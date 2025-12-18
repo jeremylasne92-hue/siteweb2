@@ -1,3 +1,4 @@
+
 # 🌳 Mouvement ECHO - Plateforme Complète
 
 Plateforme web pour la série ECHO avec gestion d'épisodes, authentification, progression vidéo et panel administrateur complet.
@@ -153,7 +154,5 @@ Pour héberger les vidéos sur AWS S3 + CloudFront, remplacer `/backend/routes/v
 
 ### Emails Réels
 Pour activer l'envoi d'emails (2FA, etc.), configurer SendGrid ou AWS SES dans `/backend/email_service.py`.
-
-## 📞 Support
 
 Documentation complète dans `/app/contracts.md`
