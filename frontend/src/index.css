@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@theme {
+  --color-echo-dark: #0A0A0A;
+  --color-echo-darker: #121212;
+  --color-echo-gold: #D4AF37;
+  --color-echo-goldLight: #FFD700;
+  --color-echo-red: #8B0000;
+  --color-echo-redLight: #DC143C;
+  --color-echo-blue: #1E3A8A;
+  --color-echo-blueLight: #3B82F6;
+  --color-echo-green: #065F46;
+  --color-echo-greenLight: #10B981;
+  --color-echo-text: #FFFFFF;
+  --color-echo-textMuted: #9CA3AF;
+
+  --font-serif: "Cinzel", "Playfair Display", serif;
+  --font-sans: "Inter", "Poppins", sans-serif;
+
+  --animate-fade-in: fadeIn 1s ease-out forwards;
+  --animate-slide-up: slideUp 0.8s ease-out forwards;
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+:root {
+  --background: #0A0A0A;
+  --foreground: #FFFFFF;
+}
+
+body {
+  background-color: var(--color-echo-dark);
+  color: var(--color-echo-text);
+  font-family: var(--font-sans);
+  background-image: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-serif);
+}
+
+.glass-panel {
+  backdrop-filter: blur(12px);
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+@layer utilities {
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  }
+}
