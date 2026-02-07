@@ -26,9 +26,6 @@ npm-debug.log*
 .cache/
 .parcel-cache/
 
-# Agent configuration (local)
-.agent/
-
 # Python
 __pycache__/
 *.py[cod]
