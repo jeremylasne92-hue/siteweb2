@@ -1,10 +1,16 @@
-import React from 'react';
+import { useState } from 'react';
 import { Mail, MapPin, Send, Instagram, Twitter, Linkedin, Facebook } from 'lucide-react';
-import { Layout } from '../components/layout/Layout';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 
 export function Contact() {
+    const [submitted, setSubmitted] = useState(false);
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubmitted(true);
+    };
+
     return (
         <section className="relative min-h-[80vh] flex items-center justify-center py-20 bg-echo-darker">
             <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1516387938699-a93567ec168e?q=80&w=2671&auto=format&fit=crop')] bg-cover bg-center opacity-10" />
@@ -52,36 +58,55 @@ export function Contact() {
 
                     {/* Form Side */}
                     <div className="md:w-2/3 p-10 bg-white/[0.02]">
-                        <form className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <Input label="Nom" placeholder="Votre nom" />
-                                <Input label="Email" type="email" placeholder="votre@email.com" />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-neutral-300 mb-1">Sujet</label>
-                                <select className="w-full bg-black/20 border border-white/10 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-1 focus:ring-echo-gold text-sm">
-                                    <option>Question générale</option>
-                                    <option>Presse & Média</option>
-                                    <option>Partenariat</option>
-                                    <option>Autre</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-neutral-300 mb-1">Message</label>
-                                <textarea
-                                    className="w-full bg-black/20 border border-white/10 rounded-md py-2 px-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-echo-gold min-h-[150px] text-sm resize-y"
-                                    placeholder="Comment pouvons-nous vous aider ?"
-                                />
-                            </div>
-
-                            <div className="flex justify-end">
-                                <Button variant="primary" className="flex items-center gap-2">
-                                    Envoyer <Send className="w-4 h-4" />
+                        {submitted ? (
+                            <div className="flex flex-col items-center justify-center h-full text-center py-16">
+                                <div className="w-16 h-16 rounded-full bg-echo-green/20 flex items-center justify-center mb-6">
+                                    <Send className="w-8 h-8 text-echo-greenLight" />
+                                </div>
+                                <h3 className="text-2xl font-serif text-white mb-3">Message envoyé !</h3>
+                                <p className="text-neutral-400 max-w-md">
+                                    Merci pour votre message. Nous vous répondrons dans les plus brefs délais.
+                                </p>
+                                <Button
+                                    variant="outline"
+                                    className="mt-8"
+                                    onClick={() => setSubmitted(false)}
+                                >
+                                    Envoyer un autre message
                                 </Button>
                             </div>
-                        </form>
+                        ) : (
+                            <form className="space-y-6" onSubmit={handleSubmit}>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <Input label="Nom" placeholder="Votre nom" />
+                                    <Input label="Email" type="email" placeholder="votre@email.com" />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-neutral-300 mb-1">Sujet</label>
+                                    <select className="w-full bg-black/20 border border-white/10 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-1 focus:ring-echo-gold text-sm">
+                                        <option>Question générale</option>
+                                        <option>Presse & Média</option>
+                                        <option>Partenariat</option>
+                                        <option>Autre</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-neutral-300 mb-1">Message</label>
+                                    <textarea
+                                        className="w-full bg-black/20 border border-white/10 rounded-md py-2 px-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-echo-gold min-h-[150px] text-sm resize-y"
+                                        placeholder="Comment pouvons-nous vous aider ?"
+                                    />
+                                </div>
+
+                                <div className="flex justify-end">
+                                    <Button variant="primary" className="flex items-center gap-2">
+                                        Envoyer <Send className="w-4 h-4" />
+                                    </Button>
+                                </div>
+                            </form>
+                        )}
                     </div>
 
                 </div>

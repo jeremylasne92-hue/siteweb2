@@ -3,6 +3,7 @@ import { Layout } from './components/layout/Layout';
 import { Home } from './pages/Home';
 import { Serie } from './pages/Serie';
 import { Mouvement } from './pages/Mouvement';
+import { Cognisphere } from './pages/Cognisphere';
 import { ECHOLink } from './pages/ECHOLink';
 import { ECHOsystem } from './pages/ECHOsystem';
 
@@ -19,6 +20,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/serie" element={<Serie />} />
           <Route path="/mouvement" element={<Mouvement />} />
+          <Route path="/cognisphere" element={<Cognisphere />} />
           <Route path="/echolink" element={<ECHOLink />} />
           <Route path="/partenaires" element={<ECHOsystem />} />
           <Route path="/agenda" element={<Events />} />

@@ -1,0 +1,31 @@
+{
+  "workflow": "document-project",
+  "mode": "completed",
+  "scan_level": "exhaustive",
+  "project_type": "multi-part (frontend-web + backend-api)",
+  "scan_started_at": "2026-03-01T21:45:00Z",
+  "scan_completed_at": "2026-03-01T22:15:00Z",
+  "files_analyzed": {
+    "frontend": 16,
+    "backend": 11,
+    "total": 27
+  },
+  "generated_documents": [
+    "project-overview.md",
+    "architecture.md",
+    "api-contracts.md",
+    "data-models.md",
+    "component-inventory.md",
+    "source-tree.md",
+    "development-guide.md",
+    "index.md"
+  ],
+  "stats": {
+    "total_lines_of_code": 3300,
+    "api_endpoints": 30,
+    "mongodb_collections": 8,
+    "frontend_pages": 9,
+    "frontend_components": 12,
+    "pydantic_models": 10
+  }
+}

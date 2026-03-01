@@ -19,6 +19,7 @@ export function Header() {
     const navLinks = [
         { name: 'La Série', path: '/serie' },
         { name: 'Le Mouvement', path: '/mouvement' },
+        { name: 'Cognisphère', path: '/cognisphere' },
         { name: 'ECHOLink', path: '/echolink' },
         { name: 'Partenaires', path: '/partenaires' },
         { name: 'Événements', path: '/agenda' },

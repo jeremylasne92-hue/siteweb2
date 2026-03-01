@@ -1,6 +1,5 @@
 import React from 'react';
 import { Heart, Check, ChevronDown } from 'lucide-react';
-import { Layout } from '../components/layout/Layout';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 
@@ -107,7 +106,7 @@ export function Support() {
                         ))}
                     </div>
                     <p className="mt-8 text-neutral-500 text-sm">
-                        Paiement sécurisé via Stripe. Vous pouvez également faire un don libre.
+                        Paiement sécurisé — intégration en cours. Contactez-nous pour soutenir le projet dès maintenant.
                     </p>
                 </div>
             </section>

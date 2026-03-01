@@ -111,7 +111,7 @@ async def register(user_data: UserCreate, db: AsyncIOMotorDatabase = Depends(get
             "username": user.username,
             "email": user.email,
             "requires_2fa": True,
-            "message": f"Code 2FA envoyé à {user.email}. Code: {code} (démo)"
+            "message": f"Code 2FA envoyé à {user.email}"
         }
     
     return {
@@ -126,7 +126,8 @@ async def register(user_data: UserCreate, db: AsyncIOMotorDatabase = Depends(get
 @router.post("/login")
 async def login(credentials: UserLogin, response: Response, db: AsyncIOMotorDatabase = Depends(get_db)):
     """Login with username/password"""
-    # Verify captcha (simple check for demo)
+    # TODO SECURITY: Implement server-side CAPTCHA verification (reCAPTCHA v3)
+    # Currently trusts client-side boolean - must validate with Google reCAPTCHA API in production
     if not credentials.captcha_verified:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -175,7 +176,7 @@ async def login(credentials: UserLogin, response: Response, db: AsyncIOMotorData
                 "role": user.role
             },
             "requires_2fa": True,
-            "message": f"Code 2FA: {code} (démo - check votre email)"
+            "message": "Code 2FA envoyé par email"
         }
     
     # Create session

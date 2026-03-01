@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, status
+from pydantic import BaseModel
 from models import User
 from routes.auth import get_current_user, require_admin, get_db
 from auth_utils import hash_password
@@ -9,6 +10,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/users", tags=["User Management"])
+
+
+class UsernameUpdateRequest(BaseModel):
+    new_username: str
+
+
+class PasswordResetRequest(BaseModel):
+    new_password: str
 
 
 @router.get("/count")
@@ -47,13 +56,13 @@ async def get_all_users(
 @router.put("/{user_id}/username")
 async def update_username(
     user_id: str,
-    new_username: str,
+    body: UsernameUpdateRequest,
     admin: User = Depends(require_admin),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
     """Update user's username (admin only)"""
     # Check if username already exists
-    existing = await db.users.find_one({"username": new_username, "id": {"$ne": user_id}})
+    existing = await db.users.find_one({"username": body.new_username, "id": {"$ne": user_id}})
     if existing:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -62,7 +71,7 @@ async def update_username(
     
     result = await db.users.update_one(
         {"id": user_id},
-        {"$set": {"username": new_username}}
+        {"$set": {"username": body.new_username}}
     )
     
     if result.modified_count == 0:
@@ -78,14 +87,14 @@ async def update_username(
 @router.put("/{user_id}/password")
 async def reset_user_password(
     user_id: str,
-    new_password: str,
+    body: PasswordResetRequest,
     admin: User = Depends(require_admin),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
     """Reset user's password (admin only)"""
     result = await db.users.update_one(
         {"id": user_id},
-        {"$set": {"password_hash": hash_password(new_password)}}
+        {"$set": {"password_hash": hash_password(body.new_password)}}
     )
     
     if result.modified_count == 0:

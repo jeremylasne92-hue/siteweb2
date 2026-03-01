@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Play, BookOpen, Facebook, Linkedin, Twitter, Flame, Mountain, Star, Instagram, Palette, Gamepad2 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
 
 type Episode = {
     title: string;
+    vice: string;
     themes: {
         existential: string;
         societal: string;
@@ -15,6 +17,7 @@ type Episode = {
 const episodesS1: Episode[] = [
     {
         title: "Révélation",
+        vice: "",
         themes: {
             existential: "Quête de sens, Rêves, Dualité, Développement personnel, Cosmogonie et symbole africain.",
             societal: "Dérèglement climatique.",
@@ -22,7 +25,8 @@ const episodesS1: Episode[] = [
         }
     },
     {
-        title: "Catabase (Les Limbes)",
+        title: "Catabase",
+        vice: "Les Limbes",
         themes: {
             existential: "Philosophie (ontologie, éthique et morale, ubuntu), Énergie et mécanisme de domination, Neurosciences.",
             societal: "Immigration.",
@@ -30,7 +34,8 @@ const episodesS1: Episode[] = [
         }
     },
     {
-        title: "Anamesis (La Luxure)",
+        title: "Anamesis",
+        vice: "La Luxure",
         themes: {
             existential: "Psychologie et psychanalyse, Synchronicités, Art divinatoire, Pouvoir de la pensée, Hypnose, Mentalisme.",
             societal: "Patriarcat, Protection animale, Médias et réseaux sociaux.",
@@ -38,7 +43,8 @@ const episodesS1: Episode[] = [
         }
     },
     {
-        title: "Maga ou Sympathie (La Gourmandise)",
+        title: "Maga ou Sympathie",
+        vice: "La Gourmandise",
         themes: {
             existential: "Substances psychoactives, EMC, Astrologie, Biologie (microcosme / macrocosme).",
             societal: "Sécurité alimentaire, Industrie primaire et secondaire, Gestion des déchets, Greenwashing.",
@@ -46,7 +52,8 @@ const episodesS1: Episode[] = [
         }
     },
     {
-        title: "Pléonexie (L'Avarice / Prodigue)",
+        title: "Pléonexie",
+        vice: "L'Avarice",
         themes: {
             existential: "Numérologie, Physique quantique, Mathématiques.",
             societal: "Fascisme, extrémiste, Économie, Finance.",
@@ -54,7 +61,8 @@ const episodesS1: Episode[] = [
         }
     },
     {
-        title: "Ménis (Colère / Paresse)",
+        title: "Ménis",
+        vice: "La Colère",
         themes: {
             existential: "Chamanisme, Exorcisme, Spiritisme, Médiumnité, Capacités psychiques.",
             societal: "Industrie pharmaceutique.",
@@ -62,7 +70,8 @@ const episodesS1: Episode[] = [
         }
     },
     {
-        title: "Mythopéïa (L'Hérésie)",
+        title: "Mythopéïa",
+        vice: "L'Hérésie",
         themes: {
             existential: "Mythologie, Ancienne civilisation, Guru et dérive sectaire.",
             societal: "Impact et risque de l'IA, Transhumanisme, Technologies, Wokisme.",
@@ -70,7 +79,8 @@ const episodesS1: Episode[] = [
         }
     },
     {
-        title: "Metanoïa (La Violence)",
+        title: "Metanoïa",
+        vice: "La Violence",
         themes: {
             existential: "Mort et réincarnation, Karma, Religions.",
             societal: "Guerre, Géopolitique, Cybersécurité.",
@@ -78,7 +88,8 @@ const episodesS1: Episode[] = [
         }
     },
     {
-        title: "Fatum (La Fraude)",
+        title: "Fatum",
+        vice: "La Fraude",
         themes: {
             existential: "Origines et influences des traditions initiatiques, Prophéties, Géométrie sacrée.",
             societal: "Droit et justice, Lobby, Logement et urbanisme.",
@@ -86,7 +97,8 @@ const episodesS1: Episode[] = [
         }
     },
     {
-        title: "Divine Providence (La Trahison 1/2)",
+        title: "Divine Providence",
+        vice: "La Trahison 1/2",
         themes: {
             existential: "Courants mystiques et philosophies spirituelles, Démonologie, Théorie complotiste.",
             societal: "Politique, Syndicats, Pouvoir, Activisme.",
@@ -94,7 +106,8 @@ const episodesS1: Episode[] = [
         }
     },
     {
-        title: "Alétheia (La Trahison 2/2)",
+        title: "Alétheia",
+        vice: "La Trahison 2/2",
         themes: {
             existential: "Cosmogonie, Gémellité, Sotériologie, Le son, Nature de la réalité.",
             societal: "Gouvernance et institutions, Citoyenneté et démocratie, Sécurité.",
@@ -107,6 +120,7 @@ export function Serie() {
     const [activeSection, setActiveSection] = useState('apercu');
     const [activeSeason, setActiveSeason] = useState(1);
     const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -128,6 +142,20 @@ export function Serie() {
 
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    // SEO dynamique
+    useEffect(() => {
+        document.title = 'La Série ECHO - Une encyclopédie moderne en 3 saisons';
+        const metaDescription = document.querySelector('meta[name="description"]');
+        if (metaDescription) {
+            metaDescription.setAttribute('content', 'Découvrez ECHO, la websérie événement inspirée de Dante. 33 épisodes pour comprendre le monde et agir.');
+        } else {
+            const meta = document.createElement('meta');
+            meta.name = 'description';
+            meta.content = 'Découvrez ECHO, la websérie événement inspirée de Dante. 33 épisodes pour comprendre le monde et agir.';
+            document.head.appendChild(meta);
+        }
     }, []);
 
     const scrollToSection = (id: string) => {
@@ -181,6 +209,7 @@ export function Serie() {
                             <button
                                 key={section}
                                 onClick={() => scrollToSection(section)}
+                                aria-label={`Aller à la section ${section}`}
                                 className={`px-6 py-4 text-sm font-bold uppercase tracking-widest border-b-2 transition-colors duration-300 ${activeSection === section
                                     ? 'border-[#D4AF37] text-[#D4AF37]'
                                     : 'border-transparent text-neutral-500 hover:text-white'
@@ -269,7 +298,7 @@ export function Serie() {
                         </p>
                         <Button
                             className="bg-[#D4AF37] text-[#0A0A0A] hover:bg-[#FFD700] hover:shadow-[0_0_24px_rgba(212,175,55,0.6)] px-8 py-4 text-sm font-bold tracking-widest uppercase rounded-lg transition-all transform hover:scale-105"
-                            onClick={() => window.location.href = '/contact'}
+                            onClick={() => navigate('/contact')}
                         >
                             Rejoindre l'aventure
                         </Button>
@@ -413,14 +442,37 @@ export function Serie() {
                                 <div
                                     key={index}
                                     onClick={() => setSelectedEpisode(ep)}
-                                    className="group relative h-[200px] bg-[#121212] rounded-xl border border-white/5 p-6 cursor-pointer overflow-hidden transition-all duration-300 hover:border-[#DC143C] hover:shadow-[0_0_30px_rgba(220,20,60,0.1)] hover:-translate-y-2"
+                                    role="button"
+                                    tabIndex={0}
+                                    onKeyDown={(e) => e.key === 'Enter' && setSelectedEpisode(ep)}
+                                    aria-label={`Voir les thèmes de l'épisode ${index + 1}: ${ep.title}`}
+                                    className="group relative h-[200px] bg-[#121212] rounded-xl border border-white/5 p-5 cursor-pointer overflow-hidden transition-all duration-300 hover:border-[#DC143C] hover:shadow-[0_0_30px_rgba(220,20,60,0.1)] hover:-translate-y-2"
                                 >
-                                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                                        <span className="text-6xl font-serif font-bold text-white">{String(index + 1).padStart(2, '0')}</span>
+                                    {/* Numéro en haut à droite - GRIS */}
+                                    <div className="absolute top-3 right-4">
+                                        <span className="text-5xl font-serif font-bold text-white/20">{String(index + 1).padStart(2, '0')}</span>
                                     </div>
-                                    <div className="h-full flex flex-col justify-end relative z-10">
-                                        <span className="text-[#DC143C] text-xs font-bold tracking-widest uppercase mb-2">Épisode {index + 1}</span>
-                                        <h3 className="text-xl font-serif font-bold text-white group-hover:text-[#DC143C] transition-colors">{ep.title}</h3>
+
+                                    {/* Épisode + Titre en haut à gauche */}
+                                    <div className="relative z-10">
+                                        <span className="text-[#DC143C] text-lg font-bold uppercase tracking-wider">Épisode</span>
+                                        <h3 className="text-lg font-serif font-bold text-white mt-1">{ep.title}</h3>
+                                    </div>
+
+                                    {/* Vice au centre */}
+                                    {ep.vice && (
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <span className="text-white/20 text-2xl font-serif font-bold italic group-hover:text-white/40 transition-colors">
+                                                {ep.vice}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {/* Indicateur hover */}
+                                    <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                                        <span className="text-[#D4AF37] text-xs font-bold bg-[#0A0A0A]/80 px-3 py-1 rounded-full border border-[#D4AF37]/30">
+                                            Voir les thèmes →
+                                        </span>
                                     </div>
                                 </div>
                             ))}
@@ -501,7 +553,7 @@ export function Serie() {
                     <h2 className="text-[48px] font-serif font-bold text-white mb-4 text-center">Les Personnages</h2>
                     <p className="text-[#D1D5DB] text-center max-w-2xl mx-auto mb-16 italic font-serif">"Ils sont le reflet de nos vices, de nos peurs, mais aussi de nos espoirs."</p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                         {/* SACHA */}
                         <CharacterCard
                             name="SACHA"
@@ -599,7 +651,7 @@ export function Serie() {
                             name="MATHIEU"
                             role="Trahison"
                             description="Directeur général, incarne le vice de la trahison. Il représente les intérêts privés, l'influence du pouvoir politique, du lobbying et du patronat. Sa réputation l'importe plus que tout. Ses mécanismes de domination, fondée sur le contrôle et la peur, se retourneront à terme contre lui."
-                            image="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=2574&auto=format&fit=crop"
+                            image="/images/characters/mathieu.png"
                         />
                     </div>
                 </div>
@@ -609,13 +661,17 @@ export function Serie() {
 }
 
 function CharacterCard({ name, role, description, image }: { name: string, role: string, description: string, image: string }) {
+    // Générer un pseudo basé sur le nom du personnage
+    const pseudo = name.toLowerCase().replace(/\s/g, '');
+
     return (
-        <div className="group relative rounded-xl overflow-hidden bg-[#1A1A1A] border border-white/5 transition-all duration-500 hover:scale-[1.02] hover:border-[#D4AF37]/50 hover:shadow-[0_0_30px_rgba(212,175,55,0.1)]">
+        <div className="group relative rounded-xl overflow-hidden bg-[#1A1A1A] border border-white/5 transition-all duration-500 hover:border-[#D4AF37]/50 hover:shadow-[0_0_30px_rgba(212,175,55,0.1)]">
             {/* Image */}
-            <div className="aspect-[4/5] relative overflow-hidden">
+            <div className="aspect-[3/4] relative overflow-hidden">
                 <img
                     src={image}
                     alt={name}
+                    loading="lazy"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent opacity-80" />
@@ -634,6 +690,45 @@ function CharacterCard({ name, role, description, image }: { name: string, role:
                         {description}
                     </p>
                 </div>
+            </div>
+
+            {/* Social Media Section */}
+            <div className="p-4 bg-[#121212] border-t border-white/5 flex justify-center gap-6">
+                <a
+                    href={`https://instagram.com/${pseudo}_echo`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-neutral-500 hover:text-[#E4405F] transition-colors duration-300 transform hover:scale-110"
+                    title={`Instagram de ${name}`}
+                >
+                    <Instagram size={20} />
+                </a>
+                <a
+                    href={`https://facebook.com/${pseudo}.echo`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-neutral-500 hover:text-[#1877F2] transition-colors duration-300 transform hover:scale-110"
+                    title={`Facebook de ${name}`}
+                >
+                    <Facebook size={20} />
+                </a>
+                <a
+                    href={`https://tiktok.com/@${pseudo}_echo`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-neutral-500 hover:text-white transition-colors duration-300 transform hover:scale-110"
+                    title={`TikTok de ${name}`}
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        width="20"
+                        height="20"
+                        fill="currentColor"
+                        className="inline-block"
+                    >
+                        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
+                    </svg>
+                </a>
             </div>
         </div>
     );

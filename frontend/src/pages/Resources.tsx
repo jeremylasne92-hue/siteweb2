@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Search, Download, FileText, Video, BookOpen, ExternalLink, Filter } from 'lucide-react';
-import { Layout } from '../components/layout/Layout';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Card } from '../components/ui/Card';
@@ -139,8 +138,8 @@ export function Resources() {
                                             {resource.size && ` • ${resource.size}`}
                                             {resource.duration && ` • ${resource.duration}`}
                                         </div>
-                                        <Button variant="ghost" size="sm" className="text-echo-blueLight hover:text-white p-0">
-                                            Télécharger
+                                        <Button variant="ghost" size="sm" className="text-echo-blueLight hover:text-white p-0 opacity-50 cursor-not-allowed" title="Bientôt disponible">
+                                            Bientôt
                                         </Button>
                                     </div>
                                 </div>

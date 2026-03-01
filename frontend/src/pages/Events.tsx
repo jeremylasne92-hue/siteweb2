@@ -1,6 +1,4 @@
-import React from 'react';
 import { Calendar, MapPin, ArrowRight, Clock } from 'lucide-react';
-import { Layout } from '../components/layout/Layout';
 import { Button } from '../components/ui/Button';
 
 export function Events() {
@@ -8,17 +6,17 @@ export function Events() {
         {
             id: 1,
             title: "Avant-première Saison 1",
-            date: "15 Oct 2023",
+            date: "15 Mai 2026",
             time: "20:00",
             location: "Paris, Le Grand Rex",
             image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2670&auto=format&fit=crop",
             type: "Projection",
-            status: "Complet"
+            status: "Inscriptions ouvertes"
         },
         {
             id: 2,
             title: "Atelier Résilience : Les bases",
-            date: "22 Oct 2023",
+            date: "22 Juin 2026",
             time: "14:00",
             location: "Lyon, La Commune",
             image: "https://images.unsplash.com/photo-1544377193-33dcf4d68fb5?q=80&w=2670&auto=format&fit=crop",
@@ -28,7 +26,7 @@ export function Events() {
         {
             id: 3,
             title: "Conférence : L'Effondrement",
-            date: "05 Nov 2023",
+            date: "05 Sep 2026",
             time: "19:30",
             location: "Bordeaux, Darwin",
             image: "https://images.unsplash.com/photo-1544531586-fde5298cdd40?q=80&w=2670&auto=format&fit=crop",
@@ -78,7 +76,7 @@ export function Events() {
             {/* Events List */}
             <section className="py-20 px-4">
                 <div className="container mx-auto max-w-6xl space-y-8">
-                    {upcomingEvents.map((event, index) => (
+                    {upcomingEvents.map((event) => (
                         <div key={event.id} className="group relative bg-white/5 border border-white/5 rounded-2xl overflow-hidden hover:border-echo-gold/30 transition-all duration-300 flex flex-col md:flex-row">
                             {/* Image */}
                             <div className="md:w-1/3 h-48 md:h-auto relative overflow-hidden">

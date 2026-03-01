@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/videos", tags=["Videos"])
 
-UPLOAD_DIR = Path("/app/backend/uploads/videos")
+UPLOAD_DIR = Path(__file__).parent.parent / "uploads" / "videos"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 
