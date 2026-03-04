@@ -1,13 +1,14 @@
 from fastapi import FastAPI, APIRouter
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
+from starlette.staticfiles import StaticFiles
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
 
 # Import routes
-from routes import auth, episodes, progress, videos, users, thematics, resources
+from routes import auth, episodes, progress, videos, users, thematics, resources, partners
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -29,13 +30,13 @@ api_router = APIRouter(prefix="/api")
 
 # Include all routers
 api_router.include_router(auth.router)
-api_router.include_router(episodes.router)
 api_router.include_router(progress.router)
 api_router.include_router(videos.router)
 api_router.include_router(users.router)
 api_router.include_router(thematics.router)
 api_router.include_router(resources.router)
 api_router.include_router(resources.actors_router)
+api_router.include_router(partners.router)
 
 # Health check endpoint
 @api_router.get("/")
@@ -44,6 +45,11 @@ async def root():
 
 # Include the router in the main app
 app.include_router(api_router)
+
+# Serve uploaded files (logos, etc.)
+uploads_dir = os.path.join(ROOT_DIR, "uploads")
+os.makedirs(uploads_dir, exist_ok=True)
+app.mount("/api/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 
 app.add_middleware(
     CORSMiddleware,

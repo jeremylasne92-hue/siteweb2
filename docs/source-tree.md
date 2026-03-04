@@ -15,7 +15,7 @@ sitewebecho by emergent/
 │   │   └── images/characters/          # Images des personnages
 │   └── src/
 │       ├── main.tsx                    # Entry point React (StrictMode)
-│       ├── App.tsx                     # Routing (9 routes)
+│       ├── App.tsx                     # Routing (10 routes)
 │       ├── App.css                     # CSS legacy Vite (non utilisé)
 │       ├── index.css                   # Design system Tailwind + thème ECHO
 │       │
@@ -35,12 +35,13 @@ sitewebecho by emergent/
 │       │   ├── Home.tsx               # 150 lignes — Hero, 3 piliers, stats
 │       │   ├── Serie.tsx              # 734 lignes — Épisodes, personnages, vidéo
 │       │   ├── Mouvement.tsx          # 268 lignes — Timeline arbre, phases, équipe
+│       │   ├── Cognisphere.tsx        # 220 lignes — Outil apprentissage IA (NEW)
 │       │   ├── ECHOLink.tsx           # 123 lignes — Plateforme interactive (à venir)
-│       │   ├── ECHOsystem.tsx         # 98 lignes  — Partenaires par catégorie
-│       │   ├── Events.tsx             # 146 lignes — Événements avec filtres
-│       │   ├── Resources.tsx          # 161 lignes — Médiathèque avec recherche
-│       │   ├── Support.tsx            # 137 lignes — Dons (3 paliers) + FAQ
-│       │   └── Contact.tsx            # 92 lignes  — Formulaire + réseaux
+│       │   ├── ECHOsystem.tsx         # 98 lignes  — Catégories partenaires + badges
+│       │   ├── Events.tsx             # 144 lignes — Événements avec filtres
+│       │   ├── Resources.tsx          # 159 lignes — Médiathèque avec recherche
+│       │   ├── Support.tsx            # 136 lignes — Dons (3 paliers) + FAQ
+│       │   └── Contact.tsx            # 105 lignes — Formulaire + confirmation
 │       │
 │       ├── hooks/                     # Custom hooks React
 │       │   └── (vide — à développer)
@@ -83,9 +84,9 @@ sitewebecho by emergent/
 
 | Métrique | Frontend | Backend | Total |
 |----------|----------|---------|-------|
-| **Fichiers source** | 16 | 11 | 27 |
-| **Lignes de code** | ~2 100 | ~1 200 | ~3 300 |
+| **Fichiers source** | 17 | 11 | 28 |
+| **Lignes de code** | ~2 300 | ~1 200 | ~3 500 |
 | **Composants** | 12 | — | 12 |
-| **Pages** | 9 | — | 9 |
+| **Pages** | 10 | — | 10 |
 | **Endpoints API** | — | 30 | 30 |
 | **Collections DB** | — | 8 | 8 |

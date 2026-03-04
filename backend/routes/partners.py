@@ -1,0 +1,481 @@
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form, BackgroundTasks
+from pydantic import BaseModel, EmailStr
+from typing import List, Optional, Dict, Any
+from datetime import datetime
+import json
+import os
+import re
+import shutil
+import uuid as uuid_mod
+import slugify
+
+from models import User, UserRole, UserCreate
+from models_partner import Partner, PartnerCategory, PartnerStatus, ThematicRef
+from routes.auth import get_current_user, require_admin, get_db, hash_password
+from email_service import send_email
+from motor.motor_asyncio import AsyncIOMotorDatabase
+
+router = APIRouter(prefix="/partners", tags=["Partners"])
+
+# ==============================================================================
+# SCHEMAS (Pydantic Models for requests/responses)
+# ==============================================================================
+
+class ApplyPartnerRequest(BaseModel):
+    name: str
+    category: PartnerCategory
+    thematics: str # JSON string of list
+    description: str
+    description_long: Optional[str] = None
+    address: str
+    city: str
+    postal_code: str
+    country: str = "France"
+    latitude: float
+    longitude: float
+    contact_name: str
+    contact_role: Optional[str] = None
+    contact_email: EmailStr
+    contact_phone: Optional[str] = None
+    website_url: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    instagram_url: Optional[str] = None
+    twitter_url: Optional[str] = None
+    password: str
+
+class RejectReason(BaseModel):
+    reason: str
+
+class PaginatedPartners(BaseModel):
+    partners: List[Partner]
+    total: int
+    has_more: bool
+
+# ==============================================================================
+# PUBLIC ENDPOINTS
+# ==============================================================================
+
+@router.get("/thematics", response_model=List[ThematicRef])
+async def get_thematics(db: AsyncIOMotorDatabase = Depends(get_db)):
+    """Get all thematics reference data"""
+    # Insert initial data if collection is empty
+    count = await db.thematics_ref.count_documents({})
+    if count == 0:
+        initial_data = [
+            {"code": "ENV", "label": "Environnement & Climat", "color": "#10B981", "icon": "Leaf"},
+            {"code": "SOC", "label": "Justice sociale", "color": "#EF4444", "icon": "Users"},
+            {"code": "ECO", "label": "Économie alternative", "color": "#F59E0B", "icon": "TrendingUp"},
+            {"code": "EDU", "label": "Éducation & Pédagogie", "color": "#8B5CF6", "icon": "GraduationCap"},
+            {"code": "TEC", "label": "Technologies & IA", "color": "#3B82F6", "icon": "Cpu"},
+            {"code": "SAN", "label": "Santé & Bien-être", "color": "#EC4899", "icon": "Heart"},
+            {"code": "ART", "label": "Art & Culture", "color": "#D4AF37", "icon": "Palette"},
+            {"code": "GEO", "label": "Géopolitique & Citoyenneté", "color": "#6366F1", "icon": "Globe"},
+            {"code": "SPI", "label": "Spiritualité & Philosophie", "color": "#A855F7", "icon": "Sparkles"},
+            {"code": "AGR", "label": "Agriculture & Alimentation", "color": "#84CC16", "icon": "Wheat"}
+        ]
+        await db.thematics_ref.insert_many(initial_data)
+        
+    cursor = db.thematics_ref.find({}, {"_id": 0})
+    return await cursor.to_list(length=100)
+
+@router.get("/stats")
+async def get_partner_stats(db: AsyncIOMotorDatabase = Depends(get_db)):
+    """Get public statistics for approved partners"""
+    pipeline = [
+        {"$match": {"status": PartnerStatus.APPROVED}},
+        {"$facet": {
+            "total": [{"$count": "count"}],
+            "by_category": [{"$group": {"_id": "$category", "count": {"$sum": 1}}}],
+            "by_thematic": [{"$unwind": "$thematics"}, {"$group": {"_id": "$thematics", "count": {"$sum": 1}}}]
+        }}
+    ]
+    
+    result = await db.partners.aggregate(pipeline).to_list(1)
+    data = result[0]
+    
+    return {
+        "total": data["total"][0]["count"] if data["total"] else 0,
+        "by_category": {item["_id"]: item["count"] for item in data["by_category"]},
+        "by_thematic": {item["_id"]: item["count"] for item in data["by_thematic"]}
+    }
+
+@router.get("", response_model=PaginatedPartners)
+async def get_public_partners(
+    category: Optional[PartnerCategory] = None,
+    thematic: Optional[str] = None, # Comma separated list
+    search: Optional[str] = None,
+    bounds: Optional[str] = None, # lat_min,lng_min,lat_max,lng_max
+    skip: int = 0,
+    limit: int = 50,
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """List approved partners with filters"""
+    query = {"status": PartnerStatus.APPROVED}
+    
+    if category:
+        query["category"] = category
+        
+    if thematic:
+        thematic_list = thematic.split(",")
+        query["thematics"] = {"$in": thematic_list}
+        
+    if search:
+        safe_search = re.escape(search)
+        query["$or"] = [
+            {"name": {"$regex": safe_search, "$options": "i"}},
+            {"city": {"$regex": safe_search, "$options": "i"}}
+        ]
+        
+    if bounds:
+        try:
+            lat_min, lng_min, lat_max, lng_max = map(float, bounds.split(","))
+            query["latitude"] = {"$gte": lat_min, "$lte": lat_max}
+            query["longitude"] = {"$gte": lng_min, "$lte": lng_max}
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid bounds format")
+
+    cursor = db.partners.find(query, {"_id": 0}).skip(skip).limit(limit+1)
+    partners = [Partner(**doc) for doc in await cursor.to_list(length=limit+1)]
+    
+    has_more = len(partners) > limit
+    if has_more:
+        partners.pop()
+        
+    total = await db.partners.count_documents(query)
+    
+    return {
+        "partners": partners,
+        "total": total,
+        "has_more": has_more
+    }
+
+@router.get("/{slug}")
+async def get_partner_by_slug(slug: str, db: AsyncIOMotorDatabase = Depends(get_db)):
+    """Get single approved partner by slug"""
+    partner = await db.partners.find_one({"slug": slug, "status": PartnerStatus.APPROVED}, {"_id": 0})
+    if not partner:
+        raise HTTPException(status_code=404, detail="Partner not found")
+    return partner
+
+@router.post("/apply")
+async def apply_partnership(
+    background_tasks: BackgroundTasks,
+    name: str = Form(...),
+    category: PartnerCategory = Form(...),
+    thematics: str = Form(...), # JSON string representation of list like '["ENV", "SOC"]'
+    description: str = Form(...),
+    address: str = Form(...),
+    city: str = Form(...),
+    postal_code: str = Form(...),
+    latitude: float = Form(...),
+    longitude: float = Form(...),
+    contact_name: str = Form(...),
+    contact_email: EmailStr = Form(...),
+    password: str = Form(...),
+    description_long: Optional[str] = Form(None),
+    country: str = Form("France"),
+    contact_role: Optional[str] = Form(None),
+    contact_phone: Optional[str] = Form(None),
+    website_url: Optional[str] = Form(None),
+    linkedin_url: Optional[str] = Form(None),
+    instagram_url: Optional[str] = Form(None),
+    twitter_url: Optional[str] = Form(None),
+    logo: UploadFile = File(None),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Submit a partnership application (multipart/form-data)"""
+    
+    # Check if email is already used for contact or user account
+    existing_user = await db.users.find_one({"email": contact_email})
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Un compte existe déjà avec cet email")
+        
+    # Create the user account with PARTNER role
+    user_doc = User(
+        username=name,
+        email=contact_email,
+        password_hash=hash_password(password),
+        role=UserRole.PARTNER
+    )
+    await db.users.insert_one(user_doc.model_dump())
+    
+    # Handle logo upload with validation
+    logo_url = None
+    if logo:
+        # Validate content type
+        allowed_types = ["image/jpeg", "image/png", "image/webp", "image/svg+xml", "image/gif"]
+        if logo.content_type not in allowed_types:
+            raise HTTPException(status_code=400, detail=f"Type de fichier non autorisé. Formats acceptés: JPEG, PNG, WebP, SVG, GIF")
+        # Validate file size (max 5MB)
+        contents = await logo.read()
+        if len(contents) > 5 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="Le fichier ne doit pas dépasser 5 Mo")
+        await logo.seek(0)
+        
+        upload_dir = "uploads/partners/logos"
+        os.makedirs(upload_dir, exist_ok=True)
+        # Sanitize filename: use UUID to prevent path traversal
+        ext = os.path.splitext(logo.filename or "logo.png")[1].lower()
+        if ext not in [".jpg", ".jpeg", ".png", ".webp", ".svg", ".gif"]:
+            ext = ".png"
+        safe_filename = f"{user_doc.id}_{uuid_mod.uuid4().hex[:8]}{ext}"
+        file_path = os.path.join(upload_dir, safe_filename)
+        
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(logo.file, buffer)
+            
+        logo_url = f"/api/uploads/partners/logos/{safe_filename}"
+        
+    # Parse thematics
+    try:
+        thematics_list = json.loads(thematics)
+    except Exception:
+        thematics_list = []
+        
+    # Create the Partner record
+    slug = slugify.slugify(name)
+    # Check slug uniqueness
+    existing_slug = await db.partners.find_one({"slug": slug})
+    if existing_slug:
+        slug = f"{slug}-{user_doc.id[:6]}"
+        
+    partner = Partner(
+        name=name,
+        slug=slug,
+        logo_url=logo_url,
+        description=description,
+        description_long=description_long,
+        website_url=website_url,
+        category=category,
+        thematics=thematics_list,
+        address=address,
+        city=city,
+        postal_code=postal_code,
+        country=country,
+        latitude=latitude,
+        longitude=longitude,
+        contact_name=contact_name,
+        contact_role=contact_role,
+        contact_email=contact_email,
+        contact_phone=contact_phone,
+        linkedin_url=linkedin_url,
+        instagram_url=instagram_url,
+        twitter_url=twitter_url,
+        user_id=user_doc.id,
+        status=PartnerStatus.PENDING
+    )
+    
+    await db.partners.insert_one(partner.model_dump())
+    
+    # Send emails in background
+    background_tasks.add_task(
+        send_email,
+        contact_email,
+        "Votre demande de partenariat ECHO",
+        "Nous avons bien reçu votre demande de partenariat. Celle-ci est en cours d'examen."
+    )
+    
+    return {
+        "success": True,
+        "message": "Votre demande a été soumise. Vous recevrez un email de confirmation.",
+        "partner_id": partner.id
+    }
+
+# ==============================================================================
+# PARTNER PRIVATE ENDPOINTS (Role: PARTNER)
+# ==============================================================================
+
+@router.get("/me/account")
+async def get_my_partner_account(
+    current_user: User = Depends(get_current_user),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Get own partner profile if logged in as partner"""
+    if current_user.role != UserRole.PARTNER and current_user.role != UserRole.ADMIN:
+        raise HTTPException(status_code=403, detail="Not a partner")
+        
+    partner = await db.partners.find_one({"user_id": current_user.id}, {"_id": 0})
+    if not partner:
+        raise HTTPException(status_code=404, detail="Partner account not found")
+        
+    return partner
+
+@router.put("/me/account")
+async def update_my_partner_account(
+    description: Optional[str] = Form(None),
+    description_long: Optional[str] = Form(None),
+    address: Optional[str] = Form(None),
+    city: Optional[str] = Form(None),
+    postal_code: Optional[str] = Form(None),
+    latitude: Optional[float] = Form(None),
+    longitude: Optional[float] = Form(None),
+    contact_phone: Optional[str] = Form(None),
+    website_url: Optional[str] = Form(None),
+    linkedin_url: Optional[str] = Form(None),
+    instagram_url: Optional[str] = Form(None),
+    twitter_url: Optional[str] = Form(None),
+    logo: UploadFile = File(None),
+    current_user: User = Depends(get_current_user),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Update own partner profile"""
+    if current_user.role != UserRole.PARTNER and current_user.role != UserRole.ADMIN:
+        raise HTTPException(status_code=403, detail="Not a partner")
+        
+    partner = await db.partners.find_one({"user_id": current_user.id})
+    if not partner:
+        raise HTTPException(status_code=404, detail="Partner account not found")
+    
+    # Build update dict with only provided fields
+    update_data: Dict[str, Any] = {"updated_at": datetime.utcnow()}
+    
+    for field_name, value in [
+        ("description", description),
+        ("description_long", description_long),
+        ("address", address),
+        ("city", city),
+        ("postal_code", postal_code),
+        ("latitude", latitude),
+        ("longitude", longitude),
+        ("contact_phone", contact_phone),
+        ("website_url", website_url),
+        ("linkedin_url", linkedin_url),
+        ("instagram_url", instagram_url),
+        ("twitter_url", twitter_url),
+    ]:
+        if value is not None:
+            update_data[field_name] = value
+    
+    # Handle logo upload with validation
+    if logo:
+        allowed_types = ["image/jpeg", "image/png", "image/webp", "image/svg+xml", "image/gif"]
+        if logo.content_type not in allowed_types:
+            raise HTTPException(status_code=400, detail=f"Type de fichier non autorisé. Formats acceptés: JPEG, PNG, WebP, SVG, GIF")
+        contents = await logo.read()
+        if len(contents) > 5 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="Le fichier ne doit pas dépasser 5 Mo")
+        await logo.seek(0)
+        
+        upload_dir = "uploads/partners/logos"
+        os.makedirs(upload_dir, exist_ok=True)
+        ext = os.path.splitext(logo.filename or "logo.png")[1].lower()
+        if ext not in [".jpg", ".jpeg", ".png", ".webp", ".svg", ".gif"]:
+            ext = ".png"
+        safe_filename = f"{partner['id']}_{uuid_mod.uuid4().hex[:8]}{ext}"
+        file_path = os.path.join(upload_dir, safe_filename)
+        
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(logo.file, buffer)
+            
+        update_data["logo_url"] = f"/api/uploads/partners/logos/{safe_filename}"
+    
+    await db.partners.update_one(
+        {"user_id": current_user.id},
+        {"$set": update_data}
+    )
+    
+    updated = await db.partners.find_one({"user_id": current_user.id}, {"_id": 0})
+    return {"success": True, "message": "Profil mis à jour", "partner": updated}
+
+# ==============================================================================
+# ADMIN ENDPOINTS (Role: ADMIN)
+# ==============================================================================
+
+@router.get("/admin/all")
+async def admin_get_all_partners(
+    status: Optional[PartnerStatus] = None,
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """List all partners for admins, optionally filtered by status"""
+    query = {}
+    if status:
+        query["status"] = status
+        
+    cursor = db.partners.find(query, {"_id": 0}).sort("created_at", -1)
+    return await cursor.to_list(length=1000)
+
+@router.put("/admin/{partner_id}/approve")
+async def admin_approve_partner(
+    partner_id: str,
+    background_tasks: BackgroundTasks,
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Approve a partner application"""
+    result = await db.partners.update_one(
+        {"id": partner_id},
+        {"$set": {
+            "status": PartnerStatus.APPROVED,
+            "validated_at": datetime.utcnow(),
+            "validated_by": admin.id,
+            "updated_at": datetime.utcnow()
+        }}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Partner not found or already approved")
+        
+    partner = await db.partners.find_one({"id": partner_id})
+    if partner:
+        background_tasks.add_task(
+            send_email,
+            partner["contact_email"],
+            "Bienvenue dans l'ÉCHOSystem !",
+            "Votre demande de partenariat a été approuvée. Votre profil est désormais public."
+        )
+        
+    return {"success": True, "message": "Partenaire approuvé avec succès"}
+
+@router.put("/admin/{partner_id}/reject")
+async def admin_reject_partner(
+    partner_id: str,
+    body: RejectReason,
+    background_tasks: BackgroundTasks,
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Reject a partner application"""
+    result = await db.partners.update_one(
+        {"id": partner_id},
+        {"$set": {
+            "status": PartnerStatus.REJECTED,
+            "rejection_reason": body.reason,
+            "updated_at": datetime.utcnow()
+        }}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Partner not found")
+        
+    partner = await db.partners.find_one({"id": partner_id})
+    if partner:
+        background_tasks.add_task(
+            send_email,
+            partner["contact_email"],
+            "Suite à votre demande de partenariat ECHO",
+            f"Malheureusement nous ne pouvons donner suite. Motif : {body.reason}"
+        )
+        
+    return {"success": True, "message": "Partenaire refusé"}
+
+@router.put("/admin/{partner_id}/feature")
+async def admin_toggle_feature(
+    partner_id: str,
+    is_featured: bool,
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Toggle the 'is_featured' flag on a partner"""
+    result = await db.partners.update_one(
+        {"id": partner_id},
+        {"$set": {
+            "is_featured": is_featured,
+            "updated_at": datetime.utcnow()
+        }}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Partner not found")
+        
+    return {"success": True, "message": f"Mise en avant {'activée' if is_featured else 'désactivée'}"}

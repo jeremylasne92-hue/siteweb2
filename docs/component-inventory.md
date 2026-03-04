@@ -12,7 +12,7 @@
 - **State** : `isScrolled` (scroll > 20px), `isMobileMenuOpen`
 - **Features** :
   - Navigation sticky avec effet blur/opacity au scroll
-  - Menu desktop (7 liens) + menu mobile (hamburger)
+  - Menu desktop (8 liens) + menu mobile (hamburger)
   - Logo, recherche, bouton compte, bouton "Soutenir"
   - Highlight de la page active via `useLocation()`
 
@@ -64,7 +64,12 @@
 - `FeatureCard` : Carte de fonctionnalité avec icône, titre, description, couleur personnalisée
 
 ### ECHOsystem.tsx
-- `PartnerCategory` : Catégorie de partenaires avec icône, titre, description, liste de noms
+- `ProblemCard` (inline) : Absent — page réécrite sans sous-composants custom (utilise `Card` générique)
+
+### Cognisphere.tsx
+- `ProblemCard` : Carte problème→solution avec emoji, texte barré et description
+- `StepCard` : Étape numérotée avec icône, badge et description
+- `ContentType` : Icône + label de type de contenu supporté
 
 ---
 
@@ -74,5 +79,5 @@
 |-----------|--------|----------|
 | Layout | 3 | Layout, Header, Footer |
 | UI réutilisables | 4 | Button, Card, Input, Modal |
-| Sous-composants pages | 5 | CharacterCard, TimelineItem, PhaseCard, FeatureCard, PartnerCategory |
-| **Total** | **12** | |
+| Sous-composants pages | 8 | CharacterCard, TimelineItem, PhaseCard, FeatureCard, ProblemCard, StepCard, ContentType |
+| **Total** | **15** | |

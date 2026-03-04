@@ -35,3 +35,13 @@ async def send_password_reset(email: str, reset_link: str) -> bool:
     """Send password reset link"""
     logger.info(f"📧 Password reset email to {email}: {reset_link}")
     return True
+
+async def send_email(email: str, subject: str, message: str) -> bool:
+    """Generic email sender (stub)"""
+    logger.info(f"=" * 60)
+    logger.info(f"📧 EMAIL TO: {email}")
+    logger.info(f"SUBJECT: {subject}")
+    logger.info(f"")
+    logger.info(f"{message}")
+    logger.info(f"=" * 60)
+    return True

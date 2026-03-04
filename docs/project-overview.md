@@ -42,7 +42,7 @@ sitewebecho by emergent/
 ├── frontend/          # Application React SPA
 │   ├── src/
 │   │   ├── components/   # Composants réutilisables (layout + ui)
-│   │   ├── pages/        # Pages de l'application (9 pages)
+│   │   ├── pages/        # Pages de l'application (10 pages)
 │   │   ├── hooks/        # Custom hooks React
 │   │   ├── services/     # Services/API clients
 │   │   └── assets/       # Assets statiques
@@ -67,12 +67,13 @@ sitewebecho by emergent/
 | `/` | Accueil | Hero, 3 piliers (Informer/Fédérer/Agir), statistiques |
 | `/serie` | La Série | Synopsis, prologue vidéo, 3 saisons avec épisodes, 14 personnages |
 | `/mouvement` | Le Mouvement | Timeline en arbre, 3 phases, équipe ECHO |
+| `/cognisphere` | Cogniphère | Outil d'apprentissage IA (répétition espacée, quiz IA, connexion apprenants) |
 | `/echolink` | ECHOLink | Plateforme interactive (en développement), vision |
-| `/partenaires` | ECHOSystem | Partenaires par catégorie (Experts, Finance, Éducation, ONG) |
+| `/partenaires` | ECHOSystem | Catégories de partenaires avec badges de statut |
 | `/agenda` | Événements | Listing événements avec filtres, réservation |
 | `/ressources` | Ressources | Médiathèque avec filtres et recherche |
 | `/soutenir` | Soutenir | 3 paliers de dons, barre de progression, FAQ |
-| `/contact` | Contact | Formulaire de contact, coordonnées, réseaux sociaux |
+| `/contact` | Contact | Formulaire de contact avec confirmation, coordonnées |
 
 ## Collections MongoDB
 
@@ -101,5 +102,5 @@ npm run dev    # → http://localhost:5173
 cd backend
 pip install -r requirements.txt
 # Configurer .env (MONGO_URL, DB_NAME, CORS_ORIGINS)
-uvicorn server:app --host 0.0.0.0 --port 8001
+uvicorn server:app --reload
 ```

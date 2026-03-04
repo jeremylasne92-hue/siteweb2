@@ -12,7 +12,7 @@ Application monopage (SPA) React 19 avec Vite 7 comme build tool. L'architecture
 main.tsx (entry point)
   └─ App.tsx (Router + Routes)
        └─ Layout (Header + main + Footer)
-            └─ Pages (9 pages)
+            └─ Pages (10 pages)
                  └─ Components (UI + Layout)
 ```
 
