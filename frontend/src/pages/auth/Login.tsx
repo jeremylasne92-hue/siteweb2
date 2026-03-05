@@ -9,6 +9,7 @@ export const Login = () => {
     const [activeTab, setActiveTab] = useState<AuthTab>('google');
     const [searchParams] = useSearchParams();
     const justRegistered = searchParams.get('registered') === 'true';
+    const justReset = searchParams.get('reset') === 'true';
 
     return (
         <div className="min-h-[80vh] flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
@@ -35,27 +36,34 @@ export const Login = () => {
                     </div>
                 )}
 
+                {/* Success banner after password reset */}
+                {justReset && (
+                    <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3">
+                        <p className="text-sm text-green-400 font-medium text-center">
+                            Mot de passe réinitialisé ! Connectez-vous avec votre nouveau mot de passe.
+                        </p>
+                    </div>
+                )}
+
                 {/* Tabs */}
                 <div className="flex rounded-lg bg-white/5 p-1 border border-white/10">
                     <button
                         type="button"
                         onClick={() => setActiveTab('google')}
-                        className={`flex-1 py-2.5 text-sm font-medium rounded-md transition-all duration-200 ${
-                            activeTab === 'google'
+                        className={`flex-1 py-2.5 text-sm font-medium rounded-md transition-all duration-200 ${activeTab === 'google'
                                 ? 'bg-white/10 text-white shadow-sm'
                                 : 'text-echo-textMuted hover:text-white'
-                        }`}
+                            }`}
                     >
                         Google
                     </button>
                     <button
                         type="button"
                         onClick={() => setActiveTab('email')}
-                        className={`flex-1 py-2.5 text-sm font-medium rounded-md transition-all duration-200 ${
-                            activeTab === 'email'
+                        className={`flex-1 py-2.5 text-sm font-medium rounded-md transition-all duration-200 ${activeTab === 'email'
                                 ? 'bg-white/10 text-white shadow-sm'
                                 : 'text-echo-textMuted hover:text-white'
-                        }`}
+                            }`}
                     >
                         Email
                     </button>

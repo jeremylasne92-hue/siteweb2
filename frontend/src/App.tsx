@@ -15,6 +15,8 @@ import AdminPartners from './pages/AdminPartners';
 import MyPartnerAccount from './pages/MyPartnerAccount';
 import { Login } from './pages/auth/Login';
 import { Register } from './pages/auth/Register';
+import { ForgotPassword } from './pages/auth/ForgotPassword';
+import { ResetPassword } from './pages/auth/ResetPassword';
 import { GoogleCallback } from './pages/auth/GoogleCallback';
 
 function App() {
@@ -36,6 +38,8 @@ function App() {
           <Route path="/mon-compte/partenaire" element={<MyPartnerAccount />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/auth/google/success" element={<GoogleCallback />} />
         </Routes>
       </Layout>

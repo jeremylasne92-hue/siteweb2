@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
@@ -60,6 +60,15 @@ export const EmailLoginForm = () => {
                 >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
+            </div>
+
+            <div className="flex justify-end">
+                <Link
+                    to="/forgot-password"
+                    className="text-xs text-echo-textMuted hover:text-echo-gold transition-colors"
+                >
+                    Mot de passe oublié ?
+                </Link>
             </div>
 
             {/* Server error */}

@@ -1,8 +1,10 @@
+from pydantic import BaseModel as PydanticBaseModel
 from fastapi import APIRouter, HTTPException, Depends, status, Response, Request
 from fastapi.responses import RedirectResponse
 from models import User, UserCreate, UserLogin, UserRegister, UserLoginLocal, UserSession, Pending2FA
 from auth_utils import hash_password, verify_password, generate_session_token, generate_2fa_code
 from services.auth_local_service import register_user, login_user
+from services.password_reset_service import request_reset, verify_token, reset_password as reset_pwd
 from email_service import send_2fa_code
 from datetime import datetime, timedelta
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -337,3 +339,35 @@ async def logout(response: Response, current_user: User = Depends(get_current_us
     return {"message": "Logged out successfully"}
 
 
+
+# ==================== PASSWORD RESET (Story 1.3) ====================
+
+
+class ForgotPasswordRequest(PydanticBaseModel):
+    email: str
+
+
+class ResetPasswordRequest(PydanticBaseModel):
+    password: str
+    password_confirm: str
+
+
+@router.post("/forgot-password")
+async def forgot_password(data: ForgotPasswordRequest, db: AsyncIOMotorDatabase = Depends(get_db)):
+    """Request password reset email (Service Pattern)."""
+    result = await request_reset(data.email, db)
+    return result
+
+
+@router.get("/reset-password/{token}")
+async def check_reset_token(token: str, db: AsyncIOMotorDatabase = Depends(get_db)):
+    """Verify reset token validity (Service Pattern)."""
+    result = await verify_token(token, db)
+    return result
+
+
+@router.post("/reset-password/{token}")
+async def do_reset_password(token: str, data: ResetPasswordRequest, db: AsyncIOMotorDatabase = Depends(get_db)):
+    """Reset password with valid token (Service Pattern)."""
+    result = await reset_pwd(token, data.password, data.password_confirm, db)
+    return result

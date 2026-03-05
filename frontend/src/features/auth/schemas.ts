@@ -60,3 +60,28 @@ export const strengthLabels: Record<PasswordStrength, string> = {
     'strong': 'Fort',
     'very-strong': 'Très fort',
 };
+
+// ==================== FORGOT PASSWORD ====================
+
+export const forgotPasswordSchema = z.object({
+    email: z.string()
+        .email('Adresse email invalide'),
+});
+
+export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
+
+// ==================== RESET PASSWORD ====================
+
+export const resetPasswordSchema = z.object({
+    password: z.string()
+        .min(8, 'Le mot de passe doit contenir au moins 8 caractères')
+        .regex(/[A-Z]/, 'Le mot de passe doit contenir au moins 1 majuscule')
+        .regex(/[0-9]/, 'Le mot de passe doit contenir au moins 1 chiffre')
+        .regex(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/, 'Le mot de passe doit contenir au moins 1 caractère spécial'),
+    password_confirm: z.string(),
+}).refine(data => data.password === data.password_confirm, {
+    message: 'Les mots de passe ne correspondent pas',
+    path: ['password_confirm'],
+});
+
+export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;

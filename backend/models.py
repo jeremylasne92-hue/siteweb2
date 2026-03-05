@@ -68,6 +68,14 @@ class UserSession(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
+class PasswordResetToken(BaseModel):
+    token: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    expires_at: datetime
+    used: bool = False
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
 class Episode(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     season: int

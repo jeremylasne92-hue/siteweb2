@@ -32,8 +32,19 @@ async def send_2fa_code(email: str, code: str) -> bool:
 
 
 async def send_password_reset(email: str, reset_link: str) -> bool:
-    """Send password reset link"""
-    logger.info(f"📧 Password reset email to {email}: {reset_link}")
+    """Send password reset link via email."""
+    logger.info(f"=" * 60)
+    logger.info(f"📧 EMAIL TO: {email}")
+    logger.info(f"SUBJECT: Réinitialisation de votre mot de passe ECHO")
+    logger.info(f"")
+    logger.info(f"Vous avez demandé la réinitialisation de votre mot de passe.")
+    logger.info(f"Cliquez sur le lien ci-dessous pour définir un nouveau mot de passe :")
+    logger.info(f"")
+    logger.info(f"    {reset_link}")
+    logger.info(f"")
+    logger.info(f"Ce lien expire dans 1 heure.")
+    logger.info(f"Si vous n'avez pas fait cette demande, ignorez cet email.")
+    logger.info(f"=" * 60)
     return True
 
 async def send_email(email: str, subject: str, message: str) -> bool:
