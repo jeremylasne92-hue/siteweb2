@@ -48,6 +48,19 @@ class UserLogin(BaseModel):
     captcha_verified: bool = False
 
 
+class UserRegister(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+    password_confirm: str
+    age_consent: bool = False
+
+
+class UserLoginLocal(BaseModel):
+    identifier: str  # email or username
+    password: str
+
+
 class UserSession(BaseModel):
     user_id: str
     session_token: str = Field(default_factory=lambda: str(uuid.uuid4()))

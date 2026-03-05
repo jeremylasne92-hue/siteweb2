@@ -14,6 +14,7 @@ import { Contact } from './pages/Contact';
 import AdminPartners from './pages/AdminPartners';
 import MyPartnerAccount from './pages/MyPartnerAccount';
 import { Login } from './pages/auth/Login';
+import { Register } from './pages/auth/Register';
 import { GoogleCallback } from './pages/auth/GoogleCallback';
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
           <Route path="/admin/partenaires" element={<AdminPartners />} />
           <Route path="/mon-compte/partenaire" element={<MyPartnerAccount />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/auth/google/success" element={<GoogleCallback />} />
         </Routes>
       </Layout>

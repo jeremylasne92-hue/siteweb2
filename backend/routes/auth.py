@@ -1,7 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends, status, Response, Request
 from fastapi.responses import RedirectResponse
-from models import User, UserCreate, UserLogin, UserSession, Pending2FA
+from models import User, UserCreate, UserLogin, UserRegister, UserLoginLocal, UserSession, Pending2FA
 from auth_utils import hash_password, verify_password, generate_session_token, generate_2fa_code
+from services.auth_local_service import register_user, login_user
 from email_service import send_2fa_code
 from datetime import datetime, timedelta
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -67,61 +68,27 @@ async def require_admin(current_user: User = Depends(get_current_user)) -> User:
 
 
 @router.post("/register")
-async def register(user_data: UserCreate, db: AsyncIOMotorDatabase = Depends(get_db)):
-    """Register new user with optional 2FA"""
-    # Check if username or email already exists
-    existing_user = await db.users.find_one({
-        "$or": [
-            {"username": user_data.username},
-            {"email": user_data.email}
-        ]
-    })
-    
-    if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username or email already registered"
-        )
-    
-    # Create user
-    user = User(
-        username=user_data.username,
-        email=user_data.email,
-        password_hash=hash_password(user_data.password),
-        is_2fa_enabled=user_data.enable_2fa
+async def register(user_data: UserRegister, db: AsyncIOMotorDatabase = Depends(get_db)):
+    """Register new user with email/password (Service Pattern)."""
+    result = await register_user(user_data, db)
+    return result
+
+
+@router.post("/login-local")
+async def login_local(credentials: UserLoginLocal, response: Response, db: AsyncIOMotorDatabase = Depends(get_db)):
+    """Login with email or username + password (Service Pattern)."""
+    result = await login_user(credentials, db)
+
+    # Set session cookie
+    response.set_cookie(
+        key="session_token",
+        value=result["session_token"],
+        httponly=True,
+        max_age=7 * 24 * 60 * 60,
+        samesite="lax"
     )
-    
-    await db.users.insert_one(user.dict())
-    
-    # If 2FA enabled, send code
-    if user_data.enable_2fa:
-        code = generate_2fa_code()
-        pending_2fa = Pending2FA(
-            user_id=user.id,
-            code=code,
-            expires_at=datetime.utcnow() + timedelta(minutes=10)
-        )
-        await db.pending_2fa.insert_one(pending_2fa.dict())
-        
-        # Send email
-        await send_2fa_code(user.email, code)
-        logger.info(f"2FA code for {user.email}: {code}")
-        
-        return {
-            "id": user.id,
-            "username": user.username,
-            "email": user.email,
-            "requires_2fa": True,
-            "message": f"Code 2FA envoyé à {user.email}"
-        }
-    
-    return {
-        "id": user.id,
-        "username": user.username,
-        "email": user.email,
-        "requires_2fa": False,
-        "message": "Compte créé avec succès"
-    }
+
+    return result
 
 
 @router.post("/login")

@@ -6,9 +6,10 @@
 
 ## 📋 État du Projet
 
-**Dernière mise à jour** : 2026-02-07  
-**Phase actuelle** : Maintenance et évolutions  
+**Dernière mise à jour** : 2026-03-05
+**Phase actuelle** : Sprint 1 — Epic 1 (Authentification)
 **Statut** : ✅ Opérationnel
+**Story en cours** : 1.2 Authentification Classique Sécurisée → **review** (code complet, tests OK, build OK)
 
 ---
 
@@ -26,11 +27,27 @@ frontend/src/
 └── index.css      # Styles globaux + thème Nature
 ```
 
-### Backend (Flask)
+### Backend (FastAPI + MongoDB via Motor)
 ```
 backend/
-├── app.py         # Point d'entrée
-└── ...
+├── server.py              # Point d'entrée FastAPI (port 8000)
+├── models.py              # Pydantic models (User, UserRegister, UserLoginLocal, etc.)
+├── auth_utils.py          # hash_password, verify_password (bcrypt/passlib)
+├── routes/
+│   ├── auth.py            # /register, /login-local, /login, /google/*, /me, /logout
+│   ├── episodes.py        # CRUD épisodes
+│   ├── progress.py        # Suivi progression vidéo
+│   ├── videos.py          # Upload/streaming vidéo
+│   ├── users.py           # Gestion utilisateurs (admin)
+│   ├── partners.py        # Gestion partenaires
+│   ├── thematics.py       # Thématiques
+│   └── resources.py       # Ressources
+├── services/
+│   ├── auth_service.py    # Google OAuth service
+│   └── auth_local_service.py  # Register/Login local (Service Pattern)
+├── core/config.py         # Settings centralisés
+└── tests/routes/
+    └── test_auth_local.py # 6 tests (register + login)
 ```
 
 ---
@@ -57,9 +74,19 @@ backend/
 |------|-------|--------|
 | Accueil | `/` | ✅ Complète |
 | La Série | `/serie` | ✅ Complète |
+| Le Mouvement | `/mouvement` | ✅ Complète |
+| Cognisphère | `/cognisphere` | ✅ Complète |
+| ECHOLink | `/echolink` | 🔄 WIP |
+| ECHOsystem | `/partenaires` | ✅ Complète |
+| Événements | `/agenda` | ✅ Complète |
+| Ressources | `/ressources` | ✅ Complète |
+| Soutenir | `/soutenir` | ✅ Complète |
 | Contact | `/contact` | ✅ Complète |
-| Événements | `/events` | ✅ Complète |
-| ECHOsystem | `/echosystem` | ✅ Complète |
+| Login | `/login` | ✅ Complète (tabs Google + Email) |
+| Inscription | `/register` | ✅ Complète (Story 1.2) |
+| Google Callback | `/auth/google/success` | ✅ Complète |
+| Admin Partenaires | `/admin/partenaires` | ✅ Complète |
+| Mon Compte Partenaire | `/mon-compte/partenaire` | ✅ Complète |
 
 ---
 
@@ -80,7 +107,7 @@ backend/
 
 | Tâche | Niveau | Justification |
 |-------|--------|---------------|
-| _Aucune tâche en cours_ | - | - |
+| Story 1.2 — Auth Classique Sécurisée | 🟡 STANDARD | Backend + Frontend, 13 fichiers, scope clair |
 
 ---
 
@@ -88,6 +115,9 @@ backend/
 
 | Date | Décision | Agent |
 |------|----------|-------|
+| 2026-03-05 | Story 1.2 frontend complété (RegisterForm, EmailLoginForm, Login tabs, Register page, store enrichi) — en review | Claude Code (Opus 4.6) |
+| 2026-03-05 | Story 1.2 backend complété (service pattern, models, routes, 6 tests OK) | Antigravity (Gemini) |
+| 2026-03-05 | Correction shared-context : Backend = FastAPI (pas Flask), port 8000 | Claude Code (Opus 4.6) |
 | 2026-02-08 | Ajout mode SPIKE, QA détaillé, règle anti-boucle | Architect |
 | 2026-02-07 | Workflow v4 avec 3 niveaux (Hotfix/Standard/Majeur) | Architect |
 | 2026-02-07 | Designer repositionné AVANT Frontend | Architect |
@@ -101,6 +131,7 @@ backend/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-05 | 🟡 STANDARD | Story 1.2 Auth Classique | Backend: ~1h (Antigravity), Frontend: ~30min (Claude Code) | Backend, Frontend |
 | _Exemple_ | 🟢 HOTFIX | Fix typo Contact | 10 min | Frontend |
 | _Exemple_ | 🟡 STANDARD | Page Partenaires | 2h | Frontend, Designer |
 | _Exemple_ | 🔴 MAJEUR | Module Echolink | 5h | Tous |
@@ -161,4 +192,15 @@ _Aucune spec en cours._
 
 ## 🚀 Prochaines Tâches
 
-_À compléter par l'Architect selon les demandes utilisateur_
+1. **Story 1.2 — Code Review** : Revue du code avant commit (QA express + review)
+2. **Story 1.3 — Réinitialisation de Mot de Passe** : Email transactionnel SendGrid (backlog)
+3. **Story 1.4 — Isolation des Vues Privées** : Guard auth, message incitatif (backlog)
+
+### Notes pour reprise par Antigravity
+
+- Story 1.2 est en statut **review** — toutes les tâches sont complétées
+- Backend tests: 6/6 OK (`pytest tests/routes/test_auth_local.py -p no:recording`)
+- Frontend build: OK (warning chunk > 500kB à adresser plus tard via code splitting)
+- Les fichiers ne sont PAS encore commités — faire code review puis commit
+- Le plugin `pytest-recording` (vcrpy) est incompatible avec la version actuelle de urllib3 — utiliser `-p no:recording` pour les tests
+- Le `shared-context.md` a été corrigé : Backend = **FastAPI** (pas Flask), architecture à jour

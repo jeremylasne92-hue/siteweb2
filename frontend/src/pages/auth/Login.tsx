@@ -1,6 +1,15 @@
+import { useState } from 'react';
+import { useSearchParams, Link } from 'react-router-dom';
 import { GoogleLoginButton } from '../../features/auth/components/GoogleLoginButton';
+import { EmailLoginForm } from '../../features/auth/components/EmailLoginForm';
+
+type AuthTab = 'google' | 'email';
 
 export const Login = () => {
+    const [activeTab, setActiveTab] = useState<AuthTab>('google');
+    const [searchParams] = useSearchParams();
+    const justRegistered = searchParams.get('registered') === 'true';
+
     return (
         <div className="min-h-[80vh] flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
             {/* Background glow effects */}
@@ -13,15 +22,60 @@ export const Login = () => {
                         Accéder à l'Espace
                     </h2>
                     <p className="mt-4 text-center text-base text-echo-textMuted">
-                        Connectez-vous ou inscrivez-vous en un clic pour rejoindre le mouvement.
+                        Connectez-vous pour rejoindre le mouvement.
                     </p>
                 </div>
 
-                <div className="mt-10 sm:mt-12 space-y-6">
-                    <GoogleLoginButton />
+                {/* Success banner after registration */}
+                {justRegistered && (
+                    <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3">
+                        <p className="text-sm text-green-400 font-medium text-center">
+                            Compte créé avec succès ! Connectez-vous maintenant.
+                        </p>
+                    </div>
+                )}
+
+                {/* Tabs */}
+                <div className="flex rounded-lg bg-white/5 p-1 border border-white/10">
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab('google')}
+                        className={`flex-1 py-2.5 text-sm font-medium rounded-md transition-all duration-200 ${
+                            activeTab === 'google'
+                                ? 'bg-white/10 text-white shadow-sm'
+                                : 'text-echo-textMuted hover:text-white'
+                        }`}
+                    >
+                        Google
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab('email')}
+                        className={`flex-1 py-2.5 text-sm font-medium rounded-md transition-all duration-200 ${
+                            activeTab === 'email'
+                                ? 'bg-white/10 text-white shadow-sm'
+                                : 'text-echo-textMuted hover:text-white'
+                        }`}
+                    >
+                        Email
+                    </button>
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-white/10">
+                <div className="mt-6 space-y-6">
+                    {activeTab === 'google' ? (
+                        <GoogleLoginButton />
+                    ) : (
+                        <EmailLoginForm />
+                    )}
+                </div>
+
+                <div className="mt-6 pt-6 border-t border-white/10 space-y-3">
+                    <p className="text-center text-sm text-echo-textMuted">
+                        Pas encore de compte ?{' '}
+                        <Link to="/register" className="text-echo-gold hover:underline font-medium">
+                            Créer un compte
+                        </Link>
+                    </p>
                     <p className="text-center text-xs text-echo-textMuted/70">
                         En continuant, vous acceptez nos conditions d'utilisation et notre politique de confidentialité.
                     </p>
