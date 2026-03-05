@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Search, User } from 'lucide-react';
 import { cn, Button } from '../ui/Button';
@@ -62,7 +62,7 @@ export function Header() {
                         <Search size={20} />
                     </button>
                     <div className="h-4 w-px bg-white/20"></div>
-                    <Link to="/auth">
+                    <Link to="/login">
                         <Button variant="ghost" size="sm" className="gap-2">
                             <User size={18} />
                             <span className="hidden xl:inline">Mon Compte</span>
@@ -96,7 +96,7 @@ export function Header() {
                         </Link>
                     ))}
                     <div className="flex flex-col gap-3 mt-4">
-                        <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
                             <Button variant="secondary" className="w-full">Mon Compte</Button>
                         </Link>
                         <Link to="/soutenir" onClick={() => setIsMobileMenuOpen(false)}>

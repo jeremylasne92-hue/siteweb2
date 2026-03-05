@@ -1,4 +1,3 @@
-import React from 'react';
 import { Heart, Check, ChevronDown } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';

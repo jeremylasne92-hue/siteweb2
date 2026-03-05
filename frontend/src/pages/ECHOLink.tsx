@@ -1,4 +1,3 @@
-import React from 'react';
 import { Network, Brain, Share2, Coins, ArrowRight, Lock } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';

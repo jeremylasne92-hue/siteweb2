@@ -1,7 +1,5 @@
-import React from 'react';
-import { Play, Users, Link as LinkIcon, ArrowRight } from 'lucide-react';
+import { Play, Users, Link as LinkIcon } from 'lucide-react';
 import { Button } from '../components/ui/Button';
-import { Card } from '../components/ui/Card';
 import { Link } from 'react-router-dom';
 
 export function Home() {

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Layout } from '../components/layout/Layout';
 import {
-    CheckCircle2, XCircle, Star, StarOff, Eye, Clock,
-    Shield, Users, Filter, RefreshCw, AlertTriangle
+    CheckCircle2, XCircle, Star, StarOff, Clock,
+    Shield, Users, RefreshCw, AlertTriangle
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { cn } from '../components/ui/Button';

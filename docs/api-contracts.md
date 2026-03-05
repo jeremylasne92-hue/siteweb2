@@ -17,7 +17,8 @@ Les endpoints protégés utilisent des sessions via cookies (`session_token`) ou
 | POST | `/auth/register` | — | Inscription utilisateur (optionnel 2FA) |
 | POST | `/auth/login` | — | Connexion username/password (captcha requis) |
 | POST | `/auth/verify-2fa` | — | Vérification code 2FA (4 chiffres, 5 tentatives max, expire 10 min) |
-| POST | `/auth/google-oauth` | — | Connexion Google OAuth via Emergent |
+| GET | `/auth/google/login` | — | Redirection vers Google OAuth (CSRF state HMAC) |
+| GET | `/auth/google/callback` | — | Callback Google → création compte + cookie session |
 | GET | `/auth/me` | ✅ User | Infos utilisateur courant |
 | DELETE | `/auth/user/{user_id}` | ✅ User (self) | Supprimer son propre compte |
 | POST | `/auth/logout` | ✅ User | Déconnexion (invalide session) |
@@ -25,6 +26,14 @@ Les endpoints protégés utilisent des sessions via cookies (`session_token`) ou
 **Register Request:** `{ username, email, password, enable_2fa? }`
 **Login Request:** `{ username, password, captcha_verified }`
 **Session:** Cookie httponly `session_token`, durée 7 jours, samesite=lax
+
+**Google OAuth Flow:**
+1. Frontend redirige vers `GET /auth/google/login`
+2. Backend redirige vers Google avec paramètre `state` (CSRF signé HMAC, expire 5 min)
+3. Google redirige vers `GET /auth/google/callback?code=...&state=...`
+4. Backend valide le `state`, échange le `code`, crée/lie l'utilisateur, pose le cookie `session_token`
+5. Backend redirige vers `{FRONTEND_URL}/auth/google/success` (sans JWT dans l'URL)
+6. Frontend vérifie la session via `GET /auth/me` avec `credentials: 'include'`
 
 ---
 
@@ -113,4 +122,4 @@ Les endpoints protégés utilisent des sessions via cookies (`session_token`) ou
 
 ---
 
-## Total : 30 endpoints API
+## Total : 31 endpoints API

@@ -5,7 +5,6 @@ import { ThematicTag } from './ThematicTag';
 import { MapPin, Globe, User, Mail, Phone, Linkedin, Instagram, Twitter } from 'lucide-react';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
-import { cn } from '../ui/Button';
 
 interface PartnerModalProps {
     partner: Partner | null;

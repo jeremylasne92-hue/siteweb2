@@ -29,6 +29,10 @@ pip install -r requirements.txt
 # MONGO_URL=mongodb://localhost:27017
 # DB_NAME=echo_db
 # CORS_ORIGINS=http://localhost:5173
+# GOOGLE_CLIENT_ID=votre_client_id_google
+# GOOGLE_CLIENT_SECRET=votre_client_secret_google
+# FRONTEND_URL=http://localhost:5173
+# OAUTH_STATE_SECRET=une_clé_secrète_aléatoire
 
 uvicorn server:app --host 0.0.0.0 --port 8001 --reload
 ```
@@ -45,13 +49,14 @@ Avec le backend lancé : `http://localhost:8001/docs` (Swagger UI)
 - **Fichiers** : PascalCase pour pages et composants (`Serie.tsx`, `Button.tsx`)
 - **Props** : Types inline ou interfaces locales
 - **Styling** : Classes Tailwind (préférer les tokens ECHO : `echo-gold`, `echo-dark`, etc.)
-- **État** : `useState` local ; pas de state management global pour le moment
+- **État** : Zustand pour le state global (auth : `features/auth/store.ts`). React Hook Form + Zod pour les formulaires.
 
 ### Backend (Python/FastAPI)
 
 - **Routes** : Un fichier par domaine dans `routes/` avec `APIRouter`
 - **Modèles** : Pydantic `BaseModel` avec `Field` et `Config`
 - **Dépendances** : DI FastAPI (`Depends(get_db)`, `Depends(require_admin)`)
+- **Config** : Centralisée dans `core/config.py` (jamais de `os.environ.get` direct dans les routes)
 - **Logging** : Module `logging` Python standard
 
 ## Structure de Routage Frontend
@@ -66,6 +71,10 @@ Avec le backend lancé : `http://localhost:8001/docs` (Swagger UI)
 | `/agenda` | `Events` | ✅ |
 | `/ressources` | `Resources` | ✅ |
 | `/contact` | `Contact` | ✅ |
+| `/login` | `Login` | ✅ |
+| `/auth/google/success` | `GoogleCallback` | ✅ |
+| `/admin/partenaires` | `AdminPartners` | ✅ |
+| `/mon-compte/partenaire` | `MyPartnerAccount` | ✅ |
 
 > **Note:** `Mouvement.tsx` inclut son propre `<Layout>` interne en plus du wrapper Layout du router. Les autres pages ne le font pas. C'est potentiellement un bug à corriger.
 

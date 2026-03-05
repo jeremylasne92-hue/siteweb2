@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, status, Response, Request
+from fastapi.responses import RedirectResponse
 from models import User, UserCreate, UserLogin, UserSession, Pending2FA
 from auth_utils import hash_password, verify_password, generate_session_token, generate_2fa_code
 from email_service import send_2fa_code
@@ -272,80 +273,50 @@ async def verify_2fa(user_id: str, code: str, response: Response, db: AsyncIOMot
     }
 
 
-@router.post("/google-oauth")
-async def google_oauth(session_id: str, response: Response, db: AsyncIOMotorDatabase = Depends(get_db)):
-    """Handle Emergent Google OAuth login"""
+@router.get("/google/login")
+async def google_login():
+    from services.auth_service import get_google_login_url
+    url = get_google_login_url()
+    return RedirectResponse(url=url)
+
+
+@router.get("/google/callback")
+async def google_callback(
+    code: str,
+    state: str = "",
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Handle Google OAuth login callback with CSRF state validation.
+    The JWT is stored in a secure httpOnly cookie, never in the URL."""
+    from services.auth_service import google_callback_service, verify_oauth_state
+    from core.config import settings
+
+    frontend_url = settings.FRONTEND_URL
+
+    # Validate CSRF state
+    if not state or not verify_oauth_state(state):
+        logger.warning("Google OAuth callback with invalid or expired state parameter")
+        return RedirectResponse(url=f"{frontend_url}/login?error=invalid_state")
+
     try:
-        # Call Emergent OAuth endpoint
-        async with httpx.AsyncClient() as client:
-            oauth_response = await client.get(
-                "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
-                headers={"X-Session-ID": session_id}
-            )
-            
-            if oauth_response.status_code != 200:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid session ID"
-                )
-            
-            oauth_data = oauth_response.json()
-        
-        # Check if user exists
-        user_doc = await db.users.find_one({"email": oauth_data["email"]})
-        
-        if user_doc:
-            user = User(**user_doc)
-        else:
-            # Create new user from OAuth
-            user = User(
-                username=oauth_data["name"].replace(" ", "_").lower(),
-                email=oauth_data["email"],
-                oauth_provider="google",
-                oauth_id=oauth_data["id"],
-                picture=oauth_data.get("picture")
-            )
-            await db.users.insert_one(user.dict())
-        
-        # Update last login
-        await db.users.update_one(
-            {"id": user.id},
-            {"$set": {"last_login": datetime.utcnow()}}
-        )
-        
-        # Create session
-        session = UserSession(
-            user_id=user.id,
-            expires_at=datetime.utcnow() + timedelta(days=7)
-        )
-        await db.user_sessions.insert_one(session.dict())
-        
-        # Set session cookie
-        response.set_cookie(
+        result = await google_callback_service(code, db)
+
+        # Redirect to frontend success page WITHOUT the token in the URL
+        redirect_resp = RedirectResponse(url=f"{frontend_url}/auth/google/success")
+
+        # Store session token in a secure httpOnly cookie
+        redirect_resp.set_cookie(
             key="session_token",
-            value=session.session_token,
+            value=result["session_token"],
             httponly=True,
             max_age=7 * 24 * 60 * 60,
             samesite="lax"
         )
-        
-        return {
-            "user": {
-                "id": user.id,
-                "username": user.username,
-                "email": user.email,
-                "role": user.role,
-                "picture": user.picture
-            },
-            "session_token": session.session_token
-        }
-    
-    except httpx.HTTPError as e:
-        logger.error(f"OAuth error: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="OAuth authentication failed"
-        )
+        return redirect_resp
+    except Exception as e:
+        logger.error(f"Google OAuth callback error: {str(e)}")
+        return RedirectResponse(url=f"{frontend_url}/login?error=oauth_failed")
+
 
 
 @router.get("/me")
