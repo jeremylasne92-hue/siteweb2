@@ -47,7 +47,7 @@ def test_register_success():
 
 
 def test_register_duplicate_email():
-    """Register with existing email returns 400."""
+    """Register with existing email returns 400 with generic message (H2)."""
     db = make_mock_db()
     db.users.find_one = AsyncMock(return_value={
         "email": "test@example.com",
@@ -65,7 +65,26 @@ def test_register_duplicate_email():
 
     app.dependency_overrides.clear()
     assert response.status_code == 400
-    assert "email" in response.json()["detail"].lower()
+    # H2 — generic message, should NOT reveal if email or username is the issue
+    assert "existe déjà" in response.json()["detail"].lower()
+
+
+def test_register_password_mismatch():
+    """Register with mismatched passwords returns 400 (M4)."""
+    db = make_mock_db()
+    app.dependency_overrides[get_db] = lambda: db
+
+    response = client.post("/api/auth/register", json={
+        "username": "testuser",
+        "email": "test@example.com",
+        "password": "StrongP@ss1",
+        "password_confirm": "DifferentP@ss2",
+        "age_consent": True
+    })
+
+    app.dependency_overrides.clear()
+    assert response.status_code == 400
+    assert "correspondent" in response.json()["detail"].lower()
 
 
 def test_register_weak_password():
@@ -120,7 +139,8 @@ def test_login_local_success():
     assert response.status_code == 200
     data = response.json()
     assert data["user"]["email"] == "test@example.com"
-    assert "session_token" in data
+    # M5 — session_token should NOT be in JSON body, only in httpOnly cookie
+    assert "session_token" not in data
     assert response.cookies.get("session_token") is not None
 
 

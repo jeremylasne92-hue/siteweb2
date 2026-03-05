@@ -12,11 +12,15 @@ from auth_utils import hash_password, verify_password
 
 logger = logging.getLogger(__name__)
 
-# Règles de validation du mot de passe
+# Hash factice pour réponse en temps constant (H1 — timing attack)
+DUMMY_HASH = hash_password("DummyP@ss1")
+
+# Règles de validation
 PASSWORD_MIN_LENGTH = 8
 PASSWORD_REGEX = re.compile(
     r'^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>\/?]).{8,}$'
 )
+USERNAME_REGEX = re.compile(r'^[a-zA-Z0-9_]{3,30}$')
 
 
 def validate_password_strength(password: str) -> None:
@@ -35,6 +39,13 @@ def validate_password_strength(password: str) -> None:
 
 async def register_user(data: UserRegister, db: AsyncIOMotorDatabase) -> dict:
     """Register a new user with email/password."""
+    # M3 — Validate username format (backend mirror of frontend Zod)
+    if not USERNAME_REGEX.match(data.username):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Le nom d'utilisateur doit contenir 3-30 caractères (lettres, chiffres, underscores)."
+        )
+
     # Validate password confirmation
     if data.password != data.password_confirm:
         raise HTTPException(
@@ -60,14 +71,10 @@ async def register_user(data: UserRegister, db: AsyncIOMotorDatabase) -> dict:
         ]
     })
     if existing:
-        if existing.get("email") == data.email:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Cette adresse email est déjà utilisée."
-            )
+        # H2 — Message générique pour éviter l'énumération d'emails
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Ce nom d'utilisateur est déjà pris."
+            detail="Un compte avec cet email ou nom d'utilisateur existe déjà."
         )
 
     # Create user
@@ -98,13 +105,11 @@ async def login_user(data: UserLoginLocal, db: AsyncIOMotorDatabase) -> dict:
         ]
     })
 
-    if not user_doc or not user_doc.get("password_hash"):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Identifiants incorrects."
-        )
+    # H1 — Toujours exécuter bcrypt pour réponse en temps constant
+    stored_hash = user_doc.get("password_hash", DUMMY_HASH) if user_doc else DUMMY_HASH
+    password_ok = verify_password(data.password, stored_hash)
 
-    if not verify_password(data.password, user_doc["password_hash"]):
+    if not user_doc or not password_ok:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Identifiants incorrects."

@@ -15,7 +15,6 @@ interface LoginResponse {
         role: string;
         picture: string | null;
     };
-    session_token: string;
 }
 
 async function loginUser(data: LoginPayload): Promise<LoginResponse> {
@@ -33,13 +32,12 @@ async function loginUser(data: LoginPayload): Promise<LoginResponse> {
 }
 
 export function useLogin() {
-    const setToken = useAuthStore((s) => s.setToken);
     const setUser = useAuthStore((s) => s.setUser);
 
     return useMutation({
         mutationFn: loginUser,
         onSuccess: (data) => {
-            setToken(data.session_token);
+            // M5 — session_token is in httpOnly cookie, not in JSON
             setUser(data.user);
         },
     });

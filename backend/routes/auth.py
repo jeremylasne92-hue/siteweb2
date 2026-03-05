@@ -79,7 +79,7 @@ async def login_local(credentials: UserLoginLocal, response: Response, db: Async
     """Login with email or username + password (Service Pattern)."""
     result = await login_user(credentials, db)
 
-    # Set session cookie
+    # Set session cookie (M5 — token only in httpOnly cookie, not in JSON body)
     response.set_cookie(
         key="session_token",
         value=result["session_token"],
@@ -88,7 +88,8 @@ async def login_local(credentials: UserLoginLocal, response: Response, db: Async
         samesite="lax"
     )
 
-    return result
+    # Return user info only, not the session_token
+    return {"user": result["user"]}
 
 
 @router.post("/login")

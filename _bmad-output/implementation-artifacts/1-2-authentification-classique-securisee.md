@@ -1,6 +1,6 @@
 # Story 1.2: Authentification Classique Sécurisée
 
-Status: review
+Status: done
 
 ## Story
 
