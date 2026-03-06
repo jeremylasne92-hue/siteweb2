@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/layout/Layout';
 import { Home } from './pages/Home';
@@ -19,8 +20,15 @@ import { ForgotPassword } from './pages/auth/ForgotPassword';
 import { ResetPassword } from './pages/auth/ResetPassword';
 import { GoogleCallback } from './pages/auth/GoogleCallback';
 import { ProtectedRoute } from './features/auth/components/ProtectedRoute';
+import { useAuthStore } from './features/auth/store';
 
 function App() {
+  const checkSession = useAuthStore((s) => s.checkSession);
+
+  useEffect(() => {
+    checkSession();
+  }, [checkSession]);
+
   return (
     <Router>
       <Layout>
