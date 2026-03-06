@@ -126,6 +126,19 @@ class VideoProgressCreate(BaseModel):
 
 
 
+class EpisodeOptIn(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    season: int
+    episode: int
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class EpisodeOptInRequest(BaseModel):
+    season: int
+    episode: int
+
+
 class Pending2FA(BaseModel):
     user_id: str
     code: str  # 4-digit code

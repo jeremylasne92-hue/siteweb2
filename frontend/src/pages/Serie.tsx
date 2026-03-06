@@ -1,12 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, BookOpen, Facebook, Linkedin, Twitter, Flame, Mountain, Star, Instagram, Palette, Gamepad2 } from 'lucide-react';
+import { Play, BookOpen, Facebook, Linkedin, Twitter, Flame, Mountain, Star, Instagram, Palette, Gamepad2, Bell, BellRing } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
+import { useAuthStore } from '../features/auth/store';
+import { API_URL } from '../config/api';
 
 type Episode = {
     title: string;
     vice: string;
+    synopsis: string;
     themes: {
         existential: string;
         societal: string;
@@ -18,6 +21,7 @@ const episodesS1: Episode[] = [
     {
         title: "Révélation",
         vice: "",
+        synopsis: "Synopsis à venir",
         themes: {
             existential: "Quête de sens, Rêves, Dualité, Développement personnel, Cosmogonie et symbole africain.",
             societal: "Dérèglement climatique.",
@@ -27,6 +31,7 @@ const episodesS1: Episode[] = [
     {
         title: "Catabase",
         vice: "Les Limbes",
+        synopsis: "Synopsis à venir",
         themes: {
             existential: "Philosophie (ontologie, éthique et morale, ubuntu), Énergie et mécanisme de domination, Neurosciences.",
             societal: "Immigration.",
@@ -36,6 +41,7 @@ const episodesS1: Episode[] = [
     {
         title: "Anamesis",
         vice: "La Luxure",
+        synopsis: "Synopsis à venir",
         themes: {
             existential: "Psychologie et psychanalyse, Synchronicités, Art divinatoire, Pouvoir de la pensée, Hypnose, Mentalisme.",
             societal: "Patriarcat, Protection animale, Médias et réseaux sociaux.",
@@ -45,6 +51,7 @@ const episodesS1: Episode[] = [
     {
         title: "Maga ou Sympathie",
         vice: "La Gourmandise",
+        synopsis: "Synopsis à venir",
         themes: {
             existential: "Substances psychoactives, EMC, Astrologie, Biologie (microcosme / macrocosme).",
             societal: "Sécurité alimentaire, Industrie primaire et secondaire, Gestion des déchets, Greenwashing.",
@@ -54,6 +61,7 @@ const episodesS1: Episode[] = [
     {
         title: "Pléonexie",
         vice: "L'Avarice",
+        synopsis: "Synopsis à venir",
         themes: {
             existential: "Numérologie, Physique quantique, Mathématiques.",
             societal: "Fascisme, extrémiste, Économie, Finance.",
@@ -63,6 +71,7 @@ const episodesS1: Episode[] = [
     {
         title: "Ménis",
         vice: "La Colère",
+        synopsis: "Synopsis à venir",
         themes: {
             existential: "Chamanisme, Exorcisme, Spiritisme, Médiumnité, Capacités psychiques.",
             societal: "Industrie pharmaceutique.",
@@ -72,6 +81,7 @@ const episodesS1: Episode[] = [
     {
         title: "Mythopéïa",
         vice: "L'Hérésie",
+        synopsis: "Synopsis à venir",
         themes: {
             existential: "Mythologie, Ancienne civilisation, Guru et dérive sectaire.",
             societal: "Impact et risque de l'IA, Transhumanisme, Technologies, Wokisme.",
@@ -81,6 +91,7 @@ const episodesS1: Episode[] = [
     {
         title: "Metanoïa",
         vice: "La Violence",
+        synopsis: "Synopsis à venir",
         themes: {
             existential: "Mort et réincarnation, Karma, Religions.",
             societal: "Guerre, Géopolitique, Cybersécurité.",
@@ -90,6 +101,7 @@ const episodesS1: Episode[] = [
     {
         title: "Fatum",
         vice: "La Fraude",
+        synopsis: "Synopsis à venir",
         themes: {
             existential: "Origines et influences des traditions initiatiques, Prophéties, Géométrie sacrée.",
             societal: "Droit et justice, Lobby, Logement et urbanisme.",
@@ -99,6 +111,7 @@ const episodesS1: Episode[] = [
     {
         title: "Divine Providence",
         vice: "La Trahison 1/2",
+        synopsis: "Synopsis à venir",
         themes: {
             existential: "Courants mystiques et philosophies spirituelles, Démonologie, Théorie complotiste.",
             societal: "Politique, Syndicats, Pouvoir, Activisme.",
@@ -108,6 +121,7 @@ const episodesS1: Episode[] = [
     {
         title: "Alétheia",
         vice: "La Trahison 2/2",
+        synopsis: "Synopsis à venir",
         themes: {
             existential: "Cosmogonie, Gémellité, Sotériologie, Le son, Nature de la réalité.",
             societal: "Gouvernance et institutions, Citoyenneté et démocratie, Sécurité.",
@@ -120,7 +134,47 @@ export function Serie() {
     const [activeSection, setActiveSection] = useState('apercu');
     const [activeSeason, setActiveSeason] = useState(1);
     const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null);
+    const [myOptins, setMyOptins] = useState<{ season: number; episode: number }[]>([]);
+    const [optinLoading, setOptinLoading] = useState(false);
     const navigate = useNavigate();
+    const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+    const token = useAuthStore((s) => s.token);
+
+    // Fetch user opt-ins on mount (if authenticated)
+    useEffect(() => {
+        if (!isAuthenticated || !token) return;
+        fetch(`${API_URL}/episodes/opt-in/me`, {
+            credentials: 'include',
+            headers: { 'Authorization': `Bearer ${token}` },
+        })
+            .then((res) => res.ok ? res.json() : [])
+            .then(setMyOptins)
+            .catch(() => {});
+    }, [isAuthenticated, token]);
+
+    const isOptedIn = useCallback((episodeIndex: number) => {
+        return myOptins.some((o) => o.season === 1 && o.episode === episodeIndex + 1);
+    }, [myOptins]);
+
+    const handleOptIn = async (episodeIndex: number) => {
+        if (!token || optinLoading) return;
+        setOptinLoading(true);
+        try {
+            const res = await fetch(`${API_URL}/episodes/opt-in`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ season: 1, episode: episodeIndex + 1 }),
+            });
+            if (res.ok) {
+                setMyOptins((prev) => [...prev, { season: 1, episode: episodeIndex + 1 }]);
+            }
+        } catch { /* silent */ }
+        setOptinLoading(false);
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -517,6 +571,11 @@ export function Serie() {
                             </div>
                         </div>
 
+                        {/* SYNOPSIS (FR8) */}
+                        <div className="mb-8 p-4 rounded-lg bg-white/5 border border-white/10">
+                            <p className="text-[#D1D5DB] leading-relaxed italic">{selectedEpisode.synopsis}</p>
+                        </div>
+
                         <div className="space-y-8">
                             {/* EXISTENTIELLES */}
                             <div>
@@ -543,7 +602,29 @@ export function Serie() {
                             </div>
                         </div>
 
-                        <div className="mt-10 pt-6 border-t border-white/10 flex justify-end">
+                        <div className="mt-10 pt-6 border-t border-white/10 flex items-center justify-between">
+                            {/* OPT-IN BUTTON (FR9) — visible only if authenticated */}
+                            {isAuthenticated ? (
+                                (() => {
+                                    const idx = episodesS1.indexOf(selectedEpisode);
+                                    const alreadyOptedIn = isOptedIn(idx);
+                                    return alreadyOptedIn ? (
+                                        <span className="flex items-center gap-2 text-[#D4AF37] text-sm font-medium">
+                                            <BellRing size={16} /> Alerte activée
+                                        </span>
+                                    ) : (
+                                        <button
+                                            onClick={() => handleOptIn(idx)}
+                                            disabled={optinLoading}
+                                            className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/30 hover:bg-[#D4AF37]/20 transition-colors disabled:opacity-50"
+                                        >
+                                            <Bell size={16} /> M'alerter à la sortie
+                                        </button>
+                                    );
+                                })()
+                            ) : (
+                                <div />
+                            )}
                             <Button onClick={() => setSelectedEpisode(null)} variant="outline" className="text-white border-white/20 hover:bg-white/5">
                                 Fermer
                             </Button>

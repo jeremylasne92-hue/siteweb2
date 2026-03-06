@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, status
-from models import Episode, User
+from models import Episode, EpisodeOptIn, EpisodeOptInRequest, User
 from routes.auth import get_current_user, require_admin, get_db
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from typing import Optional, List
@@ -118,3 +118,43 @@ async def delete_episode(
     
     logger.info(f"Deleted episode {episode_id}")
     return {"message": "Episode deleted successfully"}
+
+
+# ==================== OPT-IN ROUTES ====================
+
+@router.post("/opt-in")
+async def create_optin(
+    data: EpisodeOptInRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Subscribe to episode release notification (auth required)"""
+    # Check if already opted in (idempotent)
+    existing = await db.episode_optins.find_one({
+        "user_id": user.id,
+        "season": data.season,
+        "episode": data.episode
+    })
+    if existing:
+        return {"message": "Already subscribed", "already_subscribed": True}
+
+    optin = EpisodeOptIn(
+        user_id=user.id,
+        season=data.season,
+        episode=data.episode
+    )
+    await db.episode_optins.insert_one(optin.dict())
+    logger.info(f"User {user.id} opted in for S{data.season}E{data.episode}")
+    return {"message": "Subscribed successfully", "already_subscribed": False}
+
+
+@router.get("/opt-in/me")
+async def get_my_optins(
+    user: User = Depends(get_current_user),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Get all opt-ins for the current user"""
+    optins = await db.episode_optins.find(
+        {"user_id": user.id}
+    ).to_list(100)
+    return [{"season": o["season"], "episode": o["episode"]} for o in optins]

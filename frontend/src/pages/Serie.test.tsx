@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { Serie } from './Serie';
 
@@ -27,5 +27,33 @@ describe('Serie - Story 2.1 QA Express', () => {
         renderSerie();
         const episodeCards = screen.getAllByRole('button', { name: /Voir les thèmes de l'épisode/ });
         expect(episodeCards.length).toBe(11);
+    });
+});
+
+describe('Serie - Story 2.2 Exploration & Opt-in', () => {
+    it('affiche le synopsis dans la modale épisode (FR8)', () => {
+        renderSerie();
+        // Click first episode card to open modal
+        const cards = screen.getAllByRole('button', { name: /Voir les thèmes de l'épisode/ });
+        fireEvent.click(cards[0]);
+        // Synopsis placeholder should be visible
+        expect(screen.getByText('Synopsis à venir')).toBeInTheDocument();
+    });
+
+    it('affiche les thématiques dans la modale (FR8)', () => {
+        renderSerie();
+        const cards = screen.getAllByRole('button', { name: /Voir les thèmes de l'épisode/ });
+        fireEvent.click(cards[0]);
+        expect(screen.getByText(/Thématiques Existentielles/)).toBeInTheDocument();
+        expect(screen.getByText(/Thématiques Sociétales/)).toBeInTheDocument();
+        expect(screen.getByText(/Thématiques Sociales/)).toBeInTheDocument();
+    });
+
+    it('le bouton opt-in est masqué si non connecté (FR9)', () => {
+        renderSerie();
+        const cards = screen.getAllByRole('button', { name: /Voir les thèmes de l'épisode/ });
+        fireEvent.click(cards[0]);
+        // Opt-in button should NOT be visible when not authenticated
+        expect(screen.queryByText("M'alerter à la sortie")).not.toBeInTheDocument();
     });
 });

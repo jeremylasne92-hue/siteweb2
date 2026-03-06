@@ -37,6 +37,7 @@ api_router.include_router(thematics.router)
 api_router.include_router(resources.router)
 api_router.include_router(resources.actors_router)
 api_router.include_router(partners.router)
+api_router.include_router(episodes.router)
 
 # Health check endpoint
 @api_router.get("/")

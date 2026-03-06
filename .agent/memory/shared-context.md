@@ -9,7 +9,7 @@
 **Dernière mise à jour** : 2026-03-06
 **Phase actuelle** : Sprint 2 — Epic 2 en cours
 **Statut** : ✅ Opérationnel
-**Dernier milestone** : Story 2.1 (Vitrine Vidéo) done — badge "Bientôt disponible" ajouté
+**Dernier milestone** : Story 2.2 (Exploration & Opt-in) done — synopsis modale + bouton opt-in
 
 ---
 
@@ -107,6 +107,7 @@ backend/
 
 | Tâche | Niveau | Justification |
 |-------|--------|---------------|
+| Story 2.2 Exploration & Opt-in | 🟡 STANDARD | Frontend + backend, synopsis + opt-in |
 | Story 2.1 Vitrine Vidéo | 🟢 HOTFIX | Ajout badge uniquement, page existante |
 
 ---
@@ -115,6 +116,7 @@ backend/
 
 | Date | Décision | Agent |
 |------|----------|-------|
+| 2026-03-06 | Story 2.2 complétée — Synopsis modale + opt-in + fix routeur episodes (FR8/FR9) | Claude Code (Opus 4.6) |
 | 2026-03-06 | Story 2.1 complétée — Badge "Bientôt disponible" sur cartes S1 (FR7) | Claude Code (Opus 4.6) |
 | 2026-03-06 | Story 1.4 complétée — Epic 1 (Identité & Sécurité) DONE, 4/4 stories | Claude Code (Opus 4.6) |
 | 2026-03-06 | Story 1.3 complétée — Reset mot de passe (backend + frontend + code review) | Antigravity (Gemini) |
@@ -134,6 +136,7 @@ backend/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-06 | 🟡 STANDARD | Story 2.2 Exploration & Opt-in | ~20min (backend + frontend) | Claude Code (Opus 4.6) |
 | 2026-03-06 | 🟢 HOTFIX | Story 2.1 Vitrine Vidéo | ~5min (badge uniquement) | Frontend |
 | 2026-03-05 | 🟡 STANDARD | Story 1.2 Auth Classique | Backend: ~1h (Antigravity), Frontend: ~30min (Claude Code) | Backend, Frontend |
 | _Exemple_ | 🟢 HOTFIX | Fix typo Contact | 10 min | Frontend |
@@ -200,7 +203,7 @@ _Aucune spec en cours._
 
 **Prochaine priorité : Epic 2 — Contenu & Engagement Visiteur**
 1. ~~**Story 2.1** — Vitrine vidéo / bande-annonce~~ (done)
-2. **Story 2.2** — Exploration des épisodes opt-in (backlog)
+2. ~~**Story 2.2** — Exploration des épisodes opt-in~~ (done)
 3. **Story 2.3** — Candidatures techniques anti-spam (backlog)
 4. **Story 2.4** — Passerelle de soutien et dons (backlog)
 
