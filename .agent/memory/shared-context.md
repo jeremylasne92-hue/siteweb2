@@ -6,10 +6,10 @@
 
 ## 📋 État du Projet
 
-**Dernière mise à jour** : 2026-03-05
-**Phase actuelle** : Sprint 1 — Epic 1 (Authentification)
+**Dernière mise à jour** : 2026-03-06
+**Phase actuelle** : Sprint 1 — Epic 1 TERMINÉ, prêt pour Epic 2
 **Statut** : ✅ Opérationnel
-**Story en cours** : 1.2 Authentification Classique Sécurisée → **review** (code complet, tests OK, build OK)
+**Dernier milestone** : Epic 1 (Identité & Sécurité) complet — 4/4 stories done
 
 ---
 
@@ -107,7 +107,7 @@ backend/
 
 | Tâche | Niveau | Justification |
 |-------|--------|---------------|
-| Story 1.2 — Auth Classique Sécurisée | 🟡 STANDARD | Backend + Frontend, 13 fichiers, scope clair |
+| _Aucune tâche en cours — Epic 1 terminé_ | - | - |
 
 ---
 
@@ -115,7 +115,9 @@ backend/
 
 | Date | Décision | Agent |
 |------|----------|-------|
-| 2026-03-05 | Story 1.2 frontend complété (RegisterForm, EmailLoginForm, Login tabs, Register page, store enrichi) — en review | Claude Code (Opus 4.6) |
+| 2026-03-06 | Story 1.4 complétée — Epic 1 (Identité & Sécurité) DONE, 4/4 stories | Claude Code (Opus 4.6) |
+| 2026-03-06 | Story 1.3 complétée — Reset mot de passe (backend + frontend + code review) | Antigravity (Gemini) |
+| 2026-03-05 | Story 1.2 frontend complété (RegisterForm, EmailLoginForm, Login tabs, Register page, store enrichi) | Claude Code (Opus 4.6) |
 | 2026-03-05 | Story 1.2 backend complété (service pattern, models, routes, 6 tests OK) | Antigravity (Gemini) |
 | 2026-03-05 | Correction shared-context : Backend = FastAPI (pas Flask), port 8000 | Claude Code (Opus 4.6) |
 | 2026-02-08 | Ajout mode SPIKE, QA détaillé, règle anti-boucle | Architect |
@@ -192,15 +194,16 @@ _Aucune spec en cours._
 
 ## 🚀 Prochaines Tâches
 
-1. **Story 1.2 — Code Review** : Revue du code avant commit (QA express + review)
-2. **Story 1.3 — Réinitialisation de Mot de Passe** : Email transactionnel SendGrid (backlog)
-3. **Story 1.4 — Isolation des Vues Privées** : Guard auth, message incitatif (backlog)
+**Epic 1 (Identité & Sécurité) — TERMINÉ** (4/4 stories done)
 
-### Notes pour reprise par Antigravity
+**Prochaine priorité : Epic 2 — Contenu & Engagement Visiteur**
+1. **Story 2.1** — Vitrine vidéo / bande-annonce (backlog)
+2. **Story 2.2** — Exploration des épisodes opt-in (backlog)
+3. **Story 2.3** — Candidatures techniques anti-spam (backlog)
+4. **Story 2.4** — Passerelle de soutien et dons (backlog)
 
-- Story 1.2 est en statut **review** — toutes les tâches sont complétées
-- Backend tests: 6/6 OK (`pytest tests/routes/test_auth_local.py -p no:recording`)
-- Frontend build: OK (warning chunk > 500kB à adresser plus tard via code splitting)
-- Les fichiers ne sont PAS encore commités — faire code review puis commit
-- Le plugin `pytest-recording` (vcrpy) est incompatible avec la version actuelle de urllib3 — utiliser `-p no:recording` pour les tests
-- Le `shared-context.md` a été corrigé : Backend = **FastAPI** (pas Flask), architecture à jour
+### Notes techniques
+
+- Plugin `pytest-recording` (vcrpy) incompatible avec urllib3 — utiliser `-p no:recording`
+- Frontend bundle > 500kB — code splitting recommandé (Epic 2+)
+- Routes protégées : `/cognisphere`, `/echolink`, `/admin/partenaires` (admin), `/mon-compte/partenaire`

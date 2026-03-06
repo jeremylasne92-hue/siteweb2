@@ -18,6 +18,7 @@ import { Register } from './pages/auth/Register';
 import { ForgotPassword } from './pages/auth/ForgotPassword';
 import { ResetPassword } from './pages/auth/ResetPassword';
 import { GoogleCallback } from './pages/auth/GoogleCallback';
+import { ProtectedRoute } from './features/auth/components/ProtectedRoute';
 
 function App() {
   return (
@@ -27,15 +28,15 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/serie" element={<Serie />} />
           <Route path="/mouvement" element={<Mouvement />} />
-          <Route path="/cognisphere" element={<Cognisphere />} />
-          <Route path="/echolink" element={<ECHOLink />} />
+          <Route path="/cognisphere" element={<ProtectedRoute><Cognisphere /></ProtectedRoute>} />
+          <Route path="/echolink" element={<ProtectedRoute><ECHOLink /></ProtectedRoute>} />
           <Route path="/partenaires" element={<PartnersPage />} />
           <Route path="/agenda" element={<Events />} />
           <Route path="/ressources" element={<Resources />} />
           <Route path="/soutenir" element={<Support />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/admin/partenaires" element={<AdminPartners />} />
-          <Route path="/mon-compte/partenaire" element={<MyPartnerAccount />} />
+          <Route path="/admin/partenaires" element={<ProtectedRoute requiredRole="admin"><AdminPartners /></ProtectedRoute>} />
+          <Route path="/mon-compte/partenaire" element={<ProtectedRoute><MyPartnerAccount /></ProtectedRoute>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
