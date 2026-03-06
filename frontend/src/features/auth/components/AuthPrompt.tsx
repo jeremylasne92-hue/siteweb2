@@ -13,6 +13,7 @@ export const AuthPrompt = () => {
             <div className="max-w-md w-full text-center space-y-6 bg-black/40 p-8 sm:p-10 rounded-2xl border border-white/10 backdrop-blur-md shadow-2xl relative">
                 <button
                     onClick={() => navigate(-1)}
+                    aria-label="Fermer"
                     className="absolute top-4 right-4 text-echo-textMuted hover:text-white transition-colors"
                 >
                     <X size={20} />

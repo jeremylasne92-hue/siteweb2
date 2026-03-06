@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
+import { X } from 'lucide-react';
 import { GoogleLoginButton } from '../../features/auth/components/GoogleLoginButton';
 import { EmailLoginForm } from '../../features/auth/components/EmailLoginForm';
 
@@ -8,6 +9,7 @@ type AuthTab = 'google' | 'email';
 export const Login = () => {
     const [activeTab, setActiveTab] = useState<AuthTab>('google');
     const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
     const justRegistered = searchParams.get('registered') === 'true';
     const justReset = searchParams.get('reset') === 'true';
 
@@ -18,6 +20,13 @@ export const Login = () => {
             <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-900/10 rounded-full blur-[100px] -z-10" />
 
             <div className="max-w-md w-full space-y-8 bg-black/40 p-8 sm:p-10 rounded-2xl border border-white/10 backdrop-blur-md shadow-2xl relative z-10">
+                <button
+                    onClick={() => navigate(-1)}
+                    aria-label="Fermer"
+                    className="absolute top-4 right-4 text-echo-textMuted hover:text-white transition-colors"
+                >
+                    <X size={20} />
+                </button>
                 <div>
                     <h2 className="mt-2 text-center text-4xl font-extrabold text-white tracking-tight">
                         Accéder à l'Espace
