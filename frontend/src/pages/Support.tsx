@@ -1,6 +1,7 @@
-import { Heart, Check, ChevronDown } from 'lucide-react';
+import { Heart, Check, ChevronDown, ExternalLink } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
+import { DONATION_URL } from '../config/donation';
 
 export function Support() {
     const donationTiers = [
@@ -98,14 +99,16 @@ export function Support() {
                                     ))}
                                 </ul>
 
-                                <Button variant={i === 1 ? 'primary' : 'outline'} className="w-full">
-                                    Je soutiens
-                                </Button>
+                                <a href={DONATION_URL} target="_blank" rel="noopener noreferrer" className="w-full">
+                                    <Button variant={i === 1 ? 'primary' : 'outline'} className="w-full">
+                                        Je soutiens <ExternalLink className="w-4 h-4 ml-2 inline" />
+                                    </Button>
+                                </a>
                             </Card>
                         ))}
                     </div>
                     <p className="mt-8 text-neutral-500 text-sm">
-                        Paiement sécurisé — intégration en cours. Contactez-nous pour soutenir le projet dès maintenant.
+                        Paiement sécurisé via <a href={DONATION_URL} target="_blank" rel="noopener noreferrer" className="text-echo-gold hover:underline">HelloAsso</a> — plateforme certifiée.
                     </p>
                 </div>
             </section>

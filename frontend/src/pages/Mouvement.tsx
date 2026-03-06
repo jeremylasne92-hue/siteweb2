@@ -1,4 +1,5 @@
 import { Leaf, Sprout, Users, Play } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 
@@ -188,12 +189,16 @@ export function Mouvement() {
                             <span className="text-amber-500">Écrivez l'Histoire avec Nous.</span>
                         </h2>
                         <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-                            <Button variant="primary" size="lg" className="rounded-full px-8 bg-amber-600 hover:bg-amber-700 text-white border-none shadow-lg shadow-amber-900/20">
-                                Rejoindre le Mouvement
-                            </Button>
-                            <Button variant="outline" size="lg" className="rounded-full px-8 py-3 h-auto text-base border-stone-600 text-stone-300 hover:text-white hover:border-white hover:bg-white/5">
-                                <Play className="w-4 h-4 mr-2" /> Découvrir la Série
-                            </Button>
+                            <Link to="/soutenir">
+                                <Button variant="primary" size="lg" className="rounded-full px-8 bg-amber-600 hover:bg-amber-700 text-white border-none shadow-lg shadow-amber-900/20">
+                                    Rejoindre le Mouvement
+                                </Button>
+                            </Link>
+                            <Link to="/serie">
+                                <Button variant="outline" size="lg" className="rounded-full px-8 py-3 h-auto text-base border-stone-600 text-stone-300 hover:text-white hover:border-white hover:bg-white/5">
+                                    <Play className="w-4 h-4 mr-2" /> Découvrir la Série
+                                </Button>
+                            </Link>
                         </div>
                     </div>
                 </div>

@@ -47,11 +47,11 @@ development_status:
   1-4-isolation-des-vues-privees: done
   epic-1-retrospective: optional
 
-  epic-2: in-progress
+  epic-2: done
   2-1-vitrine-video-bande-annonce: done
   2-2-exploration-des-episodes-opt-in: done
   2-3-candidatures-techniques-anti-spam: done
-  2-4-passerelle-de-soutien-et-dons: backlog
+  2-4-passerelle-de-soutien-et-dons: done
   epic-2-retrospective: optional
 
   epic-3: backlog
