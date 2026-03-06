@@ -468,6 +468,13 @@ export function Serie() {
                                         </div>
                                     )}
 
+                                    {/* Badge "Bientôt disponible" (FR7) */}
+                                    <div className="absolute bottom-3 left-3">
+                                        <span className="text-[#D4AF37]/70 text-xs font-medium bg-[#D4AF37]/5 px-3 py-1 rounded-full border border-[#D4AF37]/20">
+                                            Bientôt disponible
+                                        </span>
+                                    </div>
+
                                     {/* Indicateur hover */}
                                     <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                                         <span className="text-[#D4AF37] text-xs font-bold bg-[#0A0A0A]/80 px-3 py-1 rounded-full border border-[#D4AF37]/30">

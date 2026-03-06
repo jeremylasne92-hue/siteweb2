@@ -47,8 +47,8 @@ development_status:
   1-4-isolation-des-vues-privees: done
   epic-1-retrospective: optional
 
-  epic-2: backlog
-  2-1-vitrine-video-bande-annonce: backlog
+  epic-2: in-progress
+  2-1-vitrine-video-bande-annonce: done
   2-2-exploration-des-episodes-opt-in: backlog
   2-3-candidatures-techniques-anti-spam: backlog
   2-4-passerelle-de-soutien-et-dons: backlog

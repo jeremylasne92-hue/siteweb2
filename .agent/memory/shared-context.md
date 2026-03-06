@@ -7,9 +7,9 @@
 ## 📋 État du Projet
 
 **Dernière mise à jour** : 2026-03-06
-**Phase actuelle** : Sprint 1 — Epic 1 TERMINÉ, prêt pour Epic 2
+**Phase actuelle** : Sprint 2 — Epic 2 en cours
 **Statut** : ✅ Opérationnel
-**Dernier milestone** : Epic 1 (Identité & Sécurité) complet — 4/4 stories done
+**Dernier milestone** : Story 2.1 (Vitrine Vidéo) done — badge "Bientôt disponible" ajouté
 
 ---
 
@@ -107,7 +107,7 @@ backend/
 
 | Tâche | Niveau | Justification |
 |-------|--------|---------------|
-| _Aucune tâche en cours — Epic 1 terminé_ | - | - |
+| Story 2.1 Vitrine Vidéo | 🟢 HOTFIX | Ajout badge uniquement, page existante |
 
 ---
 
@@ -115,6 +115,7 @@ backend/
 
 | Date | Décision | Agent |
 |------|----------|-------|
+| 2026-03-06 | Story 2.1 complétée — Badge "Bientôt disponible" sur cartes S1 (FR7) | Claude Code (Opus 4.6) |
 | 2026-03-06 | Story 1.4 complétée — Epic 1 (Identité & Sécurité) DONE, 4/4 stories | Claude Code (Opus 4.6) |
 | 2026-03-06 | Story 1.3 complétée — Reset mot de passe (backend + frontend + code review) | Antigravity (Gemini) |
 | 2026-03-05 | Story 1.2 frontend complété (RegisterForm, EmailLoginForm, Login tabs, Register page, store enrichi) | Claude Code (Opus 4.6) |
@@ -133,6 +134,7 @@ backend/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-06 | 🟢 HOTFIX | Story 2.1 Vitrine Vidéo | ~5min (badge uniquement) | Frontend |
 | 2026-03-05 | 🟡 STANDARD | Story 1.2 Auth Classique | Backend: ~1h (Antigravity), Frontend: ~30min (Claude Code) | Backend, Frontend |
 | _Exemple_ | 🟢 HOTFIX | Fix typo Contact | 10 min | Frontend |
 | _Exemple_ | 🟡 STANDARD | Page Partenaires | 2h | Frontend, Designer |
@@ -197,7 +199,7 @@ _Aucune spec en cours._
 **Epic 1 (Identité & Sécurité) — TERMINÉ** (4/4 stories done)
 
 **Prochaine priorité : Epic 2 — Contenu & Engagement Visiteur**
-1. **Story 2.1** — Vitrine vidéo / bande-annonce (backlog)
+1. ~~**Story 2.1** — Vitrine vidéo / bande-annonce~~ (done)
 2. **Story 2.2** — Exploration des épisodes opt-in (backlog)
 3. **Story 2.3** — Candidatures techniques anti-spam (backlog)
 4. **Story 2.4** — Passerelle de soutien et dons (backlog)
