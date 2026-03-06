@@ -1,7 +1,7 @@
-import { Brain, BookOpen, Users, Repeat, CalendarClock, Sparkles, ArrowRight, FileText, Youtube, StickyNote } from 'lucide-react';
+import { Brain, BookOpen, Users, Repeat, CalendarClock, Sparkles, FileText, Youtube, StickyNote } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
-import { Link } from 'react-router-dom';
+import { TechApplicationForm } from '../components/forms/TechApplicationForm';
 
 export function Cognisphere() {
     return (
@@ -31,11 +31,11 @@ export function Cognisphere() {
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link to="/contact">
+                        <a href="#candidature">
                             <Button variant="primary" size="lg" className="bg-violet-500 hover:bg-violet-600 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)] border-none">
                                 <Sparkles className="mr-2" size={20} /> Rejoindre le programme bêta
                             </Button>
-                        </Link>
+                        </a>
                         <Button variant="secondary" size="lg">
                             <BookOpen className="mr-2" size={18} /> En savoir plus
                         </Button>
@@ -197,18 +197,18 @@ export function Cognisphere() {
                 </div>
             </section>
 
-            {/* CTA */}
-            <section className="py-24 bg-violet-500/5 border-t border-violet-500/10">
-                <div className="container mx-auto px-4 text-center max-w-3xl">
-                    <h2 className="text-4xl font-serif text-white mb-6">Prêt à apprendre autrement ?</h2>
-                    <p className="text-neutral-400 mb-10 text-lg">
-                        Cognisphère est en cours de développement. Inscrivez-vous pour être parmi les premiers à tester l'outil.
-                    </p>
-                    <Link to="/contact">
-                        <Button variant="primary" size="lg" className="bg-violet-500 hover:bg-violet-600 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)] border-none text-lg px-10">
-                            Je veux participer <ArrowRight size={20} className="ml-2" />
-                        </Button>
-                    </Link>
+            {/* CANDIDATURE FORM (FR17/FR18) */}
+            <section id="candidature" className="py-24 bg-violet-500/5 border-t border-violet-500/10">
+                <div className="container mx-auto px-4 max-w-2xl">
+                    <div className="text-center mb-12">
+                        <h2 className="text-4xl font-serif text-white mb-4">Rejoindre l'équipe technique</h2>
+                        <p className="text-neutral-400 text-lg">
+                            Cognisphère est en cours de développement. Soumettez votre candidature pour contribuer au projet.
+                        </p>
+                    </div>
+                    <div className="relative bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
+                        <TechApplicationForm project="cognisphere" accentColor="violet-500" accentHex="#8B5CF6" />
+                    </div>
                 </div>
             </section>
         </div>

@@ -1,6 +1,7 @@
 import { Network, Brain, Share2, Coins, ArrowRight, Lock } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
+import { TechApplicationForm } from '../components/forms/TechApplicationForm';
 
 export function ECHOLink() {
     return (
@@ -26,9 +27,11 @@ export function ECHOLink() {
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Button variant="primary" size="lg" className="bg-echo-blueLight hover:bg-echo-blue text-white shadow-[0_0_20px_rgba(59,130,246,0.4)] border-none">
-                            <Share2 className="mr-2" size={20} /> Rejoindre le Développement
-                        </Button>
+                        <a href="#candidature">
+                            <Button variant="primary" size="lg" className="bg-echo-blueLight hover:bg-echo-blue text-white shadow-[0_0_20px_rgba(59,130,246,0.4)] border-none">
+                                <Share2 className="mr-2" size={20} /> Rejoindre le Développement
+                            </Button>
+                        </a>
                         <Button variant="secondary" size="lg">
                             <Lock className="mr-2" size={18} /> Connexion Membre
                         </Button>
@@ -73,15 +76,17 @@ export function ECHOLink() {
             </section>
 
             {/* Call for Developers */}
-            <section className="py-24 bg-echo-blue/5 border-y border-echo-blue/10">
-                <div className="container mx-auto px-4 text-center">
-                    <h2 className="text-3xl md:text-5xl font-serif text-white mb-8">Participez à la construction</h2>
-                    <p className="text-lg text-neutral-300 max-w-3xl mx-auto mb-12">
-                        ECHOLink est un projet ambitieux qui nécessite des talents techniques.
-                        Développeurs, designers, architectes système... nous avons besoin de vous.
-                    </p>
+            <section id="candidature" className="py-24 bg-echo-blue/5 border-y border-echo-blue/10">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl md:text-5xl font-serif text-white mb-8">Participez à la construction</h2>
+                        <p className="text-lg text-neutral-300 max-w-3xl mx-auto">
+                            ECHOLink est un projet ambitieux qui nécessite des talents techniques.
+                            Développeurs, designers, architectes système... nous avons besoin de vous.
+                        </p>
+                    </div>
 
-                    <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                    <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-16">
                         <Card className="text-left hover:border-echo-blueLight/50 transition-colors">
                             <h3 className="text-xl font-bold text-white mb-2">Stack Technique</h3>
                             <ul className="space-y-2 text-neutral-400 text-sm">
@@ -91,14 +96,20 @@ export function ECHOLink() {
                             </ul>
                         </Card>
                         <Card className="text-left hover:border-echo-blueLight/50 transition-colors">
-                            <h3 className="text-xl font-bold text-white mb-2">Rejoindre l'équipe Tech</h3>
+                            <h3 className="text-xl font-bold text-white mb-2">Contribuer</h3>
                             <p className="text-sm text-neutral-400 mb-4">
-                                Contribuez à un projet open-source à fort impact social.
+                                Contribuez à un projet open-source à fort impact social. Remplissez le formulaire ci-dessous pour postuler.
                             </p>
                             <Button variant="outline" size="sm" className="w-full border-echo-blueLight text-echo-blueLight hover:bg-echo-blueLight/10">
                                 Accéder au GitHub <ArrowRight size={16} className="ml-2" />
                             </Button>
                         </Card>
+                    </div>
+
+                    {/* Candidature Form (FR17/FR18) */}
+                    <div className="max-w-2xl mx-auto bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
+                        <h3 className="text-2xl font-serif text-white mb-6 text-center">Candidature technique</h3>
+                        <TechApplicationForm project="echolink" accentColor="echo-blueLight" accentHex="#60A5FA" />
                     </div>
                 </div>
             </section>

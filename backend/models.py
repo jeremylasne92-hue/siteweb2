@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, EmailStr
-from typing import Optional
+from typing import Optional, Literal
 from datetime import datetime
 import uuid
 from enum import Enum
@@ -137,6 +137,26 @@ class EpisodeOptIn(BaseModel):
 class EpisodeOptInRequest(BaseModel):
     season: int
     episode: int
+
+
+class TechCandidature(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    email: EmailStr
+    project: Literal["cognisphere", "echolink"]
+    skills: str
+    message: str
+    ip_address: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class TechCandidatureRequest(BaseModel):
+    name: str = Field(min_length=2, max_length=100)
+    email: EmailStr
+    project: Literal["cognisphere", "echolink"]
+    skills: str = Field(min_length=2, max_length=500)
+    message: str = Field(min_length=10, max_length=2000)
+    website: str = ""  # honeypot field
 
 
 class Pending2FA(BaseModel):
