@@ -7,6 +7,7 @@ from services.auth_local_service import register_user, login_user
 from services.password_reset_service import request_reset, verify_token, reset_password as reset_pwd
 from email_service import send_2fa_code
 from utils.rate_limit import check_rate_limit
+from core.config import settings
 from datetime import datetime, timedelta
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import httpx
@@ -89,6 +90,7 @@ async def login_local(request: Request, credentials: UserLoginLocal, response: R
         key="session_token",
         value=result["session_token"],
         httponly=True,
+        secure=settings.is_production,
         max_age=7 * 24 * 60 * 60,
         samesite="lax"
     )
@@ -166,10 +168,11 @@ async def login(request: Request, credentials: UserLogin, response: Response, db
         key="session_token",
         value=session.session_token,
         httponly=True,
+        secure=settings.is_production,
         max_age=7 * 24 * 60 * 60,
         samesite="lax"
     )
-    
+
     return {
         "user": {
             "id": user.id,
@@ -237,10 +240,11 @@ async def verify_2fa(user_id: str, code: str, response: Response, db: AsyncIOMot
         key="session_token",
         value=session.session_token,
         httponly=True,
+        secure=settings.is_production,
         max_age=7 * 24 * 60 * 60,
         samesite="lax"
     )
-    
+
     return {
         "verified": True,
         "session_token": session.session_token
@@ -263,7 +267,6 @@ async def google_callback(
     """Handle Google OAuth login callback with CSRF state validation.
     The JWT is stored in a secure httpOnly cookie, never in the URL."""
     from services.auth_service import google_callback_service, verify_oauth_state
-    from core.config import settings
 
     frontend_url = settings.FRONTEND_URL
 
@@ -283,6 +286,7 @@ async def google_callback(
             key="session_token",
             value=result["session_token"],
             httponly=True,
+            secure=settings.is_production,
             max_age=7 * 24 * 60 * 60,
             samesite="lax"
         )

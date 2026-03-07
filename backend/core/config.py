@@ -31,6 +31,13 @@ class Settings:
     # Security
     OAUTH_STATE_SECRET: str = os.environ.get("OAUTH_STATE_SECRET", "change-me-in-production")
 
+    # Environment
+    ENVIRONMENT: str = os.environ.get("ENVIRONMENT", "development")
+
+    @property
+    def is_production(self) -> bool:
+        return self.ENVIRONMENT == "production"
+
     def validate(self) -> None:
         """Validate that critical settings are present."""
         missing = []
