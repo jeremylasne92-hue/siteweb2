@@ -6,9 +6,10 @@ import { cn } from '../components/ui/Button';
 import {
     User, MapPin, Phone, Upload,
     CheckCircle2, Clock, XCircle, AlertTriangle,
-    Save
+    Save, Calendar, ExternalLink
 } from 'lucide-react';
 import { PARTNERS_API } from '../config/api';
+import { BOOKING_URL } from '../config/booking';
 
 const API_BASE = PARTNERS_API;
 
@@ -254,6 +255,25 @@ export default function MyPartnerAccount() {
                             <p className="text-white font-medium">{new Date(partner.updated_at).toLocaleDateString('fr-FR')}</p>
                         </div>
                     </div>
+
+                    {/* Prise de RDV */}
+                    <a
+                        href={BOOKING_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between p-5 mb-10 bg-echo-gold/10 border border-echo-gold/30 rounded-xl hover:bg-echo-gold/20 transition-colors group"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-full bg-echo-gold/20 flex items-center justify-center">
+                                <Calendar size={20} className="text-echo-gold" />
+                            </div>
+                            <div>
+                                <p className="text-white font-medium">Prendre rendez-vous avec l'équipe ECHO</p>
+                                <p className="text-echo-textMuted text-sm">Planifiez un échange pour finaliser votre intégration</p>
+                            </div>
+                        </div>
+                        <ExternalLink size={18} className="text-echo-gold group-hover:translate-x-1 transition-transform" />
+                    </a>
 
                     {/* Edit Form */}
                     <div className="bg-white/5 border border-white/10 rounded-xl p-6">
