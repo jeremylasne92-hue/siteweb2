@@ -45,8 +45,8 @@ export default function AdminDashboard() {
             title: 'Événements',
             description: 'Créer et gérer les événements publics',
             icon: <Calendar size={24} />,
-            href: '#',
-            active: false,
+            href: '/admin/events',
+            active: true,
         },
         {
             title: 'Exports',

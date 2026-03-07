@@ -1,39 +1,55 @@
-import { Calendar, MapPin, ArrowRight, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Calendar, MapPin, ArrowRight, Clock, Loader2 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
+import { EVENTS_API } from '../config/api';
+
+interface EventItem {
+    id: string;
+    title: string;
+    description: string;
+    date: string;
+    time: string;
+    location: string;
+    type: string;
+    image_url?: string;
+}
+
+const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=2670&auto=format&fit=crop';
 
 export function Events() {
-    const upcomingEvents = [
-        {
-            id: 1,
-            title: "Avant-première Saison 1",
-            date: "15 Mai 2026",
-            time: "20:00",
-            location: "Paris, Le Grand Rex",
-            image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2670&auto=format&fit=crop",
-            type: "Projection",
-            status: "Inscriptions ouvertes"
-        },
-        {
-            id: 2,
-            title: "Atelier Résilience : Les bases",
-            date: "22 Juin 2026",
-            time: "14:00",
-            location: "Lyon, La Commune",
-            image: "https://images.unsplash.com/photo-1544377193-33dcf4d68fb5?q=80&w=2670&auto=format&fit=crop",
-            type: "Atelier",
-            status: "Inscriptions ouvertes"
-        },
-        {
-            id: 3,
-            title: "Conférence : L'Effondrement",
-            date: "05 Sep 2026",
-            time: "19:30",
-            location: "Bordeaux, Darwin",
-            image: "https://images.unsplash.com/photo-1544531586-fde5298cdd40?q=80&w=2670&auto=format&fit=crop",
-            type: "Conférence",
-            status: "Places limitées"
-        }
-    ];
+    const [events, setEvents] = useState<EventItem[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [activeFilter, setActiveFilter] = useState('Tout');
+
+    useEffect(() => {
+        const fetchEvents = async () => {
+            try {
+                const res = await fetch(EVENTS_API);
+                if (res.ok) {
+                    setEvents(await res.json());
+                }
+            } catch (err) {
+                console.error('Failed to fetch events', err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchEvents();
+    }, []);
+
+    const filters = ['Tout', 'Projection', 'Atelier', 'Conférence', 'En ligne'];
+
+    const filteredEvents = activeFilter === 'Tout'
+        ? events
+        : events.filter(e => e.type === activeFilter);
+
+    const formatDate = (dateStr: string) => {
+        return new Date(dateStr).toLocaleDateString('fr-FR', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+        });
+    };
 
     return (
         <>
@@ -57,18 +73,22 @@ export function Events() {
                 </div>
             </section>
 
-            {/* Filter / Search placeholder */}
+            {/* Filter */}
             <div className="bg-echo-dark/50 border-y border-white/5 py-4 sticky top-20 z-30 backdrop-blur-md">
                 <div className="container mx-auto px-4 flex flex-wrap gap-4 items-center justify-between">
                     <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 hide-scrollbar">
-                        {['Tout', 'Projections', 'Ateliers', 'Conférences', 'En ligne'].map((filter, i) => (
-                            <button key={i} className={`px-4 py-2 rounded-full text-sm transition-colors ${i === 0 ? 'bg-echo-gold text-black font-semibold' : 'bg-white/5 text-white hover:bg-white/10'}`}>
-                                {filter}
+                        {filters.map((filter) => (
+                            <button
+                                key={filter}
+                                onClick={() => setActiveFilter(filter)}
+                                className={`px-4 py-2 rounded-full text-sm transition-colors ${activeFilter === filter ? 'bg-echo-gold text-black font-semibold' : 'bg-white/5 text-white hover:bg-white/10'}`}
+                            >
+                                {filter === 'Tout' ? 'Tout' : filter + 's'}
                             </button>
                         ))}
                     </div>
                     <div className="text-echo-gold text-sm font-mono">
-                        3 événements à venir
+                        {filteredEvents.length} événement{filteredEvents.length > 1 ? 's' : ''} à venir
                     </div>
                 </div>
             </div>
@@ -76,13 +96,23 @@ export function Events() {
             {/* Events List */}
             <section className="py-20 px-4">
                 <div className="container mx-auto max-w-6xl space-y-8">
-                    {upcomingEvents.map((event) => (
+                    {isLoading ? (
+                        <div className="flex justify-center py-20">
+                            <Loader2 className="w-8 h-8 text-echo-gold animate-spin" />
+                        </div>
+                    ) : filteredEvents.length === 0 ? (
+                        <div className="text-center py-20">
+                            <Calendar className="w-12 h-12 text-echo-textMuted mx-auto mb-4" />
+                            <p className="text-echo-textMuted text-lg">Aucun événement à venir pour le moment.</p>
+                            <p className="text-echo-textMuted text-sm mt-2">Revenez bientôt pour découvrir nos prochains rendez-vous !</p>
+                        </div>
+                    ) : filteredEvents.map((event) => (
                         <div key={event.id} className="group relative bg-white/5 border border-white/5 rounded-2xl overflow-hidden hover:border-echo-gold/30 transition-all duration-300 flex flex-col md:flex-row">
                             {/* Image */}
                             <div className="md:w-1/3 h-48 md:h-auto relative overflow-hidden">
                                 <div className="absolute inset-0 bg-echo-gold/10 mix-blend-overlay z-10" />
                                 <img
-                                    src={event.image}
+                                    src={event.image_url || DEFAULT_IMAGE}
                                     alt={event.title}
                                     className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                                 />
@@ -98,7 +128,7 @@ export function Events() {
                                         <h3 className="text-2xl font-serif text-white mb-2 group-hover:text-echo-gold transition-colors">{event.title}</h3>
                                         <div className="flex flex-wrap gap-4 text-neutral-400 text-sm">
                                             <span className="flex items-center gap-1">
-                                                <Calendar className="w-4 h-4" /> {event.date}
+                                                <Calendar className="w-4 h-4" /> {formatDate(event.date)}
                                             </span>
                                             <span className="flex items-center gap-1">
                                                 <Clock className="w-4 h-4" /> {event.time}
@@ -108,11 +138,9 @@ export function Events() {
                                             </span>
                                         </div>
                                     </div>
-                                    <div className={`hidden md:block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${event.status === 'Complet' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-echo-green/20 text-echo-green border border-echo-green/30'
-                                        }`}>
-                                        {event.status}
-                                    </div>
                                 </div>
+
+                                <p className="text-neutral-400 text-sm mb-4 line-clamp-2">{event.description}</p>
 
                                 <div className="mt-auto pt-4 flex items-center justify-between border-t border-white/5">
                                     <span className="text-neutral-500 text-sm">Organisé par l'équipe ECHO</span>

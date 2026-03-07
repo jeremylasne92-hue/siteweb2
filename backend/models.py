@@ -159,6 +159,37 @@ class TechCandidatureRequest(BaseModel):
     website: str = ""  # honeypot field
 
 
+class EventType(str, Enum):
+    PROJECTION = "Projection"
+    ATELIER = "Atelier"
+    CONFERENCE = "Conférence"
+    EN_LIGNE = "En ligne"
+
+
+class Event(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    title: str
+    description: str
+    date: datetime  # ISO 8601
+    time: str  # "20:00"
+    location: str
+    type: EventType
+    image_url: Optional[str] = None
+    is_published: bool = True
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class EventCreate(BaseModel):
+    title: str = Field(min_length=3, max_length=200)
+    description: str = Field(min_length=10, max_length=2000)
+    date: datetime
+    time: str = Field(pattern=r"^\d{2}:\d{2}$")
+    location: str = Field(min_length=3, max_length=200)
+    type: EventType
+    image_url: Optional[str] = None
+
+
 class Pending2FA(BaseModel):
     user_id: str
     code: str  # 4-digit code

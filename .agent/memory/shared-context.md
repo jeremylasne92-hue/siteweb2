@@ -122,6 +122,7 @@ backend/
 
 | Date | Décision | Agent |
 |------|----------|-------|
+| 2026-03-06 | Story 4.3 complétée — CRUD événements backend (5 endpoints + 5 tests) + AdminEvents.tsx + Events.tsx dynamique | Claude Code (Opus 4.6) |
 | 2026-03-06 | Stories 4.1 + 4.2 complétées — Dashboard admin hub + fix Accès Refusé + lien Header + 4.2 déjà implémentée | Claude Code (Opus 4.6) |
 | 2026-03-06 | Story 3.5 complétée — Bouton "Visiter le site" dans modale partenaire — **Epic 3 DONE** | Claude Code (Opus 4.6) |
 | 2026-03-06 | Story 3.4 complétée — Bouton RDV Google Calendar sur espace partenaire | Claude Code (Opus 4.6) |
@@ -221,10 +222,10 @@ _Aucune spec en cours._
 
 **Epic 3 (Partenaires & ECHOSystem) — TERMINE** (5/5 stories done)
 
-**Epic 4 (Back-Office Administration) — EN COURS** (2/4 stories done)
+**Epic 4 (Back-Office Administration) — EN COURS** (3/4 stories done)
 1. ~~**Story 4.1** — Panel d'administration sécurisé~~ ✅ done (dashboard hub + fix Accès Refusé + lien Header admin)
 2. ~~**Story 4.2** — Modération des candidatures partenaires~~ ✅ done (déjà implémentée dans AdminPartners.tsx)
-3. **Story 4.3** — Gestion de l'agenda événements
+3. ~~**Story 4.3** — Gestion de l'agenda événements~~ ✅ done (CRUD backend + admin UI + Events.tsx dynamique)
 4. **Story 4.4** — Export de la base email opt-in
 
 ### Notes techniques
