@@ -141,7 +141,7 @@ async def login(request: Request, credentials: UserLogin, response: Response, db
         
         # Send email
         await send_2fa_code(user.email, code)
-        logger.info(f"2FA code for {user.email}: {code}")
+        logger.info(f"2FA code sent to {user.email}")
         
         return {
             "user": {

@@ -18,7 +18,7 @@ async def send_2fa_code(email: str, code: str) -> bool:
     logger.info(f"")
     logger.info(f"Votre code de vérification à 4 chiffres :")
     logger.info(f"")
-    logger.info(f"    {code}")
+    logger.info(f"    [CODE REDACTED]")
     logger.info(f"")
     logger.info(f"Ce code expire dans 10 minutes.")
     logger.info(f"Vous avez 5 tentatives maximum.")
