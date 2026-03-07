@@ -121,6 +121,7 @@ backend/
 
 | Date | Décision | Agent |
 |------|----------|-------|
+| 2026-03-06 | Story 3.5 complétée — Bouton "Visiter le site" dans modale partenaire — **Epic 3 DONE** | Claude Code (Opus 4.6) |
 | 2026-03-06 | Story 3.4 complétée — Bouton RDV Google Calendar sur espace partenaire | Claude Code (Opus 4.6) |
 | 2026-03-06 | Stories 3.2 + 3.3 marquées done — déjà couvertes par implémentation existante | Claude Code (Opus 4.6) |
 | 2026-03-06 | Story 3.1 complétée — Pillow MIME validation + 2Mo limit + email équipe + rate limit 3/h/IP + 5 tests (FR11/FR12/FR13/FR18) | Claude Code (Opus 4.6) |
@@ -216,12 +217,12 @@ _Aucune spec en cours._
 
 **Epic 2 (Contenu & Engagement Visiteur) — TERMINÉ** (4/4 stories done)
 
-**Epic 3 (Partenaires & ECHOSystem) — EN COURS** (4/5 stories done)
+**Epic 3 (Partenaires & ECHOSystem) — TERMINE** (5/5 stories done)
 1. ~~**Story 3.1** — Formulaire de candidature partenaire~~ ✅ done
 2. ~~**Story 3.2** — Notifications transactionnelles~~ ✅ done (couverte par Story 3.1)
 3. ~~**Story 3.3** — Tableau de bord partenaire~~ ✅ done (deja implemente)
 4. ~~**Story 3.4** — Prise de RDV Google Calendar~~ ✅ done
-5. **Story 3.5** — Cartographie et listing publique ECHOSystem (backlog)
+5. ~~**Story 3.5** — Cartographie et listing publique ECHOSystem~~ ✅ done
 
 ### Notes techniques
 

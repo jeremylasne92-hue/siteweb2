@@ -54,12 +54,12 @@ development_status:
   2-4-passerelle-de-soutien-et-dons: done
   epic-2-retrospective: optional
 
-  epic-3: in-progress
+  epic-3: done
   3-1-formulaire-de-candidature-partenaire: done
   3-2-notifications-transactionnelles: done
   3-3-tableau-de-bord-partenaire: done
   3-4-prise-de-rdv-google-calendar: done
-  3-5-cartographie-et-listing-publique-echosystem: backlog
+  3-5-cartographie-et-listing-publique-echosystem: done
   epic-3-retrospective: optional
 
   epic-4: backlog

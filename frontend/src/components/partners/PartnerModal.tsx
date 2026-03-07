@@ -2,7 +2,7 @@ import React from 'react';
 import { Modal } from '../ui/Modal';
 import type { Partner, PartnerCategory } from './PartnerCard';
 import { ThematicTag } from './ThematicTag';
-import { MapPin, Globe, User, Mail, Phone, Linkedin, Instagram, Twitter } from 'lucide-react';
+import { MapPin, Globe, User, Mail, Phone, Linkedin, Instagram, Twitter, ExternalLink } from 'lucide-react';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 
@@ -165,6 +165,23 @@ export const PartnerModal: React.FC<PartnerModalProps> = ({ partner, isOpen, onC
                             </p>
                         </div>
                     </div>
+
+                    {/* Visiter le site */}
+                    {(partner as any).website_url && (
+                        <a
+                            href={(partner as any).website_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 mb-10 rounded-lg text-sm font-medium transition-all"
+                            style={{ backgroundColor: `${color}20`, color: color, border: `1px solid ${color}40` }}
+                            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = `${color}30`; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = `${color}20`; }}
+                        >
+                            <Globe className="w-4 h-4" />
+                            Visiter le site
+                            <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                    )}
 
                     <div>
                         <h3 className="text-lg font-serif text-white mb-4 flex items-center gap-2">
