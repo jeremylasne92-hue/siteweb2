@@ -1,8 +1,11 @@
 from fastapi import APIRouter, HTTPException, Depends, status
+from starlette.responses import StreamingResponse
 from models import Episode, EpisodeOptIn, EpisodeOptInRequest, User
 from routes.auth import get_current_user, require_admin, get_db
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from typing import Optional, List
+import csv
+import io
 import logging
 
 logger = logging.getLogger(__name__)
@@ -158,3 +161,46 @@ async def get_my_optins(
         {"user_id": user.id}
     ).to_list(100)
     return [{"season": o["season"], "episode": o["episode"]} for o in optins]
+
+
+# ==================== ADMIN EXPORT ROUTES ====================
+
+@router.get("/admin/export-optins")
+async def export_optins_csv(
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Export all opt-in emails as CSV (admin only)"""
+    optins = await db.episode_optins.find().to_list(None)
+
+    # Build user_id -> email lookup
+    user_ids = list({o["user_id"] for o in optins})
+    emails_map = {}
+    if user_ids:
+        users = await db.users.find({"id": {"$in": user_ids}}).to_list(None)
+        emails_map = {u["id"]: u.get("email", "") for u in users}
+
+    # Generate CSV with UTF-8 BOM for Excel compatibility
+    output = io.StringIO()
+    output.write("\ufeff")
+    writer = csv.writer(output)
+    writer.writerow(["email", "season", "episode", "created_at"])
+    for o in optins:
+        created = o.get("created_at", "")
+        if hasattr(created, "isoformat"):
+            created = created.isoformat()
+        writer.writerow([
+            emails_map.get(o["user_id"], ""),
+            o["season"],
+            o["episode"],
+            created,
+        ])
+
+    output.seek(0)
+    logger.info(f"Admin {admin.id} exported {len(optins)} opt-in records")
+
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": "attachment; filename=optins-export.csv"}
+    )

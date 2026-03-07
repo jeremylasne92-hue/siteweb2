@@ -52,8 +52,8 @@ export default function AdminDashboard() {
             title: 'Exports',
             description: 'Exporter la base des emails opt-in',
             icon: <Download size={24} />,
-            href: '#',
-            active: false,
+            href: '/admin/exports',
+            active: true,
         },
     ];
 

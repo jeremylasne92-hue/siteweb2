@@ -15,6 +15,7 @@ import { Contact } from './pages/Contact';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminPartners from './pages/AdminPartners';
 import AdminEvents from './pages/AdminEvents';
+import AdminExports from './pages/AdminExports';
 import MyPartnerAccount from './pages/MyPartnerAccount';
 import { Login } from './pages/auth/Login';
 import { Register } from './pages/auth/Register';
@@ -48,6 +49,7 @@ function App() {
           <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/partenaires" element={<ProtectedRoute requiredRole="admin"><AdminPartners /></ProtectedRoute>} />
           <Route path="/admin/events" element={<ProtectedRoute requiredRole="admin"><AdminEvents /></ProtectedRoute>} />
+          <Route path="/admin/exports" element={<ProtectedRoute requiredRole="admin"><AdminExports /></ProtectedRoute>} />
           <Route path="/mon-compte/partenaire" element={<ProtectedRoute><MyPartnerAccount /></ProtectedRoute>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
