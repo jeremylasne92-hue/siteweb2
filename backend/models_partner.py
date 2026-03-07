@@ -59,6 +59,9 @@ class Partner(BaseModel):
     is_featured: bool = False                    # Mis en avant sur la page
     rejection_reason: Optional[str] = None       # Motif si refusé
     
+    # Anti-spam
+    ip_address: Optional[str] = None             # IP de soumission (rate limiting)
+
     # Métadonnées
     partnership_date: Optional[datetime] = None  # Date début partenariat officiel
     created_at: datetime = Field(default_factory=datetime.utcnow)

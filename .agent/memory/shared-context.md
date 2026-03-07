@@ -7,9 +7,9 @@
 ## 📋 État du Projet
 
 **Dernière mise à jour** : 2026-03-06
-**Phase actuelle** : Sprint 2 — Epic 2 terminé, Epic 3 prêt
+**Phase actuelle** : Sprint 3 — Epic 3 en cours
 **Statut** : ✅ Opérationnel
-**Dernier milestone** : Story 2.4 (Passerelle de Soutien et Dons) done — Epic 2 complété (4/4 stories)
+**Dernier milestone** : Story 3.1 (Formulaire Candidature Partenaire) done — Pillow + rate limit + emails
 
 ---
 
@@ -47,7 +47,8 @@ backend/
 │   └── auth_local_service.py  # Register/Login local (Service Pattern)
 ├── core/config.py         # Settings centralisés
 └── tests/routes/
-    └── test_auth_local.py # 6 tests (register + login)
+    ├── test_auth_local.py    # 6 tests (register + login)
+    └── test_partners_apply.py # 5 tests (candidature partenaire)
 ```
 
 ---
@@ -107,6 +108,7 @@ backend/
 
 | Tâche | Niveau | Justification |
 |-------|--------|---------------|
+| Story 3.1 Formulaire Candidature Partenaire | 🟡 STANDARD | Backend sécurité (Pillow + rate limit + emails) |
 | Story 2.4 Passerelle Soutien/Dons | 🟡 STANDARD | Frontend uniquement, liens HelloAsso + CTAs |
 | Story 2.3 Candidatures Anti-Spam | 🟡 STANDARD | Frontend + backend, formulaires + honeypot + rate limit |
 | Story 2.2 Exploration & Opt-in | 🟡 STANDARD | Frontend + backend, synopsis + opt-in |
@@ -118,6 +120,7 @@ backend/
 
 | Date | Décision | Agent |
 |------|----------|-------|
+| 2026-03-06 | Story 3.1 complétée — Pillow MIME validation + 2Mo limit + email équipe + rate limit 3/h/IP + 5 tests (FR11/FR12/FR13/FR18) | Claude Code (Opus 4.6) |
 | 2026-03-06 | Story 2.4 complétée — Boutons HelloAsso + CTAs Mouvement — **Epic 2 DONE** (FR19) | Claude Code (Opus 4.6) |
 | 2026-03-06 | Story 2.3 complétée — Formulaires candidature tech Cognisphere/ECHOLink + anti-spam (FR17/FR18) | Claude Code (Opus 4.6) |
 | 2026-03-06 | Story 2.2 complétée — Synopsis modale + opt-in + fix routeur episodes (FR8/FR9) | Claude Code (Opus 4.6) |
@@ -140,6 +143,7 @@ backend/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-06 | 🟡 STANDARD | Story 3.1 Formulaire Candidature Partenaire | ~20min (backend sécurité + tests) | Claude Code (Opus 4.6) |
 | 2026-03-06 | 🟡 STANDARD | Story 2.4 Passerelle Soutien/Dons | ~10min (frontend uniquement) | Claude Code (Opus 4.6) |
 | 2026-03-06 | 🟡 STANDARD | Story 2.3 Candidatures Anti-Spam | ~25min (backend + frontend + composant partagé) | Claude Code (Opus 4.6) |
 | 2026-03-06 | 🟡 STANDARD | Story 2.2 Exploration & Opt-in | ~20min (backend + frontend) | Claude Code (Opus 4.6) |
@@ -209,8 +213,8 @@ _Aucune spec en cours._
 
 **Epic 2 (Contenu & Engagement Visiteur) — TERMINÉ** (4/4 stories done)
 
-**Prochaine priorité : Epic 3 — Partenaires & ECHOSystem**
-1. **Story 3.1** — Formulaire de candidature partenaire (backlog)
+**Epic 3 (Partenaires & ECHOSystem) — EN COURS** (1/5 stories done)
+1. ~~**Story 3.1** — Formulaire de candidature partenaire~~ ✅ done
 2. **Story 3.2** — Notifications transactionnelles (backlog)
 3. **Story 3.3** — Tableau de bord partenaire (backlog)
 4. **Story 3.4** — Prise de RDV Google Calendar (backlog)

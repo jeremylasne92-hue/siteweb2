@@ -1,13 +1,16 @@
-from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form, BackgroundTasks, Request
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional, Dict, Any
-from datetime import datetime
+from datetime import datetime, timedelta
+import io
 import json
+import logging
 import os
 import re
 import shutil
 import uuid as uuid_mod
 import slugify
+from PIL import Image
 
 from models import User, UserRole, UserCreate
 from models_partner import Partner, PartnerCategory, PartnerStatus, ThematicRef
@@ -15,7 +18,14 @@ from routes.auth import get_current_user, require_admin, get_db, hash_password
 from email_service import send_email
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/partners", tags=["Partners"])
+
+APPLY_RATE_LIMIT_MAX = 3
+APPLY_RATE_LIMIT_WINDOW_HOURS = 1
+LOGO_MAX_SIZE = 2 * 1024 * 1024  # 2 Mo
+LOGO_ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"]
 
 # ==============================================================================
 # SCHEMAS (Pydantic Models for requests/responses)
@@ -159,6 +169,7 @@ async def get_partner_by_slug(slug: str, db: AsyncIOMotorDatabase = Depends(get_
 
 @router.post("/apply")
 async def apply_partnership(
+    request: Request,
     background_tasks: BackgroundTasks,
     name: str = Form(...),
     category: PartnerCategory = Form(...),
@@ -184,7 +195,18 @@ async def apply_partnership(
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
     """Submit a partnership application (multipart/form-data)"""
-    
+    client_ip = request.client.host if request.client else "unknown"
+
+    # Anti-spam: rate limiting (max 3 per hour per IP)
+    window_start = datetime.utcnow() - timedelta(hours=APPLY_RATE_LIMIT_WINDOW_HOURS)
+    recent_count = await db.partners.count_documents({
+        "ip_address": client_ip,
+        "created_at": {"$gte": window_start}
+    })
+    if recent_count >= APPLY_RATE_LIMIT_MAX:
+        logger.warning(f"Partner apply rate limit exceeded for {client_ip}")
+        raise HTTPException(status_code=429, detail="Trop de soumissions récentes. Réessayez plus tard.")
+
     # Check if email is already used for contact or user account
     existing_user = await db.users.find_one({"email": contact_email})
     if existing_user:
@@ -203,20 +225,25 @@ async def apply_partnership(
     logo_url = None
     if logo:
         # Validate content type
-        allowed_types = ["image/jpeg", "image/png", "image/webp", "image/svg+xml", "image/gif"]
-        if logo.content_type not in allowed_types:
-            raise HTTPException(status_code=400, detail=f"Type de fichier non autorisé. Formats acceptés: JPEG, PNG, WebP, SVG, GIF")
-        # Validate file size (max 5MB)
+        if logo.content_type not in LOGO_ALLOWED_TYPES:
+            raise HTTPException(status_code=400, detail="Type de fichier non autorisé. Formats acceptés: JPEG, PNG, WebP")
+        # Validate file size (max 2 Mo)
         contents = await logo.read()
-        if len(contents) > 5 * 1024 * 1024:
-            raise HTTPException(status_code=400, detail="Le fichier ne doit pas dépasser 5 Mo")
+        if len(contents) > LOGO_MAX_SIZE:
+            raise HTTPException(status_code=400, detail="Le fichier ne doit pas dépasser 2 Mo")
+        # Validate real image content via Pillow (prevents malicious files)
+        try:
+            img = Image.open(io.BytesIO(contents))
+            img.verify()
+        except Exception:
+            raise HTTPException(status_code=400, detail="Le fichier n'est pas une image valide")
         await logo.seek(0)
         
         upload_dir = "uploads/partners/logos"
         os.makedirs(upload_dir, exist_ok=True)
         # Sanitize filename: use UUID to prevent path traversal
         ext = os.path.splitext(logo.filename or "logo.png")[1].lower()
-        if ext not in [".jpg", ".jpeg", ".png", ".webp", ".svg", ".gif"]:
+        if ext not in [".jpg", ".jpeg", ".png", ".webp"]:
             ext = ".png"
         safe_filename = f"{user_doc.id}_{uuid_mod.uuid4().hex[:8]}{ext}"
         file_path = os.path.join(upload_dir, safe_filename)
@@ -262,19 +289,30 @@ async def apply_partnership(
         instagram_url=instagram_url,
         twitter_url=twitter_url,
         user_id=user_doc.id,
-        status=PartnerStatus.PENDING
+        status=PartnerStatus.PENDING,
+        ip_address=client_ip
     )
     
     await db.partners.insert_one(partner.model_dump())
     
-    # Send emails in background
+    logger.info(f"New partner application from {name} ({contact_email})")
+
+    # Send confirmation email to candidate (FR12)
     background_tasks.add_task(
         send_email,
         contact_email,
         "Votre demande de partenariat ECHO",
-        "Nous avons bien reçu votre demande de partenariat. Celle-ci est en cours d'examen."
+        f"Bonjour {contact_name},\n\nNous avons bien reçu votre demande de partenariat pour \"{name}\" (catégorie: {category}).\n\nVotre dossier est en cours d'examen. Nous vous contacterons prochainement.\n\nL'équipe ECHO"
     )
-    
+
+    # Send alert email to internal team (FR13)
+    background_tasks.add_task(
+        send_email,
+        "contact@projet-echo.fr",
+        f"Nouvelle candidature partenaire — {name}",
+        f"Nom: {name}\nCatégorie: {category}\nVille: {city}\nContact: {contact_name} ({contact_email})\nDescription: {description}"
+    )
+
     return {
         "success": True,
         "message": "Votre demande a été soumise. Vous recevrez un email de confirmation.",
@@ -359,7 +397,7 @@ async def update_my_partner_account(
         upload_dir = "uploads/partners/logos"
         os.makedirs(upload_dir, exist_ok=True)
         ext = os.path.splitext(logo.filename or "logo.png")[1].lower()
-        if ext not in [".jpg", ".jpeg", ".png", ".webp", ".svg", ".gif"]:
+        if ext not in [".jpg", ".jpeg", ".png", ".webp"]:
             ext = ".png"
         safe_filename = f"{partner['id']}_{uuid_mod.uuid4().hex[:8]}{ext}"
         file_path = os.path.join(upload_dir, safe_filename)
