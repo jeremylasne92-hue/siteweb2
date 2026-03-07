@@ -20,7 +20,7 @@ So that proposer l'intégration de mon organisation à l'association ECHO.
 - [x] Task 1: Validation MIME via Pillow (`PIL.Image.open().verify()`)
 - [x] Task 2: Limite logo réduite de 5 Mo à 2 Mo (per AC)
 - [x] Task 3: Formats restreints à JPEG/PNG/WebP (retrait SVG/GIF)
-- [x] Task 4: Email alerte équipe interne (FR13) — `contact@projet-echo.fr`
+- [x] Task 4: Email alerte équipe interne (FR13) — `mouvement.echo.france@gmail.com`
 - [x] Task 5: Email récapitulatif amélioré au candidat (FR12)
 - [x] Task 6: Anti-spam rate limiting (3/h/IP) sur `POST /apply` (FR18)
 - [x] Task 7: Champ `ip_address` ajouté au modèle Partner
@@ -46,7 +46,7 @@ L'infrastructure partenaire était déjà construite :
 | 1 | Validation MIME | Header Content-Type seul (spoofable) | Pillow `Image.open().verify()` |
 | 2 | Taille max logo | 5 Mo | 2 Mo |
 | 3 | Formats logo | JPEG/PNG/WebP/SVG/GIF | JPEG/PNG/WebP uniquement |
-| 4 | Email équipe (FR13) | Non implémenté | `send_email("contact@projet-echo.fr", ...)` |
+| 4 | Email équipe (FR13) | Non implémenté | `send_email("mouvement.echo.france@gmail.com", ...)` |
 | 5 | Email candidat (FR12) | Message basique | Récapitulatif avec nom et catégorie |
 | 6 | Anti-spam (FR18) | Aucun | Rate limit 3/h/IP |
 

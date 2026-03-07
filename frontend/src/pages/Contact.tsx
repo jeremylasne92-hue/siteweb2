@@ -31,7 +31,7 @@ export function Contact() {
                                     <Mail className="w-5 h-5 text-echo-gold mt-1" />
                                     <div>
                                         <span className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1">Email</span>
-                                        contact@projet-echo.fr
+                                        mouvement.echo.france@gmail.com
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-4 text-neutral-300">

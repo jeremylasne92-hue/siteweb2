@@ -53,7 +53,7 @@ async def submit_tech_candidature(
     # Notify team via email
     project_label = "CogniSphère" if data.project == "cognisphere" else "ECHOLink"
     await send_email(
-        "contact@projet-echo.fr",
+        "mouvement.echo.france@gmail.com",
         f"Nouvelle candidature technique — {project_label}",
         f"Nom: {data.name}\nEmail: {data.email}\nProjet: {project_label}\nCompétences: {data.skills}\n\nMessage:\n{data.message}"
     )
