@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Search, User } from 'lucide-react';
+import { Menu, X, Search, User, Shield } from 'lucide-react';
 import { cn, Button } from '../ui/Button';
+import { useAuthStore } from '../../features/auth/store';
 
 export function Header() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const location = useLocation();
+    const user = useAuthStore((s) => s.user);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -62,6 +64,14 @@ export function Header() {
                         <Search size={20} />
                     </button>
                     <div className="h-4 w-px bg-white/20"></div>
+                    {user?.role === 'admin' && (
+                        <Link to="/admin">
+                            <Button variant="ghost" size="sm" className="gap-2 text-echo-gold">
+                                <Shield size={16} />
+                                <span className="hidden xl:inline">Admin</span>
+                            </Button>
+                        </Link>
+                    )}
                     <Link to="/login">
                         <Button variant="ghost" size="sm" className="gap-2">
                             <User size={18} />
@@ -96,6 +106,13 @@ export function Header() {
                         </Link>
                     ))}
                     <div className="flex flex-col gap-3 mt-4">
+                        {user?.role === 'admin' && (
+                            <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)}>
+                                <Button variant="secondary" className="w-full gap-2 text-echo-gold">
+                                    <Shield size={16} /> Administration
+                                </Button>
+                            </Link>
+                        )}
                         <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
                             <Button variant="secondary" className="w-full">Mon Compte</Button>
                         </Link>

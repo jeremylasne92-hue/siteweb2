@@ -108,6 +108,7 @@ backend/
 
 | Tâche | Niveau | Justification |
 |-------|--------|---------------|
+| Story 4.1 Panel Administration Securise | 🟡 STANDARD | Frontend : dashboard hub + fix ProtectedRoute + lien Header |
 | Story 3.4 Prise de RDV Google Calendar | 🟢 HOTFIX | Frontend uniquement, bouton + lien externe |
 | Story 3.1 Formulaire Candidature Partenaire | 🟡 STANDARD | Backend sécurité (Pillow + rate limit + emails) |
 | Story 2.4 Passerelle Soutien/Dons | 🟡 STANDARD | Frontend uniquement, liens HelloAsso + CTAs |
@@ -121,6 +122,7 @@ backend/
 
 | Date | Décision | Agent |
 |------|----------|-------|
+| 2026-03-06 | Stories 4.1 + 4.2 complétées — Dashboard admin hub + fix Accès Refusé + lien Header + 4.2 déjà implémentée | Claude Code (Opus 4.6) |
 | 2026-03-06 | Story 3.5 complétée — Bouton "Visiter le site" dans modale partenaire — **Epic 3 DONE** | Claude Code (Opus 4.6) |
 | 2026-03-06 | Story 3.4 complétée — Bouton RDV Google Calendar sur espace partenaire | Claude Code (Opus 4.6) |
 | 2026-03-06 | Stories 3.2 + 3.3 marquées done — déjà couvertes par implémentation existante | Claude Code (Opus 4.6) |
@@ -218,14 +220,15 @@ _Aucune spec en cours._
 **Epic 2 (Contenu & Engagement Visiteur) — TERMINÉ** (4/4 stories done)
 
 **Epic 3 (Partenaires & ECHOSystem) — TERMINE** (5/5 stories done)
-1. ~~**Story 3.1** — Formulaire de candidature partenaire~~ ✅ done
-2. ~~**Story 3.2** — Notifications transactionnelles~~ ✅ done (couverte par Story 3.1)
-3. ~~**Story 3.3** — Tableau de bord partenaire~~ ✅ done (deja implemente)
-4. ~~**Story 3.4** — Prise de RDV Google Calendar~~ ✅ done
-5. ~~**Story 3.5** — Cartographie et listing publique ECHOSystem~~ ✅ done
+
+**Epic 4 (Back-Office Administration) — EN COURS** (2/4 stories done)
+1. ~~**Story 4.1** — Panel d'administration sécurisé~~ ✅ done (dashboard hub + fix Accès Refusé + lien Header admin)
+2. ~~**Story 4.2** — Modération des candidatures partenaires~~ ✅ done (déjà implémentée dans AdminPartners.tsx)
+3. **Story 4.3** — Gestion de l'agenda événements
+4. **Story 4.4** — Export de la base email opt-in
 
 ### Notes techniques
 
 - Plugin `pytest-recording` (vcrpy) incompatible avec urllib3 — utiliser `-p no:recording`
 - Frontend bundle > 500kB — code splitting recommandé (Epic 2+)
-- Routes protégées : `/cognisphere`, `/echolink`, `/admin/partenaires` (admin), `/mon-compte/partenaire`
+- Routes protégées : `/cognisphere`, `/echolink`, `/admin` (admin), `/admin/partenaires` (admin), `/mon-compte/partenaire`

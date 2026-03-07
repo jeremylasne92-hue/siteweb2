@@ -62,9 +62,9 @@ development_status:
   3-5-cartographie-et-listing-publique-echosystem: done
   epic-3-retrospective: optional
 
-  epic-4: backlog
-  4-1-panel-administration-securise: backlog
-  4-2-moderation-des-candidatures-partenaires: backlog
+  epic-4: in-progress
+  4-1-panel-administration-securise: done
+  4-2-moderation-des-candidatures-partenaires: done
   4-3-gestion-de-lagenda-evenements: backlog
   4-4-export-de-la-base-email-opt-in: backlog
   epic-4-retrospective: optional

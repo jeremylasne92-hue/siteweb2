@@ -12,6 +12,7 @@ import { Events } from './pages/Events';
 import { Resources } from './pages/Resources';
 import { Support } from './pages/Support';
 import { Contact } from './pages/Contact';
+import AdminDashboard from './pages/AdminDashboard';
 import AdminPartners from './pages/AdminPartners';
 import MyPartnerAccount from './pages/MyPartnerAccount';
 import { Login } from './pages/auth/Login';
@@ -43,6 +44,7 @@ function App() {
           <Route path="/ressources" element={<Resources />} />
           <Route path="/soutenir" element={<Support />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/partenaires" element={<ProtectedRoute requiredRole="admin"><AdminPartners /></ProtectedRoute>} />
           <Route path="/mon-compte/partenaire" element={<ProtectedRoute><MyPartnerAccount /></ProtectedRoute>} />
           <Route path="/login" element={<Login />} />
