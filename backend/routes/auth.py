@@ -6,6 +6,7 @@ from auth_utils import hash_password, verify_password, generate_session_token, g
 from services.auth_local_service import register_user, login_user
 from services.password_reset_service import request_reset, verify_token, reset_password as reset_pwd
 from email_service import send_2fa_code
+from utils.rate_limit import check_rate_limit
 from datetime import datetime, timedelta
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import httpx
@@ -70,15 +71,17 @@ async def require_admin(current_user: User = Depends(get_current_user)) -> User:
 
 
 @router.post("/register")
-async def register(user_data: UserRegister, db: AsyncIOMotorDatabase = Depends(get_db)):
+async def register(request: Request, user_data: UserRegister, db: AsyncIOMotorDatabase = Depends(get_db)):
     """Register new user with email/password (Service Pattern)."""
+    await check_rate_limit(db, request, "register", max_requests=5, window_minutes=15)
     result = await register_user(user_data, db)
     return result
 
 
 @router.post("/login-local")
-async def login_local(credentials: UserLoginLocal, response: Response, db: AsyncIOMotorDatabase = Depends(get_db)):
+async def login_local(request: Request, credentials: UserLoginLocal, response: Response, db: AsyncIOMotorDatabase = Depends(get_db)):
     """Login with email or username + password (Service Pattern)."""
+    await check_rate_limit(db, request, "login", max_requests=10, window_minutes=15)
     result = await login_user(credentials, db)
 
     # Set session cookie (M5 — token only in httpOnly cookie, not in JSON body)
@@ -95,8 +98,9 @@ async def login_local(credentials: UserLoginLocal, response: Response, db: Async
 
 
 @router.post("/login")
-async def login(credentials: UserLogin, response: Response, db: AsyncIOMotorDatabase = Depends(get_db)):
+async def login(request: Request, credentials: UserLogin, response: Response, db: AsyncIOMotorDatabase = Depends(get_db)):
     """Login with username/password"""
+    await check_rate_limit(db, request, "login", max_requests=10, window_minutes=15)
     # TODO SECURITY: Implement server-side CAPTCHA verification (reCAPTCHA v3)
     # Currently trusts client-side boolean - must validate with Google reCAPTCHA API in production
     if not credentials.captcha_verified:
@@ -353,8 +357,9 @@ class ResetPasswordRequest(PydanticBaseModel):
 
 
 @router.post("/forgot-password")
-async def forgot_password(data: ForgotPasswordRequest, db: AsyncIOMotorDatabase = Depends(get_db)):
+async def forgot_password(request: Request, data: ForgotPasswordRequest, db: AsyncIOMotorDatabase = Depends(get_db)):
     """Request password reset email (Service Pattern)."""
+    await check_rate_limit(db, request, "forgot_password", max_requests=3, window_minutes=60)
     result = await request_reset(data.email, db)
     return result
 
@@ -367,7 +372,8 @@ async def check_reset_token(token: str, db: AsyncIOMotorDatabase = Depends(get_d
 
 
 @router.post("/reset-password/{token}")
-async def do_reset_password(token: str, data: ResetPasswordRequest, db: AsyncIOMotorDatabase = Depends(get_db)):
+async def do_reset_password(request: Request, token: str, data: ResetPasswordRequest, db: AsyncIOMotorDatabase = Depends(get_db)):
     """Reset password with valid token (Service Pattern)."""
+    await check_rate_limit(db, request, "reset_password", max_requests=5, window_minutes=15)
     result = await reset_pwd(token, data.password, data.password_confirm, db)
     return result

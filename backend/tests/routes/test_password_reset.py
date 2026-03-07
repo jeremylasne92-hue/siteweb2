@@ -21,6 +21,9 @@ def make_mock_db():
     db.password_reset_tokens.insert_one = AsyncMock()
     db.password_reset_tokens.update_one = AsyncMock()
     db.password_reset_tokens.update_many = AsyncMock()
+    # Rate limiting support
+    db.rate_limits.count_documents = AsyncMock(return_value=0)
+    db.rate_limits.insert_one = AsyncMock()
     return db
 
 

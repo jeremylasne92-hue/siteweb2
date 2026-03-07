@@ -69,6 +69,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+@app.on_event("startup")
+async def startup_indexes():
+    """Create TTL and compound indexes for rate limiting auto-cleanup."""
+    from utils.rate_limit import ensure_rate_limit_indexes
+    await ensure_rate_limit_indexes(db)
+    logger.info("Rate limit indexes ensured")
+
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()

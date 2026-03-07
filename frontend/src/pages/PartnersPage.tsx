@@ -1,11 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { Layout } from '../components/layout/Layout';
 import { PartnersHero } from '../components/partners/PartnersHero';
 import { PartnersStats } from '../components/partners/PartnersStats';
 import { PartnersFilters, PartnersViewSwitch } from '../components/partners/PartnersFilters';
 import { PartnersGrid } from '../components/partners/PartnersGrid';
-import { PartnersMap } from '../components/partners/PartnersMap';
 import { PartnerModal } from '../components/partners/PartnerModal';
+
+// Lazy-load map component (Leaflet ~180 KB, only needed for map view)
+const PartnersMap = lazy(() =>
+    import('../components/partners/PartnersMap').then(m => ({ default: m.PartnersMap }))
+);
 import { PartnerFormModal } from '../components/partners/PartnerFormModal';
 import type { Partner, PartnerCategory } from '../components/partners/PartnerCard';
 import type { Thematic } from '../components/partners/ThematicTag';
@@ -103,10 +107,16 @@ export default function PartnersPage() {
                             onPartnerClick={setSelectedPartner}
                         />
                     ) : (
-                        <PartnersMap
-                            partners={partners}
-                            onPartnerClick={setSelectedPartner}
-                        />
+                        <Suspense fallback={
+                            <div className="flex items-center justify-center h-[500px]">
+                                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-500" />
+                            </div>
+                        }>
+                            <PartnersMap
+                                partners={partners}
+                                onPartnerClick={setSelectedPartner}
+                            />
+                        </Suspense>
                     )}
                 </div>
             </div>

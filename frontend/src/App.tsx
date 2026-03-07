@@ -1,29 +1,38 @@
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/layout/Layout';
 import { Home } from './pages/Home';
 import { Serie } from './pages/Serie';
 import { Mouvement } from './pages/Mouvement';
-import { Cognisphere } from './pages/Cognisphere';
-import { ECHOLink } from './pages/ECHOLink';
-import PartnersPage from './pages/PartnersPage';
-
 import { Events } from './pages/Events';
 import { Resources } from './pages/Resources';
 import { Support } from './pages/Support';
 import { Contact } from './pages/Contact';
-import AdminDashboard from './pages/AdminDashboard';
-import AdminPartners from './pages/AdminPartners';
-import AdminEvents from './pages/AdminEvents';
-import AdminExports from './pages/AdminExports';
-import MyPartnerAccount from './pages/MyPartnerAccount';
-import { Login } from './pages/auth/Login';
-import { Register } from './pages/auth/Register';
-import { ForgotPassword } from './pages/auth/ForgotPassword';
-import { ResetPassword } from './pages/auth/ResetPassword';
-import { GoogleCallback } from './pages/auth/GoogleCallback';
 import { ProtectedRoute } from './features/auth/components/ProtectedRoute';
 import { useAuthStore } from './features/auth/store';
+
+// Lazy-loaded routes: admin, auth, protected pages, partners (heavy map)
+const Cognisphere = lazy(() => import('./pages/Cognisphere').then(m => ({ default: m.Cognisphere })));
+const ECHOLink = lazy(() => import('./pages/ECHOLink').then(m => ({ default: m.ECHOLink })));
+const PartnersPage = lazy(() => import('./pages/PartnersPage'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const AdminPartners = lazy(() => import('./pages/AdminPartners'));
+const AdminEvents = lazy(() => import('./pages/AdminEvents'));
+const AdminExports = lazy(() => import('./pages/AdminExports'));
+const MyPartnerAccount = lazy(() => import('./pages/MyPartnerAccount'));
+const Login = lazy(() => import('./pages/auth/Login').then(m => ({ default: m.Login })));
+const Register = lazy(() => import('./pages/auth/Register').then(m => ({ default: m.Register })));
+const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword').then(m => ({ default: m.ForgotPassword })));
+const ResetPassword = lazy(() => import('./pages/auth/ResetPassword').then(m => ({ default: m.ResetPassword })));
+const GoogleCallback = lazy(() => import('./pages/auth/GoogleCallback').then(m => ({ default: m.GoogleCallback })));
+
+function RouteLoader() {
+  return (
+    <div className="flex items-center justify-center min-h-[40vh]">
+      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-500" />
+    </div>
+  );
+}
 
 function App() {
   const checkSession = useAuthStore((s) => s.checkSession);
@@ -35,28 +44,30 @@ function App() {
   return (
     <Router>
       <Layout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/serie" element={<Serie />} />
-          <Route path="/mouvement" element={<Mouvement />} />
-          <Route path="/cognisphere" element={<ProtectedRoute><Cognisphere /></ProtectedRoute>} />
-          <Route path="/echolink" element={<ProtectedRoute><ECHOLink /></ProtectedRoute>} />
-          <Route path="/partenaires" element={<PartnersPage />} />
-          <Route path="/agenda" element={<Events />} />
-          <Route path="/ressources" element={<Resources />} />
-          <Route path="/soutenir" element={<Support />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
-          <Route path="/admin/partenaires" element={<ProtectedRoute requiredRole="admin"><AdminPartners /></ProtectedRoute>} />
-          <Route path="/admin/events" element={<ProtectedRoute requiredRole="admin"><AdminEvents /></ProtectedRoute>} />
-          <Route path="/admin/exports" element={<ProtectedRoute requiredRole="admin"><AdminExports /></ProtectedRoute>} />
-          <Route path="/mon-compte/partenaire" element={<ProtectedRoute><MyPartnerAccount /></ProtectedRoute>} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password/:token" element={<ResetPassword />} />
-          <Route path="/auth/google/success" element={<GoogleCallback />} />
-        </Routes>
+        <Suspense fallback={<RouteLoader />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/serie" element={<Serie />} />
+            <Route path="/mouvement" element={<Mouvement />} />
+            <Route path="/cognisphere" element={<ProtectedRoute><Cognisphere /></ProtectedRoute>} />
+            <Route path="/echolink" element={<ProtectedRoute><ECHOLink /></ProtectedRoute>} />
+            <Route path="/partenaires" element={<PartnersPage />} />
+            <Route path="/agenda" element={<Events />} />
+            <Route path="/ressources" element={<Resources />} />
+            <Route path="/soutenir" element={<Support />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/admin/partenaires" element={<ProtectedRoute requiredRole="admin"><AdminPartners /></ProtectedRoute>} />
+            <Route path="/admin/events" element={<ProtectedRoute requiredRole="admin"><AdminEvents /></ProtectedRoute>} />
+            <Route path="/admin/exports" element={<ProtectedRoute requiredRole="admin"><AdminExports /></ProtectedRoute>} />
+            <Route path="/mon-compte/partenaire" element={<ProtectedRoute><MyPartnerAccount /></ProtectedRoute>} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
+            <Route path="/auth/google/success" element={<GoogleCallback />} />
+          </Routes>
+        </Suspense>
       </Layout>
     </Router>
   );
