@@ -53,13 +53,6 @@ export const PartnerCard: React.FC<PartnerCardProps> = ({ partner, onClick }) =>
                 style={{ backgroundColor: catConfig.color, boxShadow: `0 0 10px ${catConfig.color}40` }}
             />
 
-            {/* Featured Badge */}
-            {partner.is_featured && (
-                <div className="absolute top-0 right-0 py-1 px-3 bg-echo-gold/20 text-echo-gold text-[10px] font-bold tracking-wider uppercase backdrop-blur-md rounded-bl-lg border-b border-l border-echo-gold/30">
-                    En vedette
-                </div>
-            )}
-
             <div className="p-5 flex-1 flex flex-col">
                 {/* Header: Logo & Name */}
                 <div className="flex items-start gap-4 mb-4">
