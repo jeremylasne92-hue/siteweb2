@@ -20,6 +20,22 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/jpeg" href="/logo-echo.jpg" />
+
+    <!-- Google Analytics (GA4) — cookieless mode for GDPR/CNIL compliance -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KHBWHQQF6W"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('consent', 'default', {
+        analytics_storage: 'denied',
+        ad_storage: 'denied'
+      });
+      gtag('config', 'G-KHBWHQQF6W', {
+        send_page_view: false,
+        anonymize_ip: true
+      });
+    </script>
   </head>
   <body>
     <div id="root"></div>
