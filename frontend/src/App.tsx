@@ -1,6 +1,7 @@
 import { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/layout/Layout';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { Home } from './pages/Home';
 import { Serie } from './pages/Serie';
 import { Mouvement } from './pages/Mouvement';
@@ -25,6 +26,7 @@ const Register = lazy(() => import('./pages/auth/Register').then(m => ({ default
 const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword').then(m => ({ default: m.ForgotPassword })));
 const ResetPassword = lazy(() => import('./pages/auth/ResetPassword').then(m => ({ default: m.ResetPassword })));
 const GoogleCallback = lazy(() => import('./pages/auth/GoogleCallback').then(m => ({ default: m.GoogleCallback })));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 function RouteLoader() {
   return (
@@ -44,30 +46,33 @@ function App() {
   return (
     <Router>
       <Layout>
-        <Suspense fallback={<RouteLoader />}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/serie" element={<Serie />} />
-            <Route path="/mouvement" element={<Mouvement />} />
-            <Route path="/cognisphere" element={<ProtectedRoute><Cognisphere /></ProtectedRoute>} />
-            <Route path="/echolink" element={<ProtectedRoute><ECHOLink /></ProtectedRoute>} />
-            <Route path="/partenaires" element={<PartnersPage />} />
-            <Route path="/agenda" element={<Events />} />
-            <Route path="/ressources" element={<Resources />} />
-            <Route path="/soutenir" element={<Support />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
-            <Route path="/admin/partenaires" element={<ProtectedRoute requiredRole="admin"><AdminPartners /></ProtectedRoute>} />
-            <Route path="/admin/events" element={<ProtectedRoute requiredRole="admin"><AdminEvents /></ProtectedRoute>} />
-            <Route path="/admin/exports" element={<ProtectedRoute requiredRole="admin"><AdminExports /></ProtectedRoute>} />
-            <Route path="/mon-compte/partenaire" element={<ProtectedRoute><MyPartnerAccount /></ProtectedRoute>} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password/:token" element={<ResetPassword />} />
-            <Route path="/auth/google/success" element={<GoogleCallback />} />
-          </Routes>
-        </Suspense>
+        <ErrorBoundary>
+          <Suspense fallback={<RouteLoader />}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/serie" element={<Serie />} />
+              <Route path="/mouvement" element={<Mouvement />} />
+              <Route path="/cognisphere" element={<ProtectedRoute><Cognisphere /></ProtectedRoute>} />
+              <Route path="/echolink" element={<ProtectedRoute><ECHOLink /></ProtectedRoute>} />
+              <Route path="/partenaires" element={<PartnersPage />} />
+              <Route path="/agenda" element={<Events />} />
+              <Route path="/ressources" element={<Resources />} />
+              <Route path="/soutenir" element={<Support />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/admin/partenaires" element={<ProtectedRoute requiredRole="admin"><AdminPartners /></ProtectedRoute>} />
+              <Route path="/admin/events" element={<ProtectedRoute requiredRole="admin"><AdminEvents /></ProtectedRoute>} />
+              <Route path="/admin/exports" element={<ProtectedRoute requiredRole="admin"><AdminExports /></ProtectedRoute>} />
+              <Route path="/mon-compte/partenaire" element={<ProtectedRoute><MyPartnerAccount /></ProtectedRoute>} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
+              <Route path="/auth/google/success" element={<GoogleCallback />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </ErrorBoundary>
       </Layout>
     </Router>
   );
