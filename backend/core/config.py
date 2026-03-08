@@ -32,6 +32,11 @@ class Settings:
     OAUTH_STATE_SECRET: str = os.environ.get("OAUTH_STATE_SECRET", "change-me-in-production")
     RECAPTCHA_SECRET_KEY: str = os.environ.get("RECAPTCHA_SECRET_KEY", "")
 
+    # Email (SendGrid)
+    SENDGRID_API_KEY: str = os.environ.get("SENDGRID_API_KEY", "")
+    EMAIL_FROM: str = os.environ.get("EMAIL_FROM", "noreply@mouvement-echo.fr")
+    EMAIL_FROM_NAME: str = os.environ.get("EMAIL_FROM_NAME", "Mouvement ECHO")
+
     # Environment
     ENVIRONMENT: str = os.environ.get("ENVIRONMENT", "development")
 
