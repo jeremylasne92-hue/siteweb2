@@ -30,6 +30,7 @@ class Settings:
 
     # Security
     OAUTH_STATE_SECRET: str = os.environ.get("OAUTH_STATE_SECRET", "change-me-in-production")
+    RECAPTCHA_SECRET_KEY: str = os.environ.get("RECAPTCHA_SECRET_KEY", "")
 
     # Environment
     ENVIRONMENT: str = os.environ.get("ENVIRONMENT", "development")

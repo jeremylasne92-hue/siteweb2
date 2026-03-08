@@ -103,13 +103,27 @@ async def login_local(request: Request, credentials: UserLoginLocal, response: R
 async def login(request: Request, credentials: UserLogin, response: Response, db: AsyncIOMotorDatabase = Depends(get_db)):
     """Login with username/password"""
     await check_rate_limit(db, request, "login", max_requests=10, window_minutes=15)
-    # TODO SECURITY: Implement server-side CAPTCHA verification (reCAPTCHA v3)
-    # Currently trusts client-side boolean - must validate with Google reCAPTCHA API in production
-    if not credentials.captcha_verified:
+    # Server-side reCAPTCHA v3 verification
+    if not credentials.captcha_token:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Captcha verification required"
+            detail="Captcha token required"
         )
+    recaptcha_secret = settings.RECAPTCHA_SECRET_KEY
+    if recaptcha_secret:
+        async with httpx.AsyncClient() as http_client:
+            recaptcha_resp = await http_client.post(
+                "https://www.google.com/recaptcha/api/siteverify",
+                data={"secret": recaptcha_secret, "response": credentials.captcha_token}
+            )
+            recaptcha_data = recaptcha_resp.json()
+            if not recaptcha_data.get("success") or recaptcha_data.get("score", 0) < 0.5:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Captcha verification failed"
+                )
+    else:
+        logger.warning("RECAPTCHA_SECRET_KEY not set — skipping server-side verification in dev")
     
     # Find user
     user_doc = await db.users.find_one({"username": credentials.username})

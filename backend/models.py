@@ -45,7 +45,7 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
     username: str
     password: str
-    captcha_verified: bool = False
+    captcha_token: str = ""
 
 
 class UserRegister(BaseModel):
