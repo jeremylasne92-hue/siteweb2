@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field, EmailStr
 from typing import Optional, Literal
 from datetime import datetime
 import uuid
+import secrets
 from enum import Enum
 
 
@@ -63,13 +64,13 @@ class UserLoginLocal(BaseModel):
 
 class UserSession(BaseModel):
     user_id: str
-    session_token: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    session_token: str = Field(default_factory=lambda: secrets.token_urlsafe(32))
     expires_at: datetime
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
 class PasswordResetToken(BaseModel):
-    token: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    token: str = Field(default_factory=lambda: secrets.token_urlsafe(32))
     user_id: str
     expires_at: datetime
     used: bool = False
@@ -192,7 +193,7 @@ class EventCreate(BaseModel):
 
 class Pending2FA(BaseModel):
     user_id: str
-    code: str  # 4-digit code
+    code: str  # 6-digit code
     attempts: int = 0
     expires_at: datetime
     created_at: datetime = Field(default_factory=datetime.utcnow)

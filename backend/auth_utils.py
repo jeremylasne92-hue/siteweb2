@@ -3,7 +3,6 @@ from jose import JWTError, jwt
 from datetime import datetime, timedelta
 import secrets
 import pyotp
-import random
 import string
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -30,8 +29,8 @@ def generate_2fa_secret() -> str:
 
 
 def generate_2fa_code() -> str:
-    """Generate 4-digit 2FA code"""
-    return ''.join(random.choices(string.digits, k=4))
+    """Generate 6-digit 2FA code using cryptographically secure random"""
+    return ''.join(secrets.choice(string.digits) for _ in range(6))
 
 
 def verify_totp_code(secret: str, code: str) -> bool:

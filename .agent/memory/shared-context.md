@@ -6,10 +6,10 @@
 
 ## 📋 État du Projet
 
-**Dernière mise à jour** : 2026-03-06
-**Phase actuelle** : Sprint 3 — Epic 3 en cours
-**Statut** : ✅ Opérationnel
-**Dernier milestone** : Story 3.1 (Formulaire Candidature Partenaire) done — Pillow + rate limit + emails
+**Dernière mise à jour** : 2026-03-08
+**Phase actuelle** : Post-Epics — Consolidation MVP (lancement 20 mars 2026)
+**Statut** : ✅ Opérationnel — 4/4 Epics terminés
+**Dernier milestone** : Consolidation sécurité (tokens crypto, 2FA 6 digits, rate limit verify-2fa, pages publiques CogniSphere/ECHOLink)
 
 ---
 
@@ -123,6 +123,8 @@ backend/
 
 | Date | Décision | Agent |
 |------|----------|-------|
+| 2026-03-08 | Sécurité tokens: 2FA 6 chiffres + secrets.choice, session/reset tokens secrets.token_urlsafe(32), rate limit /verify-2fa, pages CogniSphere/ECHOLink publiques | Claude Code (Opus 4.6) |
+| 2026-03-07 | Consolidation MVP: cookie-only auth, reCAPTCHA v3 server-side, secure cookies, 2FA logs nettoyés, ErrorBoundary, 404 page, SEO meta | Claude Code (Opus 4.6) |
 | 2026-03-07 | Story 4.4 done — Export CSV opt-in + code review (5 fixes: BOM UTF-8, to_list(None), ISO date, lien retour, test orphelin) — **Epic 4 DONE** | Claude Code (Opus 4.6) |
 | 2026-03-06 | Story 4.3 complétée — CRUD événements backend (5 endpoints + 5 tests) + AdminEvents.tsx + Events.tsx dynamique | Claude Code (Opus 4.6) |
 | 2026-03-06 | Stories 4.1 + 4.2 complétées — Dashboard admin hub + fix Accès Refusé + lien Header + 4.2 déjà implémentée | Claude Code (Opus 4.6) |
@@ -234,4 +236,6 @@ _Aucune spec en cours._
 
 - Plugin `pytest-recording` (vcrpy) incompatible avec urllib3 — utiliser `-p no:recording`
 - Frontend bundle > 500kB — code splitting recommandé (Epic 2+)
-- Routes protégées : `/cognisphere`, `/echolink`, `/admin` (admin), `/admin/partenaires` (admin), `/mon-compte/partenaire`
+- Routes protégées : `/admin` (admin), `/admin/partenaires` (admin), `/admin/events` (admin), `/admin/exports` (admin), `/mon-compte/partenaire`
+- Routes publiques (anciennement protégées) : `/cognisphere`, `/echolink`
+- Auth : cookie-only (httpOnly), pas de localStorage — `credentials: 'include'` sur tous les fetch

@@ -205,8 +205,11 @@ async def login(request: Request, credentials: UserLogin, response: Response, db
 
 
 @router.post("/verify-2fa")
-async def verify_2fa(user_id: str, code: str, response: Response, db: AsyncIOMotorDatabase = Depends(get_db)):
+async def verify_2fa(user_id: str, code: str, response: Response, request: Request, db: AsyncIOMotorDatabase = Depends(get_db)):
     """Verify 2FA code and create session"""
+    # Rate limit: max 5 attempts per 15 min per IP
+    await check_rate_limit(db, request, "verify-2fa", max_requests=5, window_minutes=15)
+
     # Find pending 2FA
     pending = await db.pending_2fa.find_one({"user_id": user_id})
     

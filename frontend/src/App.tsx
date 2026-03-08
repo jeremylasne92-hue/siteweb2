@@ -52,8 +52,8 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/serie" element={<Serie />} />
               <Route path="/mouvement" element={<Mouvement />} />
-              <Route path="/cognisphere" element={<ProtectedRoute><Cognisphere /></ProtectedRoute>} />
-              <Route path="/echolink" element={<ProtectedRoute><ECHOLink /></ProtectedRoute>} />
+              <Route path="/cognisphere" element={<Cognisphere />} />
+              <Route path="/echolink" element={<ECHOLink />} />
               <Route path="/partenaires" element={<PartnersPage />} />
               <Route path="/agenda" element={<Events />} />
               <Route path="/ressources" element={<Resources />} />
