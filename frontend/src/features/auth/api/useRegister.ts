@@ -1,6 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
 import { API_URL } from '../../../config/api';
-import { useAuthStore } from '../store';
 
 interface RegisterPayload {
     username: string;

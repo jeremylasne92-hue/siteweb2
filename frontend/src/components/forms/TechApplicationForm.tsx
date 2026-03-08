@@ -10,7 +10,7 @@ interface TechApplicationFormProps {
     accentHex: string;       // e.g. "#8B5CF6" or "#60A5FA"
 }
 
-export function TechApplicationForm({ project, accentColor, accentHex }: TechApplicationFormProps) {
+export function TechApplicationForm({ project, accentHex }: TechApplicationFormProps) {
     const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');

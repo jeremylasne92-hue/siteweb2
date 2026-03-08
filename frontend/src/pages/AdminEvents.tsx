@@ -4,7 +4,6 @@ import {
     RefreshCw, X, Save
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
-import { cn } from '../components/ui/Button';
 import { EVENTS_API } from '../config/api';
 
 interface EventItem {
