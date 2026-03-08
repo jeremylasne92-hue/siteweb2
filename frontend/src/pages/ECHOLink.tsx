@@ -1,4 +1,5 @@
 import { Network, Brain, Share2, Coins, ArrowRight, Lock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { TechApplicationForm } from '../components/forms/TechApplicationForm';
@@ -32,9 +33,11 @@ export function ECHOLink() {
                                 <Share2 className="mr-2" size={20} /> Rejoindre le Développement
                             </Button>
                         </a>
-                        <Button variant="secondary" size="lg">
-                            <Lock className="mr-2" size={18} /> Connexion Membre
-                        </Button>
+                        <Link to="/login">
+                            <Button variant="secondary" size="lg">
+                                <Lock className="mr-2" size={18} /> Connexion Membre
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </section>
@@ -100,9 +103,11 @@ export function ECHOLink() {
                             <p className="text-sm text-neutral-400 mb-4">
                                 Contribuez à un projet open-source à fort impact social. Remplissez le formulaire ci-dessous pour postuler.
                             </p>
-                            <Button variant="outline" size="sm" className="w-full border-echo-blueLight text-echo-blueLight hover:bg-echo-blueLight/10">
-                                Accéder au GitHub <ArrowRight size={16} className="ml-2" />
-                            </Button>
+                            <a href="https://github.com/MouvementECHO" target="_blank" rel="noopener noreferrer" className="block w-full">
+                                <Button variant="outline" size="sm" className="w-full border-echo-blueLight text-echo-blueLight hover:bg-echo-blueLight/10">
+                                    Accéder au GitHub <ArrowRight size={16} className="ml-2" />
+                                </Button>
+                            </a>
                         </Card>
                     </div>
 

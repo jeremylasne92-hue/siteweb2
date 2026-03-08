@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { Heart, Check, ChevronDown, ExternalLink } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { DONATION_URL } from '../config/donation';
 
 export function Support() {
+    const [openFaq, setOpenFaq] = useState<number | null>(null);
+
     const donationTiers = [
         {
             amount: "10€",
@@ -120,13 +123,18 @@ export function Support() {
                     <div className="space-y-4">
                         {faqs.map((faq, i) => (
                             <div key={i} className="bg-white/5 rounded-lg border border-white/5 overflow-hidden">
-                                <button className="w-full flex items-center justify-between p-6 text-left hover:bg-white/5 transition-colors">
+                                <button
+                                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                                    className="w-full flex items-center justify-between p-6 text-left hover:bg-white/5 transition-colors"
+                                >
                                     <span className="font-medium text-white">{faq.q}</span>
-                                    <ChevronDown className="w-5 h-5 text-neutral-500" />
+                                    <ChevronDown className={`w-5 h-5 text-neutral-500 transition-transform duration-200 ${openFaq === i ? 'rotate-180' : ''}`} />
                                 </button>
-                                <div className="px-6 pb-6 text-neutral-400 text-sm leading-relaxed">
-                                    {faq.a}
-                                </div>
+                                {openFaq === i && (
+                                    <div className="px-6 pb-6 text-neutral-400 text-sm leading-relaxed">
+                                        {faq.a}
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>

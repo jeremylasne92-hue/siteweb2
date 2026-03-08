@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Calendar, MapPin, ArrowRight, Clock, Loader2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { EVENTS_API } from '../config/api';
 
@@ -144,9 +145,11 @@ export function Events() {
 
                                 <div className="mt-auto pt-4 flex items-center justify-between border-t border-white/5">
                                     <span className="text-neutral-500 text-sm">Organisé par l'équipe ECHO</span>
-                                    <Button variant="outline" size="sm" className="group-hover:bg-echo-gold group-hover:text-black group-hover:border-echo-gold">
-                                        Réserver <ArrowRight className="w-4 h-4 ml-2" />
-                                    </Button>
+                                    <Link to="/contact">
+                                        <Button variant="outline" size="sm" className="group-hover:bg-echo-gold group-hover:text-black group-hover:border-echo-gold">
+                                            Réserver <ArrowRight className="w-4 h-4 ml-2" />
+                                        </Button>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
@@ -161,9 +164,11 @@ export function Events() {
                     <p className="text-neutral-400 max-w-2xl mx-auto mb-8">
                         Devenez ambassadeur ECHO et organisez un événement dans votre ville. Nous vous fournissons les outils nécessaires.
                     </p>
-                    <Button variant="primary" size="lg">
-                        Proposer un événement
-                    </Button>
+                    <Link to="/contact">
+                        <Button variant="primary" size="lg">
+                            Proposer un événement
+                        </Button>
+                    </Link>
                 </div>
             </section>
         </>

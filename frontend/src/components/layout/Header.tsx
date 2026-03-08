@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Search, User, Shield } from 'lucide-react';
+import { Menu, X, User, Shield } from 'lucide-react';
 import { cn, Button } from '../ui/Button';
 import { useAuthStore } from '../../features/auth/store';
 
@@ -60,10 +60,6 @@ export function Header() {
 
                 {/* Desktop Actions */}
                 <div className="hidden lg:flex items-center gap-4">
-                    <button className="text-white hover:text-echo-gold transition-colors">
-                        <Search size={20} />
-                    </button>
-                    <div className="h-4 w-px bg-white/20"></div>
                     {user?.role === 'admin' && (
                         <Link to="/admin">
                             <Button variant="ghost" size="sm" className="gap-2 text-echo-gold">

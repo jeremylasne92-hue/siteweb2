@@ -36,15 +36,17 @@ export function Cognisphere() {
                                 <Sparkles className="mr-2" size={20} /> Rejoindre le programme bêta
                             </Button>
                         </a>
-                        <Button variant="secondary" size="lg">
-                            <BookOpen className="mr-2" size={18} /> En savoir plus
-                        </Button>
+                        <a href="#le-constat">
+                            <Button variant="secondary" size="lg">
+                                <BookOpen className="mr-2" size={18} /> En savoir plus
+                            </Button>
+                        </a>
                     </div>
                 </div>
             </section>
 
             {/* Le Problème */}
-            <section className="py-24 relative z-10">
+            <section id="le-constat" className="py-24 relative z-10">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-16">
                         <span className="text-violet-400 uppercase tracking-widest text-sm font-bold mb-4 block">Le constat</span>

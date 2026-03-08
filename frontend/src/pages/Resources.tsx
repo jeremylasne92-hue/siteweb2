@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { Search, Download, FileText, Video, BookOpen, ExternalLink, Filter } from 'lucide-react';
+import { Download, FileText, Video, BookOpen, ExternalLink, Filter } from 'lucide-react';
 import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
 import { Card } from '../components/ui/Card';
 
 export function Resources() {
@@ -73,18 +72,10 @@ export function Resources() {
             <section className="relative py-20 bg-echo-darker border-b border-white/5">
                 <div className="container mx-auto px-4 max-w-4xl text-center">
                     <h1 className="text-4xl md:text-6xl font-serif text-white mb-6">Médiathèque</h1>
-                    <p className="text-xl text-neutral-400 mb-8 max-w-2xl mx-auto">
+                    <p className="text-xl text-neutral-400 max-w-2xl mx-auto">
                         Accédez à l'ensemble nos ressources pour comprendre, se former et agir.
                         Libre d'accès et de partage.
                     </p>
-
-                    <div className="relative max-w-xl mx-auto">
-                        <Input
-                            placeholder="Rechercher une ressource..."
-                            className="pl-12 bg-white/5 border-white/10 text-lg py-6 rounded-full"
-                        />
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500 w-5 h-5" />
-                    </div>
                 </div>
             </section>
 

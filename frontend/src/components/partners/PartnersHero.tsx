@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { ArrowRight, Map } from 'lucide-react';
 
@@ -39,9 +40,11 @@ export const PartnersHero: React.FC<PartnersHeroProps> = ({ onApplyClick }) => {
                             <span>Devenir partenaire</span>
                             <ArrowRight className="w-4 h-4" />
                         </Button>
-                        <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                            Soutenir le projet
-                        </Button>
+                        <Link to="/soutenir" className="w-full sm:w-auto">
+                            <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                                Soutenir le projet
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </div>
