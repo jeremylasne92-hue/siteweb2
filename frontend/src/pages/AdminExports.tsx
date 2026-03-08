@@ -9,8 +9,6 @@ export default function AdminExports() {
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const token = localStorage.getItem('token') || '';
-
     const handleDownload = async () => {
         setDownloading(true);
         setError(null);
@@ -18,7 +16,7 @@ export default function AdminExports() {
 
         try {
             const res = await fetch(`${EPISODES_API}/admin/export-optins`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                credentials: 'include',
             });
 
             if (res.status === 401 || res.status === 403) {

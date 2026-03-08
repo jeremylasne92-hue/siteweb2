@@ -5,7 +5,7 @@ import { useAuthStore } from '../../features/auth/store';
 export const GoogleCallback = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    const setToken = useAuthStore((state) => state.setToken);
+    const setUser = useAuthStore((state) => state.setUser);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -28,7 +28,7 @@ export const GoogleCallback = () => {
                 if (response.ok) {
                     const userData = await response.json();
                     // Store a session indicator (not the actual JWT, which stays httpOnly)
-                    setToken(userData.id);
+                    setUser(userData);
                     navigate('/', { replace: true });
                 } else {
                     setError("Session invalide. Veuillez réessayer.");
@@ -41,7 +41,7 @@ export const GoogleCallback = () => {
         };
 
         verifySession();
-    }, [searchParams, navigate, setToken]);
+    }, [searchParams, navigate, setUser]);
 
     return (
         <div className="flex min-h-[60vh] flex-col items-center justify-center">

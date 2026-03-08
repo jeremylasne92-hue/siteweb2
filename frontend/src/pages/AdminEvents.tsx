@@ -42,13 +42,11 @@ export default function AdminEvents() {
     const [saving, setSaving] = useState(false);
     const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
-    const token = localStorage.getItem('token') || '';
-
     const fetchEvents = async () => {
         setIsLoading(true);
         try {
             const res = await fetch(`${EVENTS_API}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                credentials: 'include',
             });
             if (res.status === 401 || res.status === 403) {
                 setAuthError(true);
@@ -82,8 +80,8 @@ export default function AdminEvents() {
 
             const res = await fetch(url, {
                 method,
+                credentials: 'include',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(payload),
@@ -118,7 +116,7 @@ export default function AdminEvents() {
         try {
             const res = await fetch(`${EVENTS_API}/${id}`, {
                 method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` },
+                credentials: 'include',
             });
             if (res.ok) {
                 setDeleteConfirmId(null);

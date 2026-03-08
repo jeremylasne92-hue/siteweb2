@@ -78,8 +78,6 @@ export default function MyPartnerAccount() {
 
     const [addressSuggestions, setAddressSuggestions] = useState<any[]>([]);
 
-    const token = localStorage.getItem('token') || '';
-
     useEffect(() => {
         fetchPartner();
     }, []);
@@ -89,7 +87,7 @@ export default function MyPartnerAccount() {
         setError(null);
         try {
             const res = await fetch(`${API_BASE}/me/account`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                credentials: 'include',
             });
             if (res.status === 401) {
                 setError('Vous devez être connecté pour accéder à cette page.');
@@ -165,7 +163,7 @@ export default function MyPartnerAccount() {
 
             const res = await fetch(`${API_BASE}/me/account`, {
                 method: 'PUT',
-                headers: { 'Authorization': `Bearer ${token}` },
+                credentials: 'include',
                 body: formData,
             });
             if (res.ok) {

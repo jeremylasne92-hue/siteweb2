@@ -58,20 +58,14 @@ export default function AdminPartners() {
     const [rejectReason, setRejectReason] = useState('');
     const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-    const token = localStorage.getItem('token') || '';
-
     const fetchPartners = async () => {
         setIsLoading(true);
         try {
-            if (!token) {
-                setAuthError(true);
-                return;
-            }
             const url = statusFilter === 'all'
                 ? `${API_BASE}/admin/all`
                 : `${API_BASE}/admin/all?status=${statusFilter}`;
             const res = await fetch(url, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                credentials: 'include',
             });
             if (res.status === 401 || res.status === 403) {
                 setAuthError(true);
@@ -94,7 +88,7 @@ export default function AdminPartners() {
         try {
             const res = await fetch(`${API_BASE}/admin/${partnerId}/approve`, {
                 method: 'PUT',
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` }
+                credentials: 'include',
             });
             if (res.ok) {
                 await fetchPartners();
@@ -112,9 +106,9 @@ export default function AdminPartners() {
         try {
             const res = await fetch(`${API_BASE}/admin/${partnerId}/reject`, {
                 method: 'PUT',
+                credentials: 'include',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ reason: rejectReason })
             });
@@ -135,7 +129,7 @@ export default function AdminPartners() {
         try {
             const res = await fetch(`${API_BASE}/admin/${partnerId}/feature?is_featured=${featured}`, {
                 method: 'PUT',
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` }
+                credentials: 'include',
             });
             if (res.ok) {
                 await fetchPartners();

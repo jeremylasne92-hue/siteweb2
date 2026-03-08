@@ -138,33 +138,30 @@ export function Serie() {
     const [optinLoading, setOptinLoading] = useState(false);
     const navigate = useNavigate();
     const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-    const token = useAuthStore((s) => s.token);
 
     // Fetch user opt-ins on mount (if authenticated)
     useEffect(() => {
-        if (!isAuthenticated || !token) return;
+        if (!isAuthenticated) return;
         fetch(`${API_URL}/episodes/opt-in/me`, {
             credentials: 'include',
-            headers: { 'Authorization': `Bearer ${token}` },
         })
             .then((res) => res.ok ? res.json() : [])
             .then(setMyOptins)
             .catch(() => {});
-    }, [isAuthenticated, token]);
+    }, [isAuthenticated]);
 
     const isOptedIn = useCallback((episodeIndex: number) => {
         return myOptins.some((o) => o.season === 1 && o.episode === episodeIndex + 1);
     }, [myOptins]);
 
     const handleOptIn = async (episodeIndex: number) => {
-        if (!token || optinLoading) return;
+        if (!isAuthenticated || optinLoading) return;
         setOptinLoading(true);
         try {
             const res = await fetch(`${API_URL}/episodes/opt-in`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ season: 1, episode: episodeIndex + 1 }),

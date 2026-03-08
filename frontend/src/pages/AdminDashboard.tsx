@@ -9,13 +9,11 @@ import { PARTNERS_API } from '../config/api';
 export default function AdminDashboard() {
     const [pendingCount, setPendingCount] = useState<number | null>(null);
     const [totalCount, setTotalCount] = useState<number | null>(null);
-    const token = localStorage.getItem('token') || '';
-
     useEffect(() => {
         const fetchStats = async () => {
             try {
                 const res = await fetch(`${PARTNERS_API}/admin/all`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    credentials: 'include',
                 });
                 if (res.ok) {
                     const partners = await res.json();
@@ -27,7 +25,7 @@ export default function AdminDashboard() {
             }
         };
         fetchStats();
-    }, [token]);
+    }, []);
 
     const sections = [
         {
