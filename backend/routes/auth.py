@@ -111,17 +111,22 @@ async def login(request: Request, credentials: UserLogin, response: Response, db
         )
     recaptcha_secret = settings.RECAPTCHA_SECRET_KEY
     if recaptcha_secret:
-        async with httpx.AsyncClient() as http_client:
-            recaptcha_resp = await http_client.post(
-                "https://www.google.com/recaptcha/api/siteverify",
-                data={"secret": recaptcha_secret, "response": credentials.captcha_token}
-            )
-            recaptcha_data = recaptcha_resp.json()
-            if not recaptcha_data.get("success") or recaptcha_data.get("score", 0) < 0.5:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Captcha verification failed"
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as http_client:
+                recaptcha_resp = await http_client.post(
+                    "https://www.google.com/recaptcha/api/siteverify",
+                    data={"secret": recaptcha_secret, "response": credentials.captcha_token}
                 )
+                recaptcha_data = recaptcha_resp.json()
+                if not recaptcha_data.get("success") or recaptcha_data.get("score", 0) < 0.5:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="Captcha verification failed"
+                    )
+        except HTTPException:
+            raise
+        except Exception:
+            logger.error("reCAPTCHA API unreachable — allowing login")
     else:
         logger.warning("RECAPTCHA_SECRET_KEY not set — skipping server-side verification in dev")
     
@@ -195,7 +200,6 @@ async def login(request: Request, credentials: UserLogin, response: Response, db
             "role": user.role,
             "picture": user.picture
         },
-        "session_token": session.session_token,
         "requires_2fa": False
     }
 
@@ -259,10 +263,7 @@ async def verify_2fa(user_id: str, code: str, response: Response, db: AsyncIOMot
         samesite="lax"
     )
 
-    return {
-        "verified": True,
-        "session_token": session.session_token
-    }
+    return {"verified": True}
 
 
 @router.get("/google/login")
@@ -356,7 +357,12 @@ async def logout(response: Response, current_user: User = Depends(get_current_us
     await db.user_sessions.delete_many({"user_id": current_user.id})
     
     # Clear cookie
-    response.delete_cookie("session_token")
+    response.delete_cookie(
+        "session_token",
+        httponly=True,
+        secure=settings.is_production,
+        samesite="lax"
+    )
     
     return {"message": "Logged out successfully"}
 
