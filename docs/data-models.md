@@ -58,6 +58,16 @@
 | `expires_at` | `datetime` | Expiration (10 min) |
 | `created_at` | `datetime` | — |
 
+### AnalyticsEvent
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `id` | `str` | UUID auto |
+| `category` | `str` | Catégorie de l'event (ex: "gamification") |
+| `action` | `str` | Action réalisée (ex: "step_2_reached") |
+| `path` | `str` | Chemin URL courant |
+| `created_at` | `datetime` | — |
+
 ---
 
 ## Modèles Étendus (`models_extended.py`)

@@ -22,6 +22,10 @@ Les endpoints protégés utilisent des sessions via cookies (`session_token`) ou
 | GET | `/auth/me` | ✅ User | Infos utilisateur courant |
 | DELETE | `/auth/user/{user_id}` | ✅ User (self) | Supprimer son propre compte |
 | POST | `/auth/logout` | ✅ User | Déconnexion (invalide session) |
+| POST | `/auth/forgot-password` | — | Demande de réinitialisation de mot de passe |
+| GET | `/auth/reset-password/{token}` | — | Vérifier la validité du token |
+| POST | `/auth/reset-password/{token}` | — | Effectuer le reset avec un nouveau mot de passe |
+| GET | `/auth/admin/export-users` | ✅ Admin | Exporter la CSV de tous les utilisateurs |
 
 **Register Request:** `{ username, email, password, enable_2fa? }`
 **Login Request:** `{ username, password, captcha_verified }`
@@ -122,4 +126,14 @@ Les endpoints protégés utilisent des sessions via cookies (`session_token`) ou
 
 ---
 
-## Total : 31 endpoints API
+## Analytique (`/api/analytics`)
+
+| Méthode | Endpoint | Auth | Description |
+|---------|----------|------|-------------|
+| POST | `/analytics/events` | — | Enregistrement événementiel RGPD (Supporte SendBeacon) |
+
+**Event Model:** `{ category, action, path }` (L'IP et l'Identity ne sont ni traitées ni persistées)
+
+---
+
+## Total : 36 endpoints API

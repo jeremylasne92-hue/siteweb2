@@ -1,106 +1,35 @@
-# Mouvement ECHO — Vue d'ensemble du Projet
+# Projet Mouvement ECHO — Vue d'ensemble (Overview)
 
-## Résumé
+## Résumé du Projet
+**Mouvement ECHO** est une plateforme web citoyenne destinée à fédérer un écosystème d'acteurs de la transition autour d'une websérie documentaire (ECHO).
+Le lancement officiel est planifié pour le **20 mars 2026**.
+La plateforme permet de visionner des documentaires interactifs (Cogniphère), de soutenir financièrement le mouvement, et de rejoindre un incubateur idéologique et partenarial (ECHOsystem).
 
-**Mouvement ECHO** est une plateforme web complète dédiée à la websérie sociale, éducative et interactive **ECHO**, inspirée de La Divine Comédie de Dante. Le projet comprend un **frontend React** et un **backend FastAPI** connecté à **MongoDB**.
+## Classification Technique
+- **Type d'Application** : Web Application Full-Stack Asynchrone
+- **Type de Dépôt** : Monorepo (Multi-Parties Frontend / Backend)
+- **Modèle de Navigation** : Single Path Application (SPA)
 
-La plateforme permet aux utilisateurs de découvrir la série (3 saisons, 33 épisodes), de visionner des épisodes avec suivi de progression, de gérer leur compte (authentification classique, Google OAuth, 2FA), et d'explorer un écosystème de partenaires et ressources. Un panel administrateur complet permet la gestion des contenus.
+## Matrice Technologique (Stack Summary)
+| Couche | Technologie Principale | Fonction |
+|--------|------------------------|----------|
+| **Frontend** | React 19 + TypeScript | Interface Utilisateur réactive et typée |
+| **Styling** | Tailwind CSS 4 | Système de Design et Tokens "Nature" |
+| **Backend API** | FastAPI 0.110 (Python) | Serveur REST Haute-Efficacité asynchrone |
+| **Base de Données** | MongoDB (NoSQL) | Stockage Documentaire Flexible (via Motor) |
+| **Authentication** | Passlib / JWT / PyOTP | Gestion sécurisée et cookies HttpOnly |
+| **Bundler** | Vite 7 | Outil de Build Haute-Vitesse |
 
-## Stack Technique
+## Navigation dans la Documentation (Index Relatif)
 
-| Catégorie | Technologie | Version | Justification |
-|-----------|------------|---------|---------------|
-| **Frontend Framework** | React | 19.2.0 | SPA moderne avec composants fonctionnels |
-| **Langage Frontend** | TypeScript | 5.9.3 | Typage statique pour la robustesse |
-| **Build Tool** | Vite | 7.2.4 | Build rapide et HMR instantané |
-| **CSS Framework** | Tailwind CSS | 4.1.18 | Design system utility-first |
-| **Routing** | React Router DOM | 7.11.0 | Navigation SPA |
-| **Animations** | Framer Motion | 12.23.26 | Animations fluides |
-| **Icônes** | Lucide React | 0.562.0 | Icônes SVG modulaires |
-| **Backend Framework** | FastAPI | 0.110.1 | API REST asynchrone performante |
-| **Langage Backend** | Python | 3.11+ | Asyncio natif |
-| **Base de données** | MongoDB | — | NoSQL flexible via Motor (async) |
-| **Driver DB** | Motor | 3.3.1 | Driver MongoDB asynchrone |
-| **Auth** | PyJWT + Passlib + bcrypt | — | Sessions + hachage sécurisé |
-| **OAuth** | httpx + Emergent | — | Google OAuth via Emergent |
-| **2FA** | pyotp | 2.9.0 | TOTP pour authentification à deux facteurs |
-| **Validation** | Pydantic | 2.12.3 | Validation des données et sérialisation |
+Voici la carte des documents techniques générés pour encadrer ce projet :
 
-## Architecture
-
-- **Type de repository** : Multi-part (frontend + backend séparés)
-- **Pattern architectural** : Client-serveur REST avec SPA
-- **Frontend** : Application React SPA avec composant-based architecture
-- **Backend** : API REST FastAPI avec routeurs modulaires
-- **Base de données** : MongoDB NoSQL (collections auto-créées)
-- **Communication** : API REST JSON via `/api/*`
-
-## Structure du Repository
-
-```
-sitewebecho by emergent/
-├── frontend/          # Application React SPA
-│   ├── src/
-│   │   ├── components/   # Composants réutilisables (layout + ui)
-│   │   ├── pages/        # Pages de l'application (10 pages)
-│   │   ├── hooks/        # Custom hooks React
-│   │   ├── services/     # Services/API clients
-│   │   └── assets/       # Assets statiques
-│   ├── package.json
-│   └── vite.config.ts
-├── backend/           # API FastAPI
-│   ├── routes/           # Routeurs API modulaires (7 modules)
-│   ├── models.py         # Modèles Pydantic principaux
-│   ├── models_extended.py # Modèles étendus (Thematic, Resource, Actor)
-│   ├── auth_utils.py     # Utilitaires d'authentification
-│   ├── email_service.py  # Service email (stub)
-│   ├── server.py         # Point d'entrée FastAPI
-│   └── requirements.txt
-├── docs/              # Documentation projet (cette documentation)
-└── _bmad/             # Configuration BMAD
-```
-
-## Pages Publiques
-
-| Route | Page | Description |
-|-------|------|-------------|
-| `/` | Accueil | Hero, 3 piliers (Informer/Fédérer/Agir), statistiques |
-| `/serie` | La Série | Synopsis, prologue vidéo, 3 saisons avec épisodes, 14 personnages |
-| `/mouvement` | Le Mouvement | Timeline en arbre, 3 phases, équipe ECHO |
-| `/cognisphere` | Cogniphère | Outil d'apprentissage IA (répétition espacée, quiz IA, connexion apprenants) |
-| `/echolink` | ECHOLink | Plateforme interactive (en développement), vision |
-| `/partenaires` | ECHOSystem | Catégories de partenaires avec badges de statut |
-| `/agenda` | Événements | Listing événements avec filtres, réservation |
-| `/ressources` | Ressources | Médiathèque avec filtres et recherche |
-| `/soutenir` | Soutenir | 3 paliers de dons, barre de progression, FAQ |
-| `/contact` | Contact | Formulaire de contact avec confirmation, coordonnées |
-
-## Collections MongoDB
-
-| Collection | Description |
-|-----------|-------------|
-| `users` | Comptes utilisateurs (id, username, email, role, 2FA) |
-| `episodes` | Épisodes de la série (saison, numéro, titre, vidéo) |
-| `thematics` | Thématiques par épisode (6 types) |
-| `resources` | Ressources par épisode (vidéo, livre, article, podcast) |
-| `actors` | Acteurs de la série |
-| `video_progress` | Progression de visionnage par utilisateur |
-| `user_sessions` | Sessions de connexion |
-| `pending_2fa` | Codes 2FA en attente de vérification |
-
-## Pour commencer
-
-### Frontend
-```bash
-cd frontend
-npm install
-npm run dev    # → http://localhost:5173
-```
-
-### Backend
-```bash
-cd backend
-pip install -r requirements.txt
-# Configurer .env (MONGO_URL, DB_NAME, CORS_ORIGINS)
-uvicorn server:app --reload
-```
+- 📐 **[Architecture Globale](architecture.md)** : Vue systémique de l'application et de sa sécurité.
+- 📦 **[Architecture Patterns](architecture-patterns.md)** : Modèles de flux de données (MVC, DTO...).
+- 🔗 **[Architecture d'Intégration](integration-architecture.md)** : Les contrats entre le proxy Vite et l'API Python.
+- 🛠️ **[Guide de Développement](development-guide.md)** : Prérequis Node, Python et commandes de lancement.
+- 📝 **[Stack Technologique Complexe](technology-stack.md)** : Versions de l'ensemble des dépendances.
+- 🌳 **[Arbre des Sources](source-tree-analysis.md)** : Carte des dossiers vitaux `src/` et `routes/`.
+- 🔌 **[Contrats API REST](api-contracts.md)** : Documentation des 36 requêtes réseaux du Backend.
+- 🗄️ **[Modèles de Données](data-models.md)** : Schémas Pydantic / Entités MongoDB de la base NoSQL.
+- 🎨 **[Inventaire UI](component-inventory.md)** : Registre des 17 blocs visuels (Génération, SEO, Layouts).

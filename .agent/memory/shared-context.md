@@ -6,10 +6,10 @@
 
 ## 📋 État du Projet
 
-**Dernière mise à jour** : 2026-03-08
-**Phase actuelle** : Post-Epics — Consolidation MVP (lancement 20 mars 2026)
-**Statut** : ✅ Opérationnel — 4/4 Epics terminés
-**Dernier milestone** : Consolidation sécurité (tokens crypto, 2FA 6 digits, rate limit verify-2fa, pages publiques CogniSphere/ECHOLink)
+**Dernière mise à jour** : 2026-03-11
+**Phase actuelle** : Post-Epics — Pré-lancement (lancement 20 mars 2026)
+**Statut** : ✅ Opérationnel — 4/4 Epics terminés + RGPD complet
+**Dernier milestone** : RGPD compliance (12 tâches : 3 pages légales, bannière cookies, consentement formulaires, export données, suppression compte, désinscription emails)
 
 ---
 
@@ -88,6 +88,10 @@ backend/
 | Google Callback | `/auth/google/success` | ✅ Complète |
 | Admin Partenaires | `/admin/partenaires` | ✅ Complète |
 | Mon Compte Partenaire | `/mon-compte/partenaire` | ✅ Complète |
+| Politique de Confidentialité | `/politique-de-confidentialite` | ✅ Complète (RGPD) |
+| Mentions Légales | `/mentions-legales` | ✅ Complète (RGPD) |
+| CGU | `/cgu` | ✅ Complète (RGPD) |
+| Admin Exports | `/admin/exports` | ✅ Complète |
 
 ---
 
@@ -127,6 +131,10 @@ backend/
 
 | Date | Décision | Agent |
 |------|----------|-------|
+| 2026-03-11 | RGPD compliance complète : 3 pages légales (confidentialité, mentions légales, CGU) + bannière cookies (localStorage + gtag consent) + checkboxes consentement sur 3 formulaires + endpoint export données GET /me/export + UI suppression/export sur MyPartnerAccount + champ email_opt_out + endpoint unsubscribe + lien désinscription emails. 51 tests backend OK, build frontend OK. | Claude Code (Opus 4.6) |
+| 2026-03-11 | Admin CSV exports : 2 nouveaux endpoints (GET /auth/admin/export-users, GET /partners/admin/export) + refonte AdminExports.tsx avec 3 cartes export. | Claude Code (Opus 4.6) |
+| 2026-03-11 | Fix logo partenaire admin : ajout proxy Vite /api → localhost:8000 pour résoudre les URLs relatives des uploads en dev. | Claude Code (Opus 4.6) |
+| 2026-03-11 | Workflow `/document-project` (Niveau 3: Exhaustive Scan) exécuté. Recréation indexée de 10 fichiers techniques d'architecture, intégration, et modèles. | Antigravity (Gemini) |
 | 2026-03-11 | SEO OpenGraph: Installation React Helmet Async, injection dynamique du composant `<SEO>` sur Home, Serie, Mouvement, Partners, Support et Contact. | Antigravity (Gemini) |
 | 2026-03-11 | Micro-Analytique RGPD: Tracking cookieless en `navigator.sendBeacon` sur le FE. API `202 Accepted` MongoDB. | Antigravity (Gemini) |
 | 2026-03-11 | Admin: édition partenaire (tous champs) + masquer/réactiver (suspend) + bouton logout Header (menu déroulant utilisateur) | Claude Code (Opus 4.6) |
@@ -163,6 +171,10 @@ backend/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-11 | 🔴 MAJEUR | RGPD Compliance (12 tâches, 5 blocs) | ~2h (Frontend + Backend) | Claude Code (Opus 4.6) |
+| 2026-03-11 | 🟡 STANDARD | Admin CSV Exports (users + partners) | ~20min (Backend + Frontend) | Claude Code (Opus 4.6) |
+| 2026-03-11 | 🟢 HOTFIX | Fix logo partenaire (Vite proxy) | ~10min | Claude Code (Opus 4.6) |
+| 2026-03-11 | 🔴 MAJEUR | Scan Documentaire Exhaustif (\`/document-project\`) | ~45min (Docs & Archs) | Antigravity (Gemini) |
 | 2026-03-11 | 🟡 STANDARD | Proposition 4 (SEO OpenGraph) | ~30min (Frontend Vite) | Antigravity (Gemini) |
 | 2026-03-11 | 🟡 STANDARD | Proposition 3 (Micro-Analytique RGPD) | ~40min (Backend ASYNC + Frontend CTA hooks) | Antigravity (Gemini) |
 | 2026-03-11 | 🟡 STANDARD | Admin Edit/Hide Partner + Logout | ~30min (Backend + Frontend) | Claude Code (Opus 4.6) |
@@ -252,3 +264,30 @@ _Aucune spec en cours._
 - Routes protégées : `/admin` (admin), `/admin/partenaires` (admin), `/admin/events` (admin), `/admin/exports` (admin), `/mon-compte/partenaire`
 - Routes publiques (anciennement protégées) : `/cognisphere`, `/echolink`
 - Auth : cookie-only (httpOnly), pas de localStorage — `credentials: 'include'` sur tous les fetch
+- RGPD : bannière cookies (localStorage `echo-cookie-consent` + gtag consent API), consentement formulaires, export/suppression données, désinscription emails
+- Vite proxy : `/api` → `localhost:8000` en dev (vite.config.ts)
+
+---
+
+## 📋 Backlog Pré-Lancement
+
+| # | Tâche | Priorité | Statut |
+|---|-------|----------|--------|
+| 1 | ~~RGPD compliance~~ | Critique | ✅ Done |
+| 2 | Vue admin candidatures techniques (collection `tech_candidatures`) | Haute | À faire |
+| 3 | Admin événements : drag & drop image + autocomplétion adresse | Moyenne | À faire |
+| 4 | Vérifier tous les parcours utilisateurs et boutons | Haute | À faire |
+| 5 | Design responsive mobile | Haute | À faire |
+| 6 | Formulaire d'adhésion membre | Moyenne | À faire |
+| 7 | Page profil utilisateur | Moyenne | À faire |
+| 8 | Page Soutenir avec nouveaux niveaux | Basse | À faire |
+| 9 | Modifier pages contenu (Ressources, Mouvement, CogniSphère, ECHOLink) | Moyenne | À faire |
+| 10 | Modifier formulaires candidature | Moyenne | À faire |
+| 11 | Modifier images personnages | Basse | À faire |
+| 12 | Corriger logo ECHO série | Basse | À faire |
+| 13 | Nouvelle charte graphique | Basse | À faire |
+| 14 | Configurer SendGrid en production | Haute | À faire |
+| 15 | Liens sociaux (12 href="#") — URLs à fournir | Moyenne | À faire |
+| 16 | Vérifier la barre en bas (footer) avec les liens | Moyenne | À faire |
+| 17 | Rédiger et compléter la FAQ | Moyenne | À faire |
+| 18 | Dashboard partenaire avec métriques (clics site, etc.) | Moyenne | À faire |

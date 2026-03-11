@@ -1,143 +1,51 @@
-# Architecture — Frontend (React/TypeScript)
+# Architecture — Mouvement ECHO
 
-## Vue d'ensemble
+Ce document détaille l'architecture logicielle globale du projet Mouvement ECHO.
 
-Application monopage (SPA) React 19 avec Vite 7 comme build tool. L'architecture est basée sur une séparation pages/composants avec un design system Tailwind CSS 4 personnalisé.
+## 1. Topologie Matérielle et Réseau
 
-## Pattern Architectural
+L'application suit une structure **Client-Serveur asynchrone** avec un déploiement découpé :
+- Une **Single Page Application (SPA)** React livrée sous forme de fichiers statiques optimisés via un CDN web (Webstrator ou Vercel/Netlify).
+- Un **Serveur d'API REST** hébergé sur une instance conteneurisée ou VPS, exécutant FastAPI (Python) via Gunicorn/Uvicorn.
+- Une **Base de Données MongoDB** orientée document NoSQL, sécurisée hors des accès web frontaux.
 
-**Component-Based Architecture** avec routage déclaratif React Router DOM v7.
+## 2. Découpage du Monorepo
 
-```
-main.tsx (entry point)
-  └─ App.tsx (Router + Routes)
-       └─ Layout (Header + main + Footer)
-            └─ Pages (10 pages)
-                 └─ Components (UI + Layout)
-```
-
-## Design System ECHO
-
-### Palette de couleurs (`index.css` @theme)
-
-| Token | Valeur | Usage |
-|-------|--------|-------|
-| `echo-dark` | `#0A0A0A` | Background principal |
-| `echo-darker` | `#121212` | Backgrounds secondaires |
-| `echo-gold` | `#D4AF37` | Accent principal, CTA |
-| `echo-goldLight` | `#FFD700` | Hover accents dorés |
-| `echo-red` | `#8B0000` | Saison 1 (L'Enfer) |
-| `echo-redLight` | `#DC143C` | Accent rouge clair |
-| `echo-blue` | `#1E3A8A` | Saison 3 (Le Paradis) |
-| `echo-blueLight` | `#3B82F6` | ECHOLink, tech |
-| `echo-green` | `#065F46` | Saison 2 (Le Purgatoire) |
-| `echo-greenLight` | `#10B981` | ECHOSystem, nature |
-| `echo-text` | `#FFFFFF` | Texte principal |
-| `echo-textMuted` | `#9CA3AF` | Texte secondaire |
-
-### Typographie
-
-- **Serif** : Cinzel, Playfair Display → titres (h1-h6)
-- **Sans-serif** : Inter, Poppins → corps de texte
-
-### Classes utilitaires
-
-- `.glass-panel` : Effet glassmorphism (backdrop-blur, border semi-transparent)
-- `.text-shadow` / `.text-glow` : Ombres textuelles
-- Animations : `fadeIn` (1s), `slideUp` (0.8s)
-
-## Composants
-
-### Layout (3)
-- **Layout** : Wrapper flex-col min-h-screen (Header + main + Footer)
-- **Header** : Barre fixe avec scroll detection, nav desktop/mobile, logo, actions (search, login, soutenir)
-- **Footer** : 5 colonnes (brand + navigation + ressources + légal), réseaux sociaux
-
-### UI (4)
-- **Button** : 4 variants (primary/secondary/outline/ghost), 3 tailles, forwardRef, loading state
-- **Card** : 3 variants (default/glass/solid), hover effects
-- **Input** : Label + error support, focus ring
-- **Modal** : Overlay backdrop-blur, body scroll lock, fermeture par clic extérieur
-
-## Dépendances clés
-
-- `clsx` + `tailwind-merge` : Composition de classes CSS
-- `framer-motion` : Animations (utilisé dans certaines pages)
-- `lucide-react` : Bibliothèque d'icônes (20+ icônes utilisées)
-
-## État & Navigation
-
-- **Pas de state management global** (pas de Redux/Context)
-- **État local** : `useState` au niveau des pages (filtres, tabs, modals)
-- **Navigation** : React Router DOM avec `Link` et `useLocation`
-- **SEO** : Meta tags dynamiques dans Serie.tsx via `useEffect`
-
----
-
-# Architecture — Backend (FastAPI/Python)
-
-## Vue d'ensemble
-
-API REST asynchrone FastAPI avec MongoDB via Motor (driver async). Architecture modulaire avec routeurs séparés par domaine.
-
-## Structure
-
-```
-server.py                  # Point d'entrée FastAPI + CORS + DB
-├── models.py              # Modèles Pydantic (User, Episode, VideoProgress, Pending2FA)
-├── models_extended.py     # Modèles étendus (Thematic, Resource, Actor)
-├── auth_utils.py          # bcrypt, session tokens, 2FA (pyotp)
-├── email_service.py       # Service email (stub/démo)
-└── routes/
-    ├── auth.py            # Authentification (register, login, OAuth, 2FA, logout)
-    ├── episodes.py        # CRUD épisodes
-    ├── progress.py        # Progression vidéo
-    ├── videos.py          # Upload et streaming vidéo
-    ├── users.py           # Gestion utilisateurs (admin)
-    ├── thematics.py       # CRUD thématiques
-    └── resources.py       # CRUD ressources + acteurs
+```mermaid
+graph TD
+    A[Dépôt GitHub Monorepo ECHO]
+    A --> B[Dossier /frontend]
+    A --> C[Dossier /backend]
+    
+    B --> B1[React 19 / Vite]
+    B --> B2[Zustand / React Query]
+    B --> B3[Tailwind CSS v4]
+    
+    C --> C1[FastAPI Routes]
+    C --> C2[Services & Mails (Oauth, 2FA)]
+    C --> C3[Pydantic Models]
+    
+    C1 --> D[(MongoDB via Motor Asynchrone)]
+    C3 --> D
 ```
 
-## Authentification
+## 3. Flux et États (Frontend)
 
-### Mécanismes supportés
-1. **Login classique** : Username + password (bcrypt) + captcha
-2. **Google OAuth** : Via Emergent Platform (`demobackend.emergentagent.com`)
-3. **2FA optionnel** : Code 4 chiffres par email (pyotp), 5 tentatives, expire 10 min
+L'architecture React est centralisée autour de la notion de **Features Indépendantes**.
+- Contrairement aux approches Redux monolithiques, l'état serveur (données de l'API) est géré localement par `React Query`, qui gère seul le cache, le refetching et le stale-time.
+- L'état UI global (Modal ouverte, thème sombre, step formulaire) est géré très légèrement par `Zustand`.
+- **Routage :** Les composants React sont mappés via `react-router-dom` v7 dans un fichier Layout maître, permettant une navigation sans rechargement de page.
 
-### Sessions
-- Token aléatoire (`secrets.token_urlsafe(32)`)
-- Stocké en cookie HttpOnly (`session_token`, 7 jours, samesite=lax)
-- Fallback : header `Authorization: Bearer <token>`
-- Middleware RBAC : `get_current_user` (User) et `require_admin` (Admin)
+## 4. Architecture de la Donnée (Backend)
 
-## Base de données
+La persistance des actions utilise trois couches logiques sur FastAPI :
+1. **Pydantic (DTO)** : Les requêtes HTTP POST/PUT sont nativement castées et validées par Pydantic. Si le JSON de la requête est malformé (ex: `email` invalide, `age_consent` manquant), l'exécution échoue en erreur HTTP 422 immédiatement.
+2. **Couche Métier (Services)** : Les requêtes validées passent dans le dossier `/services` qui exécute la logique métier pure (Ex: Hashage Bcrypt via Passlib, Génération CSRF pour Google).
+3. **Couche Base de données** : Appel à la librairie Motor (`db.users.insert_one(payload)`) pour écrire de manière non-bloquante dans la DB.
 
-**MongoDB** via **Motor** (driver asynchrone).
+## 5. Mécanismes de Sécurité Déployés
 
-### Collections (8)
-| Collection | Index | Clé primaire |
-|-----------|-------|-------------|
-| `users` | `username`, `email` | `id` (UUID) |
-| `episodes` | `season + episode` | `id` (UUID) |
-| `thematics` | `episode_id + order` | `id` (UUID) |
-| `resources` | `episode_id + order` | `id` (UUID) |
-| `actors` | `order` | `id` (UUID) |
-| `video_progress` | `user_id + episode_id` | `id` (UUID) |
-| `user_sessions` | `session_token` | auto |
-| `pending_2fa` | `user_id` | auto |
-
-### Rôles
-- `user` : Accès lecture + progression vidéo
-- `admin` : CRUD complet sur tous les contenus + gestion utilisateurs
-
-## Middleware
-- **CORS** : Origins configurables via `.env` (CORS_ORIGINS)
-- **Logging** : Python standard logging (INFO)
-
-## Configuration
-
-Variables d'environnement (`.env`) :
-- `MONGO_URL` : URL de connexion MongoDB
-- `DB_NAME` : Nom de la base de données
-- `CORS_ORIGINS` : Origines CORS autorisées (séparées par virgules)
+- **Authentification Hybride** : Système JWT/Cookies HttpOnly. Interdiction absolue d'exposer ou de stocker le token dans le LocalStorage Front.
+- **Double Facteur (2FA)** : Intégré aux workflows de création de compte pour contrer les mots de passe compromis (Code 6 chiffres par email via `secrets.choice`).
+- **Rate-Limiting Memcached/Redis** : Sur les point névralgiques (`/auth/login`, `/auth/verify-2fa`) pour prévenir le Bruteforce.
+- **Micro-Analytique RGPD** : Remplacement des cookies tiers par des envois événementiels en background `navigator.sendBeacon` sur le composant `<Analytics>`.

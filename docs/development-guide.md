@@ -1,117 +1,71 @@
-# Guide de Développement — Mouvement ECHO
+# Guide de Développement & Déploiement — Mouvement ECHO
+
+Ce guide détaille les prérequis et les étapes matérielles pour faire fonctionner le projet Mouvement ECHO en local ou en production.
 
 ## Prérequis
+- **Node.js** (v20+ recommandé) pour le frontend.
+- **Python** (v3.11+) pour le serveur Backend.
+- **MongoDB** (Server local ou instance de test Atlas).
+- Gestionnaire Node : `npm` (ou `pnpm`).
 
-| Outil | Version minimale |
-|-------|-----------------|
-| Node.js | 18+ |
-| npm | 9+ |
-| Python | 3.11+ |
-| MongoDB | 5.0+ |
-
-## Installation & Lancement
-
-### Frontend
+## Instructions Frontend (Client React)
+Le projet est packagé via `Vite` en ESM.
 
 ```bash
 cd frontend
+# Installation de tous les paquets du package.json (lucide-react, echarts, leaflet...)
 npm install
-npm run dev          # Démarre sur http://localhost:5173
+
+# Démarrage du serveur de dev local avec Hot-Reload (HMRA)
+npm run dev
+# URL (par défaut) : http://localhost:5173
+
+# Lancer la suite de test Vitest
+npm run test
+
+# Analyse Lint
+npm run lint
+
+# Créer un Build optimisé pour la production dans /dist
+npm run build
 ```
 
-### Backend
+## Instructions Backend (API FastAPI)
+L'API REST tourne de façon asynchrone avec Uvicorn.
 
 ```bash
 cd backend
+# Il est recommandé d'utiliser un venv (python -m venv venv && source venv/bin/activate)
+
+# Installation des dépendances (FastAPI, Motor, Pydantic, etc)
 pip install -r requirements.txt
 
-# Configurer le fichier .env
+# Configurer les identifiants en environnement variables ou .env (.env racine idéalement)
 # MONGO_URL=mongodb://localhost:27017
-# DB_NAME=echo_db
-# CORS_ORIGINS=http://localhost:5173
-# GOOGLE_CLIENT_ID=votre_client_id_google
-# GOOGLE_CLIENT_SECRET=votre_client_secret_google
-# FRONTEND_URL=http://localhost:5173
-# OAUTH_STATE_SECRET=une_clé_secrète_aléatoire
+# ENVIRONMENT=local
 
-uvicorn server:app --host 0.0.0.0 --port 8001 --reload
+# Lancer en dev (Hot reload Python)
+uvicorn server:app --reload
+# L'API répondra par défaut sur : http://localhost:8000
+
+# Lancer la suite de tests (Pytest) IMPORTANT : ne pas enregistrer
+python -m pytest -p no:recording -q
 ```
 
-### Documentation API interactive
+## Déploiement et Configuration (CI/CD)
+Pour la production (déploiement sur AWS, Webstrator ou VPS classique), l'application peut se builder en mode Single Page app.
 
-Avec le backend lancé : `http://localhost:8001/docs` (Swagger UI)
+### Stratégie de Déploiement Frontend
+1. Exécuter `npm run build`.
+2. Le dossier `/dist` contenant les assets optimisés est généré.
+3. Configurer un serveur Nginx/Apache pour renvoyer `index.html` sur l'ensemble des requêtes statiques (SPA Fallback de React Router).
 
-## Conventions de Code
-
-### Frontend (TypeScript/React)
-
-- **Composants** : Fonctions nommées exportées (`export function Button()`)
-- **Fichiers** : PascalCase pour pages et composants (`Serie.tsx`, `Button.tsx`)
-- **Props** : Types inline ou interfaces locales
-- **Styling** : Classes Tailwind (préférer les tokens ECHO : `echo-gold`, `echo-dark`, etc.)
-- **État** : Zustand pour le state global (auth : `features/auth/store.ts`). React Hook Form + Zod pour les formulaires.
-
-### Backend (Python/FastAPI)
-
-- **Routes** : Un fichier par domaine dans `routes/` avec `APIRouter`
-- **Modèles** : Pydantic `BaseModel` avec `Field` et `Config`
-- **Dépendances** : DI FastAPI (`Depends(get_db)`, `Depends(require_admin)`)
-- **Config** : Centralisée dans `core/config.py` (jamais de `os.environ.get` direct dans les routes)
-- **Logging** : Module `logging` Python standard
-
-## Structure de Routage Frontend
-
-| Route | Composant | Wrappé par Layout ? |
-|-------|-----------|-------------------|
-| `/` | `Home` | ✅ (via App.tsx) |
-| `/serie` | `Serie` | ✅ |
-| `/mouvement` | `Mouvement` | ⚠️ (Layout interne) |
-| `/echolink` | `ECHOLink` | ✅ |
-| `/partenaires` | `ECHOsystem` | ✅ |
-| `/agenda` | `Events` | ✅ |
-| `/ressources` | `Resources` | ✅ |
-| `/contact` | `Contact` | ✅ |
-| `/login` | `Login` | ✅ |
-| `/auth/google/success` | `GoogleCallback` | ✅ |
-| `/admin/partenaires` | `AdminPartners` | ✅ |
-| `/mon-compte/partenaire` | `MyPartnerAccount` | ✅ |
-
-> **Note:** `Mouvement.tsx` inclut son propre `<Layout>` interne en plus du wrapper Layout du router. Les autres pages ne le font pas. C'est potentiellement un bug à corriger.
-
-## Rôles & Permissions
-
-| Action | User | Admin |
-|--------|------|-------|
-| Voir les épisodes | ✅ | ✅ |
-| Sauvegarder la progression | ✅ | ✅ |
-| Gérer son compte | ✅ | ✅ |
-| CRUD épisodes | ❌ | ✅ |
-| CRUD thématiques / ressources | ❌ | ✅ |
-| Gestion utilisateurs | ❌ | ✅ |
-| Upload vidéos | ❌ | ✅ |
-
-## Compte Admin par défaut
-
-Au premier lancement, créer un compte admin manuellement dans MongoDB :
-
-```json
-{
-  "id": "...",
-  "username": "darkthony",
-  "email": "admin@projet-echo.fr",
-  "password_hash": "...",
-  "role": "admin"
-}
+### Stratégie de Déploiement Backend
+1. Déployer les scripts dans l'instance.
+2. Passer la variable `ENVIRONMENT` définie dans Pydantic BaseSettings en mode "production".
+3. Utiliser un gestionnaire ASGI product-ready comme `Gunicorn` mappé sur les workers Uvicorn.
+```bash
+gunicorn server:app -w 4 -k uvicorn.workers.UvicornWorker
 ```
 
-## Déploiement
-
-Voir le `README.md` à la racine pour les instructions de déploiement sur Webstrator.
-
-## Points d'attention
-
-1. **Email** : Le service email est un stub (logs en console). Implémenter SendGrid/AWS SES pour la production.
-2. **Stockage vidéo** : Local pour le moment. Migration AWS S3 + CloudFront planifiée.
-3. **2FA** : Mode démo (code affiché dans la réponse API). Retirer pour la production.
-4. **CAPTCHA** : Booléen simple côté client. Implémenter reCAPTCHA pour la production.
-5. **HTTPS** : Non configuré. À activer en production (Nginx/CloudFront).
+*(Conformément au process du monorepo, des workflows Github actions existent ou l'automation PM2 est conseillée).*

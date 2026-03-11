@@ -49,6 +49,16 @@
 - **Props** : `isOpen`, `onClose`, `title`, `children`, `className`
 - **Features** : Body scroll lock, backdrop blur, fermeture par overlay click, animation fade-in
 
+### StepProgress
+- **Fichier** : `StepProgress.tsx`
+- **Props** : `currentStep`, `totalSteps`, `className`
+- **Features** : Jauge de statut animé pour la gamification des formulaires Onboarding.
+
+### SEO
+- **Fichier** : `seo/SEO.tsx`
+- **Props** : `title`, `description`, `image`, `url`, `type`
+- **Features** : Injection dynamique via `react-helmet-async` des balises contextuelles (OpenGraph, Twitter Cards).
+
 ---
 
 ## Sous-composants de Pages
@@ -78,6 +88,6 @@
 | Catégorie | Nombre | Fichiers |
 |-----------|--------|----------|
 | Layout | 3 | Layout, Header, Footer |
-| UI réutilisables | 4 | Button, Card, Input, Modal |
+| UI réutilisables | 6 | Button, Card, Input, Modal, StepProgress, SEO |
 | Sous-composants pages | 8 | CharacterCard, TimelineItem, PhaseCard, FeatureCard, ProblemCard, StepCard, ContentType |
-| **Total** | **15** | |
+| **Total** | **17** | |

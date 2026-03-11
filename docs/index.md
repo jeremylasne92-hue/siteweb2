@@ -1,28 +1,38 @@
-# 📚 Documentation Projet — Mouvement ECHO
+# 📚 Guide Documentaire — Mouvement ECHO
 
-> Documentation exhaustive générée automatiquement par analyse complète du code source frontend et backend.
+> Index Exhaustif des ressources d'architecture et de développement générées par le Workflow BMAD (Mars 2026).
 
-## Index des Documents
+## Projet
 
-| # | Document | Description |
-|---|----------|-------------|
-| 1 | [project-overview.md](project-overview.md) | Vue d'ensemble : stack, architecture, pages, collections MongoDB |
-| 2 | [architecture.md](architecture.md) | Architecture détaillée frontend (React/Tailwind) et backend (FastAPI/Motor) |
-| 3 | [api-contracts.md](api-contracts.md) | Contrats API : 30 endpoints REST documentés avec auth et modèles |
-| 4 | [data-models.md](data-models.md) | Modèles de données Pydantic avec types, relations et diagramme ER |
-| 5 | [component-inventory.md](component-inventory.md) | Inventaire des 15 composants UI (layout + réutilisables + pages) |
-| 6 | [source-tree.md](source-tree.md) | Arborescence complète avec statistiques (28 fichiers, ~3 500 lignes) |
-| 7 | [development-guide.md](development-guide.md) | Guide de développement : installation, conventions, déploiement |
+- **Type :** Multi-parties (Monorepo React/FastAPI)
+- **Langages Principaux :** TypeScript (Frontend), Python (Backend)
+- **Modèle d'Architecture :** SPA (Client) et API REST Stateless (Serveur)
+- **Statut :** Phase Post-MVP (Cible Lancement au 20 Mars 2026)
 
-## Métadonnées
+## 🗺️ Navigation dans la Documentation
 
-- **Projet** : Mouvement ECHO (websérie sociale/éducative)
-- **Type** : Application web full-stack (React + FastAPI + MongoDB)
-- **Niveau de scan** : Exhaustif (100% des fichiers source analysés)
-- **Fichiers analysés** : 28 fichiers source (17 frontend + 11 backend)
-- **Date de génération** : Février 2026
+### Vues d'Ensemble
+- [📝 Vue d'ensemble du Projet (Overview)](./project-overview.md)
+- [🌳 Analyse de l'Arborescence des Sources](./source-tree-analysis.md)
 
-## Deep-Dive Documentation
+### Concepts Architecturaux
+- [📐 Architecture Logicielle et Sécurité](./architecture.md)
+- [📦 Design Patterns & Modèles d'Architecture](./architecture-patterns.md)
+- [🔗 Architecture d'Intégration et Proxy Vite](./integration-architecture.md)
+- [⚙️ Matrice Technologique (Tech Stack)](./technology-stack.md)
 
-Analyse exhaustive d'une zone spécifique de l'architecture :
-- [Module d'Authentification & Sécurité (Backend)](deep-dive-auth-securite.md) - Générée le 04 Mars 2026
+### Techniques & Code
+- [🔌 Contrats des Endpoints REST de l'API](./api-contracts.md)
+- [🗄️ Entités et Modèles de Données Pydantic/MongoDB](./data-models.md)
+- [🎨 Inventaire des Composants UI (Interface)](./component-inventory.md)
+
+### Opérations et Déploiement
+- [🛠️ Guide de Développement / Déploiement CI-CD](./development-guide.md)
+
+---
+
+### Mémos BMAD Externes (À la Racine)
+- [Journal des Changements (Changelog)](../CHANGELOG.md)
+- [Règles Claude (Directives Claude.ai)](../CLAUDE.md)
+- [Règles Antigravity (Directives Gemini)](../.gemini/GEMINI.md)
+- [Mémoire Partagée BMAD (Locks & Niveaux)](../.agent/memory/shared-context.md)
