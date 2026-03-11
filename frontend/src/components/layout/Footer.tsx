@@ -48,8 +48,10 @@ export function Footer() {
                     <div>
                         <h4 className="text-white font-serif mb-6">Légal</h4>
                         <ul className="space-y-3">
-                            <FooterLink to="/contact">Nous Contacter</FooterLink>
-                            <FooterLink to="/soutenir">Soutenir ECHO</FooterLink>
+                            <FooterLink to="/politique-de-confidentialite">Confidentialité</FooterLink>
+                            <FooterLink to="/mentions-legales">Mentions légales</FooterLink>
+                            <FooterLink to="/cgu">CGU</FooterLink>
+                            <FooterLink to="/contact">Contact</FooterLink>
                         </ul>
                     </div>
                 </div>
