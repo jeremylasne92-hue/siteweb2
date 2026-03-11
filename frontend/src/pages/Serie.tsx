@@ -232,6 +232,7 @@ export function Serie() {
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1517604931442-710e8cd52285?q=80&w=2670&auto=format&fit=crop')] bg-cover bg-center opacity-30 mix-blend-overlay" />
 
                 <div className="relative z-20 text-center max-w-4xl px-4 animate-fade-in">
+                    <img src="/logo-echo.jpg" alt="ECHO" className="h-32 md:h-44 w-auto object-contain mix-blend-lighten mx-auto mb-2" />
                     <span className="text-[#DC143C] uppercase tracking-[0.3em] text-sm font-bold mb-4 block">La Websérie Événement</span>
                     <h1 className="text-6xl md:text-8xl font-serif font-bold text-white mb-6 tracking-tighter text-shadow-lg">
                         La Série ECHO

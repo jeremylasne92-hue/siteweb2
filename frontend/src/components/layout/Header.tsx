@@ -38,7 +38,7 @@ export function Header() {
         >
             <div className="container mx-auto px-4 flex items-center justify-between">
                 <Link to="/" className="flex items-center gap-2 relative group">
-                    <img src="/src/assets/logo-echo.jpg" alt="ECHO Logo" className="h-16 w-auto object-contain" />
+                    <img src="/logo-echo.jpg" alt="ECHO Logo" className="h-12 w-auto object-contain mix-blend-lighten" />
                     <span className="sr-only">ECHO</span>
                 </Link>
 

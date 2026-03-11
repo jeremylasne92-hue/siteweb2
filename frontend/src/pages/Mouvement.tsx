@@ -20,9 +20,7 @@ export function Mouvement() {
                 </div>
 
                 <div className="relative z-20 text-center max-w-4xl px-6">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-500/10 mb-8 border border-amber-500/20 animate-fade-in-up">
-                        <Sprout className="w-8 h-8 text-amber-500" />
-                    </div>
+                    <img src="/logo-mouvement.png" alt="Mouvement ECHO" className="h-32 md:h-44 w-auto object-contain mx-auto mb-4" />
 
                     <h1 className="text-6xl md:text-8xl font-bold text-white mb-6 tracking-tight animate-fade-in-up delay-100">
                         Mouvement ECHO

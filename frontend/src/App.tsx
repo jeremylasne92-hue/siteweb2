@@ -2,13 +2,16 @@ import { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/layout/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
+// Static import (Landing page / Initial bundle)
 import { Home } from './pages/Home';
-import { Serie } from './pages/Serie';
-import { Mouvement } from './pages/Mouvement';
-import { Events } from './pages/Events';
-import { Resources } from './pages/Resources';
-import { Support } from './pages/Support';
-import { Contact } from './pages/Contact';
+
+// Lazy-loaded routes: public pages
+const Serie = lazy(() => import('./pages/Serie').then(m => ({ default: m.Serie })));
+const Mouvement = lazy(() => import('./pages/Mouvement').then(m => ({ default: m.Mouvement })));
+const Events = lazy(() => import('./pages/Events').then(m => ({ default: m.Events })));
+const Resources = lazy(() => import('./pages/Resources').then(m => ({ default: m.Resources })));
+const Support = lazy(() => import('./pages/Support').then(m => ({ default: m.Support })));
+const Contact = lazy(() => import('./pages/Contact').then(m => ({ default: m.Contact })));
 import { ProtectedRoute } from './features/auth/components/ProtectedRoute';
 import { useAuthStore } from './features/auth/store';
 import { usePageTracking } from './hooks/usePageTracking';

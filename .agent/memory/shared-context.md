@@ -123,6 +123,7 @@ backend/
 
 | Date | Décision | Agent |
 |------|----------|-------|
+| 2026-03-11 | Optimisation MVP: Code-Splitting sur App.tsx (React.lazy) pour les routes publiques + extraction des manualChunks (lucide-react, react-hook-form) sur Vite. Bundle index allégé. | Antigravity (Gemini) |
 | 2026-03-08 | Sécurité tokens: 2FA 6 chiffres + secrets.choice, session/reset tokens secrets.token_urlsafe(32), rate limit /verify-2fa, pages CogniSphere/ECHOLink publiques | Claude Code (Opus 4.6) |
 | 2026-03-07 | Consolidation MVP: cookie-only auth, reCAPTCHA v3 server-side, secure cookies, 2FA logs nettoyés, ErrorBoundary, 404 page, SEO meta | Claude Code (Opus 4.6) |
 | 2026-03-07 | Story 4.4 done — Export CSV opt-in + code review (5 fixes: BOM UTF-8, to_list(None), ISO date, lien retour, test orphelin) — **Epic 4 DONE** | Claude Code (Opus 4.6) |
@@ -154,6 +155,7 @@ backend/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-11 | 🟡 STANDARD | Optimisation Bundle (Code-Splitting) | ~20min (Frontend Vite + Router) | Antigravity (Gemini) |
 | 2026-03-06 | 🟡 STANDARD | Story 3.1 Formulaire Candidature Partenaire | ~20min (backend sécurité + tests) | Claude Code (Opus 4.6) |
 | 2026-03-06 | 🟡 STANDARD | Story 2.4 Passerelle Soutien/Dons | ~10min (frontend uniquement) | Claude Code (Opus 4.6) |
 | 2026-03-06 | 🟡 STANDARD | Story 2.3 Candidatures Anti-Spam | ~25min (backend + frontend + composant partagé) | Claude Code (Opus 4.6) |
@@ -234,8 +236,8 @@ _Aucune spec en cours._
 
 ### Notes techniques
 
-- Plugin `pytest-recording` (vcrpy) incompatible avec urllib3 — utiliser `-p no:recording`
-- Frontend bundle > 500kB — code splitting recommandé (Epic 2+)
+- Plugin `pytest-recording` (vcrpy) incompatible avec urllib3 — utiliser `-p no:recording` ou downgrader urllib3<2.
+- Frontend bundle : Code Splitting (React.lazy) en place pour différer le chargement des routes. L'index est à ~230kB `(gzip ~72kB)`.
 - Routes protégées : `/admin` (admin), `/admin/partenaires` (admin), `/admin/events` (admin), `/admin/exports` (admin), `/mon-compte/partenaire`
 - Routes publiques (anciennement protégées) : `/cognisphere`, `/echolink`
 - Auth : cookie-only (httpOnly), pas de localStorage — `credentials: 'include'` sur tous les fetch

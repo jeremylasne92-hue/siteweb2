@@ -12,6 +12,8 @@ export default defineConfig({
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
           'vendor-leaflet': ['leaflet', 'react-leaflet'],
           'vendor-query': ['@tanstack/react-query'],
+          'vendor-ui': ['lucide-react'],
+          'vendor-forms': ['react-hook-form', '@hookform/resolvers', 'zod'],
         },
       },
     },
