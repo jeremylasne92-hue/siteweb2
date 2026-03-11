@@ -108,6 +108,8 @@ backend/
 
 | Tâche | Niveau | Justification |
 |-------|--------|---------------|
+| Proposition 3 (Micro-Analytique) | 🟡 STANDARD | Endpoint Custom Event Tracking (MongoDB) + Hook Frontend (sendBeacon). |
+| Proposition 1 (UX Onboarding Gamification) | 🟡 STANDARD | Refonte des formulaires d'inscription et de candidature en multi-étapes. |
 | Nettoyage Fin de Chantier (urllib3, pytest) | 🟢 HOTFIX | Retrait d'un mock HTTP de test et up-version d'une doc. Aucune complexité. |
 | Story 4.4 Export Email Opt-In | 🟡 STANDARD | Backend endpoint CSV + frontend page admin + tests |
 | Story 4.1 Panel Administration Securise | 🟡 STANDARD | Frontend : dashboard hub + fix ProtectedRoute + lien Header |
@@ -124,6 +126,8 @@ backend/
 
 | Date | Décision | Agent |
 |------|----------|-------|
+| 2026-03-11 | Admin: édition partenaire (tous champs) + masquer/réactiver (suspend) + bouton logout Header (menu déroulant utilisateur) | Claude Code (Opus 4.6) |
+| 2026-03-11 | UX Onboarding: Refonte totale de `RegisterForm.tsx` et `TechApplicationForm.tsx` en formulaires multi-étapes avec composant de jauge `<StepProgress />`. Gamification. | Antigravity (Gemini) |
 | 2026-03-11 | Optimisation MVP: Code-Splitting sur App.tsx (React.lazy) pour les routes publiques + extraction des manualChunks (lucide-react, react-hook-form) sur Vite. Bundle index allégé. | Antigravity (Gemini) |
 | 2026-03-08 | Sécurité tokens: 2FA 6 chiffres + secrets.choice, session/reset tokens secrets.token_urlsafe(32), rate limit /verify-2fa, pages CogniSphere/ECHOLink publiques | Claude Code (Opus 4.6) |
 | 2026-03-07 | Consolidation MVP: cookie-only auth, reCAPTCHA v3 server-side, secure cookies, 2FA logs nettoyés, ErrorBoundary, 404 page, SEO meta | Claude Code (Opus 4.6) |
@@ -156,6 +160,8 @@ backend/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-11 | 🟡 STANDARD | Admin Edit/Hide Partner + Logout | ~30min (Backend + Frontend) | Claude Code (Opus 4.6) |
+| 2026-03-11 | 🟡 STANDARD | Proposition 1 (UX Onboarding Gamification) | ~1h (Frontend UI) | Antigravity (Gemini) |
 | 2026-03-11 | 🟡 STANDARD | Optimisation Bundle (Code-Splitting) | ~20min (Frontend Vite + Router) | Antigravity (Gemini) |
 | 2026-03-06 | 🟡 STANDARD | Story 3.1 Formulaire Candidature Partenaire | ~20min (backend sécurité + tests) | Claude Code (Opus 4.6) |
 | 2026-03-06 | 🟡 STANDARD | Story 2.4 Passerelle Soutien/Dons | ~10min (frontend uniquement) | Claude Code (Opus 4.6) |
@@ -176,7 +182,10 @@ backend/
 
 | Fichier | Agent | Depuis | Expiration |
 |---------|-------|--------|------------|
-| _Aucun lock actif_ | - | - | - |
+| `backend/models.py` | Antigravity | 2026-03-11T14:10:00 | 2026-03-11T16:10:00 |
+| `backend/server.py` | Antigravity | 2026-03-11T14:10:00 | 2026-03-11T16:10:00 |
+| `backend/routes/analytics.py` | Antigravity | 2026-03-11T14:10:00 | 2026-03-11T16:10:00 |
+| `frontend/src/utils/analytics.ts` | Antigravity | 2026-03-11T14:10:00 | 2026-03-11T16:10:00 |
 
 ---
 

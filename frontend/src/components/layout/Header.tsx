@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User, Shield } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, User, Shield, LogOut } from 'lucide-react';
 import { cn, Button } from '../ui/Button';
 import { useAuthStore } from '../../features/auth/store';
 
@@ -9,6 +9,16 @@ export function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const location = useLocation();
     const user = useAuthStore((s) => s.user);
+    const logout = useAuthStore((s) => s.logout);
+    const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+    const navigate = useNavigate();
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+
+    const handleLogout = () => {
+        logout();
+        setIsUserMenuOpen(false);
+        navigate('/');
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -17,6 +27,14 @@ export function Header() {
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    useEffect(() => {
+        const handleClickOutside = () => setIsUserMenuOpen(false);
+        if (isUserMenuOpen) {
+            document.addEventListener('click', handleClickOutside);
+            return () => document.removeEventListener('click', handleClickOutside);
+        }
+    }, [isUserMenuOpen]);
 
     const navLinks = [
         { name: 'La Série', path: '/serie' },
@@ -68,12 +86,45 @@ export function Header() {
                             </Button>
                         </Link>
                     )}
-                    <Link to="/login">
-                        <Button variant="ghost" size="sm" className="gap-2">
-                            <User size={18} />
-                            <span className="hidden xl:inline">Mon Compte</span>
-                        </Button>
-                    </Link>
+                    {isAuthenticated ? (
+                        <div className="relative">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="gap-2"
+                                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                            >
+                                <User size={18} />
+                                <span className="hidden xl:inline">{user?.username || 'Mon Compte'}</span>
+                            </Button>
+                            {isUserMenuOpen && (
+                                <div className="absolute right-0 top-full mt-2 w-48 bg-echo-darker border border-white/10 rounded-lg shadow-xl overflow-hidden animate-fade-in">
+                                    <Link
+                                        to="/login"
+                                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-echo-textMuted hover:bg-white/5 hover:text-white transition-colors"
+                                        onClick={() => setIsUserMenuOpen(false)}
+                                    >
+                                        <User size={14} />
+                                        Mon Compte
+                                    </Link>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors border-t border-white/10"
+                                    >
+                                        <LogOut size={14} />
+                                        Se déconnecter
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <Link to="/login">
+                            <Button variant="ghost" size="sm" className="gap-2">
+                                <User size={18} />
+                                <span className="hidden xl:inline">Mon Compte</span>
+                            </Button>
+                        </Link>
+                    )}
                     <Link to="/soutenir">
                         <Button variant="primary" size="sm">Soutenir</Button>
                     </Link>
@@ -109,9 +160,24 @@ export function Header() {
                                 </Button>
                             </Link>
                         )}
-                        <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                            <Button variant="secondary" className="w-full">Mon Compte</Button>
-                        </Link>
+                        {isAuthenticated ? (
+                            <>
+                                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                                    <Button variant="secondary" className="w-full">Mon Compte</Button>
+                                </Link>
+                                <button
+                                    onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }}
+                                    className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-colors text-sm"
+                                >
+                                    <LogOut size={16} />
+                                    Se déconnecter
+                                </button>
+                            </>
+                        ) : (
+                            <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                                <Button variant="secondary" className="w-full">Mon Compte</Button>
+                            </Link>
+                        )}
                         <Link to="/soutenir" onClick={() => setIsMobileMenuOpen(false)}>
                             <Button variant="primary" className="w-full">Soutenir le projet</Button>
                         </Link>

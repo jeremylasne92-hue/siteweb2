@@ -517,3 +517,72 @@ async def admin_toggle_feature(
         raise HTTPException(status_code=404, detail="Partner not found")
         
     return {"success": True, "message": f"Mise en avant {'activée' if is_featured else 'désactivée'}"}
+
+@router.put("/admin/{partner_id}/suspend")
+async def admin_suspend_partner(
+    partner_id: str,
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Suspend (hide) a partner — removes from public listing"""
+    partner = await db.partners.find_one({"id": partner_id})
+    if not partner:
+        raise HTTPException(status_code=404, detail="Partner not found")
+
+    new_status = PartnerStatus.APPROVED if partner["status"] == PartnerStatus.SUSPENDED else PartnerStatus.SUSPENDED
+    await db.partners.update_one(
+        {"id": partner_id},
+        {"$set": {"status": new_status, "updated_at": datetime.utcnow()}}
+    )
+    label = "réactivé" if new_status == PartnerStatus.APPROVED else "suspendu"
+    return {"success": True, "message": f"Partenaire {label}"}
+
+
+class AdminPartnerEdit(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    description_long: Optional[str] = None
+    category: Optional[PartnerCategory] = None
+    thematics: Optional[List[str]] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    postal_code: Optional[str] = None
+    country: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    contact_name: Optional[str] = None
+    contact_email: Optional[str] = None
+    contact_phone: Optional[str] = None
+    contact_role: Optional[str] = None
+    website_url: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    instagram_url: Optional[str] = None
+    twitter_url: Optional[str] = None
+
+
+@router.put("/admin/{partner_id}/edit")
+async def admin_edit_partner(
+    partner_id: str,
+    body: AdminPartnerEdit,
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Admin can edit any partner field"""
+    updates = {k: v for k, v in body.model_dump().items() if v is not None}
+    if not updates:
+        raise HTTPException(status_code=400, detail="No fields to update")
+
+    # Regenerate slug if name changed
+    if "name" in updates:
+        updates["slug"] = slugify.slugify(updates["name"])
+
+    updates["updated_at"] = datetime.utcnow()
+
+    result = await db.partners.update_one(
+        {"id": partner_id},
+        {"$set": updates}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Partner not found")
+
+    return {"success": True, "message": "Partenaire mis à jour"}
