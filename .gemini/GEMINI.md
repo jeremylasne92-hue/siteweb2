@@ -57,12 +57,42 @@ Après chaque modification, vérifier dans cet ordre :
 - Éviter le sur-engineering : pas d'abstraction prématurée
 - Route handlers async par défaut (backend)
 
-## Collaboration multi-agents
-Ce projet est développé avec Claude Code ET Antigravity en parallèle.
-- RÈGLE CRITIQUE : ne jamais modifier un fichier que l'autre agent est en train d'éditer
-- Toujours faire un `git pull` ou vérifier `git status` avant de commencer
+## Méthodologie BMAD (multi-agents)
+Ce projet suit la méthodologie BMAD avec mémoire partagée et coordination.
+
+### Source de vérité
+- **État projet + locks + décisions** : `.agent/memory/shared-context.md`
+- LIRE ce fichier AVANT toute tâche, le METTRE À JOUR après chaque modification
+
+### Niveaux de workflow
+| Niveau | Quand | Étapes |
+|--------|-------|--------|
+| HOTFIX | Fix trivial, 1 fichier | Code → Test → Commit |
+| STANDARD | Feature classique, multi-fichiers | Scope → Code → Test → Code Review → Commit |
+| MAJEUR | Changement architectural | Scope → Design → Code → QA → Code Review → Commit |
+
+### Système de locks
+Avant de modifier un fichier, vérifier les locks dans `shared-context.md`.
+Si le fichier est locké par un autre agent, NE PAS le modifier. Max 2h par lock.
+
+### Après chaque tâche
+1. Mettre à jour la section "Décisions Récentes" dans `shared-context.md`
+2. Mettre à jour "Historique des Niveaux" avec durée réelle
+3. Libérer les locks
+
+### Agents disponibles
+- Agents : `.agent/agents/` (architect, backend, frontend, designer, qa-tester, code-reviewer, documentation)
+- Skills : `.agent/skills/` (code-review, component-generator, css-design-system, react-typescript)
+- Workflows : `.agent/workflows/` (master, dev, QA, PM, architect, quick-flow-solo-dev)
+
+## Collaboration Antigravity + Claude Code
+Ce projet est développé avec Antigravity ET Claude Code en parallèle.
+Les règles Claude Code sont dans `CLAUDE.md` à la racine.
+- RÈGLE CRITIQUE : vérifier les locks dans `shared-context.md` avant d'éditer
+- Toujours vérifier `git status` avant de commencer
 - Git est la source de vérité — commiter fréquemment
 - En cas de conflit, le dernier commit testé et buildé gagne
+- Après chaque tâche : mettre à jour `shared-context.md` avec l'agent utilisé
 
 ## Docs de référence
 - Architecture détaillée: `docs/architecture.md`
@@ -71,3 +101,4 @@ Ce projet est développé avec Claude Code ET Antigravity en parallèle.
 - Guide développement: `docs/development-guide.md`
 - Inventaire composants: `docs/component-inventory.md`
 - PRD Phase 2: `_bmad-output/planning-artifacts/prd.md`
+- Mémoire partagée BMAD: `.agent/memory/shared-context.md`

@@ -3,6 +3,8 @@ import { Heart, Check, ChevronDown, ExternalLink } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { DONATION_URL } from '../config/donation';
+import { trackEvent } from '../utils/analytics';
+import { SEO } from '../components/seo/SEO';
 
 export function Support() {
     const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -45,6 +47,11 @@ export function Support() {
 
     return (
         <>
+            <SEO
+                title="Soutenir ECHO"
+                description="ECHO est un projet indépendant, libre et sans publicité. Votre soutien financier est notre seule énergie pour produire la série documentaire."
+                url="https://mouvement-echo.fr/soutenir"
+            />
             {/* Hero Section */}
             <section className="relative py-20 bg-echo-darker">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-echo-gold/20 via-black to-black" />
@@ -102,7 +109,7 @@ export function Support() {
                                     ))}
                                 </ul>
 
-                                <a href={DONATION_URL} target="_blank" rel="noopener noreferrer" className="w-full">
+                                <a href={DONATION_URL} target="_blank" rel="noopener noreferrer" className="w-full" onClick={() => trackEvent('Soutenir', `click_helloasso_tier_${tier.title}`, '/soutenir')}>
                                     <Button variant={i === 1 ? 'primary' : 'outline'} className="w-full">
                                         Je soutiens <ExternalLink className="w-4 h-4 ml-2 inline" />
                                     </Button>
@@ -111,7 +118,7 @@ export function Support() {
                         ))}
                     </div>
                     <p className="mt-8 text-neutral-500 text-sm">
-                        Paiement sécurisé via <a href={DONATION_URL} target="_blank" rel="noopener noreferrer" className="text-echo-gold hover:underline">HelloAsso</a> — plateforme certifiée.
+                        Paiement sécurisé via <a href={DONATION_URL} target="_blank" rel="noopener noreferrer" className="text-echo-gold hover:underline" onClick={() => trackEvent('Soutenir', 'click_helloasso_footer', '/soutenir')}>HelloAsso</a> — plateforme certifiée.
                     </p>
                 </div>
             </section>

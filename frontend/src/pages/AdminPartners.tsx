@@ -62,6 +62,19 @@ const categoryLabels: Record<PartnerCategory, string> = {
 
 /* Partner Detail Modal */
 
+const THEMATICS_LIST = [
+    { code: 'ENV', label: 'Environnement & Climat' },
+    { code: 'SOC', label: 'Justice sociale' },
+    { code: 'ECO', label: 'Économie alternative' },
+    { code: 'EDU', label: 'Éducation & Pédagogie' },
+    { code: 'TEC', label: 'Technologies & IA' },
+    { code: 'SAN', label: 'Santé & Bien-être' },
+    { code: 'ART', label: 'Art & Culture' },
+    { code: 'GEO', label: 'Géopolitique & Citoyenneté' },
+    { code: 'SPI', label: 'Spiritualité & Philosophie' },
+    { code: 'AGR', label: 'Agriculture & Alimentation' },
+];
+
 function AdminPartnerDetail({
     partner,
     onClose,
@@ -84,7 +97,10 @@ function AdminPartnerDetail({
     const status = statusConfig[partner.status];
 
     const [isEditing, setIsEditing] = useState(false);
-    const [editData, setEditData] = useState<Record<string, string>>({});
+    const [editData, setEditData] = useState<Record<string, string | string[] | number | null>>({});
+    const [, setLogoFile] = useState<File | null>(null);
+    const [logoPreview, setLogoPreview] = useState<string | null>(null);
+    const [logoUploading, setLogoUploading] = useState(false);
 
     const startEditing = () => {
         setEditData({
@@ -92,6 +108,7 @@ function AdminPartnerDetail({
             description: partner.description || '',
             description_long: partner.description_long || '',
             category: partner.category || '',
+            thematics: partner.thematics || [],
             contact_name: partner.contact_name || '',
             contact_email: partner.contact_email || '',
             contact_phone: partner.contact_phone || '',
@@ -99,6 +116,9 @@ function AdminPartnerDetail({
             address: partner.address || '',
             city: partner.city || '',
             postal_code: partner.postal_code || '',
+            country: partner.country || 'France',
+            latitude: partner.latitude ?? null,
+            longitude: partner.longitude ?? null,
             website_url: partner.website_url || '',
             linkedin_url: partner.linkedin_url || '',
             instagram_url: partner.instagram_url || '',
@@ -110,7 +130,12 @@ function AdminPartnerDetail({
     const handleSave = () => {
         const changes: Record<string, unknown> = {};
         for (const [key, value] of Object.entries(editData)) {
-            if (value !== (partner as AdminPartner & Record<string, unknown>)[key] && value !== '') {
+            const original = (partner as AdminPartner & Record<string, unknown>)[key];
+            if (Array.isArray(value)) {
+                if (JSON.stringify(value) !== JSON.stringify(original)) {
+                    changes[key] = value;
+                }
+            } else if (value !== original && value !== '' && value !== null) {
                 changes[key] = value;
             }
         }
@@ -120,8 +145,80 @@ function AdminPartnerDetail({
         setIsEditing(false);
     };
 
-    const updateField = (field: string, value: string) => {
+    const updateField = (field: string, value: string | string[] | number | null) => {
         setEditData(prev => ({ ...prev, [field]: value }));
+    };
+
+    const toggleThematic = (code: string) => {
+        const current = (editData.thematics as string[]) || [];
+        if (current.includes(code)) {
+            updateField('thematics', current.filter(t => t !== code));
+        } else {
+            updateField('thematics', [...current, code]);
+        }
+    };
+
+    const handleLogoUpload = async (file: File) => {
+        if (!file.type.match(/^image\/(jpeg|png|webp)$/)) {
+            alert('Format non supporté. Utilisez JPEG, PNG ou WebP.');
+            return;
+        }
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Le fichier ne doit pas dépasser 2 Mo.');
+            return;
+        }
+        setLogoFile(file);
+        setLogoPreview(URL.createObjectURL(file));
+
+        // Upload immediately
+        setLogoUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append('logo', file);
+            const res = await fetch(`${API_BASE}/admin/${partner.id}/logo`, {
+                method: 'POST',
+                credentials: 'include',
+                body: formData,
+            });
+            if (res.ok) {
+                await res.json();
+                // Trigger refresh
+                onEdit(partner.id, { __logo_refresh: true } as any);
+            }
+        } catch (err) {
+            console.error('Logo upload failed', err);
+        } finally {
+            setLogoUploading(false);
+        }
+    };
+
+    const handleLogoDelete = async () => {
+        setLogoUploading(true);
+        try {
+            const res = await fetch(`${API_BASE}/admin/${partner.id}/logo`, {
+                method: 'DELETE',
+                credentials: 'include',
+            });
+            if (res.ok) {
+                setLogoPreview(null);
+                setLogoFile(null);
+                onEdit(partner.id, { __logo_refresh: true } as any);
+            }
+        } catch (err) {
+            console.error('Logo delete failed', err);
+        } finally {
+            setLogoUploading(false);
+        }
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        const file = e.dataTransfer.files[0];
+        if (file) handleLogoUpload(file);
+    };
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
     };
 
     return (
@@ -221,130 +318,286 @@ function AdminPartnerDetail({
                     <div className="w-full md:w-1/3 p-6 border-b md:border-b-0 md:border-r border-white/10 space-y-6">
                         {/* Logo + Name */}
                         <div className="text-center">
-                            <div className="w-20 h-20 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-3 text-2xl font-serif text-echo-gold overflow-hidden">
-                                {partner.logo_url
-                                    ? <img src={partner.logo_url} alt={partner.name} className="w-full h-full object-cover" />
-                                    : partner.name.charAt(0)
-                                }
+                            <div className="relative group/logo mx-auto mb-3 w-20 h-20">
+                                <div className="w-20 h-20 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl font-serif text-echo-gold overflow-hidden">
+                                    {logoPreview
+                                        ? <img src={logoPreview} alt="Preview" className="w-full h-full object-cover" />
+                                        : partner.logo_url
+                                            ? <img src={partner.logo_url} alt={partner.name} className="w-full h-full object-cover" />
+                                            : partner.name.charAt(0)
+                                    }
+                                </div>
+                                {/* Delete button overlay */}
+                                {(partner.logo_url || logoPreview) && isEditing && (
+                                    <button
+                                        type="button"
+                                        onClick={handleLogoDelete}
+                                        disabled={logoUploading}
+                                        className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center text-xs hover:bg-red-600 transition-colors shadow-lg disabled:opacity-50"
+                                        title="Supprimer le logo"
+                                    >
+                                        <X size={12} />
+                                    </button>
+                                )}
+                                {logoUploading && (
+                                    <div className="absolute inset-0 rounded-xl bg-black/50 flex items-center justify-center">
+                                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    </div>
+                                )}
                             </div>
+                            {isEditing && (
+                                <div
+                                    onDrop={handleDrop}
+                                    onDragOver={handleDragOver}
+                                    onClick={() => {
+                                        const input = document.createElement('input');
+                                        input.type = 'file';
+                                        input.accept = 'image/jpeg,image/png,image/webp';
+                                        input.onchange = (e) => {
+                                            const file = (e.target as HTMLInputElement).files?.[0];
+                                            if (file) handleLogoUpload(file);
+                                        };
+                                        input.click();
+                                    }}
+                                    className="w-full mt-1 p-2 border border-dashed border-white/20 rounded-lg cursor-pointer hover:border-echo-gold/40 hover:bg-echo-gold/5 transition-colors text-center"
+                                >
+                                    <p className="text-[10px] text-echo-textMuted">
+                                        Glisser un fichier ou <span className="text-echo-gold">cliquer</span>
+                                    </p>
+                                    <p className="text-[9px] text-echo-textMuted/50">JPEG, PNG, WebP (max 2Mo)</p>
+                                </div>
+                            )}
                             {isEditing ? (
                                 <input
-                                    value={editData.name}
+                                    value={editData.name as string}
                                     onChange={(e) => updateField('name', e.target.value)}
                                     className="w-full text-center text-lg font-serif text-white bg-white/5 border border-white/10 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-echo-gold/50"
                                 />
                             ) : (
                                 <h2 className="text-lg font-serif text-white">{partner.name}</h2>
                             )}
-                            <span className="inline-block mt-1 px-2 py-0.5 bg-echo-gold/10 text-echo-gold text-xs rounded-full">
-                                {categoryLabels[partner.category] || partner.category}
-                            </span>
+                            {isEditing ? (
+                                <select
+                                    value={editData.category as string}
+                                    onChange={(e) => updateField('category', e.target.value)}
+                                    className="mt-1 text-xs bg-white/5 border border-white/10 rounded px-2 py-1 text-echo-gold focus:outline-none focus:ring-2 focus:ring-echo-gold/50"
+                                >
+                                    <option value="expert">Expert</option>
+                                    <option value="financier">Financier</option>
+                                    <option value="audiovisuel">Audiovisuel</option>
+                                    <option value="education">Éducation</option>
+                                    <option value="membre">Membre</option>
+                                </select>
+                            ) : (
+                                <span className="inline-block mt-1 px-2 py-0.5 bg-echo-gold/10 text-echo-gold text-xs rounded-full">
+                                    {categoryLabels[partner.category] || partner.category}
+                                </span>
+                            )}
                         </div>
 
                         {/* Thematics */}
-                        {partner.thematics.length > 0 && (
+                        {isEditing ? (
                             <div>
                                 <h4 className="text-xs uppercase tracking-wider text-echo-textMuted mb-2">Thématiques</h4>
                                 <div className="flex flex-wrap gap-1.5">
-                                    {partner.thematics.map(tag => (
-                                        <span key={tag} className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-xs text-echo-textMuted">
-                                            {tag}
-                                        </span>
-                                    ))}
+                                    {THEMATICS_LIST.map(t => {
+                                        const selected = ((editData.thematics as string[]) || []).includes(t.code);
+                                        return (
+                                            <button
+                                                key={t.code}
+                                                type="button"
+                                                onClick={() => toggleThematic(t.code)}
+                                                className={cn(
+                                                    "px-2 py-0.5 rounded text-xs border transition-colors",
+                                                    selected
+                                                        ? "bg-echo-gold/20 border-echo-gold/40 text-echo-gold"
+                                                        : "bg-white/5 border-white/10 text-echo-textMuted hover:bg-white/10"
+                                                )}
+                                            >
+                                                {t.code}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
+                        ) : (
+                            partner.thematics.length > 0 && (
+                                <div>
+                                    <h4 className="text-xs uppercase tracking-wider text-echo-textMuted mb-2">Thématiques</h4>
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {partner.thematics.map(tag => (
+                                            <span key={tag} className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-xs text-echo-textMuted">
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )
                         )}
 
                         {/* Referent */}
                         <div>
                             <h4 className="text-xs uppercase tracking-wider text-echo-textMuted mb-2">Référent</h4>
                             {isEditing ? (
-                                <input
-                                    value={editData.contact_name}
-                                    onChange={(e) => updateField('contact_name', e.target.value)}
-                                    className="w-full text-sm text-white bg-white/5 border border-white/10 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-echo-gold/50"
-                                />
+                                <div className="space-y-2">
+                                    <input
+                                        value={editData.contact_name as string}
+                                        onChange={(e) => updateField('contact_name', e.target.value)}
+                                        placeholder="Nom du référent"
+                                        className="w-full text-sm text-white bg-white/5 border border-white/10 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-echo-gold/50"
+                                    />
+                                    <input
+                                        value={editData.contact_role as string}
+                                        onChange={(e) => updateField('contact_role', e.target.value)}
+                                        placeholder="Fonction"
+                                        className="w-full text-sm text-echo-textMuted bg-white/5 border border-white/10 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-echo-gold/50"
+                                    />
+                                </div>
                             ) : (
-                                <p className="text-sm text-white">{partner.contact_name}</p>
-                            )}
-                            {partner.contact_role && (
-                                <p className="text-xs text-echo-textMuted">{partner.contact_role}</p>
+                                <>
+                                    <p className="text-sm text-white">{partner.contact_name}</p>
+                                    {partner.contact_role && <p className="text-xs text-echo-textMuted">{partner.contact_role}</p>}
+                                </>
                             )}
                         </div>
 
                         {/* Contact */}
                         <div>
                             <h4 className="text-xs uppercase tracking-wider text-echo-textMuted mb-2">Contact</h4>
-                            <div className="space-y-1.5">
-                                <a
-                                    href={`mailto:${partner.contact_email}`}
-                                    className="flex items-center gap-2 text-sm text-echo-textMuted hover:text-echo-gold transition-colors"
-                                >
-                                    <span className="text-xs">✉</span>
-                                    {isEditing ? (
+                            {isEditing ? (
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs">✉</span>
                                         <input
-                                            value={editData.contact_email}
+                                            value={editData.contact_email as string}
                                             onChange={(e) => updateField('contact_email', e.target.value)}
                                             className="flex-1 text-sm text-white bg-white/5 border border-white/10 rounded px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-echo-gold/50"
                                         />
-                                    ) : (
-                                        partner.contact_email
-                                    )}
-                                </a>
-                                {partner.contact_phone && (
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Phone size={12} className="text-echo-textMuted" />
+                                        <input
+                                            value={editData.contact_phone as string}
+                                            onChange={(e) => updateField('contact_phone', e.target.value)}
+                                            placeholder="Téléphone"
+                                            className="flex-1 text-sm text-white bg-white/5 border border-white/10 rounded px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-echo-gold/50"
+                                        />
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="space-y-1.5">
                                     <a
-                                        href={`tel:${partner.contact_phone}`}
+                                        href={`mailto:${partner.contact_email}`}
                                         className="flex items-center gap-2 text-sm text-echo-textMuted hover:text-echo-gold transition-colors"
                                     >
-                                        <Phone size={12} />
-                                        {partner.contact_phone}
+                                        <span className="text-xs">✉</span> {partner.contact_email}
                                     </a>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Links */}
-                        {(partner.website_url || partner.linkedin_url || partner.instagram_url || partner.twitter_url) && (
-                            <div>
-                                <h4 className="text-xs uppercase tracking-wider text-echo-textMuted mb-2">Liens</h4>
-                                <div className="space-y-1.5">
-                                    {partner.website_url && (
-                                        <a href={partner.website_url} target="_blank" rel="noopener noreferrer"
-                                            className="flex items-center gap-2 text-sm text-echo-textMuted hover:text-echo-gold transition-colors">
-                                            <Globe size={12} /> Site web <ExternalLink size={10} className="ml-auto opacity-50" />
-                                        </a>
-                                    )}
-                                    {partner.linkedin_url && (
-                                        <a href={partner.linkedin_url} target="_blank" rel="noopener noreferrer"
-                                            className="flex items-center gap-2 text-sm text-echo-textMuted hover:text-echo-gold transition-colors">
-                                            <Globe size={12} /> LinkedIn <ExternalLink size={10} className="ml-auto opacity-50" />
-                                        </a>
-                                    )}
-                                    {partner.instagram_url && (
-                                        <a href={partner.instagram_url} target="_blank" rel="noopener noreferrer"
-                                            className="flex items-center gap-2 text-sm text-echo-textMuted hover:text-echo-gold transition-colors">
-                                            <Globe size={12} /> Instagram <ExternalLink size={10} className="ml-auto opacity-50" />
-                                        </a>
-                                    )}
-                                    {partner.twitter_url && (
-                                        <a href={partner.twitter_url} target="_blank" rel="noopener noreferrer"
-                                            className="flex items-center gap-2 text-sm text-echo-textMuted hover:text-echo-gold transition-colors">
-                                            <Globe size={12} /> X / Twitter <ExternalLink size={10} className="ml-auto opacity-50" />
+                                    {partner.contact_phone && (
+                                        <a
+                                            href={`tel:${partner.contact_phone}`}
+                                            className="flex items-center gap-2 text-sm text-echo-textMuted hover:text-echo-gold transition-colors"
+                                        >
+                                            <Phone size={12} /> {partner.contact_phone}
                                         </a>
                                     )}
                                 </div>
+                            )}
+                        </div>
+
+                        {/* Links */}
+                        {isEditing ? (
+                            <div>
+                                <h4 className="text-xs uppercase tracking-wider text-echo-textMuted mb-2">Liens</h4>
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <Globe size={12} className="text-echo-textMuted shrink-0" />
+                                        <input
+                                            value={editData.website_url as string}
+                                            onChange={(e) => updateField('website_url', e.target.value)}
+                                            placeholder="https://site-web.com"
+                                            className="flex-1 text-sm text-white bg-white/5 border border-white/10 rounded px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-echo-gold/50"
+                                        />
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Globe size={12} className="text-echo-textMuted shrink-0" />
+                                        <input
+                                            value={editData.linkedin_url as string}
+                                            onChange={(e) => updateField('linkedin_url', e.target.value)}
+                                            placeholder="LinkedIn URL"
+                                            className="flex-1 text-sm text-white bg-white/5 border border-white/10 rounded px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-echo-gold/50"
+                                        />
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Globe size={12} className="text-echo-textMuted shrink-0" />
+                                        <input
+                                            value={editData.instagram_url as string}
+                                            onChange={(e) => updateField('instagram_url', e.target.value)}
+                                            placeholder="Instagram URL"
+                                            className="flex-1 text-sm text-white bg-white/5 border border-white/10 rounded px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-echo-gold/50"
+                                        />
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <Globe size={12} className="text-echo-textMuted shrink-0" />
+                                        <input
+                                            value={editData.twitter_url as string}
+                                            onChange={(e) => updateField('twitter_url', e.target.value)}
+                                            placeholder="X / Twitter URL"
+                                            className="flex-1 text-sm text-white bg-white/5 border border-white/10 rounded px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-echo-gold/50"
+                                        />
+                                    </div>
+                                </div>
                             </div>
+                        ) : (
+                            (partner.website_url || partner.linkedin_url || partner.instagram_url || partner.twitter_url) && (
+                                <div>
+                                    <h4 className="text-xs uppercase tracking-wider text-echo-textMuted mb-2">Liens</h4>
+                                    <div className="space-y-1.5">
+                                        {partner.website_url && (
+                                            <a href={partner.website_url} target="_blank" rel="noopener noreferrer"
+                                                className="flex items-center gap-2 text-sm text-echo-textMuted hover:text-echo-gold transition-colors">
+                                                <Globe size={12} /> Site web <ExternalLink size={10} className="ml-auto opacity-50" />
+                                            </a>
+                                        )}
+                                        {partner.linkedin_url && (
+                                            <a href={partner.linkedin_url} target="_blank" rel="noopener noreferrer"
+                                                className="flex items-center gap-2 text-sm text-echo-textMuted hover:text-echo-gold transition-colors">
+                                                <Globe size={12} /> LinkedIn <ExternalLink size={10} className="ml-auto opacity-50" />
+                                            </a>
+                                        )}
+                                        {partner.instagram_url && (
+                                            <a href={partner.instagram_url} target="_blank" rel="noopener noreferrer"
+                                                className="flex items-center gap-2 text-sm text-echo-textMuted hover:text-echo-gold transition-colors">
+                                                <Globe size={12} /> Instagram <ExternalLink size={10} className="ml-auto opacity-50" />
+                                            </a>
+                                        )}
+                                        {partner.twitter_url && (
+                                            <a href={partner.twitter_url} target="_blank" rel="noopener noreferrer"
+                                                className="flex items-center gap-2 text-sm text-echo-textMuted hover:text-echo-gold transition-colors">
+                                                <Globe size={12} /> X / Twitter <ExternalLink size={10} className="ml-auto opacity-50" />
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
+                            )
                         )}
                     </div>
 
                     {/* Right column — Details + Admin */}
                     <div className="w-full md:w-2/3 p-6 space-y-6">
+                        {/* Short description (edit mode only) */}
+                        {isEditing && (
+                            <div>
+                                <h4 className="text-xs uppercase tracking-wider text-echo-textMuted mb-2">Accroche (description courte)</h4>
+                                <input value={editData.description as string} onChange={(e) => updateField('description', e.target.value)} className="w-full text-sm text-white bg-white/5 border border-white/10 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-echo-gold/50" />
+                            </div>
+                        )}
+
                         {/* About */}
                         <div>
                             <h4 className="text-xs uppercase tracking-wider text-echo-textMuted mb-2">À propos</h4>
                             {isEditing ? (
                                 <textarea
-                                    value={editData.description_long || editData.description}
+                                    value={editData.description_long as string}
                                     onChange={(e) => updateField('description_long', e.target.value)}
                                     className="w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-echo-gold/50 min-h-[100px]"
                                 />
@@ -361,20 +614,29 @@ function AdminPartnerDetail({
                                 <MapPin size={12} />
                                 Localisation
                             </h4>
-                            <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                                {partner.address && (
-                                    <p className="text-sm text-white">{partner.address}</p>
-                                )}
-                                <p className="text-sm text-echo-textMuted">
-                                    {[partner.postal_code, partner.city].filter(Boolean).join(' ')}
-                                    {partner.country && partner.country !== 'France' && `, ${partner.country}`}
-                                </p>
-                                {partner.latitude != null && partner.longitude != null && (
-                                    <p className="text-xs text-echo-textMuted/50 mt-1">
-                                        GPS : {partner.latitude.toFixed(4)}, {partner.longitude.toFixed(4)}
+                            {isEditing ? (
+                                <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-2">
+                                    <input value={editData.address as string} onChange={(e) => updateField('address', e.target.value)} placeholder="Adresse" className="w-full text-sm text-white bg-white/5 border border-white/10 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-echo-gold/50" />
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <input value={editData.city as string} onChange={(e) => updateField('city', e.target.value)} placeholder="Ville" className="text-sm text-white bg-white/5 border border-white/10 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-echo-gold/50" />
+                                        <input value={editData.postal_code as string} onChange={(e) => updateField('postal_code', e.target.value)} placeholder="Code postal" className="text-sm text-white bg-white/5 border border-white/10 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-echo-gold/50" />
+                                    </div>
+                                    <input value={editData.country as string} onChange={(e) => updateField('country', e.target.value)} placeholder="Pays" className="w-full text-sm text-white bg-white/5 border border-white/10 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-echo-gold/50" />
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <input type="number" step="0.0001" value={editData.latitude != null ? editData.latitude : ''} onChange={(e) => updateField('latitude', e.target.value ? parseFloat(e.target.value) : null)} placeholder="Latitude" className="text-sm text-white bg-white/5 border border-white/10 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-echo-gold/50" />
+                                        <input type="number" step="0.0001" value={editData.longitude != null ? editData.longitude : ''} onChange={(e) => updateField('longitude', e.target.value ? parseFloat(e.target.value) : null)} placeholder="Longitude" className="text-sm text-white bg-white/5 border border-white/10 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-echo-gold/50" />
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                                    {partner.address && (<p className="text-sm text-white">{partner.address}</p>)}
+                                    <p className="text-sm text-echo-textMuted">
+                                        {[partner.postal_code, partner.city].filter(Boolean).join(' ')}
+                                        {partner.country && partner.country !== 'France' && `, ${partner.country}`}
                                     </p>
-                                )}
-                            </div>
+                                    {partner.latitude != null && partner.longitude != null && (<p className="text-xs text-echo-textMuted/50 mt-1">GPS : {partner.latitude.toFixed(4)}, {partner.longitude.toFixed(4)}</p>)}
+                                </div>
+                            )}
                         </div>
 
                         {/* Featured toggle */}
@@ -548,6 +810,11 @@ export default function AdminPartners() {
     };
 
     const handleEdit = async (partnerId: string, data: Record<string, unknown>) => {
+        // Logo changes are handled via separate upload endpoint
+        if ('__logo_refresh' in data) {
+            await fetchPartners();
+            return;
+        }
         setActionLoading(partnerId);
         try {
             const res = await fetch(`${API_BASE}/admin/${partnerId}/edit`, {

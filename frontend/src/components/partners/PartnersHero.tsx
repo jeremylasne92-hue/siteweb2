@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { ArrowRight, Map } from 'lucide-react';
+import { trackEvent } from '../../utils/analytics';
 
 interface PartnersHeroProps {
     onApplyClick: () => void;
@@ -36,11 +37,14 @@ export const PartnersHero: React.FC<PartnersHeroProps> = ({ onApplyClick }) => {
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center gap-4">
-                        <Button size="lg" className="w-full sm:w-auto gap-2" onClick={onApplyClick}>
+                        <Button size="lg" className="w-full sm:w-auto gap-2" onClick={() => {
+                            trackEvent('Partenaire', 'click_hero_apply', '/partenaires');
+                            onApplyClick();
+                        }}>
                             <span>Devenir partenaire</span>
                             <ArrowRight className="w-4 h-4" />
                         </Button>
-                        <Link to="/soutenir" className="w-full sm:w-auto">
+                        <Link to="/soutenir" className="w-full sm:w-auto" onClick={() => trackEvent('Partenaire', 'click_hero_soutenir', '/partenaires')}>
                             <Button variant="outline" size="lg" className="w-full sm:w-auto">
                                 Soutenir le projet
                             </Button>

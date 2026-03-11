@@ -2,11 +2,16 @@ import { Leaf, Sprout, Users, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
+import { SEO } from '../components/seo/SEO';
 
 export function Mouvement() {
     return (
         <div className="bg-stone-950 text-stone-200 font-sans selection:bg-amber-500/30">
-
+            <SEO
+                title="Le Mouvement"
+                description="Nous ne cherchons pas à réparer le vieux monde, mais à en faire pousser un nouveau. Rejoignez notre action citoyenne."
+                url="https://mouvement-echo.fr/mouvement"
+            />
             {/* --- Hero Section --- */}
             <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
                 {/* Background Image with Overlay */}

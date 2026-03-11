@@ -4,8 +4,9 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import type { PartnerCategory } from './PartnerCard';
 import type { Thematic } from './ThematicTag';
-import { MapPin, Upload, ChevronRight, ChevronLeft, CheckCircle2 } from 'lucide-react';
+import { MapPin, Upload, ChevronRight, ChevronLeft, CheckCircle2, CalendarDays, Mail, Clock } from 'lucide-react';
 import { PARTNERS_API } from '../../config/api';
+import { BOOKING_URL } from '../../config/booking';
 
 interface PartnerFormModalProps {
     isOpen: boolean;
@@ -99,11 +100,18 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
     };
 
     const selectAddress = (suggestion: any) => {
+        const addr = suggestion.address || {};
+        const houseNumber = addr.house_number || '';
+        const road = addr.road || '';
+        const fullStreet = houseNumber && road
+            ? `${houseNumber} ${road}`
+            : road || suggestion.display_name.split(',').slice(0, 2).join(',').trim();
+
         setFormData(prev => ({
             ...prev,
-            address: suggestion.display_name.split(',')[0],
-            city: suggestion.address?.city || suggestion.address?.town || suggestion.address?.village || '',
-            postal_code: suggestion.address?.postcode || '',
+            address: fullStreet,
+            city: addr.city || addr.town || addr.village || addr.municipality || '',
+            postal_code: addr.postcode || '',
             latitude: parseFloat(suggestion.lat),
             longitude: parseFloat(suggestion.lon)
         }));
@@ -120,7 +128,7 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
             Object.entries(formData).forEach(([key, value]) => {
                 if (key === 'thematics') {
                     form.append(key, JSON.stringify(value));
-                } else if (value) {
+                } else if (value !== '' && value !== null && value !== undefined) {
                     form.append(key, String(value));
                 }
             });
@@ -139,9 +147,17 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
             if (res.ok) {
                 setSuccess(true);
             } else {
-                setError(data.detail || "Une erreur est survenue");
+                // FastAPI 422 returns detail as array — extract readable message
+                const detail = data.detail;
+                if (typeof detail === 'string') {
+                    setError(detail);
+                } else if (Array.isArray(detail)) {
+                    setError(detail.map((d: { msg?: string }) => d.msg || '').join(', ') || "Erreur de validation");
+                } else {
+                    setError("Une erreur est survenue lors de l'envoi");
+                }
             }
-        } catch (err) {
+        } catch {
             setError("Erreur de connexion au serveur");
         } finally {
             setIsSubmitting(false);
@@ -300,15 +316,63 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Devenir Partenaire ECHO" className="max-w-2xl">
             {success ? (
-                <div className="text-center py-10 space-y-4">
-                    <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto text-green-500">
-                        <CheckCircle2 size={32} />
+                <div className="py-8 space-y-6">
+                    {/* Success Header */}
+                    <div className="text-center space-y-3">
+                        <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto text-green-500">
+                            <CheckCircle2 size={32} />
+                        </div>
+                        <h3 className="text-2xl font-serif text-white">Candidature envoyée avec succès !</h3>
+                        <p className="text-echo-textMuted text-sm max-w-md mx-auto">
+                            Merci pour votre engagement auprès du Mouvement ECHO.
+                        </p>
                     </div>
-                    <h3 className="text-2xl font-serif text-white">Demande envoyée !</h3>
-                    <p className="text-echo-textMuted">
-                        Merci pour votre engagement. Notre équipe étudiera votre demande et vous recevrez un email de confirmation prochainement.
-                    </p>
-                    <Button onClick={onClose} className="mt-4">Fermer</Button>
+
+                    {/* Next Steps */}
+                    <div className="space-y-3 max-w-md mx-auto">
+                        <div className="flex items-start gap-3 p-3 bg-white/5 border border-white/10 rounded-lg">
+                            <Mail size={18} className="text-echo-gold mt-0.5 shrink-0" />
+                            <div>
+                                <p className="text-sm text-white font-medium">Email de confirmation envoyé</p>
+                                <p className="text-xs text-echo-textMuted mt-0.5">
+                                    Un email a été envoyé à <span className="text-white">{formData.contact_email}</span> avec les détails de votre candidature.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start gap-3 p-3 bg-white/5 border border-white/10 rounded-lg">
+                            <Clock size={18} className="text-echo-gold mt-0.5 shrink-0" />
+                            <div>
+                                <p className="text-sm text-white font-medium">Examen de votre dossier</p>
+                                <p className="text-xs text-echo-textMuted mt-0.5">
+                                    Notre équipe examinera votre demande sous 48h et vous notifiera par email de la décision.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start gap-3 p-3 bg-echo-gold/10 border border-echo-gold/20 rounded-lg">
+                            <CalendarDays size={18} className="text-echo-gold mt-0.5 shrink-0" />
+                            <div>
+                                <p className="text-sm text-white font-medium">Prenez rendez-vous avec l'équipe</p>
+                                <p className="text-xs text-echo-textMuted mt-0.5 mb-2">
+                                    Vous pouvez dès maintenant planifier un échange avec l'équipe ECHO pour discuter de votre partenariat.
+                                </p>
+                                <a
+                                    href={BOOKING_URL}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-echo-gold/20 border border-echo-gold/40 rounded-md text-xs font-medium text-echo-gold hover:bg-echo-gold/30 transition-colors"
+                                >
+                                    <CalendarDays size={14} />
+                                    Prendre rendez-vous
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="text-center pt-2">
+                        <Button onClick={onClose}>Fermer</Button>
+                    </div>
                 </div>
             ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">

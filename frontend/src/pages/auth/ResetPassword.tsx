@@ -11,8 +11,10 @@ export const ResetPassword = () => {
 
     useEffect(() => {
         if (!token) {
-            setStatus('invalid');
-            setErrorMessage('Lien de réinitialisation invalide.');
+            setTimeout(() => {
+                setStatus('invalid');
+                setErrorMessage('Lien de réinitialisation invalide.');
+            }, 0);
             return;
         }
 

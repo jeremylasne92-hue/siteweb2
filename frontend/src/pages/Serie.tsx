@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Play, BookOpen, Facebook, Linkedin, Twitter, Flame, Mountain, Star, Instagram, Palette, Gamepad2, Bell, BellRing } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
+import { SEO } from '../components/seo/SEO';
 import { useAuthStore } from '../features/auth/store';
 import { API_URL } from '../config/api';
 
@@ -147,7 +148,7 @@ export function Serie() {
         })
             .then((res) => res.ok ? res.json() : [])
             .then(setMyOptins)
-            .catch(() => {});
+            .catch(() => { });
     }, [isAuthenticated]);
 
     const isOptedIn = useCallback((episodeIndex: number) => {
@@ -195,20 +196,6 @@ export function Serie() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // SEO dynamique
-    useEffect(() => {
-        document.title = 'La Série ECHO - Une encyclopédie moderne en 3 saisons';
-        const metaDescription = document.querySelector('meta[name="description"]');
-        if (metaDescription) {
-            metaDescription.setAttribute('content', 'Découvrez ECHO, la websérie événement inspirée de Dante. 33 épisodes pour comprendre le monde et agir.');
-        } else {
-            const meta = document.createElement('meta');
-            meta.name = 'description';
-            meta.content = 'Découvrez ECHO, la websérie événement inspirée de Dante. 33 épisodes pour comprendre le monde et agir.';
-            document.head.appendChild(meta);
-        }
-    }, []);
-
     const scrollToSection = (id: string) => {
         const element = document.getElementById(id);
         if (element) {
@@ -226,6 +213,11 @@ export function Serie() {
 
     return (
         <div className="flex flex-col min-h-screen bg-[#0A0A0A] text-white">
+            <SEO
+                title="La Série"
+                description="33 épisodes inspirés de la Divine Comédie de Dante pour comprendre le monde, décrypter ses vices et identifier des solutions réelles."
+                url="https://mouvement-echo.fr/serie"
+            />
             {/* HERO SECTION */}
             <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-echo-red/20 via-black to-black z-10" />

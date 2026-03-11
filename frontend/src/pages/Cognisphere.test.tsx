@@ -13,7 +13,7 @@ describe('Cognisphere - Story 2.3 Candidatures Anti-Spam', () => {
     it('affiche le formulaire de candidature technique (FR17)', () => {
         renderPage();
         expect(screen.getByText("Rejoindre l'équipe technique")).toBeInTheDocument();
-        expect(screen.getByPlaceholderText('Votre nom')).toBeInTheDocument();
+        expect(screen.getByPlaceholderText('Votre prénom et nom')).toBeInTheDocument();
         expect(screen.getByPlaceholderText('votre@email.com')).toBeInTheDocument();
     });
 
@@ -24,8 +24,8 @@ describe('Cognisphere - Story 2.3 Candidatures Anti-Spam', () => {
         expect(honeypot.tabIndex).toBe(-1);
     });
 
-    it('le bouton Envoyer est présent', () => {
+    it('le bouton Suivant est présent à la première étape', () => {
         renderPage();
-        expect(screen.getByText('Envoyer ma candidature')).toBeInTheDocument();
+        expect(screen.getByText('Suivant')).toBeInTheDocument();
     });
 });

@@ -1,17 +1,17 @@
 import React from 'react';
 import { Card } from '../ui/Card';
-import { MapPin, ExternalLink } from 'lucide-react';
+import { MapPin, ExternalLink, Mail, Phone } from 'lucide-react';
 import { ThematicTag } from './ThematicTag';
 
 export type PartnerCategory = 'expert' | 'financier' | 'audiovisuel' | 'education' | 'membre';
 
-// Temporary type matching backend response
 export interface Partner {
     id: string;
     name: string;
     slug: string;
     logo_url?: string;
     description: string;
+    description_long?: string;
     category: PartnerCategory;
     thematics: string[];
     city: string;
@@ -19,6 +19,19 @@ export interface Partner {
     is_featured?: boolean;
     latitude?: number;
     longitude?: number;
+    // Contact
+    contact_name?: string;
+    contact_role?: string;
+    contact_email?: string;
+    contact_phone?: string;
+    // Location
+    address?: string;
+    postal_code?: string;
+    // Social
+    website_url?: string;
+    linkedin_url?: string;
+    instagram_url?: string;
+    twitter_url?: string;
 }
 
 interface PartnerCardProps {
@@ -108,6 +121,24 @@ export const PartnerCard: React.FC<PartnerCardProps> = ({ partner, onClick }) =>
                         <ExternalLink className="w-3 h-3" />
                     </div>
                 </div>
+
+                {/* Contact direct */}
+                {(partner.contact_email || partner.contact_phone) && (
+                    <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
+                        {partner.contact_email && (
+                            <a href={`mailto:${partner.contact_email}`} className="flex items-center gap-1 hover:text-echo-gold transition-colors" onClick={(e) => e.stopPropagation()}>
+                                <Mail className="w-3.5 h-3.5" />
+                                <span>Email</span>
+                            </a>
+                        )}
+                        {partner.contact_phone && (
+                            <a href={`tel:${partner.contact_phone}`} className="flex items-center gap-1 hover:text-echo-gold transition-colors" onClick={(e) => e.stopPropagation()}>
+                                <Phone className="w-3.5 h-3.5" />
+                                <span>Appeler</span>
+                            </a>
+                        )}
+                    </div>
+                )}
             </div>
         </Card>
     );

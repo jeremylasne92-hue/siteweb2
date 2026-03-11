@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Mail, MapPin, Send, Instagram, Twitter, Linkedin, Facebook } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
+import { SEO } from '../components/seo/SEO';
 
 export function Contact() {
     const [submitted, setSubmitted] = useState(false);
@@ -13,6 +14,11 @@ export function Contact() {
 
     return (
         <section className="relative min-h-[80vh] flex items-center justify-center py-20 bg-echo-darker">
+            <SEO
+                title="Contact"
+                description="Une question ? Une proposition de partenariat ? Contactez l'équipe du mouvement ECHO."
+                url="https://mouvement-echo.fr/contact"
+            />
             <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1516387938699-a93567ec168e?q=80&w=2671&auto=format&fit=crop')] bg-cover bg-center opacity-10" />
 
             <div className="container mx-auto px-4 relative z-10">

@@ -586,3 +586,83 @@ async def admin_edit_partner(
         raise HTTPException(status_code=404, detail="Partner not found")
 
     return {"success": True, "message": "Partenaire mis à jour"}
+
+
+@router.post("/admin/{partner_id}/logo")
+async def admin_upload_logo(
+    partner_id: str,
+    logo: UploadFile = File(...),
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Admin uploads a logo for a partner"""
+    partner = await db.partners.find_one({"id": partner_id})
+    if not partner:
+        raise HTTPException(status_code=404, detail="Partner not found")
+    
+    # Validate content type
+    ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp"}
+    if logo.content_type not in ALLOWED_TYPES:
+        raise HTTPException(status_code=400, detail="Type de fichier non autorisé. Formats acceptés: JPEG, PNG, WebP")
+    
+    # Validate file size (max 2 Mo)
+    contents = await logo.read()
+    if len(contents) > 2 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Le fichier ne doit pas dépasser 2 Mo")
+    
+    # Validate real image content via Pillow
+    try:
+        img = Image.open(io.BytesIO(contents))
+        img.verify()
+    except Exception:
+        raise HTTPException(status_code=400, detail="Le fichier n'est pas une image valide")
+    
+    # Delete old logo file if exists
+    if partner.get("logo_url"):
+        old_path = partner["logo_url"].replace("/api/uploads/", "uploads/")
+        if os.path.exists(old_path):
+            os.remove(old_path)
+    
+    # Save new logo
+    upload_dir = "uploads/partners/logos"
+    os.makedirs(upload_dir, exist_ok=True)
+    ext = os.path.splitext(logo.filename or "logo.png")[1].lower()
+    if ext not in [".jpg", ".jpeg", ".png", ".webp"]:
+        ext = ".png"
+    safe_filename = f"{partner_id}_{uuid_mod.uuid4().hex[:8]}{ext}"
+    file_path = os.path.join(upload_dir, safe_filename)
+    
+    with open(file_path, "wb") as buffer:
+        buffer.write(contents)
+    
+    logo_url = f"/api/uploads/partners/logos/{safe_filename}"
+    await db.partners.update_one(
+        {"id": partner_id},
+        {"$set":  {"logo_url": logo_url, "updated_at": datetime.utcnow()}}
+    )
+    
+    return {"success": True, "logo_url": logo_url}
+
+
+@router.delete("/admin/{partner_id}/logo")
+async def admin_delete_logo(
+    partner_id: str,
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Admin deletes a partner's logo"""
+    partner = await db.partners.find_one({"id": partner_id})
+    if not partner:
+        raise HTTPException(status_code=404, detail="Partner not found")
+    
+    if partner.get("logo_url"):
+        old_path = partner["logo_url"].replace("/api/uploads/", "uploads/")
+        if os.path.exists(old_path):
+            os.remove(old_path)
+    
+    await db.partners.update_one(
+        {"id": partner_id},
+        {"$set":  {"logo_url": None, "updated_at": datetime.utcnow()}}
+    )
+    
+    return {"success": True, "message": "Logo supprimé"}

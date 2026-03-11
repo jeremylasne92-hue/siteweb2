@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import type { Partner, PartnerCategory } from './PartnerCard';
-import { ExternalLink, MapPin } from 'lucide-react';
+import { ExternalLink, MapPin, Mail, Phone } from 'lucide-react';
 
 interface PartnersMapProps {
     partners: Partner[];
@@ -91,10 +91,26 @@ export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerCli
                                     {partner.description}
                                 </p>
 
-                                <div className="flex items-center gap-1 text-xs text-gray-400 mb-4">
+                                <div className="flex items-center gap-1 text-xs text-gray-400 mb-1">
                                     <MapPin className="w-3 h-3" />
                                     <span>{partner.city}</span>
                                 </div>
+
+                                {partner.contact_email && (
+                                    <a href={`mailto:${partner.contact_email}`} className="flex items-center gap-1 text-xs text-gray-400 hover:text-echo-gold transition-colors mb-1" onClick={(e) => e.stopPropagation()}>
+                                        <Mail className="w-3 h-3" />
+                                        <span>{partner.contact_email}</span>
+                                    </a>
+                                )}
+                                {partner.contact_phone && (
+                                    <a href={`tel:${partner.contact_phone}`} className="flex items-center gap-1 text-xs text-gray-400 hover:text-echo-gold transition-colors mb-3" onClick={(e) => e.stopPropagation()}>
+                                        <Phone className="w-3 h-3" />
+                                        <span>{partner.contact_phone}</span>
+                                    </a>
+                                )}
+                                {!partner.contact_email && !partner.contact_phone && (
+                                    <div className="mb-3" />
+                                )}
 
                                 <button
                                     onClick={(e) => {

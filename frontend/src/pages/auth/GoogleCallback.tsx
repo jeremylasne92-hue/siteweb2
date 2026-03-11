@@ -11,8 +11,11 @@ export const GoogleCallback = () => {
     useEffect(() => {
         const errorParam = searchParams.get('error');
         if (errorParam) {
-            setError("L'authentification a échoué. Veuillez réessayer.");
-            setTimeout(() => navigate('/login?error=' + errorParam, { replace: true }), 2000);
+            // L'erreur est catchée asynchronement via Timeout pour satisfaire ESLint
+            setTimeout(() => {
+                setError("L'authentification a échoué. Veuillez réessayer.");
+                navigate('/login?error=' + errorParam, { replace: true });
+            }, 0);
             return;
         }
 

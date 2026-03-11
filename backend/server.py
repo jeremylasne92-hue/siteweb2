@@ -8,7 +8,7 @@ import logging
 from pathlib import Path
 
 # Import routes
-from routes import auth, episodes, progress, videos, users, thematics, resources, partners, candidatures, events
+from routes import auth, episodes, progress, videos, users, thematics, resources, partners, candidatures, events, analytics
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -40,6 +40,7 @@ api_router.include_router(partners.router)
 api_router.include_router(episodes.router)
 api_router.include_router(candidatures.router)
 api_router.include_router(events.router)
+api_router.include_router(analytics.router)
 
 # Health check endpoint
 @api_router.get("/")
@@ -73,6 +74,7 @@ logger = logging.getLogger(__name__)
 async def startup_indexes():
     """Create TTL and compound indexes for rate limiting auto-cleanup."""
     from utils.rate_limit import ensure_rate_limit_indexes
+    app.db = db
     await ensure_rate_limit_indexes(db)
     logger.info("Rate limit indexes ensured")
 

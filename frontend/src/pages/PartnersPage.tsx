@@ -5,6 +5,7 @@ import { PartnersStats } from '../components/partners/PartnersStats';
 import { PartnersFilters, PartnersViewSwitch } from '../components/partners/PartnersFilters';
 import { PartnersGrid } from '../components/partners/PartnersGrid';
 import { PartnerModal } from '../components/partners/PartnerModal';
+import { SEO } from '../components/seo/SEO';
 
 // Lazy-load map component (Leaflet ~180 KB, only needed for map view)
 const PartnersMap = lazy(() =>
@@ -82,6 +83,11 @@ export default function PartnersPage() {
 
     return (
         <Layout>
+            <SEO
+                title="L'Écosystème"
+                description="Découvrez l'ECHOSystem : un réseau de partenaires engagés qui tentent de changer positivement ce monde."
+                url="https://mouvement-echo.fr/partenaires"
+            />
             <PartnersHero onApplyClick={() => setIsFormOpen(true)} />
 
             <PartnersStats stats={stats} />

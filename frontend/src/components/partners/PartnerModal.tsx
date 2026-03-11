@@ -87,15 +87,14 @@ export const PartnerModal: React.FC<PartnerModalProps> = ({ partner, isOpen, onC
 
                     <div className="space-y-6">
                         {/* Contact Person */}
-                        {/* Extended properties exist only on the full Partner model, so we assert type */}
-                        {(partner as any).contact_name && (
+                        {partner.contact_name && (
                             <div>
                                 <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Référent</h4>
                                 <div className="flex items-start gap-3 text-sm text-gray-300">
                                     <User className="w-4 h-4 text-gray-500 mt-0.5" />
                                     <div>
-                                        <div className="font-medium text-white">{(partner as any).contact_name}</div>
-                                        {(partner as any).contact_role && <div className="text-gray-400">{(partner as any).contact_role}</div>}
+                                        <div className="font-medium text-white">{partner.contact_name}</div>
+                                        {partner.contact_role && <div className="text-gray-400">{partner.contact_role}</div>}
                                     </div>
                                 </div>
                             </div>
@@ -105,45 +104,47 @@ export const PartnerModal: React.FC<PartnerModalProps> = ({ partner, isOpen, onC
                         <div>
                             <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Contact</h4>
                             <ul className="space-y-3">
-                                {(partner as any).contact_email && (
+                                {partner.contact_email && (
                                     <li className="flex items-center gap-3 text-sm text-gray-300">
                                         <Mail className="w-4 h-4 text-gray-500" />
-                                        <a href={`mailto:${(partner as any).contact_email}`} className="hover:text-echo-gold transition-colors">
-                                            {(partner as any).contact_email}
+                                        <a href={`mailto:${partner.contact_email}`} className="hover:text-echo-gold transition-colors">
+                                            {partner.contact_email}
                                         </a>
                                     </li>
                                 )}
-                                {(partner as any).contact_phone && (
+                                {partner.contact_phone && (
                                     <li className="flex items-center gap-3 text-sm text-gray-300">
                                         <Phone className="w-4 h-4 text-gray-500" />
-                                        <span>{(partner as any).contact_phone}</span>
+                                        <a href={`tel:${partner.contact_phone}`} className="hover:text-echo-gold transition-colors">
+                                            {partner.contact_phone}
+                                        </a>
                                     </li>
                                 )}
                             </ul>
                         </div>
 
                         {/* Web & Social */}
-                        {((partner as any).website_url || (partner as any).linkedin_url || (partner as any).instagram_url || (partner as any).twitter_url) && (
+                        {(partner.website_url || partner.linkedin_url || partner.instagram_url || partner.twitter_url) && (
                             <div>
                                 <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Réseaux</h4>
                                 <div className="flex flex-wrap gap-3">
-                                    {(partner as any).website_url && (
-                                        <a href={(partner as any).website_url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:bg-white/10 hover:text-white transition-all">
+                                    {partner.website_url && (
+                                        <a href={partner.website_url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:bg-white/10 hover:text-white transition-all">
                                             <Globe className="w-4 h-4" />
                                         </a>
                                     )}
-                                    {(partner as any).linkedin_url && (
-                                        <a href={(partner as any).linkedin_url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#0A66C2]/10 border border-[#0A66C2]/20 flex items-center justify-center text-[#0A66C2] hover:bg-[#0A66C2] hover:text-white transition-all">
+                                    {partner.linkedin_url && (
+                                        <a href={partner.linkedin_url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#0A66C2]/10 border border-[#0A66C2]/20 flex items-center justify-center text-[#0A66C2] hover:bg-[#0A66C2] hover:text-white transition-all">
                                             <Linkedin className="w-4 h-4" />
                                         </a>
                                     )}
-                                    {(partner as any).twitter_url && (
-                                        <a href={(partner as any).twitter_url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:bg-white/10 hover:text-white transition-all">
+                                    {partner.twitter_url && (
+                                        <a href={partner.twitter_url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:bg-white/10 hover:text-white transition-all">
                                             <Twitter className="w-4 h-4" />
                                         </a>
                                     )}
-                                    {(partner as any).instagram_url && (
-                                        <a href={(partner as any).instagram_url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#E1306C]/10 border border-[#E1306C]/20 flex items-center justify-center text-[#E1306C] hover:bg-gradient-to-tr hover:from-[#F56040] hover:to-[#833AB4] hover:text-white transition-all">
+                                    {partner.instagram_url && (
+                                        <a href={partner.instagram_url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#E1306C]/10 border border-[#E1306C]/20 flex items-center justify-center text-[#E1306C] hover:bg-gradient-to-tr hover:from-[#F56040] hover:to-[#833AB4] hover:text-white transition-all">
                                             <Instagram className="w-4 h-4" />
                                         </a>
                                     )}
@@ -161,15 +162,15 @@ export const PartnerModal: React.FC<PartnerModalProps> = ({ partner, isOpen, onC
                         <div className="prose prose-invert max-w-none">
                             {/* Fallback to short description if long doesn't exist yet */}
                             <p className="text-gray-300 leading-relaxed whitespace-pre-wrap text-base">
-                                {(partner as any).description_long || partner.description}
+                                {partner.description_long || partner.description}
                             </p>
                         </div>
                     </div>
 
                     {/* Visiter le site */}
-                    {(partner as any).website_url && (
+                    {partner.website_url && (
                         <a
-                            href={(partner as any).website_url}
+                            href={partner.website_url}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 px-5 py-2.5 mb-10 rounded-lg text-sm font-medium transition-all"
@@ -191,17 +192,17 @@ export const PartnerModal: React.FC<PartnerModalProps> = ({ partner, isOpen, onC
 
                         <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-4">
                             <p className="text-gray-300">
-                                {(partner as any).address}<br />
-                                {partner.city}, {(partner as any).postal_code}<br />
+                                {partner.address}<br />
+                                {partner.city}, {partner.postal_code}<br />
                                 {partner.country}
                             </p>
                         </div>
 
                         {/* Mini Map */}
-                        {(partner as any).latitude && (partner as any).longitude && (
+                        {partner.latitude && partner.longitude && (
                             <div className="h-48 w-full rounded-xl overflow-hidden border border-white/10 relative z-0">
                                 <MapContainer
-                                    center={[(partner as any).latitude, (partner as any).longitude]}
+                                    center={[partner.latitude, partner.longitude]}
                                     zoom={14}
                                     zoomControl={false}
                                     dragging={false}
@@ -213,7 +214,7 @@ export const PartnerModal: React.FC<PartnerModalProps> = ({ partner, isOpen, onC
                                         url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                                     />
                                     <Marker
-                                        position={[(partner as any).latitude, (partner as any).longitude]}
+                                        position={[partner.latitude, partner.longitude]}
                                         icon={createMiniIcon(partner.category)}
                                     />
                                 </MapContainer>

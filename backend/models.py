@@ -197,3 +197,14 @@ class Pending2FA(BaseModel):
     attempts: int = 0
     expires_at: datetime
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class AnalyticsEventCreate(BaseModel):
+    category: str = Field(min_length=1, max_length=50)
+    action: str = Field(min_length=1, max_length=50)
+    path: str = Field(min_length=1, max_length=200)
+
+
+class AnalyticsEvent(AnalyticsEventCreate):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    created_at: datetime = Field(default_factory=datetime.utcnow)

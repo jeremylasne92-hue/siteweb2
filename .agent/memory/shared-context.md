@@ -108,6 +108,7 @@ backend/
 
 | Tâche | Niveau | Justification |
 |-------|--------|---------------|
+| Proposition 4 (SEO OpenGraph) | 🟡 STANDARD | Injection dynamique de meta tags react-helmet-async dans le routeur et les pages. |
 | Proposition 3 (Micro-Analytique) | 🟡 STANDARD | Endpoint Custom Event Tracking (MongoDB) + Hook Frontend (sendBeacon). |
 | Proposition 1 (UX Onboarding Gamification) | 🟡 STANDARD | Refonte des formulaires d'inscription et de candidature en multi-étapes. |
 | Nettoyage Fin de Chantier (urllib3, pytest) | 🟢 HOTFIX | Retrait d'un mock HTTP de test et up-version d'une doc. Aucune complexité. |
@@ -126,6 +127,8 @@ backend/
 
 | Date | Décision | Agent |
 |------|----------|-------|
+| 2026-03-11 | SEO OpenGraph: Installation React Helmet Async, injection dynamique du composant `<SEO>` sur Home, Serie, Mouvement, Partners, Support et Contact. | Antigravity (Gemini) |
+| 2026-03-11 | Micro-Analytique RGPD: Tracking cookieless en `navigator.sendBeacon` sur le FE. API `202 Accepted` MongoDB. | Antigravity (Gemini) |
 | 2026-03-11 | Admin: édition partenaire (tous champs) + masquer/réactiver (suspend) + bouton logout Header (menu déroulant utilisateur) | Claude Code (Opus 4.6) |
 | 2026-03-11 | UX Onboarding: Refonte totale de `RegisterForm.tsx` et `TechApplicationForm.tsx` en formulaires multi-étapes avec composant de jauge `<StepProgress />`. Gamification. | Antigravity (Gemini) |
 | 2026-03-11 | Optimisation MVP: Code-Splitting sur App.tsx (React.lazy) pour les routes publiques + extraction des manualChunks (lucide-react, react-hook-form) sur Vite. Bundle index allégé. | Antigravity (Gemini) |
@@ -160,6 +163,8 @@ backend/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-11 | 🟡 STANDARD | Proposition 4 (SEO OpenGraph) | ~30min (Frontend Vite) | Antigravity (Gemini) |
+| 2026-03-11 | 🟡 STANDARD | Proposition 3 (Micro-Analytique RGPD) | ~40min (Backend ASYNC + Frontend CTA hooks) | Antigravity (Gemini) |
 | 2026-03-11 | 🟡 STANDARD | Admin Edit/Hide Partner + Logout | ~30min (Backend + Frontend) | Claude Code (Opus 4.6) |
 | 2026-03-11 | 🟡 STANDARD | Proposition 1 (UX Onboarding Gamification) | ~1h (Frontend UI) | Antigravity (Gemini) |
 | 2026-03-11 | 🟡 STANDARD | Optimisation Bundle (Code-Splitting) | ~20min (Frontend Vite + Router) | Antigravity (Gemini) |
@@ -182,10 +187,7 @@ backend/
 
 | Fichier | Agent | Depuis | Expiration |
 |---------|-------|--------|------------|
-| `backend/models.py` | Antigravity | 2026-03-11T14:10:00 | 2026-03-11T16:10:00 |
-| `backend/server.py` | Antigravity | 2026-03-11T14:10:00 | 2026-03-11T16:10:00 |
-| `backend/routes/analytics.py` | Antigravity | 2026-03-11T14:10:00 | 2026-03-11T16:10:00 |
-| `frontend/src/utils/analytics.ts` | Antigravity | 2026-03-11T14:10:00 | 2026-03-11T16:10:00 |
+| _Aucun lock actif_ | - | - | - |
 
 ---
 

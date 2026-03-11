@@ -1,10 +1,15 @@
 import { Play, Users, Link as LinkIcon } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Link } from 'react-router-dom';
+import { SEO } from '../components/seo/SEO';
 
 export function Home() {
     return (
         <div className="flex flex-col">
+            <SEO
+                title="Accueil"
+                description="Découvrez ECHO, un mouvement citoyen né d'une websérie documentaire événement. Rejoignez-nous pour comprendre, fédérer et agir."
+            />
             {/* Hero Section */}
             <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
                 {/* Background Placeholder - Replace with Video later */}
