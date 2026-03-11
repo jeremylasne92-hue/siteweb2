@@ -108,6 +108,7 @@ backend/
 
 | Tâche | Niveau | Justification |
 |-------|--------|---------------|
+| Nettoyage Fin de Chantier (urllib3, pytest) | 🟢 HOTFIX | Retrait d'un mock HTTP de test et up-version d'une doc. Aucune complexité. |
 | Story 4.4 Export Email Opt-In | 🟡 STANDARD | Backend endpoint CSV + frontend page admin + tests |
 | Story 4.1 Panel Administration Securise | 🟡 STANDARD | Frontend : dashboard hub + fix ProtectedRoute + lien Header |
 | Story 3.4 Prise de RDV Google Calendar | 🟢 HOTFIX | Frontend uniquement, bouton + lien externe |
@@ -236,7 +237,6 @@ _Aucune spec en cours._
 
 ### Notes techniques
 
-- Plugin `pytest-recording` (vcrpy) incompatible avec urllib3 — utiliser `-p no:recording` ou downgrader urllib3<2.
 - Frontend bundle : Code Splitting (React.lazy) en place pour différer le chargement des routes. L'index est à ~230kB `(gzip ~72kB)`.
 - Routes protégées : `/admin` (admin), `/admin/partenaires` (admin), `/admin/events` (admin), `/admin/exports` (admin), `/mon-compte/partenaire`
 - Routes publiques (anciennement protégées) : `/cognisphere`, `/echolink`
