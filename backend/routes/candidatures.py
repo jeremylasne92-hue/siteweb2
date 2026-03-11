@@ -4,6 +4,7 @@ from routes.auth import get_db
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from datetime import datetime, timedelta
 from email_service import send_email
+from utils.rate_limit import anonymize_ip
 import logging
 
 logger = logging.getLogger(__name__)
@@ -45,7 +46,7 @@ async def submit_tech_candidature(
         project=data.project,
         skills=data.skills,
         message=data.message,
-        ip_address=client_ip,
+        ip_address=anonymize_ip(client_ip),
     )
     await db.tech_candidatures.insert_one(candidature.model_dump())
     logger.info(f"New tech candidature from {data.name} for {data.project}")

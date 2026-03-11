@@ -18,6 +18,7 @@ from models import User, UserRole, UserCreate
 from models_partner import Partner, PartnerCategory, PartnerStatus, ThematicRef
 from routes.auth import get_current_user, require_admin, get_db, hash_password
 from email_service import send_email
+from utils.rate_limit import anonymize_ip
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 logger = logging.getLogger(__name__)
@@ -292,7 +293,7 @@ async def apply_partnership(
         twitter_url=twitter_url,
         user_id=user_doc.id,
         status=PartnerStatus.PENDING,
-        ip_address=client_ip
+        ip_address=anonymize_ip(client_ip)
     )
     
     await db.partners.insert_one(partner.model_dump())

@@ -6,9 +6,9 @@ import { cn } from '../components/ui/Button';
 import {
     User, MapPin, Phone, Upload,
     CheckCircle2, Clock, XCircle, AlertTriangle,
-    Save, Calendar, ExternalLink
+    Save, Calendar, ExternalLink, Download, Trash2
 } from 'lucide-react';
-import { PARTNERS_API } from '../config/api';
+import { PARTNERS_API, API_URL } from '../config/api';
 import { BOOKING_URL } from '../config/booking';
 
 const API_BASE = PARTNERS_API;
@@ -59,6 +59,9 @@ export default function MyPartnerAccount() {
     const [isSaving, setIsSaving] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [newLogo, setNewLogo] = useState<File | null>(null);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [isExporting, setIsExporting] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     // Editable fields
     const [form, setForm] = useState({
@@ -174,6 +177,50 @@ export default function MyPartnerAccount() {
                 setTimeout(() => setSaveSuccess(false), 3000);
             }
         } catch { /* ignore */ } finally { setIsSaving(false); }
+    };
+
+    const handleExportData = async () => {
+        setIsExporting(true);
+        try {
+            const res = await fetch(`${API_URL}/auth/me/export`, { credentials: 'include' });
+            if (res.ok) {
+                const data = await res.json();
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'mes-donnees-echo.json';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+            }
+        } catch (err) {
+            console.error('Export failed', err);
+        } finally {
+            setIsExporting(false);
+        }
+    };
+
+    const handleDeleteAccount = async () => {
+        setIsDeleting(true);
+        try {
+            // Fetch current user ID first
+            const meRes = await fetch(`${API_URL}/auth/me`, { credentials: 'include' });
+            if (!meRes.ok) return;
+            const me = await meRes.json();
+            const res = await fetch(`${API_URL}/auth/user/${me.id}`, {
+                method: 'DELETE',
+                credentials: 'include',
+            });
+            if (res.ok) {
+                window.location.href = '/';
+            }
+        } catch (err) {
+            console.error('Delete failed', err);
+        } finally {
+            setIsDeleting(false);
+        }
     };
 
     if (isLoading) {
@@ -384,8 +431,50 @@ export default function MyPartnerAccount() {
                             </div>
                         </div>
                     </div>
+
+                    {/* RGPD — Données personnelles */}
+                    <div className="mt-10 pt-8 border-t border-red-500/20">
+                        <h3 className="text-lg font-serif text-white mb-2">Donnees personnelles</h3>
+                        <p className="text-sm text-gray-400 mb-4">
+                            Conformement au RGPD, vous pouvez exporter ou supprimer vos donnees.
+                        </p>
+                        <div className="flex flex-wrap gap-3">
+                            <button onClick={handleExportData} disabled={isExporting}
+                                className="flex items-center gap-2 px-4 py-2 text-sm bg-white/5 border border-white/10 rounded-lg text-gray-300 hover:bg-white/10 transition-colors disabled:opacity-50">
+                                <Download size={16} />
+                                {isExporting ? 'Export...' : 'Exporter mes donnees'}
+                            </button>
+                            <button onClick={() => setShowDeleteConfirm(true)}
+                                className="flex items-center gap-2 px-4 py-2 text-sm bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 hover:bg-red-500/20 transition-colors">
+                                <Trash2 size={16} />
+                                Supprimer mon compte
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            {/* Delete confirmation modal */}
+            {showDeleteConfirm && (
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+                    <div className="bg-[#1a1a1a] border border-white/10 rounded-xl p-6 max-w-md w-full">
+                        <h3 className="text-lg font-serif text-white mb-3">Supprimer votre compte ?</h3>
+                        <p className="text-sm text-gray-400 mb-6">
+                            Cette action est irreversible. Toutes vos donnees seront definitivement supprimees.
+                        </p>
+                        <div className="flex gap-3 justify-end">
+                            <button onClick={() => setShowDeleteConfirm(false)}
+                                className="px-4 py-2 text-sm bg-white/5 border border-white/10 rounded-lg text-gray-300 hover:bg-white/10">
+                                Annuler
+                            </button>
+                            <button onClick={handleDeleteAccount} disabled={isDeleting}
+                                className="px-4 py-2 text-sm bg-red-600 rounded-lg text-white hover:bg-red-700 disabled:opacity-50">
+                                {isDeleting ? 'Suppression...' : 'Confirmer la suppression'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </Layout>
     );
 }

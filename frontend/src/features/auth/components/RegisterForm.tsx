@@ -30,6 +30,7 @@ export const RegisterForm = () => {
             password: '',
             password_confirm: '',
             age_consent: false,
+            rgpd_consent: false,
         },
         mode: 'onChange',
     });
@@ -167,6 +168,34 @@ export const RegisterForm = () => {
                 {errors.age_consent && (
                     <p className="text-xs text-red-500 font-medium text-center bg-red-500/10 p-2 rounded-lg border border-red-500/20">
                         {errors.age_consent.message}
+                    </p>
+                )}
+
+                {/* RGPD consent checkbox */}
+                <div className={`flex items-start space-x-3 bg-white/5 p-4 rounded-lg border transition-colors hover:bg-white/10 ${errors.rgpd_consent ? 'border-red-500/50' : 'border-white/10'}`}>
+                    <div className="flex items-center h-5 mt-0.5">
+                        <input
+                            id="rgpd_consent"
+                            type="checkbox"
+                            className="w-4 h-4 text-echo-gold bg-transparent border-white/40 rounded focus:ring-echo-gold focus:ring-2 cursor-pointer"
+                            {...register('rgpd_consent')}
+                        />
+                    </div>
+                    <div className="text-sm">
+                        <label htmlFor="rgpd_consent" className="font-medium text-white cursor-pointer select-none">
+                            J'accepte la politique de confidentialité
+                        </label>
+                        <p className="text-echo-textMuted mt-1 text-xs">
+                            Vos données sont traitées conformément à notre{' '}
+                            <a href="/politique-de-confidentialite" target="_blank" className="text-amber-500 hover:underline">
+                                politique de confidentialité
+                            </a>.
+                        </p>
+                    </div>
+                </div>
+                {errors.rgpd_consent && (
+                    <p className="text-xs text-red-500 font-medium text-center bg-red-500/10 p-2 rounded-lg border border-red-500/20">
+                        {errors.rgpd_consent.message}
                     </p>
                 )}
 

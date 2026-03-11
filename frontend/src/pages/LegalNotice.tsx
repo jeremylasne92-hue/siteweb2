@@ -30,7 +30,13 @@ export function LegalNotice() {
           </p>
           <ul className="text-gray-300 space-y-2 mt-4 ml-4">
             <li>
-              <strong className="text-white">Siège social :</strong> France
+              <strong className="text-white">Siège social :</strong> 59 quai Boissy d'Anglas, 78380 Bougival, France
+            </li>
+            <li>
+              <strong className="text-white">RNA :</strong> W784010993
+            </li>
+            <li>
+              <strong className="text-white">SIRET :</strong> 933 682 510 00013
             </li>
             <li>
               <strong className="text-white">E-mail :</strong>{' '}
@@ -50,8 +56,8 @@ export function LegalNotice() {
             2. Directeur de la publication
           </h2>
           <p className="text-gray-300 leading-relaxed">
-            Le directeur de la publication est le président de l'Association
-            Mouvement ECHO.
+            Les co-fondateurs et représentants de l'Association
+            Mouvement ECHO sont M. Jeremy Lasne et M. Eddyason Koffi.
           </p>
         </section>
 
@@ -60,10 +66,26 @@ export function LegalNotice() {
           <h2 className="text-2xl font-serif text-amber-500 mb-4">
             3. Hébergement
           </h2>
-          <p className="text-gray-300 leading-relaxed">
-            Le site est hébergé par{' '}
-            <strong className="text-white">Webstrator</strong>.
+          <p className="text-gray-300 leading-relaxed mb-2">
+            Le site est hébergé par :
           </p>
+          <ul className="text-gray-300 space-y-2 mt-2 ml-4">
+            <li>
+              <strong className="text-white">OVHcloud</strong>
+            </li>
+            <li>
+              2, rue Kellermann — 59100 Roubaix, France
+            </li>
+            <li>
+              Téléphone : +33 9 72 10 10 07
+            </li>
+            <li>
+              Site web :{' '}
+              <a href="https://www.ovhcloud.com" target="_blank" rel="noopener noreferrer" className="text-amber-500 hover:text-amber-400 underline">
+                www.ovhcloud.com
+              </a>
+            </li>
+          </ul>
         </section>
 
         {/* Propriété intellectuelle */}

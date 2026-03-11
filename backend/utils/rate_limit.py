@@ -7,6 +7,19 @@ Records are stored in the `rate_limits` collection with a TTL index
 on `created_at` for automatic cleanup (see ensure_rate_limit_indexes).
 """
 from fastapi import HTTPException, Request
+
+
+def anonymize_ip(ip: str) -> str:
+    """Anonymize IP address: mask last octet for IPv4, last 80 bits for IPv6."""
+    if not ip or ip == "unknown":
+        return ip
+    if '.' in ip:
+        parts = ip.split('.')
+        return '.'.join(parts[:3]) + '.0'
+    if ':' in ip:
+        parts = ip.split(':')
+        return ':'.join(parts[:4]) + '::0'
+    return ip
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from datetime import datetime, timedelta
 import logging

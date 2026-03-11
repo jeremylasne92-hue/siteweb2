@@ -25,6 +25,7 @@ class User(BaseModel):
     totp_secret: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     last_login: Optional[datetime] = None
+    email_opt_out: bool = False
 
     class Config:
         json_schema_extra = {

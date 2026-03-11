@@ -18,6 +18,9 @@ export const registerSchema = z.object({
     age_consent: z.boolean().refine(val => val === true, {
         message: 'Vous devez certifier avoir plus de 15 ans',
     }),
+    rgpd_consent: z.boolean().refine(val => val === true, {
+        message: 'Vous devez accepter la politique de confidentialité',
+    }),
 }).refine(data => data.password === data.password_confirm, {
     message: 'Les mots de passe ne correspondent pas',
     path: ['password_confirm'],

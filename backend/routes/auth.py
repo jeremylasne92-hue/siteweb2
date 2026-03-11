@@ -349,10 +349,63 @@ async def delete_user(
     await db.user_sessions.delete_many({"user_id": user_id})
     await db.video_progress.delete_many({"user_id": user_id})
     await db.pending_2fa.delete_many({"user_id": user_id})
-    
+    # Cascade: delete partner data
+    await db.partners.delete_many({"user_id": user_id})
+    # Cascade: delete tech candidatures by email
+    if current_user.email:
+        await db.tech_candidatures.delete_many({"email": current_user.email})
+    # Cascade: delete episode optins
+    await db.episode_optins.delete_many({"user_id": user_id})
+
     logger.info(f"Deleted user account: {user_id}")
-    
+
     return {"message": "Account deleted successfully"}
+
+
+@router.get("/me/export")
+async def export_my_data(
+    current_user: User = Depends(get_current_user),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Export all user data (RGPD right to data portability)"""
+    user_data = await db.users.find_one(
+        {"id": current_user.id},
+        {"_id": 0, "password_hash": 0, "totp_secret": 0}
+    )
+    sessions = await db.user_sessions.find(
+        {"user_id": current_user.id}, {"_id": 0}
+    ).to_list(None)
+    optins = await db.episode_optins.find(
+        {"user_id": current_user.id}, {"_id": 0}
+    ).to_list(None)
+    partner = await db.partners.find_one(
+        {"user_id": current_user.id}, {"_id": 0, "ip_address": 0}
+    )
+
+    export = {
+        "user": user_data,
+        "sessions": sessions,
+        "episode_optins": optins,
+        "partner": partner,
+        "exported_at": datetime.utcnow().isoformat(),
+    }
+
+    return export
+
+
+@router.get("/unsubscribe/{user_id}")
+async def unsubscribe_emails(
+    user_id: str,
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Unsubscribe from non-transactional emails (RGPD)"""
+    result = await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"email_opt_out": True}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"message": "Vous etes desinscrits des emails non-transactionnels."}
 
 
 @router.post("/logout")

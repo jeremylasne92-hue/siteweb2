@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+import { resetCookieConsent } from '../ui/CookieBanner';
 
 export function Footer() {
     return (
@@ -51,6 +52,11 @@ export function Footer() {
                             <FooterLink to="/politique-de-confidentialite">Confidentialité</FooterLink>
                             <FooterLink to="/mentions-legales">Mentions légales</FooterLink>
                             <FooterLink to="/cgu">CGU</FooterLink>
+                            <li>
+                                <button onClick={resetCookieConsent} className="text-echo-textMuted hover:text-echo-gold transition-colors text-sm">
+                                    Gérer mes cookies
+                                </button>
+                            </li>
                             <FooterLink to="/contact">Contact</FooterLink>
                         </ul>
                     </div>

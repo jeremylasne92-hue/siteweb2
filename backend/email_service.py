@@ -92,9 +92,24 @@ async def send_password_reset(email: str, reset_link: str) -> bool:
     return await _log_email(email, subject, f"Reset link: {reset_link}\nExpires in 1 hour.")
 
 
-async def send_email(email: str, subject: str, message: str) -> bool:
-    """Generic email sender for notifications."""
-    html = f"<div style='white-space:pre-line;'>{message}</div>"
+async def send_email(email: str, subject: str, message: str, user_id: str = None, db=None) -> bool:
+    """Generic email sender for notifications. Checks email_opt_out if user_id and db provided."""
+    # Check opt-out for non-transactional emails
+    if user_id and db:
+        user = await db.users.find_one({"id": user_id}, {"email_opt_out": 1})
+        if user and user.get("email_opt_out"):
+            logger.info(f"Email skipped for {email}: user opted out")
+            return True
+
+    unsubscribe = ""
+    if user_id:
+        base = settings.FRONTEND_URL if hasattr(settings, 'FRONTEND_URL') and settings.FRONTEND_URL else "https://mouvement-echo.fr"
+        unsubscribe = (
+            f'<p style="margin-top:20px;font-size:11px;color:#888;text-align:center;">'
+            f'Pour vous desinscrire des emails : '
+            f'<a href="{base}/api/auth/unsubscribe/{user_id}" style="color:#D4AF37;">cliquez ici</a></p>'
+        )
+    html = f"<div style='white-space:pre-line;'>{message}</div>{unsubscribe}"
     if _use_sendgrid():
         return await _send_via_sendgrid(email, subject, html)
     return await _log_email(email, subject, message)
