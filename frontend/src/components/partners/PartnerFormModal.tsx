@@ -52,6 +52,7 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
     });
 
     const [logoFile, setLogoFile] = useState<File | null>(null);
+    const [consentRGPD, setConsentRGPD] = useState(false);
     const [addressSuggestions, setAddressSuggestions] = useState<any[]>([]);
 
     // Reset on close
@@ -68,6 +69,7 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
                     website_url: '', linkedin_url: '', instagram_url: '', twitter_url: '', password: ''
                 });
                 setLogoFile(null);
+                setConsentRGPD(false);
             }, 300);
         }
     }, [isOpen]);
@@ -424,9 +426,27 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
                                 Suivant <ChevronRight className="ml-2 h-4 w-4" />
                             </Button>
                         ) : (
-                            <Button type="submit" disabled={!isStep4Valid || isSubmitting}>
-                                {isSubmitting ? "Envoi..." : "Soumettre la candidature"}
-                            </Button>
+                            <div className="flex flex-col items-end gap-3">
+                                <label className="flex items-start gap-3 text-sm text-gray-300 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={consentRGPD}
+                                        onChange={(e) => setConsentRGPD(e.target.checked)}
+                                        className="mt-1 accent-echo-gold shrink-0"
+                                        required
+                                    />
+                                    <span>
+                                        J'accepte que mes donnees soient traitees conformement a la{' '}
+                                        <a href="/politique-de-confidentialite" target="_blank" rel="noopener noreferrer"
+                                           className="text-echo-gold hover:underline">
+                                            politique de confidentialite
+                                        </a>.
+                                    </span>
+                                </label>
+                                <Button type="submit" disabled={!isStep4Valid || !consentRGPD || isSubmitting}>
+                                    {isSubmitting ? "Envoi..." : "Soumettre la candidature"}
+                                </Button>
+                            </div>
                         )}
                     </div>
                 </form>

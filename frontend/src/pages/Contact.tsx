@@ -6,10 +6,13 @@ import { SEO } from '../components/seo/SEO';
 
 export function Contact() {
     const [submitted, setSubmitted] = useState(false);
+    const [consentRGPD, setConsentRGPD] = useState(false);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        if (!consentRGPD) return;
         setSubmitted(true);
+        setConsentRGPD(false);
     };
 
     return (
@@ -106,8 +109,25 @@ export function Contact() {
                                     />
                                 </div>
 
+                                <label className="flex items-start gap-3 text-sm text-gray-300 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={consentRGPD}
+                                        onChange={(e) => setConsentRGPD(e.target.checked)}
+                                        className="mt-1 accent-echo-gold shrink-0"
+                                        required
+                                    />
+                                    <span>
+                                        J'accepte que mes donnees soient traitees conformement a la{' '}
+                                        <a href="/politique-de-confidentialite" target="_blank" rel="noopener noreferrer"
+                                           className="text-echo-gold hover:underline">
+                                            politique de confidentialite
+                                        </a>.
+                                    </span>
+                                </label>
+
                                 <div className="flex justify-end">
-                                    <Button variant="primary" className="flex items-center gap-2">
+                                    <Button variant="primary" className="flex items-center gap-2" disabled={!consentRGPD}>
                                         Envoyer <Send className="w-4 h-4" />
                                     </Button>
                                 </div>

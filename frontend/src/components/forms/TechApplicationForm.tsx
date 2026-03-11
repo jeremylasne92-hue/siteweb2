@@ -16,6 +16,7 @@ export function TechApplicationForm({ project, accentHex }: TechApplicationFormP
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [step, setStep] = useState(1);
+    const [consentRGPD, setConsentRGPD] = useState(false);
     const formRef = useRef<HTMLFormElement>(null);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -154,14 +155,32 @@ export function TechApplicationForm({ project, accentHex }: TechApplicationFormP
                         Suivant <ChevronRight className="ml-2 h-4 w-4" />
                     </Button>
                 ) : (
-                    <Button
-                        variant="primary"
-                        className="flex items-center justify-center gap-2 hover:opacity-90 md:w-auto w-full"
-                        style={{ backgroundColor: accentHex }}
-                        disabled={loading}
-                    >
-                        {loading ? 'Envoi...' : 'Soumettre'} <Send className="w-4 h-4" />
-                    </Button>
+                    <div className="flex flex-col items-end gap-3">
+                        <label className="flex items-start gap-3 text-sm text-gray-300 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={consentRGPD}
+                                onChange={(e) => setConsentRGPD(e.target.checked)}
+                                className="mt-1 accent-echo-gold shrink-0"
+                                required
+                            />
+                            <span>
+                                J'accepte que mes donnees soient traitees conformement a la{' '}
+                                <a href="/politique-de-confidentialite" target="_blank" rel="noopener noreferrer"
+                                   className="text-echo-gold hover:underline">
+                                    politique de confidentialite
+                                </a>.
+                            </span>
+                        </label>
+                        <Button
+                            variant="primary"
+                            className="flex items-center justify-center gap-2 hover:opacity-90 md:w-auto w-full"
+                            style={{ backgroundColor: accentHex }}
+                            disabled={loading || !consentRGPD}
+                        >
+                            {loading ? 'Envoi...' : 'Soumettre'} <Send className="w-4 h-4" />
+                        </Button>
+                    </div>
                 )}
             </div>
         </form>
