@@ -1,29 +1,55 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Download, Shield, FileSpreadsheet, CheckCircle, ArrowLeft } from 'lucide-react';
+import { Download, Shield, FileSpreadsheet, CheckCircle, ArrowLeft, Users, Handshake } from 'lucide-react';
 import { Button } from '../components/ui/Button';
-import { EPISODES_API } from '../config/api';
+import { API_URL, EPISODES_API, PARTNERS_API } from '../config/api';
+
+type ExportKey = 'optins' | 'users' | 'partners';
+
+const EXPORTS: { key: ExportKey; title: string; description: string; url: string; filename: string; icon: React.ReactNode }[] = [
+    {
+        key: 'optins',
+        title: 'Emails Opt-In',
+        description: 'Liste des utilisateurs ayant souscrit aux notifications de sortie d’épisodes. Colonnes : email, saison, épisode, date.',
+        url: `${EPISODES_API}/admin/export-optins`,
+        filename: 'optins-export.csv',
+        icon: <FileSpreadsheet className="text-echo-gold" size={28} />,
+    },
+    {
+        key: 'users',
+        title: 'Utilisateurs',
+        description: 'Liste complète des comptes utilisateurs. Colonnes : id, pseudo, email, rôle, provider OAuth, 2FA, dates.',
+        url: `${API_URL}/auth/admin/export-users`,
+        filename: 'users-export.csv',
+        icon: <Users className="text-blue-400" size={28} />,
+    },
+    {
+        key: 'partners',
+        title: 'Partenaires',
+        description: 'Liste complète des partenaires (tous statuts). Colonnes : nom, catégorie, statut, ville, contact, thématiques, réseaux.',
+        url: `${PARTNERS_API}/admin/export`,
+        filename: 'partenaires-export.csv',
+        icon: <Handshake className="text-green-400" size={28} />,
+    },
+];
 
 export default function AdminExports() {
-    const [downloading, setDownloading] = useState(false);
-    const [success, setSuccess] = useState(false);
+    const [downloading, setDownloading] = useState<ExportKey | null>(null);
+    const [success, setSuccess] = useState<ExportKey | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    const handleDownload = async () => {
-        setDownloading(true);
+    const handleDownload = async (exp: typeof EXPORTS[number]) => {
+        setDownloading(exp.key);
         setError(null);
-        setSuccess(false);
+        setSuccess(null);
 
         try {
-            const res = await fetch(`${EPISODES_API}/admin/export-optins`, {
-                credentials: 'include',
-            });
+            const res = await fetch(exp.url, { credentials: 'include' });
 
             if (res.status === 401 || res.status === 403) {
                 setError('Accès refusé. Vérifiez vos permissions administrateur.');
                 return;
             }
-
             if (!res.ok) {
                 setError('Erreur lors du téléchargement.');
                 return;
@@ -33,29 +59,27 @@ export default function AdminExports() {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'optins-export.csv';
+            a.download = exp.filename;
             document.body.appendChild(a);
             a.click();
             a.remove();
             window.URL.revokeObjectURL(url);
-            setSuccess(true);
+            setSuccess(exp.key);
         } catch {
             setError('Impossible de contacter le serveur.');
         } finally {
-            setDownloading(false);
+            setDownloading(null);
         }
     };
 
     return (
         <div className="min-h-screen bg-echo-dark pt-24 pb-16">
             <div className="max-w-3xl mx-auto px-6 lg:px-8">
-                {/* Back link */}
                 <Link to="/admin" className="inline-flex items-center gap-1.5 text-sm text-echo-textMuted hover:text-echo-gold transition-colors mb-6">
                     <ArrowLeft size={16} />
                     Retour au dashboard
                 </Link>
 
-                {/* Header */}
                 <div className="flex items-center gap-3 mb-8">
                     <div className="p-2 bg-echo-gold/20 rounded-lg">
                         <Download className="text-echo-gold" size={24} />
@@ -66,40 +90,40 @@ export default function AdminExports() {
                     </div>
                 </div>
 
-                {/* Export Card */}
-                <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-                    <div className="flex items-start gap-4">
-                        <div className="p-3 bg-echo-gold/10 rounded-lg shrink-0">
-                            <FileSpreadsheet className="text-echo-gold" size={28} />
-                        </div>
-                        <div className="flex-1">
-                            <h2 className="text-lg font-serif text-white mb-1">Emails Opt-In</h2>
-                            <p className="text-sm text-echo-textMuted mb-4">
-                                Exporter la liste des utilisateurs ayant souscrit aux notifications de sortie d'épisodes.
-                                Le fichier CSV contient : email, saison, épisode, date d'inscription.
-                            </p>
-
-                            <Button onClick={handleDownload} disabled={downloading}>
-                                <Download size={16} className="mr-2" />
-                                {downloading ? 'Téléchargement...' : 'Télécharger CSV'}
-                            </Button>
-
-                            {success && (
-                                <div className="flex items-center gap-2 mt-4 text-sm text-green-400">
-                                    <CheckCircle size={16} />
-                                    <span>Fichier téléchargé avec succès.</span>
+                <div className="space-y-4">
+                    {EXPORTS.map((exp) => (
+                        <div key={exp.key} className="bg-white/5 border border-white/10 rounded-xl p-6">
+                            <div className="flex items-start gap-4">
+                                <div className="p-3 bg-white/5 rounded-lg shrink-0">
+                                    {exp.icon}
                                 </div>
-                            )}
+                                <div className="flex-1">
+                                    <h2 className="text-lg font-serif text-white mb-1">{exp.title}</h2>
+                                    <p className="text-sm text-echo-textMuted mb-4">{exp.description}</p>
 
-                            {error && (
-                                <div className="flex items-center gap-2 mt-4 text-sm text-red-400">
-                                    <Shield size={16} />
-                                    <span>{error}</span>
+                                    <Button onClick={() => handleDownload(exp)} disabled={downloading !== null}>
+                                        <Download size={16} className="mr-2" />
+                                        {downloading === exp.key ? 'Téléchargement...' : 'Télécharger CSV'}
+                                    </Button>
+
+                                    {success === exp.key && (
+                                        <div className="flex items-center gap-2 mt-4 text-sm text-green-400">
+                                            <CheckCircle size={16} />
+                                            <span>Fichier téléchargé avec succès.</span>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
+                            </div>
                         </div>
-                    </div>
+                    ))}
                 </div>
+
+                {error && (
+                    <div className="flex items-center gap-2 mt-6 text-sm text-red-400 bg-red-400/10 border border-red-400/20 rounded-lg p-4">
+                        <Shield size={16} />
+                        <span>{error}</span>
+                    </div>
+                )}
             </div>
         </div>
     );

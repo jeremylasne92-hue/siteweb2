@@ -1,6 +1,6 @@
 from pydantic import BaseModel as PydanticBaseModel
 from fastapi import APIRouter, HTTPException, Depends, status, Response, Request
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, StreamingResponse
 from models import User, UserCreate, UserLogin, UserRegister, UserLoginLocal, UserSession, Pending2FA
 from auth_utils import hash_password, verify_password, generate_session_token, generate_2fa_code
 from services.auth_local_service import register_user, login_user
@@ -11,6 +11,8 @@ from core.config import settings
 from datetime import datetime, timedelta
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import httpx
+import csv
+import io
 import logging
 import os
 
@@ -404,3 +406,43 @@ async def do_reset_password(request: Request, token: str, data: ResetPasswordReq
     await check_rate_limit(db, request, "reset_password", max_requests=5, window_minutes=15)
     result = await reset_pwd(token, data.password, data.password_confirm, db)
     return result
+
+
+@router.get("/admin/export-users")
+async def export_users_csv(
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Export all users as CSV (admin only)"""
+    users = await db.users.find({}, {"_id": 0, "password_hash": 0, "totp_secret": 0}).to_list(None)
+
+    output = io.StringIO()
+    output.write("﻿")
+    writer = csv.writer(output)
+    writer.writerow(["id", "username", "email", "role", "oauth_provider", "is_2fa_enabled", "created_at", "last_login"])
+    for u in users:
+        created = u.get("created_at", "")
+        if hasattr(created, "isoformat"):
+            created = created.isoformat()
+        last_login = u.get("last_login", "")
+        if hasattr(last_login, "isoformat"):
+            last_login = last_login.isoformat()
+        writer.writerow([
+            u.get("id", ""),
+            u.get("username", ""),
+            u.get("email", ""),
+            u.get("role", ""),
+            u.get("oauth_provider", ""),
+            u.get("is_2fa_enabled", False),
+            created,
+            last_login or "",
+        ])
+
+    output.seek(0)
+    logging.getLogger(__name__).info(f"Admin {admin.id} exported {len(users)} user records")
+
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": "attachment; filename=users-export.csv"}
+    )

@@ -1,7 +1,9 @@
+from fastapi.responses import StreamingResponse
 from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form, BackgroundTasks, Request
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
+import csv
 import io
 import json
 import logging
@@ -666,3 +668,68 @@ async def admin_delete_logo(
     )
     
     return {"success": True, "message": "Logo supprimé"}
+
+
+@router.get("/admin/export")
+async def admin_export_partners_csv(
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Export all partners as CSV (admin only)"""
+    partners = await db.partners.find({}, {"_id": 0}).to_list(None)
+
+    output = io.StringIO()
+    output.write("﻿")
+    writer = csv.writer(output)
+    writer.writerow([
+        "id", "name", "category", "status", "city", "postal_code", "country",
+        "address", "latitude", "longitude",
+        "contact_name", "contact_role", "contact_email", "contact_phone",
+        "thematics", "description", "description_long",
+        "website_url", "linkedin_url", "instagram_url", "twitter_url",
+        "is_featured", "created_at", "validated_at", "rejection_reason",
+    ])
+    for p in partners:
+        created = p.get("created_at", "")
+        if hasattr(created, "isoformat"):
+            created = created.isoformat()
+        validated = p.get("validated_at", "")
+        if hasattr(validated, "isoformat"):
+            validated = validated.isoformat()
+        thematics = ";".join(p.get("thematics", []))
+        writer.writerow([
+            p.get("id", ""),
+            p.get("name", ""),
+            p.get("category", ""),
+            p.get("status", ""),
+            p.get("city", ""),
+            p.get("postal_code", ""),
+            p.get("country", ""),
+            p.get("address", ""),
+            p.get("latitude", ""),
+            p.get("longitude", ""),
+            p.get("contact_name", ""),
+            p.get("contact_role", ""),
+            p.get("contact_email", ""),
+            p.get("contact_phone", ""),
+            thematics,
+            p.get("description", ""),
+            p.get("description_long", "") or "",
+            p.get("website_url", "") or "",
+            p.get("linkedin_url", "") or "",
+            p.get("instagram_url", "") or "",
+            p.get("twitter_url", "") or "",
+            p.get("is_featured", False),
+            created,
+            validated or "",
+            p.get("rejection_reason", "") or "",
+        ])
+
+    output.seek(0)
+    logger.info(f"Admin {admin.id} exported {len(partners)} partner records")
+
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": "attachment; filename=partenaires-export.csv"}
+    )
