@@ -155,7 +155,7 @@ export function TechApplicationForm({ project, accentHex }: TechApplicationFormP
                         Suivant <ChevronRight className="ml-2 h-4 w-4" />
                     </Button>
                 ) : (
-                    <div className="flex flex-col items-end gap-3">
+                    <div className="flex flex-col items-stretch sm:items-end gap-3 w-full sm:w-auto">
                         <label className="flex items-start gap-3 text-sm text-gray-300 cursor-pointer">
                             <input
                                 type="checkbox"

@@ -37,7 +37,7 @@ export function StepProgress({ currentStep, totalSteps, labels }: StepProgressPr
                                 {isCompleted ? <Check size={16} strokeWidth={3} /> : stepNum}
                             </div>
                             {labels && labels[i] && (
-                                <span className={`text-xs mt-3 absolute -bottom-7 whitespace-nowrap transition-colors duration-300 ${isActive ? 'text-echo-gold font-medium' : isCompleted ? 'text-white/80' : 'text-white/30'
+                                <span className={`text-[10px] sm:text-xs mt-3 absolute -bottom-7 whitespace-nowrap transition-colors duration-300 ${isActive ? 'text-echo-gold font-medium' : isCompleted ? 'text-white/80' : 'text-white/30'
                                     }`}>
                                     {labels[i]}
                                 </span>

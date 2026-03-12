@@ -9,8 +9,8 @@ export function PrivacyPolicy() {
         url="https://mouvement-echo.fr/politique-de-confidentialite"
       />
 
-      <div className="max-w-4xl mx-auto px-6 lg:px-8 py-24">
-        <h1 className="text-4xl md:text-5xl font-serif text-amber-500 mb-4">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif text-amber-500 mb-4">
           Politique de Confidentialité
         </h1>
         <p className="text-gray-400 mb-12">
