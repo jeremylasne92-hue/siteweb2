@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Download, Shield, FileSpreadsheet, CheckCircle, ArrowLeft, Users, Handshake } from 'lucide-react';
+import { Download, Shield, FileSpreadsheet, CheckCircle, ArrowLeft, Users, Handshake, FileText } from 'lucide-react';
 import { Button } from '../components/ui/Button';
-import { API_URL, EPISODES_API, PARTNERS_API } from '../config/api';
+import { API_URL, EPISODES_API, PARTNERS_API, CANDIDATURES_API } from '../config/api';
 
-type ExportKey = 'optins' | 'users' | 'partners';
+type ExportKey = 'optins' | 'users' | 'partners' | 'candidatures';
 
 const EXPORTS: { key: ExportKey; title: string; description: string; url: string; filename: string; icon: React.ReactNode }[] = [
     {
         key: 'optins',
         title: 'Emails Opt-In',
-        description: 'Liste des utilisateurs ayant souscrit aux notifications de sortie d’épisodes. Colonnes : email, saison, épisode, date.',
+        description: "Liste des utilisateurs ayant souscrit aux notifications de sortie d'episodes. Colonnes : email, saison, episode, date.",
         url: `${EPISODES_API}/admin/export-optins`,
         filename: 'optins-export.csv',
         icon: <FileSpreadsheet className="text-echo-gold" size={28} />,
@@ -18,7 +18,7 @@ const EXPORTS: { key: ExportKey; title: string; description: string; url: string
     {
         key: 'users',
         title: 'Utilisateurs',
-        description: 'Liste complète des comptes utilisateurs. Colonnes : id, pseudo, email, rôle, provider OAuth, 2FA, dates.',
+        description: "Liste complete des comptes utilisateurs. Colonnes : id, pseudo, email, role, provider OAuth, 2FA, dates.",
         url: `${API_URL}/auth/admin/export-users`,
         filename: 'users-export.csv',
         icon: <Users className="text-blue-400" size={28} />,
@@ -26,10 +26,18 @@ const EXPORTS: { key: ExportKey; title: string; description: string; url: string
     {
         key: 'partners',
         title: 'Partenaires',
-        description: 'Liste complète des partenaires (tous statuts). Colonnes : nom, catégorie, statut, ville, contact, thématiques, réseaux.',
+        description: "Liste complete des partenaires (tous statuts). Colonnes : nom, categorie, statut, ville, contact, thematiques, reseaux.",
         url: `${PARTNERS_API}/admin/export`,
         filename: 'partenaires-export.csv',
         icon: <Handshake className="text-green-400" size={28} />,
+    },
+    {
+        key: 'candidatures',
+        title: 'Candidatures techniques',
+        description: "Candidatures CogniSphere & ECHOLink. Colonnes : id, nom, email, projet, competences, message, date.",
+        url: `${CANDIDATURES_API}/admin/export`,
+        filename: 'candidatures-tech-export.csv',
+        icon: <FileText className="text-purple-400" size={28} />,
     },
 ];
 
@@ -47,11 +55,11 @@ export default function AdminExports() {
             const res = await fetch(exp.url, { credentials: 'include' });
 
             if (res.status === 401 || res.status === 403) {
-                setError('Accès refusé. Vérifiez vos permissions administrateur.');
+                setError('Acces refuse. Verifiez vos permissions administrateur.');
                 return;
             }
             if (!res.ok) {
-                setError('Erreur lors du téléchargement.');
+                setError('Erreur lors du telechargement.');
                 return;
             }
 
@@ -86,7 +94,7 @@ export default function AdminExports() {
                     </div>
                     <div>
                         <h1 className="text-2xl font-serif text-white">Exports</h1>
-                        <p className="text-sm text-echo-textMuted">Exporter les données de la plateforme</p>
+                        <p className="text-sm text-echo-textMuted">Exporter les donnees de la plateforme</p>
                     </div>
                 </div>
 
@@ -103,13 +111,13 @@ export default function AdminExports() {
 
                                     <Button onClick={() => handleDownload(exp)} disabled={downloading !== null}>
                                         <Download size={16} className="mr-2" />
-                                        {downloading === exp.key ? 'Téléchargement...' : 'Télécharger CSV'}
+                                        {downloading === exp.key ? 'Telechargement...' : 'Telecharger CSV'}
                                     </Button>
 
                                     {success === exp.key && (
                                         <div className="flex items-center gap-2 mt-4 text-sm text-green-400">
                                             <CheckCircle size={16} />
-                                            <span>Fichier téléchargé avec succès.</span>
+                                            <span>Fichier telecharge avec succes.</span>
                                         </div>
                                     )}
                                 </div>

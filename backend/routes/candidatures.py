@@ -1,10 +1,13 @@
-from fastapi import APIRouter, Request, Depends
-from models import TechCandidature, TechCandidatureRequest
-from routes.auth import get_db
+from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi.responses import StreamingResponse
+from models import TechCandidature, TechCandidatureRequest, User
+from routes.auth import get_db, require_admin
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from datetime import datetime, timedelta
 from email_service import send_email
 from utils.rate_limit import anonymize_ip
+import csv
+import io
 import logging
 
 logger = logging.getLogger(__name__)
@@ -60,3 +63,75 @@ async def submit_tech_candidature(
     )
 
     return {"message": "Candidature envoyée avec succès"}
+
+
+@router.get("/admin/all")
+async def list_tech_candidatures(
+    project: str = "all",
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    """List all tech candidatures (admin only), optionally filtered by project."""
+    query = {}
+    if project in ("cognisphere", "echolink"):
+        query["project"] = project
+
+    cursor = db.tech_candidatures.find(query).sort("created_at", -1)
+    candidatures = []
+    async for doc in cursor:
+        doc["_id"] = str(doc["_id"])
+        candidatures.append(doc)
+    return candidatures
+
+
+@router.delete("/admin/{candidature_id}")
+async def delete_tech_candidature(
+    candidature_id: str,
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    """Delete a tech candidature (admin only)."""
+    result = await db.tech_candidatures.delete_one({"id": candidature_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Candidature non trouvée")
+    logger.info(f"Admin {admin.id} deleted tech candidature {candidature_id}")
+    return {"message": "Candidature supprimée"}
+
+
+@router.get("/admin/export")
+async def export_tech_candidatures(
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    """Export all tech candidatures as CSV (admin only)."""
+    cursor = db.tech_candidatures.find().sort("created_at", -1)
+    candidatures = []
+    async for doc in cursor:
+        candidatures.append(doc)
+
+    output = io.StringIO()
+    output.write("\ufeff")  # BOM UTF-8
+    writer = csv.writer(output)
+    writer.writerow(["id", "name", "email", "project", "skills", "message", "created_at"])
+    for c in candidatures:
+        created = c.get("created_at", "")
+        if hasattr(created, "isoformat"):
+            created = created.isoformat()
+        writer.writerow([
+            c.get("id", ""),
+            c.get("name", ""),
+            c.get("email", ""),
+            c.get("project", ""),
+            c.get("skills", ""),
+            c.get("message", ""),
+            created,
+        ])
+
+    output.seek(0)
+    logger.info(f"Admin {admin.id} exported {len(candidatures)} tech candidature records")
+
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": "attachment; filename=candidatures-tech-export.csv"},
+    )

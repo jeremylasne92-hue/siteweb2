@@ -5,3 +5,4 @@ export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/ap
 export const PARTNERS_API = `${API_URL}/partners`;
 export const EVENTS_API = `${API_URL}/events`;
 export const EPISODES_API = `${API_URL}/episodes`;
+export const CANDIDATURES_API = `${API_URL}/candidatures`;

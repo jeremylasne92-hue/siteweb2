@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
-    Shield, Users, Calendar, Download,
+    Shield, Users, Calendar, Download, FileText,
     Clock, ChevronRight, AlertTriangle
 } from 'lucide-react';
-import { PARTNERS_API } from '../config/api';
+import { PARTNERS_API, CANDIDATURES_API } from '../config/api';
 
 export default function AdminDashboard() {
     const [pendingCount, setPendingCount] = useState<number | null>(null);
     const [totalCount, setTotalCount] = useState<number | null>(null);
+    const [candidatureCount, setCandidatureCount] = useState<number | null>(null);
     useEffect(() => {
         const fetchStats = async () => {
             try {
@@ -19,6 +20,17 @@ export default function AdminDashboard() {
                     const partners = await res.json();
                     setTotalCount(partners.length);
                     setPendingCount(partners.filter((p: { status: string }) => p.status === 'pending').length);
+                }
+            } catch {
+                // silent
+            }
+            try {
+                const res = await fetch(`${CANDIDATURES_API}/admin/all`, {
+                    credentials: 'include',
+                });
+                if (res.ok) {
+                    const candidatures = await res.json();
+                    setCandidatureCount(candidatures.length);
                 }
             } catch {
                 // silent
@@ -38,6 +50,15 @@ export default function AdminDashboard() {
                 ? `${pendingCount} en attente`
                 : totalCount !== null ? `${totalCount} partenaires` : undefined,
             badgeColor: pendingCount && pendingCount > 0 ? '#F59E0B' : '#10B981',
+        },
+        {
+            title: 'Candidatures',
+            description: 'Consulter les candidatures techniques CogniSphère & ECHOLink',
+            icon: <FileText size={24} />,
+            href: '/admin/candidatures',
+            active: true,
+            badge: candidatureCount !== null && candidatureCount > 0 ? `${candidatureCount} candidature${candidatureCount > 1 ? 's' : ''}` : undefined,
+            badgeColor: '#A78BFA',
         },
         {
             title: 'Événements',
@@ -70,7 +91,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Section Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {sections.map(section => (
                         <div key={section.title} className="relative">
                             {section.active ? (
