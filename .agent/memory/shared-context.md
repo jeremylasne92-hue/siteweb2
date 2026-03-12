@@ -6,10 +6,10 @@
 
 ## 📋 État du Projet
 
-**Dernière mise à jour** : 2026-03-11
+**Dernière mise à jour** : 2026-03-12
 **Phase actuelle** : Post-Epics — Pré-lancement (lancement 20 mars 2026)
-**Statut** : ✅ Opérationnel — 4/4 Epics terminés + RGPD complet
-**Dernier milestone** : RGPD compliance (12 tâches : 3 pages légales, bannière cookies, consentement formulaires, export données, suppression compte, désinscription emails)
+**Statut** : ✅ Opérationnel — Features P1 (Dashboard Partenaire + Landing Page Dynamique)
+**Dernier milestone** : Dashboard Partenaire (analytics Recharts, tracking vues/clics) + Landing Page Dynamique (compteurs communautaires, mode "Mon ECHO" personnalisé)
 
 ---
 
@@ -31,15 +31,16 @@ frontend/src/
 ```
 backend/
 ├── server.py              # Point d'entrée FastAPI (port 8000)
-├── models.py              # Pydantic models (User, UserRegister, UserLoginLocal, etc.)
+├── models.py              # Pydantic models (User, UserRegister, etc.) — partner_id sur AnalyticsEventCreate
 ├── auth_utils.py          # hash_password, verify_password (bcrypt/passlib)
 ├── routes/
 │   ├── auth.py            # /register, /login-local, /login, /google/*, /me, /logout
+│   ├── analytics.py       # /events (SendBeacon), /stats/public (cache 30min)
 │   ├── episodes.py        # CRUD épisodes
 │   ├── progress.py        # Suivi progression vidéo
 │   ├── videos.py          # Upload/streaming vidéo
 │   ├── users.py           # Gestion utilisateurs (admin)
-│   ├── partners.py        # Gestion partenaires
+│   ├── partners.py        # Gestion partenaires — /me/stats (agrégation analytics 30j)
 │   ├── thematics.py       # Thématiques
 │   └── resources.py       # Ressources
 ├── services/
@@ -49,6 +50,18 @@ backend/
 └── tests/routes/
     ├── test_auth_local.py    # 6 tests (register + login)
     └── test_partners_apply.py # 5 tests (candidature partenaire)
+```
+
+### Hooks & Composants Frontend Clés
+```
+frontend/src/
+├── hooks/
+│   ├── useAnalytics.ts    # Tracking GA4 + interne (SendBeacon)
+│   └── usePageTracking.ts # Tracking de navigation GA4
+└── components/partners/
+    ├── PartnerAnalytics.tsx  # Graphiques Recharts (vues/clics 30j)
+    ├── PartnerModal.tsx      # Fiche partenaire — tracking vues + clics site
+    └── PartnersMap.tsx      # Carte — tracking clics marker
 ```
 
 ---
@@ -73,7 +86,7 @@ backend/
 
 | Page | Route | Statut |
 |------|-------|--------|
-| Accueil | `/` | ✅ Complète |
+| Accueil | `/` | ✅ Complète + Landing Dynamique (compteurs + mode Mon ECHO) |
 | La Série | `/serie` | ✅ Complète |
 | Le Mouvement | `/mouvement` | ✅ Complète |
 | Cognisphère | `/cognisphere` | ✅ Complète |
@@ -87,7 +100,7 @@ backend/
 | Inscription | `/register` | ✅ Complète (Story 1.2) |
 | Google Callback | `/auth/google/success` | ✅ Complète |
 | Admin Partenaires | `/admin/partenaires` | ✅ Complète |
-| Mon Compte Partenaire | `/mon-compte/partenaire` | ✅ Complète |
+| Mon Compte Partenaire | `/mon-compte/partenaire` | ✅ Complète + Dashboard Analytics (onglet) |
 | Politique de Confidentialité | `/politique-de-confidentialite` | ✅ Complète (RGPD) |
 | Mentions Légales | `/mentions-legales` | ✅ Complète (RGPD) |
 | CGU | `/cgu` | ✅ Complète (RGPD) |
@@ -130,7 +143,9 @@ backend/
 ## 📝 Décisions Récentes
 
 | Date | Décision | Agent |
-|------|----------|-------|
+|------|----------|---------|
+| 2026-03-12 | Dashboard Partenaire : tracking vues/clics (partner_id dans AnalyticsEvent), endpoint /partners/me/stats (MongoDB Aggregate 30j), composant PartnerAnalytics.tsx (Recharts), hook useAnalytics.ts (SendBeacon). Onglet Dashboard dans MyPartnerAccount avec export CSV. | Antigravity (Gemini) |
+| 2026-03-12 | Landing Page Dynamique : endpoint /analytics/stats/public (cache mémoire 30min), compteurs communautaires dynamiques (membres, partenaires, événements), mode "Mon ECHO" pour les utilisateurs connectés dans Home.tsx. | Antigravity (Gemini) |
 | 2026-03-12 | Brainstorming Features Site Web : 20 idées générées (S-C-A-M-P-E-R + Cross-Pollination). 7 idées critiques bonifiées via Role Playing (9 personas). Focus : Navigation Informer/Fédérer/Agir, Dashboard Partenaire, Expérience Post-Épisode, La Fabrique ECHO. | Antigravity (Gemini) |
 | 2026-03-11 | RGPD compliance complète : 3 pages légales (confidentialité, mentions légales, CGU) + bannière cookies (localStorage + gtag consent) + checkboxes consentement sur 3 formulaires + endpoint export données GET /me/export + UI suppression/export sur MyPartnerAccount + champ email_opt_out + endpoint unsubscribe + lien désinscription emails. 51 tests backend OK, build frontend OK. | Claude Code (Opus 4.6) |
 | 2026-03-11 | Admin CSV exports : 2 nouveaux endpoints (GET /auth/admin/export-users, GET /partners/admin/export) + refonte AdminExports.tsx avec 3 cartes export. | Claude Code (Opus 4.6) |
@@ -172,6 +187,8 @@ backend/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-12 | 🔴 MAJEUR | Dashboard Partenaire (analytics, Recharts, hook tracking, onglet) | ~1h30 | Antigravity (Gemini) |
+| 2026-03-12 | 🟡 STANDARD | Landing Page Dynamique (API stats/public + personnalisation) | ~30min | Antigravity (Gemini) |
 | 2026-03-11 | 🔴 MAJEUR | RGPD Compliance (12 tâches, 5 blocs) | ~2h (Frontend + Backend) | Claude Code (Opus 4.6) |
 | 2026-03-11 | 🟡 STANDARD | Admin CSV Exports (users + partners) | ~20min (Backend + Frontend) | Claude Code (Opus 4.6) |
 | 2026-03-11 | 🟢 HOTFIX | Fix logo partenaire (Vite proxy) | ~10min | Claude Code (Opus 4.6) |

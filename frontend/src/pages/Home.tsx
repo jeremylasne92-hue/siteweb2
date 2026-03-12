@@ -1,9 +1,22 @@
-import { Play, Users, Link as LinkIcon } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Play, Users, Link as LinkIcon, ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Link } from 'react-router-dom';
 import { SEO } from '../components/seo/SEO';
+import { useAuthStore } from '../features/auth/store';
+import { API_URL } from '../config/api';
 
 export function Home() {
+    const { user, isAuthenticated } = useAuthStore();
+    const [stats, setStats] = useState({ partners: 0, members: 0, events: 0 });
+
+    useEffect(() => {
+        fetch(`${API_URL}/analytics/stats/public`)
+            .then(res => res.json())
+            .then(data => setStats(data))
+            .catch(() => { /* fallback to zero */ });
+    }, []);
+
     return (
         <div className="flex flex-col">
             <SEO
@@ -17,22 +30,42 @@ export function Home() {
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2672&auto=format&fit=crop')] bg-cover bg-center opacity-30 animate-pulse" />
 
                 <div className="relative z-20 text-center max-w-4xl px-4 animate-fade-in">
+                    {isAuthenticated && (
+                        <div className="mb-6 flex justify-center">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-echo-gold/10 border border-echo-gold/30 rounded-full text-echo-gold text-sm font-medium animate-bounce-subtle">
+                                <Sparkles size={16} />
+                                Ravi de vous revoir, {user?.username} !
+                            </div>
+                        </div>
+                    )}
+                    
                     <h1 className="text-6xl md:text-8xl font-serif font-bold text-white mb-6 tracking-tighter text-shadow">
-                        ECHO
+                        {isAuthenticated ? "MON ECHO" : "ECHO"}
                     </h1>
                     <p className="text-xl md:text-2xl text-echo-textMuted mb-8 italic font-serif">
-                        "Au milieu de mon chemin de vie, je me suis retrouvé dans une forêt en feu,<br />
-                        car la voie droite était perdue."
+                        {isAuthenticated 
+                            ? "Poursuivez votre exploration et agissez pour le vivant."
+                            : "\"Au milieu de mon chemin de vie, je me suis retrouvé dans une forêt en feu, car la voie droite était perdue.\""
+                        }
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link to="/serie">
                             <Button variant="primary" size="lg" className="w-full sm:w-auto">
-                                <Play className="mr-2" size={20} /> Découvrir la Série
+                                <Play className="mr-2" size={20} /> 
+                                {isAuthenticated ? "Reprendre la Série" : "Découvrir la Série"}
                             </Button>
                         </Link>
-                        <Link to="/mouvement">
+                        <Link to={isAuthenticated ? "/profil" : "/mouvement"}>
                             <Button variant="secondary" size="lg" className="w-full sm:w-auto">
-                                <Users className="mr-2" size={20} /> Rejoindre le Mouvement
+                                {isAuthenticated ? (
+                                    <>
+                                        <Users className="mr-2" size={20} /> Mon Espace
+                                    </>
+                                ) : (
+                                    <>
+                                        <Users className="mr-2" size={20} /> Rejoindre le Mouvement
+                                    </>
+                                )}
                             </Button>
                         </Link>
                     </div>
@@ -128,23 +161,33 @@ export function Home() {
                 </div>
             </section>
 
-            {/* Stats Teaser */}
+            {/* Stats Teaser - Dynamic */}
             <section className="py-20 border-t border-white/5 bg-echo-darker">
                 <div className="container mx-auto px-4">
+                    <div className="text-center mb-12">
+                        <h2 className="text-2xl font-serif text-white opacity-50 uppercase tracking-[4px]">La Communauté ECHO</h2>
+                    </div>
                     <div className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16 text-center">
                         <div className="md:border-r md:border-white/10 md:pr-16 last:border-0 last:pr-0">
-                            <div className="text-4xl md:text-5xl font-serif text-echo-gold mb-2">3</div>
-                            <div className="text-echo-textMuted uppercase tracking-widest text-sm">Saisons</div>
+                            <div className="text-4xl md:text-5xl font-serif text-echo-gold mb-2 font-bold">{stats.members || '...'}</div>
+                            <div className="text-echo-textMuted uppercase tracking-widest text-xs">Citoyens Engagés</div>
                         </div>
                         <div className="md:border-r md:border-white/10 md:pr-16 last:border-0 last:pr-0">
-                            <div className="text-4xl md:text-5xl font-serif text-echo-gold mb-2">33</div>
-                            <div className="text-echo-textMuted uppercase tracking-widest text-sm">Épisodes</div>
+                            <div className="text-4xl md:text-5xl font-serif text-echo-gold mb-2 font-bold">{stats.partners || '...'}</div>
+                            <div className="text-echo-textMuted uppercase tracking-widest text-xs">Partenaires</div>
                         </div>
                         <div>
-                            <div className="text-4xl md:text-5xl font-serif text-echo-gold mb-2">∞</div>
-                            <div className="text-echo-textMuted uppercase tracking-widest text-sm">Possibilités</div>
+                            <div className="text-4xl md:text-5xl font-serif text-white mb-2 font-bold">{stats.events || '...'}</div>
+                            <div className="text-echo-textMuted uppercase tracking-widest text-xs">Rendez-vous</div>
                         </div>
                     </div>
+                    {(stats.members > 0 || stats.partners > 0) && (
+                        <div className="mt-12 flex justify-center">
+                           <Link to="/mouvement" className="text-echo-gold hover:text-[#FFD700] flex items-center gap-2 text-sm font-medium transition-colors group">
+                                Faire grandir l'écho <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                           </Link>
+                        </div>
+                    )}
                 </div>
             </section>
         </div>
