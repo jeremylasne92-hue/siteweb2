@@ -348,8 +348,10 @@ class ProfileUpdate(PydanticBaseModel):
 
 
 VALID_INTERESTS = [
-    "ecologie", "justice-sociale", "numerique", "education",
-    "culture", "alimentation", "energie", "mobilite",
+    "philosophie-conscience", "spiritualite-esoterisme", "religions-traditions",
+    "mythes-civilisations", "sciences-neurosciences", "ecologie-climat",
+    "justice-droits", "geopolitique-pouvoir", "economie-industrie",
+    "technologies-ia", "sante-bien-etre", "arts-medias-culture",
 ]
 
 

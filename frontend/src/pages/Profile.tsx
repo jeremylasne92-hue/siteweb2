@@ -4,18 +4,11 @@ import { SEO } from '../components/seo/SEO';
 import {
     Download, Trash2, Shield, AlertTriangle,
     Pencil, Save, X, Calendar, Heart, ExternalLink,
-    Bell, Tag, FileText, ChevronRight
+    Tag, FileText, ChevronRight
 } from 'lucide-react';
 import { API_URL } from '../config/api';
 import { Button } from '../components/ui/Button';
 import { useAuthStore } from '../features/auth/store';
-
-interface NotificationPrefs {
-    newsletter: boolean;
-    episodes: boolean;
-    events: boolean;
-    partners: boolean;
-}
 
 interface UserData {
     id: string;
@@ -29,20 +22,23 @@ interface UserData {
     bio?: string;
     interests: string[];
     avatar_url?: string;
-    notification_prefs: NotificationPrefs;
     is_member: boolean;
     member_since?: string;
 }
 
 const AVAILABLE_INTERESTS = [
-    { id: 'ecologie', label: 'Écologie', emoji: '🌿' },
-    { id: 'justice-sociale', label: 'Justice sociale', emoji: '⚖️' },
-    { id: 'numerique', label: 'Numérique responsable', emoji: '💻' },
-    { id: 'education', label: 'Éducation', emoji: '📚' },
-    { id: 'culture', label: 'Culture', emoji: '🎭' },
-    { id: 'alimentation', label: 'Alimentation', emoji: '🌾' },
-    { id: 'energie', label: 'Énergie', emoji: '⚡' },
-    { id: 'mobilite', label: 'Mobilité', emoji: '🚲' },
+    { id: 'philosophie-conscience', label: 'Philosophie & Conscience', emoji: '🧠' },
+    { id: 'spiritualite-esoterisme', label: 'Spiritualité & Ésotérisme', emoji: '🔮' },
+    { id: 'religions-traditions', label: 'Religions & Traditions', emoji: '📿' },
+    { id: 'mythes-civilisations', label: 'Mythes & Civilisations', emoji: '🏛️' },
+    { id: 'sciences-neurosciences', label: 'Sciences & Neurosciences', emoji: '🧬' },
+    { id: 'ecologie-climat', label: 'Écologie & Climat', emoji: '🌍' },
+    { id: 'justice-droits', label: 'Justice & Droits', emoji: '⚖️' },
+    { id: 'geopolitique-pouvoir', label: 'Géopolitique & Pouvoir', emoji: '🌐' },
+    { id: 'economie-industrie', label: 'Économie & Industrie', emoji: '💰' },
+    { id: 'technologies-ia', label: 'Technologies & IA', emoji: '🤖' },
+    { id: 'sante-bien-etre', label: 'Santé & Bien-être', emoji: '🏥' },
+    { id: 'arts-medias-culture', label: 'Arts, Médias & Culture', emoji: '🎭' },
 ];
 
 export default function Profile() {
@@ -79,7 +75,6 @@ export default function Profile() {
             setUserData({
                 ...data,
                 interests: data.interests || [],
-                notification_prefs: data.notification_prefs || { newsletter: true, episodes: true, events: true, partners: false },
                 is_member: data.is_member || false,
             });
         } catch {
@@ -121,17 +116,6 @@ export default function Profile() {
             ? current.filter(i => i !== interestId)
             : [...current, interestId];
         await updateProfile({ interests: updated });
-    };
-
-    const toggleNotifPref = async (key: keyof NotificationPrefs) => {
-        if (!userData) return;
-        const updated = { ...userData.notification_prefs, [key]: !userData.notification_prefs[key] };
-        await updateProfile({ notification_prefs: updated });
-    };
-
-    const handleToggleEmailOptOut = async () => {
-        if (!userData) return;
-        await updateProfile({ email_opt_out: !userData.email_opt_out });
     };
 
     const handleExportData = async () => {
@@ -354,55 +338,7 @@ export default function Profile() {
                         </div>
                     </div>
 
-                    {/* ===== Préférences de notification ===== */}
-                    <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
-                        <h2 className="text-lg font-serif text-white mb-4 flex items-center gap-2">
-                            <Bell size={18} className="text-echo-gold" />
-                            Préférences de notification
-                        </h2>
-
-                        {/* Global opt-out */}
-                        <NotifToggle
-                            label="Recevoir les emails du mouvement ECHO"
-                            description="Désactivez pour ne plus recevoir aucun email (sauf transactionnels)"
-                            checked={!userData.email_opt_out}
-                            onChange={handleToggleEmailOptOut}
-                            loading={savingField === 'email_opt_out'}
-                        />
-
-                        {!userData.email_opt_out && (
-                            <div className="mt-4 pt-4 border-t border-white/5 space-y-1">
-                                <NotifToggle
-                                    label="Newsletter générale"
-                                    description="Actualités du mouvement et de la série"
-                                    checked={userData.notification_prefs.newsletter}
-                                    onChange={() => toggleNotifPref('newsletter')}
-                                    loading={savingField === 'notification_prefs'}
-                                />
-                                <NotifToggle
-                                    label="Nouveaux épisodes"
-                                    description="Soyez averti(e) dès qu'un épisode sort"
-                                    checked={userData.notification_prefs.episodes}
-                                    onChange={() => toggleNotifPref('episodes')}
-                                    loading={savingField === 'notification_prefs'}
-                                />
-                                <NotifToggle
-                                    label="Événements"
-                                    description="Projections, ateliers et rencontres"
-                                    checked={userData.notification_prefs.events}
-                                    onChange={() => toggleNotifPref('events')}
-                                    loading={savingField === 'notification_prefs'}
-                                />
-                                <NotifToggle
-                                    label="Actualités partenaires"
-                                    description="Nouveautés de l'ECHOSystem"
-                                    checked={userData.notification_prefs.partners}
-                                    onChange={() => toggleNotifPref('partners')}
-                                    loading={savingField === 'notification_prefs'}
-                                />
-                            </div>
-                        )}
-                    </div>
+                    {/* ===== Préférences de notification — masqué en attente de la newsletter ===== */}
 
                     {/* ===== Raccourcis ===== */}
                     {(userData.role === 'partner' || userData.role === 'admin') && (
@@ -527,36 +463,5 @@ export default function Profile() {
                 </div>
             )}
         </>
-    );
-}
-
-
-function NotifToggle({ label, description, checked, onChange, loading }: {
-    label: string;
-    description: string;
-    checked: boolean;
-    onChange: () => void;
-    loading: boolean;
-}) {
-    return (
-        <div className="flex items-center justify-between gap-4 py-2">
-            <div className="min-w-0">
-                <p className="text-white text-sm font-medium">{label}</p>
-                <p className="text-echo-textMuted text-xs mt-0.5">{description}</p>
-            </div>
-            <button
-                onClick={onChange}
-                disabled={loading}
-                className={`relative w-11 h-6 rounded-full transition-colors duration-200 shrink-0 ${
-                    checked ? 'bg-echo-gold' : 'bg-white/20'
-                }`}
-            >
-                <span
-                    className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${
-                        checked ? 'translate-x-5' : 'translate-x-0'
-                    }`}
-                />
-            </button>
-        </div>
     );
 }
