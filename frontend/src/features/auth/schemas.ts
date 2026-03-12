@@ -13,7 +13,7 @@ export const registerSchema = z.object({
         .min(8, 'Le mot de passe doit contenir au moins 8 caractères')
         .regex(/[A-Z]/, 'Le mot de passe doit contenir au moins 1 majuscule')
         .regex(/[0-9]/, 'Le mot de passe doit contenir au moins 1 chiffre')
-        .regex(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/, 'Le mot de passe doit contenir au moins 1 caractère spécial'),
+        .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/, 'Le mot de passe doit contenir au moins 1 caractère spécial'),
     password_confirm: z.string(),
     age_consent: z.boolean().refine(val => val === true, {
         message: 'Vous devez certifier avoir plus de 15 ans',
@@ -49,7 +49,7 @@ export function getPasswordStrength(password: string): { score: number; label: P
     if (password.length >= 12) score++;
     if (/[A-Z]/.test(password)) score++;
     if (/[0-9]/.test(password)) score++;
-    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) score++;
+    if (/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) score++;
 
     if (score <= 1) return { score: 1, label: 'weak', color: '#ef4444' };
     if (score <= 2) return { score: 2, label: 'medium', color: '#f59e0b' };
@@ -80,7 +80,7 @@ export const resetPasswordSchema = z.object({
         .min(8, 'Le mot de passe doit contenir au moins 8 caractères')
         .regex(/[A-Z]/, 'Le mot de passe doit contenir au moins 1 majuscule')
         .regex(/[0-9]/, 'Le mot de passe doit contenir au moins 1 chiffre')
-        .regex(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/, 'Le mot de passe doit contenir au moins 1 caractère spécial'),
+        .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/, 'Le mot de passe doit contenir au moins 1 caractère spécial'),
     password_confirm: z.string(),
 }).refine(data => data.password === data.password_confirm, {
     message: 'Les mots de passe ne correspondent pas',

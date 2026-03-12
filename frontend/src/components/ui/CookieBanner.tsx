@@ -31,28 +31,27 @@ function saveConsent(choice: ConsentData['choice']) {
     localStorage.setItem(CONSENT_KEY, JSON.stringify({ choice, timestamp: Date.now() }));
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function resetCookieConsent() {
     localStorage.removeItem(CONSENT_KEY);
     window.location.reload();
 }
 
 export function CookieBanner() {
-    const [visible, setVisible] = useState(false);
+    const [visible, setVisible] = useState(() => !getConsent());
     const [showCustomize, setShowCustomize] = useState(false);
     const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
 
     useEffect(() => {
         const consent = getConsent();
-        if (!consent) {
-            setVisible(true);
-        } else if (consent.choice === 'accepted') {
-            try { gtag('consent', 'update', { analytics_storage: 'granted' }); } catch {}
+        if (consent?.choice === 'accepted') {
+            try { gtag('consent', 'update', { analytics_storage: 'granted' }); } catch { /* gtag not loaded */ }
         }
     }, []);
 
     const acceptAll = () => {
         saveConsent('accepted');
-        try { gtag('consent', 'update', { analytics_storage: 'granted' }); } catch {}
+        try { gtag('consent', 'update', { analytics_storage: 'granted' }); } catch { /* gtag not loaded */ }
         setVisible(false);
     };
 
@@ -64,7 +63,7 @@ export function CookieBanner() {
     const saveCustom = () => {
         if (analyticsEnabled) {
             saveConsent('accepted');
-            try { gtag('consent', 'update', { analytics_storage: 'granted' }); } catch {}
+            try { gtag('consent', 'update', { analytics_storage: 'granted' }); } catch { /* gtag not loaded */ }
         } else {
             saveConsent('essential-only');
         }
@@ -84,7 +83,7 @@ export function CookieBanner() {
                                 En savoir plus
                             </Link>
                         </p>
-                        <div className="flex gap-3 shrink-0">
+                        <div className="flex flex-col sm:flex-row gap-3 shrink-0 w-full sm:w-auto">
                             <button
                                 onClick={refuseAll}
                                 className="px-5 py-2 rounded-lg text-sm font-medium border border-white/20 text-white hover:bg-white/10 transition-colors"
@@ -139,7 +138,7 @@ export function CookieBanner() {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex justify-end gap-3">
+                        <div className="flex flex-col-reverse sm:flex-row justify-end gap-3">
                             <button
                                 onClick={() => setShowCustomize(false)}
                                 className="px-5 py-2 rounded-lg text-sm font-medium border border-white/20 text-white hover:bg-white/10 transition-colors"

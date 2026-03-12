@@ -53,7 +53,7 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
 
     const [logoFile, setLogoFile] = useState<File | null>(null);
     const [consentRGPD, setConsentRGPD] = useState(false);
-    const [addressSuggestions, setAddressSuggestions] = useState<any[]>([]);
+    const [addressSuggestions, setAddressSuggestions] = useState<Array<{ display_name: string; lat: string; lon: string; address?: Record<string, string> }>>([]);
 
     // Reset on close
     useEffect(() => {
@@ -89,7 +89,7 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
     };
 
     const handleAddressSearch = async (query: string) => {
-        handleInputChange({ target: { name: 'address', value: query } } as any);
+        handleInputChange({ target: { name: 'address', value: query } } as React.ChangeEvent<HTMLInputElement>);
         if (query.length < 5) return;
 
         try {
@@ -101,7 +101,7 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
         }
     };
 
-    const selectAddress = (suggestion: any) => {
+    const selectAddress = (suggestion: { display_name: string; lat: string; lon: string; address?: Record<string, string> }) => {
         const addr = suggestion.address || {};
         const houseNumber = addr.house_number || '';
         const road = addr.road || '';

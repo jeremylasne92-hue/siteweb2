@@ -1,9 +1,11 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import type { Partner, PartnerCategory } from './PartnerCard';
 import { ExternalLink, MapPin, Mail, Phone } from 'lucide-react';
+
+import { useAnalytics } from '../../hooks/useAnalytics';
 
 interface PartnersMapProps {
     partners: Partner[];
@@ -40,20 +42,20 @@ const createCustomIcon = (category: PartnerCategory) => {
 };
 
 export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerClick }) => {
+    const { trackEvent } = useAnalytics();
+    
     // Center map on France roughly
     const defaultCenter: [number, number] = [46.603354, 1.888334];
     const defaultZoom = 6;
 
-    // Memoize icons to prevent recreation on every render
-    const icons = useMemo(() => {
-        const iconCache = {} as Record<string, L.DivIcon>;
-        return (category: PartnerCategory) => {
-            if (!iconCache[category]) {
-                iconCache[category] = createCustomIcon(category);
-            }
-            return iconCache[category];
-        };
-    }, []);
+    // Pre-compute all category icons (stable across renders since categories don't change)
+    const iconMap: Record<string, L.DivIcon> = {
+        expert: createCustomIcon('expert'),
+        financier: createCustomIcon('financier'),
+        audiovisuel: createCustomIcon('audiovisuel'),
+        education: createCustomIcon('education'),
+        membre: createCustomIcon('membre'),
+    };
 
     return (
         <div className="w-full h-[600px] rounded-2xl overflow-hidden border border-white/10 shadow-lg relative z-0">
@@ -72,7 +74,7 @@ export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerCli
                     <Marker
                         key={partner.id}
                         position={[partner.latitude!, partner.longitude!]}
-                        icon={icons(partner.category)}
+                        icon={iconMap[partner.category]}
                     >
                         <Popup className="dark-popup">
                             <div className="min-w-[200px] p-2 bg-echo-darker text-white">
@@ -116,6 +118,7 @@ export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerCli
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
+                                        trackEvent('partner', 'partner_click_map', partner.id);
                                         onPartnerClick(partner);
                                     }}
                                     className="w-full flex items-center justify-center gap-2 py-2 bg-white/5 hover:bg-echo-gold/20 text-echo-gold border border-echo-gold/30 rounded-lg text-sm transition-colors"

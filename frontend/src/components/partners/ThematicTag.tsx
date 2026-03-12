@@ -16,7 +16,7 @@ interface ThematicTagProps {
     className?: string;
 }
 
-const iconMap: Record<string, React.FC<any>> = {
+const iconMap: Record<string, React.FC<{ className?: string; size?: number; style?: React.CSSProperties }>> = {
     Leaf, Users, TrendingUp, GraduationCap, Cpu, Heart, Palette, Globe, Sparkles, Wheat, Tag
 };
 

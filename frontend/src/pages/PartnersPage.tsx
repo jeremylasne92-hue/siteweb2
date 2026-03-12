@@ -18,7 +18,7 @@ import { PARTNERS_API } from '../config/api';
 
 export default function PartnersPage() {
     const [partners, setPartners] = useState<Partner[]>([]);
-    const [stats, setStats] = useState<any>(null);
+    const [stats, setStats] = useState<{ total: number; by_category: Record<string, number> } | null>(null);
     const [thematicsList, setThematicsList] = useState<Thematic[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 

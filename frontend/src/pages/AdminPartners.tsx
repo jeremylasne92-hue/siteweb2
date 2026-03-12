@@ -183,7 +183,7 @@ function AdminPartnerDetail({
             if (res.ok) {
                 await res.json();
                 // Trigger refresh
-                onEdit(partner.id, { __logo_refresh: true } as any);
+                onEdit(partner.id, { __logo_refresh: true } as Record<string, unknown>);
             }
         } catch (err) {
             console.error('Logo upload failed', err);
@@ -202,7 +202,7 @@ function AdminPartnerDetail({
             if (res.ok) {
                 setLogoPreview(null);
                 setLogoFile(null);
-                onEdit(partner.id, { __logo_refresh: true } as any);
+                onEdit(partner.id, { __logo_refresh: true } as Record<string, unknown>);
             }
         } catch (err) {
             console.error('Logo delete failed', err);
@@ -732,6 +732,7 @@ export default function AdminPartners() {
         }
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => { fetchPartners(); }, [statusFilter]);
 
     const handleApprove = async (partnerId: string) => {

@@ -5,6 +5,8 @@ import { ThematicTag } from './ThematicTag';
 import { MapPin, Globe, User, Mail, Phone, Linkedin, Instagram, Twitter, ExternalLink } from 'lucide-react';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
+import { useAnalytics } from '../../hooks/useAnalytics';
+import { useEffect } from 'react';
 
 interface PartnerModalProps {
     partner: Partner | null;
@@ -38,6 +40,14 @@ const createMiniIcon = (category: PartnerCategory) => {
 };
 
 export const PartnerModal: React.FC<PartnerModalProps> = ({ partner, isOpen, onClose }) => {
+    const { trackEvent } = useAnalytics();
+
+    useEffect(() => {
+        if (isOpen && partner) {
+            trackEvent('partner', 'partner_view', partner.id);
+        }
+    }, [isOpen, partner, trackEvent]);
+
     if (!partner) return null;
 
     const color = categoryColors[partner.category] || categoryColors.expert;
@@ -173,6 +183,7 @@ export const PartnerModal: React.FC<PartnerModalProps> = ({ partner, isOpen, onC
                             href={partner.website_url}
                             target="_blank"
                             rel="noopener noreferrer"
+                            onClick={() => trackEvent('partner', 'partner_click_website', partner.id)}
                             className="inline-flex items-center gap-2 px-5 py-2.5 mb-10 rounded-lg text-sm font-medium transition-all"
                             style={{ backgroundColor: `${color}20`, color: color, border: `1px solid ${color}40` }}
                             onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = `${color}30`; }}

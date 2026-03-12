@@ -27,7 +27,7 @@ export const GoogleLoginButton = () => {
     const onSubmit = () => {
         // Redirection vers le backend pour l'authentification Google
         const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
-        window.location.href = `${backendUrl}/auth/google/login`;
+        window.location.assign(`${backendUrl}/auth/google/login`);
     };
 
     return (
