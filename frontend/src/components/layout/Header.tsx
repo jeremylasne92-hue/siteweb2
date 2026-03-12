@@ -92,7 +92,7 @@ export function Header() {
                                 variant="ghost"
                                 size="sm"
                                 className="gap-2"
-                                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                                onClick={(e) => { e.stopPropagation(); setIsUserMenuOpen(!isUserMenuOpen); }}
                             >
                                 <User size={18} />
                                 <span className="hidden xl:inline">{user?.username || 'Mon Compte'}</span>
@@ -106,6 +106,14 @@ export function Header() {
                                     >
                                         <User size={14} />
                                         Mon profil
+                                    </Link>
+                                    <Link
+                                        to="/mon-compte/partenaire"
+                                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-echo-textMuted hover:bg-white/5 hover:text-white transition-colors border-t border-white/5"
+                                        onClick={() => setIsUserMenuOpen(false)}
+                                    >
+                                        <Shield size={14} className="text-echo-gold" />
+                                        Espace Partenaire
                                     </Link>
                                     <button
                                         onClick={handleLogout}
@@ -164,6 +172,11 @@ export function Header() {
                             <>
                                 <Link to="/profil" onClick={() => setIsMobileMenuOpen(false)}>
                                     <Button variant="secondary" className="w-full">Mon profil</Button>
+                                </Link>
+                                <Link to="/mon-compte/partenaire" onClick={() => setIsMobileMenuOpen(false)}>
+                                    <Button variant="secondary" className="w-full gap-2">
+                                        <Shield size={16} className="text-echo-gold" /> Espace Partenaire
+                                    </Button>
                                 </Link>
                                 <button
                                     onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }}

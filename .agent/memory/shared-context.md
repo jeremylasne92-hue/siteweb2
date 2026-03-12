@@ -9,7 +9,12 @@
 **Dernière mise à jour** : 2026-03-12
 **Phase actuelle** : Post-Epics — Pré-lancement (lancement 20 mars 2026)
 **Statut** : ✅ Opérationnel — Features P1 (Dashboard Partenaire + Landing Page Dynamique)
-**Dernier milestone** : Dashboard Partenaire (analytics Recharts, tracking vues/clics) + Landing Page Dynamique (compteurs communautaires, mode "Mon ECHO" personnalisé)
+**Dernier milestone** : Dashboard Partenaire + Landing Page + Fix menu utilisateur + Lien Espace Partenaire Header
+
+### ⚠️ Rappels Pré-Lancement (20 mars 2026)
+- [ ] **Revoir le Dashboard Partenaire** avant la sortie officielle (UX, données, design)
+- [ ] Build de production (`npm run build`)
+- [ ] Déploiement final
 
 ---
 
