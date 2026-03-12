@@ -6,6 +6,7 @@ interface RegisterPayload {
     email: string;
     password: string;
     password_confirm: string;
+    interests?: string[];
     age_consent: boolean;
 }
 

@@ -66,6 +66,7 @@ class UserRegister(BaseModel):
     email: EmailStr
     password: str
     password_confirm: str
+    interests: list[str] = Field(default_factory=list)
     age_consent: bool = False
 
 

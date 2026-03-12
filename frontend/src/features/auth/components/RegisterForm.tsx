@@ -9,6 +9,21 @@ import { StepProgress } from '../../../components/ui/StepProgress';
 import { useRegister } from '../api/useRegister';
 import { registerSchema, type RegisterFormData, getPasswordStrength, strengthLabels } from '../schemas';
 
+const AVAILABLE_INTERESTS = [
+    { id: 'philosophie-conscience', label: 'Philosophie & Conscience', emoji: '🧠' },
+    { id: 'spiritualite-esoterisme', label: 'Spiritualité & Ésotérisme', emoji: '🔮' },
+    { id: 'religions-traditions', label: 'Religions & Traditions', emoji: '📿' },
+    { id: 'mythes-civilisations', label: 'Mythes & Civilisations', emoji: '🏛️' },
+    { id: 'sciences-neurosciences', label: 'Sciences & Neurosciences', emoji: '🧬' },
+    { id: 'ecologie-climat', label: 'Écologie & Climat', emoji: '🌍' },
+    { id: 'justice-droits', label: 'Justice & Droits', emoji: '⚖️' },
+    { id: 'geopolitique-pouvoir', label: 'Géopolitique & Pouvoir', emoji: '🌐' },
+    { id: 'economie-industrie', label: 'Économie & Industrie', emoji: '💰' },
+    { id: 'technologies-ia', label: 'Technologies & IA', emoji: '🤖' },
+    { id: 'sante-bien-etre', label: 'Santé & Bien-être', emoji: '🏥' },
+    { id: 'arts-medias-culture', label: 'Arts, Médias & Culture', emoji: '🎭' },
+];
+
 export const RegisterForm = () => {
     const navigate = useNavigate();
     const registerMutation = useRegister();
@@ -21,6 +36,7 @@ export const RegisterForm = () => {
         handleSubmit,
         watch,
         trigger,
+        setValue,
         formState: { errors, isSubmitting },
     } = useForm<RegisterFormData>({
         resolver: zodResolver(registerSchema),
@@ -29,6 +45,7 @@ export const RegisterForm = () => {
             email: '',
             password: '',
             password_confirm: '',
+            interests: [],
             age_consent: false,
             rgpd_consent: false,
         },
@@ -36,7 +53,16 @@ export const RegisterForm = () => {
     });
 
     const passwordValue = watch('password');
+    const selectedInterests: string[] = watch('interests') ?? [];
     const strength = passwordValue ? getPasswordStrength(passwordValue) : null;
+
+    const toggleInterest = (interestId: string) => {
+        const current = selectedInterests;
+        const updated = current.includes(interestId)
+            ? current.filter(i => i !== interestId)
+            : [...current, interestId];
+        setValue('interests', updated);
+    };
 
     const onSubmit = async (data: RegisterFormData) => {
         try {
@@ -51,11 +77,13 @@ export const RegisterForm = () => {
         let fieldsToValidate: (keyof RegisterFormData)[] = [];
         if (step === 1) fieldsToValidate = ['username', 'email'];
         if (step === 2) fieldsToValidate = ['password', 'password_confirm'];
+        // Step 3 (interests) has no required validation — skip straight through
 
-        const isStepValid = await trigger(fieldsToValidate);
-        if (isStepValid) {
-            setStep(prev => prev + 1);
+        if (fieldsToValidate.length > 0) {
+            const isStepValid = await trigger(fieldsToValidate);
+            if (!isStepValid) return;
         }
+        setStep(prev => prev + 1);
     };
 
     const handleBack = () => {
@@ -64,8 +92,9 @@ export const RegisterForm = () => {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <StepProgress currentStep={step} totalSteps={3} labels={['Identité', 'Sécurité', 'Validation']} />
+            <StepProgress currentStep={step} totalSteps={4} labels={['Identité', 'Sécurité', 'Intérêts', 'Validation']} />
 
+            {/* Step 1 — Identité */}
             <div className={`space-y-5 ${step !== 1 ? 'hidden' : 'animate-fade-in delay-100'}`}>
                 <Input
                     label="Nom d'utilisateur"
@@ -83,6 +112,7 @@ export const RegisterForm = () => {
                 />
             </div>
 
+            {/* Step 2 — Sécurité */}
             <div className={`space-y-5 ${step !== 2 ? 'hidden' : 'animate-fade-in delay-100'}`}>
                 <div className="relative">
                     <Input
@@ -141,7 +171,41 @@ export const RegisterForm = () => {
                 </div>
             </div>
 
+            {/* Step 3 — Centres d'intérêt */}
             <div className={`space-y-5 ${step !== 3 ? 'hidden' : 'animate-fade-in delay-100'}`}>
+                <div className="text-center p-4 bg-white/5 border border-white/10 rounded-lg text-sm text-echo-textMuted mb-2">
+                    Quelles thématiques de la série vous intéressent ? <span className="text-neutral-500">(optionnel)</span>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                    {AVAILABLE_INTERESTS.map(interest => {
+                        const isSelected = selectedInterests.includes(interest.id);
+                        return (
+                            <button
+                                key={interest.id}
+                                type="button"
+                                onClick={() => toggleInterest(interest.id)}
+                                className={`px-3 py-1.5 rounded-full text-sm border transition-all ${
+                                    isSelected
+                                        ? 'bg-echo-gold/20 border-echo-gold/40 text-echo-gold'
+                                        : 'bg-white/5 border-white/10 text-neutral-400 hover:border-white/20 hover:text-neutral-300'
+                                }`}
+                            >
+                                {interest.emoji} {interest.label}
+                            </button>
+                        );
+                    })}
+                </div>
+
+                {selectedInterests.length > 0 && (
+                    <p className="text-xs text-echo-textMuted text-center animate-fade-in">
+                        {selectedInterests.length} thématique{selectedInterests.length > 1 ? 's' : ''} sélectionnée{selectedInterests.length > 1 ? 's' : ''}
+                    </p>
+                )}
+            </div>
+
+            {/* Step 4 — Validation */}
+            <div className={`space-y-5 ${step !== 4 ? 'hidden' : 'animate-fade-in delay-100'}`}>
                 <div className="text-center p-4 bg-white/5 border border-white/10 rounded-lg text-sm text-echo-textMuted mb-2">
                     Dernière étape ! Mouvement ECHO s'engage à protéger vos données éthiquement.
                 </div>
@@ -221,9 +285,9 @@ export const RegisterForm = () => {
                     </Button>
                 ) : <div className="hidden md:block"></div>}
 
-                {step < 3 ? (
+                {step < 4 ? (
                     <Button type="button" onClick={handleNext} className="md:w-auto w-full">
-                        Suivant <ChevronRight className="w-4 h-4 ml-2" />
+                        {step === 3 ? (selectedInterests.length === 0 ? 'Passer' : 'Suivant') : 'Suivant'} <ChevronRight className="w-4 h-4 ml-2" />
                     </Button>
                 ) : (
                     <Button

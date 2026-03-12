@@ -77,11 +77,21 @@ async def register_user(data: UserRegister, db: AsyncIOMotorDatabase) -> dict:
             detail="Un compte avec cet email ou nom d'utilisateur existe déjà."
         )
 
+    # Validate and clean interests
+    valid_interests = [
+        "philosophie-conscience", "spiritualite-esoterisme", "religions-traditions",
+        "mythes-civilisations", "sciences-neurosciences", "ecologie-climat",
+        "justice-droits", "geopolitique-pouvoir", "economie-industrie",
+        "technologies-ia", "sante-bien-etre", "arts-medias-culture",
+    ]
+    cleaned_interests = [i for i in (data.interests or []) if i in valid_interests]
+
     # Create user
     user = User(
         username=data.username,
         email=data.email,
         password_hash=hash_password(data.password),
+        interests=cleaned_interests,
     )
     await db.users.insert_one(user.model_dump())
 
