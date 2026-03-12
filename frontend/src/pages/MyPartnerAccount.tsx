@@ -6,10 +6,12 @@ import { cn } from '../components/ui/Button';
 import {
     User, MapPin, Phone, Upload,
     CheckCircle2, Clock, XCircle, AlertTriangle,
-    Save, Calendar, ExternalLink, Download, Trash2
+    Save, Calendar, ExternalLink, Download, Trash2,
+    BarChart3
 } from 'lucide-react';
 import { PARTNERS_API, API_URL } from '../config/api';
 import { BOOKING_URL } from '../config/booking';
+import { PartnerAnalytics, type PartnerStats } from '../components/partners/PartnerAnalytics';
 
 const API_BASE = PARTNERS_API;
 
@@ -52,6 +54,8 @@ interface PartnerData {
     updated_at: string;
 }
 
+type Tab = 'profile' | 'dashboard';
+
 export default function MyPartnerAccount() {
     const [partner, setPartner] = useState<PartnerData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -62,6 +66,9 @@ export default function MyPartnerAccount() {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [activeTab, setActiveTab] = useState<Tab>('profile');
+    const [partnerStats, setPartnerStats] = useState<PartnerStats | null>(null);
+    const [statsLoading, setStatsLoading] = useState(false);
 
     // Editable fields
     const [form, setForm] = useState({
@@ -79,11 +86,47 @@ export default function MyPartnerAccount() {
         twitter_url: '',
     });
 
-    const [addressSuggestions, setAddressSuggestions] = useState<any[]>([]);
+    const [addressSuggestions, setAddressSuggestions] = useState<Array<{ display_name: string; lat: string; lon: string; address?: Record<string, string> }>>([]);
 
     useEffect(() => {
         fetchPartner();
     }, []);
+
+    const fetchStats = async () => {
+        if (partnerStats) return; // already loaded
+        setStatsLoading(true);
+        try {
+            const res = await fetch(`${PARTNERS_API}/me/stats`, { credentials: 'include' });
+            if (res.ok) setPartnerStats(await res.json());
+        } catch { /* ignore */ } finally {
+            setStatsLoading(false);
+        }
+    };
+
+    const handleTabChange = (tab: Tab) => {
+        setActiveTab(tab);
+        if (tab === 'dashboard') fetchStats();
+    };
+
+    const handleExportStatsCsv = () => {
+        if (!partnerStats) return;
+        const rows = ['Date,Vues,Clics Site,Clics Carte'];
+        const byDate: Record<string, Record<string, number>> = {};
+        partnerStats.daily.forEach(d => {
+            const date = d._id.date;
+            const action = d._id.action;
+            if (!byDate[date]) byDate[date] = {};
+            byDate[date][action] = d.count;
+        });
+        Object.entries(byDate).sort(([a], [b]) => a.localeCompare(b)).forEach(([date, actions]) => {
+            rows.push(`${date},${actions['partner_view'] || 0},${actions['partner_click_website'] || 0},${actions['partner_click_map'] || 0}`);
+        });
+        const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `stats-echo-${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+    };
 
     const fetchPartner = async () => {
         setIsLoading(true);
@@ -118,7 +161,7 @@ export default function MyPartnerAccount() {
                 instagram_url: data.instagram_url || '',
                 twitter_url: data.twitter_url || '',
             });
-        } catch (err) {
+        } catch {
             setError('Impossible de charger votre profil partenaire.');
         } finally {
             setIsLoading(false);
@@ -140,7 +183,7 @@ export default function MyPartnerAccount() {
         } catch { /* ignore */ }
     };
 
-    const selectAddress = (s: any) => {
+    const selectAddress = (s: { display_name: string; lat: string; lon: string; address?: Record<string, string> }) => {
         setForm(prev => ({
             ...prev,
             address: s.display_name.split(',')[0],
@@ -285,6 +328,34 @@ export default function MyPartnerAccount() {
                         </div>
                     )}
 
+                    {/* Tab Navigation */}
+                    <div className="flex gap-1 mb-8 p-1 bg-white/5 rounded-xl border border-white/10 w-fit">
+                        <button
+                            onClick={() => handleTabChange('profile')}
+                            className={cn(
+                                'flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all',
+                                activeTab === 'profile'
+                                    ? 'bg-echo-gold text-echo-dark shadow-md'
+                                    : 'text-echo-textMuted hover:text-white'
+                            )}
+                        >
+                            <User size={15} /> Mon Profil
+                        </button>
+                        {partner.status === 'approved' && (
+                            <button
+                                onClick={() => handleTabChange('dashboard')}
+                                className={cn(
+                                    'flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all',
+                                    activeTab === 'dashboard'
+                                        ? 'bg-echo-gold text-echo-dark shadow-md'
+                                        : 'text-echo-textMuted hover:text-white'
+                                )}
+                            >
+                                <BarChart3 size={15} /> Dashboard
+                            </button>
+                        )}
+                    </div>
+
                     {/* Info cards */}
                     <div className="grid grid-cols-3 gap-4 mb-10">
                         <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
@@ -301,6 +372,9 @@ export default function MyPartnerAccount() {
                         </div>
                     </div>
 
+                    {/* === ONGLET PROFIL === */}
+                    {activeTab === 'profile' && (
+                    <>
                     {/* Prise de RDV */}
                     <a
                         href={BOOKING_URL}
@@ -431,6 +505,37 @@ export default function MyPartnerAccount() {
                             </div>
                         </div>
                     </div>
+                    </>
+                    )}
+
+                    {/* === ONGLET DASHBOARD === */}
+                    {activeTab === 'dashboard' && (
+                        <div>
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-xl font-serif text-white flex items-center gap-2">
+                                    <BarChart3 size={20} className="text-echo-gold" />
+                                    Mes performances — 30 jours
+                                </h2>
+                                {partnerStats && (
+                                    <button
+                                        onClick={handleExportStatsCsv}
+                                        className="flex items-center gap-2 px-4 py-2 text-sm bg-white/5 border border-white/10 rounded-lg text-gray-300 hover:bg-white/10 transition-colors"
+                                    >
+                                        <Download size={15} /> Exporter CSV
+                                    </button>
+                                )}
+                            </div>
+                            {statsLoading ? (
+                                <div className="flex items-center justify-center py-20">
+                                    <div className="animate-spin w-8 h-8 border-2 border-echo-gold border-t-transparent rounded-full" />
+                                </div>
+                            ) : partnerStats ? (
+                                <PartnerAnalytics stats={partnerStats} />
+                            ) : (
+                                <p className="text-echo-textMuted text-center py-20">Aucune donnée disponible pour le moment.</p>
+                            )}
+                        </div>
+                    )}
 
                     {/* RGPD — Données personnelles */}
                     <div className="mt-10 pt-8 border-t border-red-500/20">

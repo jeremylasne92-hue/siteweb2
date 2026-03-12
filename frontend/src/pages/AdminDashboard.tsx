@@ -18,7 +18,7 @@ export default function AdminDashboard() {
                 if (res.ok) {
                     const partners = await res.json();
                     setTotalCount(partners.length);
-                    setPendingCount(partners.filter((p: any) => p.status === 'pending').length);
+                    setPendingCount(partners.filter((p: { status: string }) => p.status === 'pending').length);
                 }
             } catch {
                 // silent

@@ -48,7 +48,7 @@ export const RegisterForm = () => {
     };
 
     const handleNext = async () => {
-        let fieldsToValidate: any = [];
+        let fieldsToValidate: (keyof RegisterFormData)[] = [];
         if (step === 1) fieldsToValidate = ['username', 'email'];
         if (step === 2) fieldsToValidate = ['password', 'password_confirm'];
 

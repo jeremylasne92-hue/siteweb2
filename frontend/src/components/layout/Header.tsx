@@ -100,12 +100,12 @@ export function Header() {
                             {isUserMenuOpen && (
                                 <div className="absolute right-0 top-full mt-2 w-48 bg-echo-darker border border-white/10 rounded-lg shadow-xl overflow-hidden animate-fade-in">
                                     <Link
-                                        to="/login"
+                                        to="/profil"
                                         className="flex items-center gap-2 px-4 py-2.5 text-sm text-echo-textMuted hover:bg-white/5 hover:text-white transition-colors"
                                         onClick={() => setIsUserMenuOpen(false)}
                                     >
                                         <User size={14} />
-                                        Mon Compte
+                                        Mon profil
                                     </Link>
                                     <button
                                         onClick={handleLogout}
@@ -162,8 +162,8 @@ export function Header() {
                         )}
                         {isAuthenticated ? (
                             <>
-                                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                                    <Button variant="secondary" className="w-full">Mon Compte</Button>
+                                <Link to="/profil" onClick={() => setIsMobileMenuOpen(false)}>
+                                    <Button variant="secondary" className="w-full">Mon profil</Button>
                                 </Link>
                                 <button
                                     onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }}

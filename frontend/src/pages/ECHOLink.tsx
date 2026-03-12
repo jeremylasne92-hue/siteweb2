@@ -122,7 +122,15 @@ export function ECHOLink() {
     );
 }
 
-function FeatureCard({ icon, title, desc, color, borderColor }: any) {
+interface FeatureCardProps {
+    icon: React.ReactNode;
+    title: string;
+    desc: string;
+    color: string;
+    borderColor: string;
+}
+
+function FeatureCard({ icon, title, desc, color, borderColor }: FeatureCardProps) {
     return (
         <div className={`p-8 rounded-2xl bg-white/5 border ${borderColor} backdrop-blur-sm hover:-translate-y-2 transition-transform duration-300`}>
             <div className={`w-14 h-14 rounded-full bg-white/5 flex items-center justify-center mb-6 ${color}`}>

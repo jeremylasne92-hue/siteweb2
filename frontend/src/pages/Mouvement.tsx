@@ -214,7 +214,15 @@ export function Mouvement() {
 
 // --- Subcomponents ---
 
-function TimelineItem({ side, icon: Icon, title, subtitle, children }: any) {
+interface TimelineItemProps {
+    side: string;
+    icon: React.ElementType;
+    title: string;
+    subtitle: string;
+    children: React.ReactNode;
+}
+
+function TimelineItem({ side, icon: Icon, title, subtitle, children }: TimelineItemProps) {
     const isLeft = side === 'left';
 
     return (
@@ -242,7 +250,16 @@ function TimelineItem({ side, icon: Icon, title, subtitle, children }: any) {
     );
 }
 
-function PhaseCard({ number, title, season, desc, actions, isActive }: any) {
+interface PhaseCardProps {
+    number: string;
+    title: string;
+    season: string;
+    desc: string;
+    actions: string[];
+    isActive?: boolean;
+}
+
+function PhaseCard({ number, title, season, desc, actions, isActive }: PhaseCardProps) {
     return (
         <Card className={`relative h-full bg-stone-950 border-stone-800 p-8 hover:border-amber-500/50 transition-all duration-300 group ${isActive ? 'border-amber-500/30' : ''}`}>
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">

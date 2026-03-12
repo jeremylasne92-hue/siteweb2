@@ -28,6 +28,7 @@ const AdminPartners = lazy(() => import('./pages/AdminPartners'));
 const AdminEvents = lazy(() => import('./pages/AdminEvents'));
 const AdminExports = lazy(() => import('./pages/AdminExports'));
 const MyPartnerAccount = lazy(() => import('./pages/MyPartnerAccount'));
+const Profile = lazy(() => import('./pages/Profile'));
 const Login = lazy(() => import('./pages/auth/Login').then(m => ({ default: m.Login })));
 const Register = lazy(() => import('./pages/auth/Register').then(m => ({ default: m.Register })));
 const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword').then(m => ({ default: m.ForgotPassword })));
@@ -65,6 +66,7 @@ function AppRoutes() {
       <Route path="/admin/partenaires" element={<ProtectedRoute requiredRole="admin"><AdminPartners /></ProtectedRoute>} />
       <Route path="/admin/events" element={<ProtectedRoute requiredRole="admin"><AdminEvents /></ProtectedRoute>} />
       <Route path="/admin/exports" element={<ProtectedRoute requiredRole="admin"><AdminExports /></ProtectedRoute>} />
+      <Route path="/profil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route path="/mon-compte/partenaire" element={<ProtectedRoute><MyPartnerAccount /></ProtectedRoute>} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
