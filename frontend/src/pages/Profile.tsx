@@ -1,19 +1,49 @@
 import { useState, useEffect } from 'react';
-import { Layout } from '../components/layout/Layout';
+import { Link } from 'react-router-dom';
 import { SEO } from '../components/seo/SEO';
-import { User, Download, Trash2, Mail, Shield, AlertTriangle } from 'lucide-react';
+import {
+    Download, Trash2, Shield, AlertTriangle,
+    Pencil, Save, X, Calendar, Heart, ExternalLink,
+    Bell, Tag, FileText, ChevronRight
+} from 'lucide-react';
 import { API_URL } from '../config/api';
 import { Button } from '../components/ui/Button';
+import { useAuthStore } from '../features/auth/store';
+
+interface NotificationPrefs {
+    newsletter: boolean;
+    episodes: boolean;
+    events: boolean;
+    partners: boolean;
+}
 
 interface UserData {
     id: string;
     username: string;
     email: string;
     role: string;
+    picture?: string;
     email_opt_out: boolean;
     created_at: string;
     last_login?: string;
+    bio?: string;
+    interests: string[];
+    avatar_url?: string;
+    notification_prefs: NotificationPrefs;
+    is_member: boolean;
+    member_since?: string;
 }
+
+const AVAILABLE_INTERESTS = [
+    { id: 'ecologie', label: 'Écologie', emoji: '🌿' },
+    { id: 'justice-sociale', label: 'Justice sociale', emoji: '⚖️' },
+    { id: 'numerique', label: 'Numérique responsable', emoji: '💻' },
+    { id: 'education', label: 'Éducation', emoji: '📚' },
+    { id: 'culture', label: 'Culture', emoji: '🎭' },
+    { id: 'alimentation', label: 'Alimentation', emoji: '🌾' },
+    { id: 'energie', label: 'Énergie', emoji: '⚡' },
+    { id: 'mobilite', label: 'Mobilité', emoji: '🚲' },
+];
 
 export default function Profile() {
     const [userData, setUserData] = useState<UserData | null>(null);
@@ -22,7 +52,13 @@ export default function Profile() {
     const [isExporting, setIsExporting] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const [isTogglingEmail, setIsTogglingEmail] = useState(false);
+    const [savingField, setSavingField] = useState<string | null>(null);
+
+    // Editable fields
+    const [isEditingBio, setIsEditingBio] = useState(false);
+    const [bioDraft, setBioDraft] = useState('');
+
+    const logout = useAuthStore((s) => s.logout);
 
     useEffect(() => {
         fetchUser();
@@ -39,12 +75,63 @@ export default function Profile() {
             }
             if (!res.ok) throw new Error('Erreur serveur');
             const data = await res.json();
-            setUserData(data);
+            // Ensure defaults
+            setUserData({
+                ...data,
+                interests: data.interests || [],
+                notification_prefs: data.notification_prefs || { newsletter: true, episodes: true, events: true, partners: false },
+                is_member: data.is_member || false,
+            });
         } catch {
             setError('Impossible de charger votre profil.');
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const updateProfile = async (fields: Record<string, unknown>) => {
+        const fieldName = Object.keys(fields)[0];
+        setSavingField(fieldName);
+        try {
+            const res = await fetch(`${API_URL}/auth/me`, {
+                method: 'PATCH',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(fields),
+            });
+            if (res.ok) {
+                setUserData(prev => prev ? { ...prev, ...fields } as UserData : null);
+            }
+        } catch (err) {
+            console.error('Update failed', err);
+        } finally {
+            setSavingField(null);
+        }
+    };
+
+    const handleSaveBio = async () => {
+        await updateProfile({ bio: bioDraft });
+        setIsEditingBio(false);
+    };
+
+    const toggleInterest = async (interestId: string) => {
+        if (!userData) return;
+        const current = userData.interests;
+        const updated = current.includes(interestId)
+            ? current.filter(i => i !== interestId)
+            : [...current, interestId];
+        await updateProfile({ interests: updated });
+    };
+
+    const toggleNotifPref = async (key: keyof NotificationPrefs) => {
+        if (!userData) return;
+        const updated = { ...userData.notification_prefs, [key]: !userData.notification_prefs[key] };
+        await updateProfile({ notification_prefs: updated });
+    };
+
+    const handleToggleEmailOptOut = async () => {
+        if (!userData) return;
+        await updateProfile({ email_opt_out: !userData.email_opt_out });
     };
 
     const handleExportData = async () => {
@@ -79,32 +166,13 @@ export default function Profile() {
                 credentials: 'include',
             });
             if (res.ok) {
+                logout();
                 window.location.href = '/';
             }
         } catch (err) {
             console.error('Delete failed', err);
         } finally {
             setIsDeleting(false);
-        }
-    };
-
-    const handleToggleEmailOptOut = async () => {
-        if (!userData) return;
-        setIsTogglingEmail(true);
-        try {
-            const res = await fetch(`${API_URL}/auth/me`, {
-                method: 'PATCH',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email_opt_out: !userData.email_opt_out }),
-            });
-            if (res.ok) {
-                setUserData(prev => prev ? { ...prev, email_opt_out: !prev.email_opt_out } : null);
-            }
-        } catch (err) {
-            console.error('Toggle email opt-out failed', err);
-        } finally {
-            setIsTogglingEmail(false);
         }
     };
 
@@ -116,115 +184,296 @@ export default function Profile() {
         });
     };
 
+    const getInitials = (name: string) => {
+        return name.slice(0, 2).toUpperCase();
+    };
+
+    const getRoleBadge = (role: string) => {
+        switch (role) {
+            case 'admin':
+                return { label: 'Admin', color: 'bg-red-500/20 text-red-400 border-red-500/30' };
+            case 'partner':
+                return { label: 'Partenaire', color: 'bg-echo-gold/20 text-echo-gold border-echo-gold/30' };
+            default:
+                return { label: 'Membre', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' };
+        }
+    };
+
     if (isLoading) {
         return (
-            <Layout>
-                <div className="min-h-screen flex items-center justify-center">
-                    <div className="animate-spin w-8 h-8 border-2 border-echo-gold border-t-transparent rounded-full" />
-                </div>
-            </Layout>
+            <div className="min-h-[60vh] flex items-center justify-center">
+                <div className="animate-spin w-8 h-8 border-2 border-echo-gold border-t-transparent rounded-full" />
+            </div>
         );
     }
 
     if (error) {
         return (
-            <Layout>
-                <div className="min-h-screen flex items-center justify-center">
-                    <div className="text-center max-w-md p-8 bg-white/5 border border-white/10 rounded-xl">
-                        <AlertTriangle className="mx-auto mb-4 text-yellow-500" size={48} />
-                        <h2 className="text-xl font-serif text-white mb-2">Accès restreint</h2>
-                        <p className="text-echo-textMuted mb-4">{error}</p>
-                        <Button onClick={() => window.location.href = '/login'}>
-                            Se connecter
-                        </Button>
-                    </div>
+            <div className="min-h-[60vh] flex items-center justify-center">
+                <div className="text-center max-w-md p-8 bg-white/5 border border-white/10 rounded-xl">
+                    <AlertTriangle className="mx-auto mb-4 text-yellow-500" size={48} />
+                    <h2 className="text-xl font-serif text-white mb-2">Accès restreint</h2>
+                    <p className="text-echo-textMuted mb-4">{error}</p>
+                    <Button onClick={() => window.location.href = '/login'}>
+                        Se connecter
+                    </Button>
                 </div>
-            </Layout>
+            </div>
         );
     }
 
     if (!userData) return null;
 
+    const roleBadge = getRoleBadge(userData.role);
+
     return (
-        <Layout>
-            <SEO title="Mon Profil — ECHO" description="Gérez votre profil et vos données personnelles sur la plateforme ECHO." />
+        <>
+            <SEO title="Mon Profil" description="Gérez votre profil et vos données personnelles sur la plateforme ECHO." />
             <div className="min-h-screen bg-echo-dark pt-24 pb-16">
                 <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 
-                    {/* Header */}
-                    <div className="flex items-center gap-4 mb-10">
-                        <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-                            <User size={28} className="text-echo-gold" />
-                        </div>
-                        <div>
-                            <h1 className="text-2xl sm:text-3xl font-serif text-white">Mon Profil</h1>
-                            <p className="text-echo-textMuted text-sm mt-1">{userData.email}</p>
-                        </div>
-                    </div>
-
-                    {/* Section: Informations */}
-                    <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-8">
-                        <h2 className="text-xl font-serif text-white mb-6 flex items-center gap-2">
-                            <User size={20} className="text-echo-gold" />
-                            Informations personnelles
-                        </h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
-                                <p className="text-xs text-echo-textMuted uppercase tracking-wider mb-1">Nom d'utilisateur</p>
-                                <p className="text-white font-medium">{userData.username}</p>
-                            </div>
-                            <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
-                                <p className="text-xs text-echo-textMuted uppercase tracking-wider mb-1">Email</p>
-                                <p className="text-white font-medium">{userData.email}</p>
-                            </div>
-                            <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
-                                <p className="text-xs text-echo-textMuted uppercase tracking-wider mb-1">Membre depuis</p>
-                                <p className="text-white font-medium">{formatDate(userData.created_at)}</p>
-                            </div>
-                            <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
-                                <p className="text-xs text-echo-textMuted uppercase tracking-wider mb-1">Dernière connexion</p>
-                                <p className="text-white font-medium">
-                                    {userData.last_login ? formatDate(userData.last_login) : 'N/A'}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Section: Préférences emails */}
-                    <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-8">
-                        <h2 className="text-xl font-serif text-white mb-4 flex items-center gap-2">
-                            <Mail size={20} className="text-echo-gold" />
-                            Préférences emails
-                        </h2>
-                        <div className="flex items-center justify-between gap-4">
-                            <div className="min-w-0">
-                                <p className="text-white text-sm font-medium">Recevoir les emails du mouvement ECHO</p>
-                                <p className="text-echo-textMuted text-xs mt-1">
-                                    Actualités, événements et mises à jour de la série documentaire
-                                </p>
-                            </div>
-                            <button
-                                onClick={handleToggleEmailOptOut}
-                                disabled={isTogglingEmail}
-                                className={`relative w-12 h-6 rounded-full transition-colors duration-200 shrink-0 ${
-                                    userData.email_opt_out
-                                        ? 'bg-white/20'
-                                        : 'bg-echo-gold'
-                                }`}
-                            >
-                                <span
-                                    className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${
-                                        userData.email_opt_out ? 'translate-x-0' : 'translate-x-6'
-                                    }`}
+                    {/* ===== En-tête Profil ===== */}
+                    <div className="flex items-start gap-5 mb-10">
+                        {/* Avatar */}
+                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-echo-gold/30 to-echo-gold/10 border border-echo-gold/20 flex items-center justify-center shrink-0">
+                            {userData.avatar_url || userData.picture ? (
+                                <img
+                                    src={userData.avatar_url || userData.picture}
+                                    alt={userData.username}
+                                    className="w-full h-full rounded-2xl object-cover"
                                 />
-                            </button>
+                            ) : (
+                                <span className="text-2xl font-bold text-echo-gold">
+                                    {getInitials(userData.username)}
+                                </span>
+                            )}
+                        </div>
+                        <div className="min-w-0">
+                            <div className="flex items-center gap-3 flex-wrap">
+                                <h1 className="text-2xl sm:text-3xl font-serif text-white">{userData.username}</h1>
+                                <span className={`text-xs px-2.5 py-1 rounded-full border ${roleBadge.color}`}>
+                                    {roleBadge.label}
+                                </span>
+                                {userData.is_member && (
+                                    <span className="text-xs px-2.5 py-1 rounded-full border bg-echo-gold/20 text-echo-gold border-echo-gold/30 flex items-center gap-1">
+                                        <Heart size={10} /> Adhérent
+                                    </span>
+                                )}
+                            </div>
+                            <p className="text-echo-textMuted text-sm mt-1">{userData.email}</p>
+                            <p className="text-echo-textMuted text-xs mt-1 flex items-center gap-1">
+                                <Calendar size={12} />
+                                Membre depuis {formatDate(userData.created_at)}
+                                {userData.last_login && (
+                                    <span className="ml-2">· Dernière connexion : {formatDate(userData.last_login)}</span>
+                                )}
+                            </p>
                         </div>
                     </div>
 
-                    {/* Section: RGPD */}
+                    {/* ===== Bio & Intérêts ===== */}
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+                        <h2 className="text-lg font-serif text-white mb-4 flex items-center gap-2">
+                            <FileText size={18} className="text-echo-gold" />
+                            Bio & Centres d'intérêt
+                        </h2>
+
+                        {/* Bio */}
+                        <div className="mb-6">
+                            <div className="flex items-center justify-between mb-2">
+                                <label className="text-sm text-echo-textMuted">Ma présentation</label>
+                                {!isEditingBio && (
+                                    <button
+                                        onClick={() => { setIsEditingBio(true); setBioDraft(userData.bio || ''); }}
+                                        className="text-xs text-echo-gold hover:underline flex items-center gap-1"
+                                    >
+                                        <Pencil size={12} /> Modifier
+                                    </button>
+                                )}
+                            </div>
+                            {isEditingBio ? (
+                                <div>
+                                    <textarea
+                                        value={bioDraft}
+                                        onChange={e => setBioDraft(e.target.value)}
+                                        maxLength={280}
+                                        rows={3}
+                                        placeholder="Décrivez-vous en quelques mots…"
+                                        className="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-white text-sm placeholder-neutral-500 focus:outline-none focus:border-echo-gold/50 resize-none"
+                                    />
+                                    <div className="flex items-center justify-between mt-2">
+                                        <span className="text-xs text-neutral-500">{bioDraft.length}/280</span>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => setIsEditingBio(false)}
+                                                className="text-xs text-neutral-400 hover:text-white flex items-center gap-1"
+                                            >
+                                                <X size={12} /> Annuler
+                                            </button>
+                                            <button
+                                                onClick={handleSaveBio}
+                                                disabled={savingField === 'bio'}
+                                                className="text-xs text-echo-gold hover:underline flex items-center gap-1 disabled:opacity-50"
+                                            >
+                                                <Save size={12} /> {savingField === 'bio' ? 'Enregistrement…' : 'Enregistrer'}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <p className="text-sm text-neutral-300 italic">
+                                    {userData.bio || 'Aucune bio définie. Cliquez sur "Modifier" pour vous présenter.'}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Intérêts */}
+                        <div>
+                            <label className="text-sm text-echo-textMuted mb-3 block flex items-center gap-1">
+                                <Tag size={14} /> Mes thématiques d'intérêt
+                            </label>
+                            <div className="flex flex-wrap gap-2">
+                                {AVAILABLE_INTERESTS.map(interest => {
+                                    const isSelected = userData.interests.includes(interest.id);
+                                    return (
+                                        <button
+                                            key={interest.id}
+                                            onClick={() => toggleInterest(interest.id)}
+                                            disabled={savingField === 'interests'}
+                                            className={`px-3 py-1.5 rounded-full text-sm border transition-all ${
+                                                isSelected
+                                                    ? 'bg-echo-gold/20 border-echo-gold/40 text-echo-gold'
+                                                    : 'bg-white/5 border-white/10 text-neutral-400 hover:border-white/20'
+                                            }`}
+                                        >
+                                            {interest.emoji} {interest.label}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ===== Préférences de notification ===== */}
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+                        <h2 className="text-lg font-serif text-white mb-4 flex items-center gap-2">
+                            <Bell size={18} className="text-echo-gold" />
+                            Préférences de notification
+                        </h2>
+
+                        {/* Global opt-out */}
+                        <NotifToggle
+                            label="Recevoir les emails du mouvement ECHO"
+                            description="Désactivez pour ne plus recevoir aucun email (sauf transactionnels)"
+                            checked={!userData.email_opt_out}
+                            onChange={handleToggleEmailOptOut}
+                            loading={savingField === 'email_opt_out'}
+                        />
+
+                        {!userData.email_opt_out && (
+                            <div className="mt-4 pt-4 border-t border-white/5 space-y-1">
+                                <NotifToggle
+                                    label="Newsletter générale"
+                                    description="Actualités du mouvement et de la série"
+                                    checked={userData.notification_prefs.newsletter}
+                                    onChange={() => toggleNotifPref('newsletter')}
+                                    loading={savingField === 'notification_prefs'}
+                                />
+                                <NotifToggle
+                                    label="Nouveaux épisodes"
+                                    description="Soyez averti(e) dès qu'un épisode sort"
+                                    checked={userData.notification_prefs.episodes}
+                                    onChange={() => toggleNotifPref('episodes')}
+                                    loading={savingField === 'notification_prefs'}
+                                />
+                                <NotifToggle
+                                    label="Événements"
+                                    description="Projections, ateliers et rencontres"
+                                    checked={userData.notification_prefs.events}
+                                    onChange={() => toggleNotifPref('events')}
+                                    loading={savingField === 'notification_prefs'}
+                                />
+                                <NotifToggle
+                                    label="Actualités partenaires"
+                                    description="Nouveautés de l'ECHOSystem"
+                                    checked={userData.notification_prefs.partners}
+                                    onChange={() => toggleNotifPref('partners')}
+                                    loading={savingField === 'notification_prefs'}
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* ===== Raccourcis ===== */}
+                    {(userData.role === 'partner' || userData.role === 'admin') && (
+                        <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+                            <h2 className="text-lg font-serif text-white mb-4 flex items-center gap-2">
+                                <ExternalLink size={18} className="text-echo-gold" />
+                                Raccourcis
+                            </h2>
+                            <div className="space-y-2">
+                                {(userData.role === 'partner' || userData.role === 'admin') && (
+                                    <Link
+                                        to="/mon-compte/partenaire"
+                                        className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors group"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <Shield size={16} className="text-echo-gold" />
+                                            <span className="text-white text-sm">Espace Partenaire</span>
+                                        </div>
+                                        <ChevronRight size={16} className="text-neutral-500 group-hover:text-white transition-colors" />
+                                    </Link>
+                                )}
+                                {userData.role === 'admin' && (
+                                    <Link
+                                        to="/admin"
+                                        className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors group"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <Shield size={16} className="text-red-400" />
+                                            <span className="text-white text-sm">Administration</span>
+                                        </div>
+                                        <ChevronRight size={16} className="text-neutral-500 group-hover:text-white transition-colors" />
+                                    </Link>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ===== Statut Adhérent ===== */}
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+                        <h2 className="text-lg font-serif text-white mb-4 flex items-center gap-2">
+                            <Heart size={18} className="text-echo-gold" />
+                            Adhésion à l'association
+                        </h2>
+                        {userData.is_member ? (
+                            <div className="flex items-center gap-3 p-4 bg-echo-gold/10 border border-echo-gold/20 rounded-lg">
+                                <Heart size={20} className="text-echo-gold shrink-0" />
+                                <div>
+                                    <p className="text-white text-sm font-medium">Vous êtes adhérent(e) du Mouvement ECHO</p>
+                                    {userData.member_since && (
+                                        <p className="text-echo-textMuted text-xs mt-0.5">Depuis le {formatDate(userData.member_since)}</p>
+                                    )}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="text-center py-4">
+                                <p className="text-neutral-400 text-sm mb-4">
+                                    Vous n'êtes pas encore adhérent(e). Rejoignez l'association pour soutenir le mouvement !
+                                </p>
+                                <Link to="/soutenir">
+                                    <Button variant="outline" size="sm">
+                                        Devenir adhérent <ExternalLink size={14} className="ml-1" />
+                                    </Button>
+                                </Link>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* ===== Données (RGPD) ===== */}
                     <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-                        <h2 className="text-xl font-serif text-white mb-2 flex items-center gap-2">
-                            <Shield size={20} className="text-echo-gold" />
+                        <h2 className="text-lg font-serif text-white mb-2 flex items-center gap-2">
+                            <Shield size={18} className="text-echo-gold" />
                             Mes Données (RGPD)
                         </h2>
                         <p className="text-sm text-gray-400 mb-6">
@@ -237,7 +486,7 @@ export default function Profile() {
                                 className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm bg-white/5 border border-white/10 rounded-lg text-gray-300 hover:bg-white/10 transition-colors disabled:opacity-50"
                             >
                                 <Download size={16} />
-                                {isExporting ? 'Export en cours...' : 'Exporter mes données'}
+                                {isExporting ? 'Export en cours…' : 'Exporter mes données'}
                             </button>
                             <button
                                 onClick={() => setShowDeleteConfirm(true)}
@@ -271,12 +520,43 @@ export default function Profile() {
                                 disabled={isDeleting}
                                 className="px-4 py-2.5 text-sm bg-red-600 rounded-lg text-white hover:bg-red-700 disabled:opacity-50"
                             >
-                                {isDeleting ? 'Suppression...' : 'Confirmer la suppression'}
+                                {isDeleting ? 'Suppression…' : 'Confirmer la suppression'}
                             </button>
                         </div>
                     </div>
                 </div>
             )}
-        </Layout>
+        </>
+    );
+}
+
+
+function NotifToggle({ label, description, checked, onChange, loading }: {
+    label: string;
+    description: string;
+    checked: boolean;
+    onChange: () => void;
+    loading: boolean;
+}) {
+    return (
+        <div className="flex items-center justify-between gap-4 py-2">
+            <div className="min-w-0">
+                <p className="text-white text-sm font-medium">{label}</p>
+                <p className="text-echo-textMuted text-xs mt-0.5">{description}</p>
+            </div>
+            <button
+                onClick={onChange}
+                disabled={loading}
+                className={`relative w-11 h-6 rounded-full transition-colors duration-200 shrink-0 ${
+                    checked ? 'bg-echo-gold' : 'bg-white/20'
+                }`}
+            >
+                <span
+                    className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-200 ${
+                        checked ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                />
+            </button>
+        </div>
     );
 }

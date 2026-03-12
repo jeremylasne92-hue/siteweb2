@@ -326,8 +326,71 @@ async def get_current_user_info(current_user: User = Depends(get_current_user)):
         "email": current_user.email,
         "role": current_user.role,
         "picture": current_user.picture,
-        "is_2fa_enabled": current_user.is_2fa_enabled
+        "is_2fa_enabled": current_user.is_2fa_enabled,
+        "created_at": current_user.created_at.isoformat() if current_user.created_at else None,
+        "last_login": current_user.last_login.isoformat() if current_user.last_login else None,
+        "email_opt_out": current_user.email_opt_out,
+        "bio": current_user.bio,
+        "interests": current_user.interests,
+        "avatar_url": current_user.avatar_url,
+        "notification_prefs": current_user.notification_prefs,
+        "is_member": current_user.is_member,
+        "member_since": current_user.member_since.isoformat() if current_user.member_since else None,
     }
+
+
+class ProfileUpdate(PydanticBaseModel):
+    email_opt_out: bool | None = None
+    bio: str | None = None
+    interests: list[str] | None = None
+    avatar_url: str | None = None
+    notification_prefs: dict | None = None
+
+
+VALID_INTERESTS = [
+    "ecologie", "justice-sociale", "numerique", "education",
+    "culture", "alimentation", "energie", "mobilite",
+]
+
+
+@router.patch("/me")
+async def update_profile(
+    updates: ProfileUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    """Update current user profile fields"""
+    update_data: dict = {}
+
+    if updates.email_opt_out is not None:
+        update_data["email_opt_out"] = updates.email_opt_out
+
+    if updates.bio is not None:
+        if len(updates.bio) > 280:
+            raise HTTPException(status_code=400, detail="Bio must be 280 characters or less")
+        update_data["bio"] = updates.bio.strip()
+
+    if updates.interests is not None:
+        cleaned = [i for i in updates.interests if i in VALID_INTERESTS]
+        update_data["interests"] = cleaned
+
+    if updates.avatar_url is not None:
+        if updates.avatar_url and len(updates.avatar_url) > 500:
+            raise HTTPException(status_code=400, detail="Avatar URL too long")
+        update_data["avatar_url"] = updates.avatar_url
+
+    if updates.notification_prefs is not None:
+        allowed_keys = {"newsletter", "episodes", "events", "partners"}
+        cleaned_prefs = {k: bool(v) for k, v in updates.notification_prefs.items() if k in allowed_keys}
+        update_data["notification_prefs"] = cleaned_prefs
+
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No valid fields to update")
+
+    await db.users.update_one({"id": current_user.id}, {"$set": update_data})
+    logger.info(f"User {current_user.id} updated profile fields: {list(update_data.keys())}")
+
+    return {"message": "Profile updated", "updated_fields": list(update_data.keys())}
 
 
 @router.delete("/user/{user_id}")

@@ -26,6 +26,17 @@ class User(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     last_login: Optional[datetime] = None
     email_opt_out: bool = False
+    bio: Optional[str] = None
+    interests: list[str] = Field(default_factory=list)
+    avatar_url: Optional[str] = None
+    notification_prefs: dict = Field(default_factory=lambda: {
+        "newsletter": True,
+        "episodes": True,
+        "events": True,
+        "partners": False,
+    })
+    is_member: bool = False
+    member_since: Optional[datetime] = None
 
     class Config:
         json_schema_extra = {
