@@ -204,6 +204,7 @@ class AnalyticsEventCreate(BaseModel):
     category: str = Field(min_length=1, max_length=50)
     action: str = Field(min_length=1, max_length=50)
     path: str = Field(min_length=1, max_length=200)
+    partner_id: Optional[str] = None
 
 
 class AnalyticsEvent(AnalyticsEventCreate):

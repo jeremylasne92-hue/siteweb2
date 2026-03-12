@@ -103,11 +103,17 @@ async def send_email(email: str, subject: str, message: str, user_id: str = None
 
     unsubscribe = ""
     if user_id:
+        import hmac, hashlib
+        token = hmac.new(
+            settings.UNSUBSCRIBE_SECRET.encode(),
+            user_id.encode(),
+            hashlib.sha256
+        ).hexdigest()
         base = settings.FRONTEND_URL if hasattr(settings, 'FRONTEND_URL') and settings.FRONTEND_URL else "https://mouvement-echo.fr"
         unsubscribe = (
             f'<p style="margin-top:20px;font-size:11px;color:#888;text-align:center;">'
             f'Pour vous desinscrire des emails : '
-            f'<a href="{base}/api/auth/unsubscribe/{user_id}" style="color:#D4AF37;">cliquez ici</a></p>'
+            f'<a href="{base}/api/auth/unsubscribe/{user_id}?token={token}" style="color:#D4AF37;">cliquez ici</a></p>'
         )
     html = f"<div style='white-space:pre-line;'>{message}</div>{unsubscribe}"
     if _use_sendgrid():

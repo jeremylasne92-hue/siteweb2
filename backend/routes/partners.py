@@ -341,6 +341,66 @@ async def get_my_partner_account(
         
     return partner
 
+@router.get("/me/stats")
+async def get_my_partner_stats(
+    current_user: User = Depends(get_current_user),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Get visitor statistics for the logged-in partner (FR15)"""
+    if current_user.role != UserRole.PARTNER and current_user.role != UserRole.ADMIN:
+        raise HTTPException(status_code=403, detail="Espace partenaire uniquement")
+        
+    partner = await db.partners.find_one({"user_id": current_user.id})
+    if not partner:
+        raise HTTPException(status_code=404, detail="Compte partenaire introuvable")
+        
+    partner_id = partner["id"]
+    
+    # Date 30 jours en arrière pour le graphe
+    since = datetime.utcnow() - timedelta(days=30)
+    
+    pipeline = [
+        {"$match": {
+            "partner_id": partner_id,
+            "created_at": {"$gte": since}
+        }},
+        {"$facet": {
+            "summary": [
+                {"$group": {
+                    "_id": "$action",
+                    "count": {"$sum": 1}
+                }}
+            ],
+            "daily": [
+                {"$group": {
+                    "_id": {
+                        "date": {"$dateToString": {"format": "%Y-%m-%d", "date": "$created_at"}},
+                        "action": "$action"
+                    },
+                    "count": {"$sum": 1}
+                }},
+                {"$sort": {"_id.date": 1}}
+            ]
+        }}
+    ]
+    
+    result = await db.analytics_events.aggregate(pipeline).to_list(1)
+    data = result[0] if result else {"summary": [], "daily": []}
+    
+    # Formatter le summary pour le simplifier au front
+    summary_dict = {item["_id"]: item["count"] for item in data.get("summary", [])}
+    
+    return {
+        "partner_id": partner_id,
+        "period_days": 30,
+        "summary": {
+            "views": summary_dict.get("partner_view", 0),
+            "website_clicks": summary_dict.get("partner_click_website", 0),
+            "map_clicks": summary_dict.get("partner_click_map", 0),
+        },
+        "daily": data.get("daily", [])
+    }
+
 @router.put("/me/account")
 async def update_my_partner_account(
     description: Optional[str] = Form(None),

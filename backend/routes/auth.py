@@ -396,9 +396,18 @@ async def export_my_data(
 @router.get("/unsubscribe/{user_id}")
 async def unsubscribe_emails(
     user_id: str,
+    token: str = "",
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
-    """Unsubscribe from non-transactional emails (RGPD)"""
+    """Unsubscribe from non-transactional emails (RGPD). Requires valid HMAC token."""
+    import hmac, hashlib
+    expected = hmac.new(
+        settings.UNSUBSCRIBE_SECRET.encode(),
+        user_id.encode(),
+        hashlib.sha256
+    ).hexdigest()
+    if not token or not hmac.compare_digest(token, expected):
+        raise HTTPException(status_code=403, detail="Invalid unsubscribe token")
     result = await db.users.update_one(
         {"id": user_id},
         {"$set": {"email_opt_out": True}}

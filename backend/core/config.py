@@ -37,6 +37,9 @@ class Settings:
     EMAIL_FROM: str = os.environ.get("EMAIL_FROM", "noreply@mouvement-echo.fr")
     EMAIL_FROM_NAME: str = os.environ.get("EMAIL_FROM_NAME", "Mouvement ECHO")
 
+    # Unsubscribe
+    UNSUBSCRIBE_SECRET: str = os.environ.get("UNSUBSCRIBE_SECRET", "echo-unsubscribe-secret-change-me")
+
     # Environment
     ENVIRONMENT: str = os.environ.get("ENVIRONMENT", "development")
 
