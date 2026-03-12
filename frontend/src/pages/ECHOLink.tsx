@@ -20,7 +20,7 @@ export function ECHOLink() {
                     <div className="inline-block p-4 rounded-full bg-echo-blue/10 mb-6 border border-echo-blue/30 shadow-[0_0_30px_rgba(59,130,246,0.2)]">
                         <Network className="w-12 h-12 text-echo-blueLight" />
                     </div>
-                    <h1 className="text-6xl md:text-8xl font-serif font-bold text-white mb-6 tracking-tighter text-glow">
+                    <h1 className="text-4xl sm:text-6xl md:text-8xl font-serif font-bold text-white mb-6 tracking-tighter text-glow">
                         ECHOLink
                     </h1>
                     <p className="text-xl md:text-2xl text-echo-textMuted mb-8 font-light">

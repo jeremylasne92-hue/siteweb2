@@ -15,6 +15,7 @@ const Contact = lazy(() => import('./pages/Contact').then(m => ({ default: m.Con
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy').then(m => ({ default: m.PrivacyPolicy })));
 const LegalNotice = lazy(() => import('./pages/LegalNotice').then(m => ({ default: m.LegalNotice })));
 const TermsOfService = lazy(() => import('./pages/TermsOfService').then(m => ({ default: m.TermsOfService })));
+const FAQ = lazy(() => import('./pages/FAQ').then(m => ({ default: m.FAQ })));
 import { ProtectedRoute } from './features/auth/components/ProtectedRoute';
 import { useAuthStore } from './features/auth/store';
 import { usePageTracking } from './hooks/usePageTracking';
@@ -63,6 +64,7 @@ function AppRoutes() {
       <Route path="/politique-de-confidentialite" element={<PrivacyPolicy />} />
       <Route path="/mentions-legales" element={<LegalNotice />} />
       <Route path="/cgu" element={<TermsOfService />} />
+      <Route path="/faq" element={<FAQ />} />
       <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
       <Route path="/admin/partenaires" element={<ProtectedRoute requiredRole="admin"><AdminPartners /></ProtectedRoute>} />
       <Route path="/admin/events" element={<ProtectedRoute requiredRole="admin"><AdminEvents /></ProtectedRoute>} />

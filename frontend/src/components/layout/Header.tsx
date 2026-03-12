@@ -160,6 +160,13 @@ export function Header() {
                             {link.name}
                         </Link>
                     ))}
+                    <Link
+                        to="/faq"
+                        className="text-white hover:text-echo-gold py-2 border-b border-white/5"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                        FAQ
+                    </Link>
                     <div className="flex flex-col gap-3 mt-4">
                         {user?.role === 'admin' && (
                             <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)}>

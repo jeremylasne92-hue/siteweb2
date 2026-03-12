@@ -5,14 +5,14 @@ import { resetCookieConsent } from '../ui/CookieBanner';
 
 export function Footer() {
     return (
-        <footer className="bg-black border-t border-white/10 pt-16 pb-8">
+        <footer className="bg-black border-t border-white/10 pt-10 sm:pt-16 pb-8">
             <div className="container mx-auto px-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12 mb-10 lg:mb-16">
 
                     {/* Brand Column */}
-                    <div className="lg:col-span-2">
-                        <Link to="/" className="text-3xl font-serif font-bold text-white mb-6 block">ECHO</Link>
-                        <p className="text-echo-textMuted mb-6 max-w-sm">
+                    <div className="col-span-2 lg:col-span-2 mb-2 lg:mb-0">
+                        <Link to="/" className="text-3xl font-serif font-bold text-white mb-4 lg:mb-6 block">ECHO</Link>
+                        <p className="text-echo-textMuted mb-4 lg:mb-6 max-w-sm text-sm">
                             Une websérie sociale, éducative et interactive qui s'inspire de La Divine Comédie pour décrypter les défis contemporains et fédérer une communauté engagée.
                         </p>
                         <div className="flex gap-4">
@@ -25,10 +25,11 @@ export function Footer() {
 
                     {/* Navigation */}
                     <div>
-                        <h4 className="text-white font-serif mb-6">Navigation</h4>
-                        <ul className="space-y-3">
+                        <h4 className="text-white font-serif mb-4 lg:mb-6 text-sm lg:text-base">Navigation</h4>
+                        <ul className="space-y-2 lg:space-y-3">
                             <FooterLink to="/serie">La Série</FooterLink>
                             <FooterLink to="/mouvement">Le Mouvement</FooterLink>
+                            <FooterLink to="/cognisphere">CogniSphère</FooterLink>
                             <FooterLink to="/echolink">ECHOLink</FooterLink>
                             <FooterLink to="/partenaires">ECHOSystem</FooterLink>
                         </ul>
@@ -36,19 +37,20 @@ export function Footer() {
 
                     {/* Resources */}
                     <div>
-                        <h4 className="text-white font-serif mb-6">Ressources</h4>
-                        <ul className="space-y-3">
+                        <h4 className="text-white font-serif mb-4 lg:mb-6 text-sm lg:text-base">Ressources</h4>
+                        <ul className="space-y-2 lg:space-y-3">
                             <FooterLink to="/ressources">Catalogue</FooterLink>
                             <FooterLink to="/agenda">Événements</FooterLink>
-                            <FooterLink to="/soutenir">FAQ & Soutien</FooterLink>
+                            <FooterLink to="/faq">FAQ</FooterLink>
+                            <FooterLink to="/soutenir">Soutenir</FooterLink>
                             <FooterLink to="/contact">Contact</FooterLink>
                         </ul>
                     </div>
 
                     {/* Legal */}
-                    <div>
-                        <h4 className="text-white font-serif mb-6">Légal</h4>
-                        <ul className="space-y-3">
+                    <div className="col-span-2 sm:col-span-1">
+                        <h4 className="text-white font-serif mb-4 lg:mb-6 text-sm lg:text-base">Légal</h4>
+                        <ul className="space-y-2 lg:space-y-3">
                             <FooterLink to="/politique-de-confidentialite">Confidentialité</FooterLink>
                             <FooterLink to="/mentions-legales">Mentions légales</FooterLink>
                             <FooterLink to="/cgu">CGU</FooterLink>
@@ -57,7 +59,6 @@ export function Footer() {
                                     Gérer mes cookies
                                 </button>
                             </li>
-                            <FooterLink to="/contact">Contact</FooterLink>
                         </ul>
                     </div>
                 </div>

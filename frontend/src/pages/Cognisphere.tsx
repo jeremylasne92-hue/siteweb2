@@ -18,7 +18,7 @@ export function Cognisphere() {
                     <div className="inline-block p-4 rounded-full bg-violet-500/10 mb-6 border border-violet-500/30 shadow-[0_0_30px_rgba(139,92,246,0.2)]">
                         <Brain className="w-12 h-12 text-violet-400" />
                     </div>
-                    <h1 className="text-6xl md:text-8xl font-serif font-bold text-white mb-6 tracking-tighter">
+                    <h1 className="text-4xl sm:text-6xl md:text-8xl font-serif font-bold text-white mb-6 tracking-tighter">
                         Cogni<span className="text-violet-400">sphère</span>
                     </h1>
                     <p className="text-xl md:text-2xl text-echo-textMuted mb-4 font-light">

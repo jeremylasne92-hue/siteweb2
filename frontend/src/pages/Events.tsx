@@ -65,7 +65,7 @@ export function Events() {
                     <div className="inline-block p-3 rounded-full bg-echo-gold/10 mb-6 border border-echo-gold/30">
                         <Calendar className="w-8 h-8 text-echo-gold" />
                     </div>
-                    <h1 className="text-5xl md:text-7xl font-serif text-white mb-6">
+                    <h1 className="text-4xl sm:text-5xl md:text-7xl font-serif text-white mb-6">
                         L'Agenda <span className="text-echo-gold">ECHO</span>
                     </h1>
                     <p className="text-xl text-neutral-300 max-w-2xl mx-auto font-light">

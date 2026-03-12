@@ -17,7 +17,7 @@ export function Home() {
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2672&auto=format&fit=crop')] bg-cover bg-center opacity-30 animate-pulse" />
 
                 <div className="relative z-20 text-center max-w-4xl px-4 animate-fade-in">
-                    <h1 className="text-6xl md:text-8xl font-serif font-bold text-white mb-6 tracking-tighter text-shadow">
+                    <h1 className="text-4xl sm:text-6xl md:text-8xl font-serif font-bold text-white mb-6 tracking-tighter text-shadow">
                         ECHO
                     </h1>
                     <p className="text-xl md:text-2xl text-echo-textMuted mb-8 italic font-serif">
