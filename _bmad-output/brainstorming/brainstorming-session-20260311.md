@@ -15,137 +15,127 @@ context_file: ''
 
 ---
 
-## 📅 Calendrier de Référence
+## 📅 Calendrier de Référence (2026)
 
 | Date | Jalon |
 |------|-------|
-| **20 mars 2026** | 🎬 Lancement bande-annonce + site web |
-| **25 mars 2026** | 🎭 Bêtisier IA prêt |
-| **Avril 2026** | 💰 Recherche de financement (partenaires + crowdfunding) + événements |
-| **Mai 2026** | 🧠 Cognisphère MVP (beta) |
-| **Septembre 2026** | 📺 Sortie Épisode 1 |
+| **20 mars** | 🎬 Lancement bande-annonce + site web |
+| **25 mars** | 🎭 Bêtisier IA prêt |
+| **Avril** | 💰 Recherche de financement (partenaires + crowdfunding) + événements |
+| **Mai** | 🧠 Cognisphère MVP (beta) |
+| **Septembre** | 📺 Sortie Épisode 1 |
 | **Fin 2026** | 🔗 ECHOLink MVP (beta) |
 
 ---
 
 ## 🎯 Directive Transversale : Navigation AI-Friendly
 
-> Le site doit être optimisé pour la navigation des **IA (crawlers, bots, assistants vocaux)** ET des spectateurs humains. Cela inclut : données structurées (JSON-LD, Schema.org), balises sémantiques HTML5, sitemap XML dynamique, méta-descriptions riches, et contenu accessible sans JavaScript quand possible.
+> Le site doit être optimisé pour la navigation des **IA (crawlers, bots, assistants vocaux)** ET des spectateurs humains. Cela inclut : données structurées (JSON-LD, Schema.org), balises sémantiques HTML5, sitemap XML dynamique, et méta-descriptions riches.
 
 ---
 
-## 🎭 Personas de Référence (9)
+## 🎭 Personas du Role Playing (9)
 
-| # | Persona | Emoji | Description |
-|---|---------|-------|-------------|
-| 1 | Spectateur Néophyte | 😶 | Ne connaît rien aux thématiques, peu intéressé |
-| 2 | Spectateur Conscient-Passif | 🤔 | Sait qu'il faut changer mais n'est pas passé à l'acte |
-| 3 | Spectateur Engagé | ✊ | Déjà conscient et actif |
-| 4 | Partenaire Associatif | 🤝 | Veut savoir ce que ECHO lui apporte |
-| 5 | Investisseur / Mécène | 💰 | Veut des preuves d'impact |
-| 6 | Admin ECHO | 🛠️ | Gère le quotidien |
-| 7 | Développeur Outils | 💻 | Développe Cognisphère/ECHOLink |
-| 8 | Candidat ECHO | 🌱 | Veut rejoindre le projet |
-| 9 | Adversaire | 🔴 | Veut nuire au projet |
+| # | Persona | Emoji | Besoins Clés |
+|---|---------|-------|--------------|
+| 1 | **Néophyte** | 😶 | Clarté immédiate, pas de jargon. |
+| 2 | **Conscient-Passif**| 🤔 | Preuve d'action, déclic vers l'engagement. |
+| 3 | **Engagé** | ✊ | Rapidité d'accès, sentiment d'appartenance. |
+| 4 | **Partenaire** | 🤝 | Visibilité, stats d'impact local. |
+| 5 | **Investisseur** | 💰 | Vision, data, transparence financière. |
+| 6 | **Admin ECHO** | 🛠️ | Simplicité de gestion, outils intégrés. |
+| 7 | **Dév. Outils** | 💻 | Documentation technique, contribution. |
+| 8 | **Candidat** | 🌱 | Parcours d'intégration clair, rôles. |
+| 9 | **Adversaire** | 🔴 | Sécurité, modération, anti-fraude. |
 
 ---
 
 ## 🔴 Priorité 1 — CRITIQUE (Mars-Avril 2026)
 
 ### [E #17b] 🧭 Navigation restructurée : La Série / Le Mouvement / Les Outils
-
-**Concept :** Restructurer le Header autour de Informer → Fédérer → Agir.
-
-**Bonifications (Role Playing) :**
-- ✏️ Ajouter des **sous-textes explicatifs** sous chaque menu (ex: "La Série — *Découvrir les épisodes*")
-- ✏️ Bouton **"Soutenir"** séparé et toujours visible, pas caché dans un menu
-- ✏️ CTA **"Rejoindre ECHO"** permanent et distinct du menu principal
-- ✏️ Lien **"Mon ECHO"** visible pour les utilisateurs connectés (accès dashboard perso)
-- ✏️ Sous-menu Outils : Cognisphère / ECHOLink / **Contribuer** (pour les devs)
-- ✏️ Lien **"Espace Partenaire"** maintenu dans le footer
-
----
+**Concept :** Simplifier le Header autour de Informer → Fédérer → Agir.
+**Bonifications :**
+- ✏️ **Explainer Text** : Sous-titres sous les menus (ex: "La Série — *Découvrir*").
+- ✏️ **Floating Action** : Bouton "Soutenir" distinct et toujours visible.
+- ✏️ **Recrutement** : CTA "Rejoindre ECHO" permanent hors menu.
+- ✏️ **User Area** : Lien "Mon ECHO" dynamique (Dashboard) une fois connecté.
+- ✏️ **Dev Access** : Sous-menu Outils incluant "Contribuer (Tech)".
+- ✏️ **Trust Layout** : "Espace Partenaire" maintenu en footer.
 
 ### [S #2] 🏠 Landing Page Dynamique
-
-**Concept :** Page d'accueil personnalisée (nouveau visiteur vs. membre connecté).
-
-**Role Playing — En cours...**
-
----
+**Concept :** Accueil personnalisé selon le profil visiteur.
+**Bonifications :**
+- ✏️ **Hero Hybrid** : Teaser autoplay (muet) + Tagline + CTA unique Néophytes.
+- ✏️ **Proof of Life** : Section Compteurs (#14) + Événements récents pour Passifs.
+- ✏️ **Bâtisseurs Index** : Bandeau logos partenaires défilant + CTA Recrutement.
+- ✏️ **Financial Trust** : Section "Impact" avec lien direct vers le Soutien.
+- ✏️ **User Feed** : Mode "Mon ECHO" (feed d'actualités/progrès) pour les connectés.
+- ✏️ **SEO Power** : JSON-LD (VideoObject, Organization) pour indexation IA.
 
 ### [A #9] ✉️ Newsletter standard
-
-**Concept :** Capture de contacts dès le lancement. Communications post-lancement et fundraising.
-
----
+**Concept :** Capture de contacts agile liée à SendGrid.
+**Bonifications :**
+- ✏️ **Contextual Lead** : Formulaire après teaser ("Prévenez-moi pour l'Ep 1").
+- ✏️ **Subscription UX** : Inscription sans compte, migration vers compte plus tard.
+- ✏️ **Content Promise** : Fréquence (1/mois) et types (Coulisses, Actions) annoncés.
+- ✏️ **Preferences** : Choix de catégories (Série, Mouvement, Outils).
+- ✏️ **Trust Protocol** : Double opt-in obligatoire + Protection reCAPTCHA.
+- ✏️ **B2B Lane** : Newsletter dédiée Partenaires & Rapport d'impact Mécènes.
 
 ### [P #14] 📊 Compteurs communautaires publics
+**Concept :** Social proof massif via l'affichage des volumes (Membres, Actions).
+**Bonifications :**
+- ✏️ **Narrative Stats** : Chiffres accompagnés d'un message ("1247 Citoyens...").
+- ✏️ **Action Meter** : Mixer volumes humains et volumes d'impact (Engagements tenus).
+- ✏️ **Growth Indicator** : Tendance "+X cette semaine" pour rassurer les mécènes.
+- ✏️ **Identity Reward** : "Vous êtes le Xème membre" pour les connectés.
+- ✏️ **Performance** : API `/stats` avec cache horaire + Valeur plancher (anti-0).
 
-**Concept :** Compteurs "X personnes ont rejoint" — social proof sur la Home.
-
----
-
-### [CP #30] 🎭 Section "En coulisses" + Bêtisier IA + Contenu exclusif adhérents
-
-**Concept :** Contenu prêt le 25 mars. Humanise le projet. Levier d'adhésion.
-
----
+### [CP #30] 🎭 La Fabrique ECHO (Bêtisier & Exclusif)
+**Concept :** Humanisation via le making-of et le bêtisier IA (25 mars).
+**Bonifications :**
+- ✏️ **Naming** : Nommer "La Fabrique" ou "Making-of" (plus humain que IA).
+- ✏️ **Dual Content** : Mixer Humour (Bêtisier) et Manifeste (Vision équipe).
+- ✏️ **Cadence** : Contenu exclusif adhérents trimestriel.
+- ✏️ **Talent Path** : Section "Contribuer à la prod" (réalisation, post-prod) intégrée.
+- ✏️ **Salarial Trust** : Grille tarifaire affichée (Bénévolat vs Financement asso).
+- ✏️ **Exclusivité** : Mode "Accès Anticipé" (protection par flag `is_member`).
 
 ### [CP #28] 💡 Section éditoriale "Idées"
+**Concept :** Micro-articles (300 mots) partageables pour SEO et engagement.
+**Bonifications :**
+- ✏️ **Actionable Blog** : Chaque article finit par 1 engagement concret (#29).
+- ✏️ **Co-Signing** : Articles rédigés par ECHO × Partenaires (visibilité croisée).
+- ✏️ **Editor Role** : Nouveau rôle utilisateur "Rédacteur" pour soumettre des tribunes.
+- ✏️ **Moderation** : Toutes les tribunes membres sont validées par Admin.
+- ✏️ **Automated Reach** : Cross-post réseaux sociaux auto dès publication.
 
-**Concept :** Billets courts résumant les grandes idées ECHO, cross-postés sur les réseaux.
-
----
-
-### [P #15] 📈 Dashboard Partenaire avec stats
-
-**Concept :** Justifie les partenariats par la data (clics, vues, conversions).
+### [P #15] 📈 Dashboard Partenaire
+**Concept :** Justification de la valeur du réseau via la data de fréquentation.
+**Bonifications :**
+- ✏️ **P1 Priority** : Dashboard prêt pour le fundraising d'Avril.
+- ✏️ **Metrics** : Vues profil, clics site, zones géo (agrégées/anonymes).
+- ✏️ **Report Generator** : Export PDF pour les rapports annuels des partenaires.
+- ✏️ **Public Badge** : Social proof public sur fiche ("Partenaire Actif").
+- ✏️ **Admin Alert** : Notification si partenaire sans visites depuis 30 jours.
 
 ---
 
 ## 🟡 Priorité 2 — IMPORTANT (Mai-Août 2026)
+*(À bonifier en Phase de Role Playing suivante)*
 
-### [M #11] 🧭 Questionnaire d'Orientation → Matching Partenaires + Parcours
-Connecte chaque inscrit à son réseau de partenaires locaux et à des parcours thématiques.
-
-### [A #8] 📚 Parcours Thématiques Multi-Format → Cognisphère
-Ressources multi-support par thématique. Lié à la beta Cognisphère de Mai.
-
-### [P #13] 🎬 Expérience Post-Épisode
-Feedback, vote thématique, suggestions, engagements. Prêt pour septembre.
-
-### [CP #29] ✊ Engagements gradués post-épisode
-Du plus simple au plus complexe. Collecte des raisons du non-engagement.
-
-### [C #6] 👤 Profils Publics "Bâtisseurs"
-Bio + photo optionnelle. Recrutement par social proof citoyen.
-
-### [R #19] 🎨 "ECHO par vous" — UGC Curated
-Poster numérique géant + capsules d'initiatives des spectateurs.
-
-### [S #1] 🤖 Bot-Personnage Accompagnateur
-Compagnon IA incarné par un personnage de la série.
+- **[M #11]** 🧭 Questionnaire d'Orientation → Matching
+- **[A #8]** 📚 Parcours Thématiques Multi-Format
+- **[P #13]** 🎬 Expérience Post-Épisode
+- **[CP #29]** ✊ Engagements gradués
+- **[C #6]** 👤 Profils "Bâtisseurs"
+- **[R #19]** 🎨 "ECHO par vous"
+- **[S #1]** 🤖 Bot-Personnage (Important)
 
 ---
 
 ## 🟢 Priorité 3 — AMÉLIORATIONS CONTINUES (Fin 2026)
 
-### [R #21] 💰 Monnaie d'Engagement (Points ECHO)
-"Si vous ne pouvez pas aider, c'est nous qui vous aidons." Donateurs = plus de points.
-
-### [R #20] 🏘️ ECHO Local — Événements auto-organisés
-Rôle "Organisateur" avec cadre fourni. Scaling communautaire.
-
-### [A #7] 📺 Watch Parties synchronisées
-Visionnage collectif pour les événements de lancement de saison.
-
----
-
-## 💡 Synthèse
-
-| Phase | Nb Idées | Focus | Timeline |
-|-------|----------|-------|----------|
-| 🔴 Critique | 7 | Lancement, Fundraising, Dashboard Partenaire | Mars-Avril 2026 |
-| 🟡 Important | 7 | Cognisphère, Épisode 1, Bot-Personnage | Mai-Août 2026 |
-| 🟢 Continu | 3 | Scaling communautaire | Fin 2026 |
+- **[R #21]** 💰 Monnaie d'Engagement (Points ECHO)
+- **[R #20]** 🏘️ ECHO Local
+- **[A #7]** 📺 Watch Parties

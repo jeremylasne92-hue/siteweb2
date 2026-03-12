@@ -131,6 +131,7 @@ backend/
 
 | Date | Décision | Agent |
 |------|----------|-------|
+| 2026-03-12 | Brainstorming Features Site Web : 20 idées générées (S-C-A-M-P-E-R + Cross-Pollination). 7 idées critiques bonifiées via Role Playing (9 personas). Focus : Navigation Informer/Fédérer/Agir, Dashboard Partenaire, Expérience Post-Épisode, La Fabrique ECHO. | Antigravity (Gemini) |
 | 2026-03-11 | RGPD compliance complète : 3 pages légales (confidentialité, mentions légales, CGU) + bannière cookies (localStorage + gtag consent) + checkboxes consentement sur 3 formulaires + endpoint export données GET /me/export + UI suppression/export sur MyPartnerAccount + champ email_opt_out + endpoint unsubscribe + lien désinscription emails. 51 tests backend OK, build frontend OK. | Claude Code (Opus 4.6) |
 | 2026-03-11 | Admin CSV exports : 2 nouveaux endpoints (GET /auth/admin/export-users, GET /partners/admin/export) + refonte AdminExports.tsx avec 3 cartes export. | Claude Code (Opus 4.6) |
 | 2026-03-11 | Fix logo partenaire admin : ajout proxy Vite /api → localhost:8000 pour résoudre les URLs relatives des uploads en dev. | Claude Code (Opus 4.6) |
