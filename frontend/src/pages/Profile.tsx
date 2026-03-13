@@ -4,9 +4,10 @@ import { SEO } from '../components/seo/SEO';
 import {
     Download, Trash2, Shield, AlertTriangle,
     Pencil, Save, X, Calendar, Heart, ExternalLink,
-    Tag, FileText, ChevronRight
+    Tag, FileText, ChevronRight, Brain, Share2,
+    Clock, Users, CheckCircle2, XCircle
 } from 'lucide-react';
-import { API_URL } from '../config/api';
+import { API_URL, CANDIDATURES_API } from '../config/api';
 import { Button } from '../components/ui/Button';
 import { useAuthStore } from '../features/auth/store';
 
@@ -54,10 +55,15 @@ export default function Profile() {
     const [isEditingBio, setIsEditingBio] = useState(false);
     const [bioDraft, setBioDraft] = useState('');
 
+    const [myCandidatures, setMyCandidatures] = useState<{
+        id: string; project: string; status: string; status_note?: string; created_at: string;
+    }[]>([]);
+
     const logout = useAuthStore((s) => s.logout);
 
     useEffect(() => {
         fetchUser();
+        fetchMyCandidatures();
     }, []);
 
     const fetchUser = async () => {
@@ -81,6 +87,18 @@ export default function Profile() {
             setError('Impossible de charger votre profil.');
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const fetchMyCandidatures = async () => {
+        try {
+            const res = await fetch(`${CANDIDATURES_API}/me`, { credentials: 'include' });
+            if (res.ok) {
+                const data = await res.json();
+                setMyCandidatures(data);
+            }
+        } catch {
+            // silent — not critical
         }
     };
 
@@ -337,6 +355,61 @@ export default function Profile() {
                             </div>
                         </div>
                     </div>
+
+                    {/* ===== Mes candidatures ===== */}
+                    {myCandidatures.length > 0 && (
+                        <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+                            <h2 className="text-lg font-serif text-white mb-4 flex items-center gap-2">
+                                <FileText size={18} className="text-echo-gold" />
+                                Mes candidatures techniques
+                            </h2>
+                            <div className="space-y-3">
+                                {myCandidatures.map(c => {
+                                    const isCS = c.project === 'cognisphere';
+                                    const projectLabel = isCS ? 'CogniSphère' : 'ECHOLink';
+                                    const projectColor = isCS ? '#A78BFA' : '#60A5FA';
+                                    const ProjectIcon = isCS ? Brain : Share2;
+                                    const statusMap: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
+                                        pending: { label: 'En attente', color: '#F59E0B', icon: <Clock size={12} /> },
+                                        entretien: { label: 'Entretien', color: '#3B82F6', icon: <Users size={12} /> },
+                                        accepted: { label: 'Acceptée', color: '#10B981', icon: <CheckCircle2 size={12} /> },
+                                        rejected: { label: 'Non retenue', color: '#EF4444', icon: <XCircle size={12} /> },
+                                    };
+                                    const st = statusMap[c.status] || statusMap.pending;
+                                    return (
+                                        <div key={c.id} className="p-4 bg-white/5 border border-white/10 rounded-lg">
+                                            <div className="flex items-center justify-between flex-wrap gap-2">
+                                                <div className="flex items-center gap-2">
+                                                    <span
+                                                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border"
+                                                        style={{ color: projectColor, borderColor: `${projectColor}40`, backgroundColor: `${projectColor}15` }}
+                                                    >
+                                                        <ProjectIcon size={12} />
+                                                        {projectLabel}
+                                                    </span>
+                                                    <span className="text-xs text-echo-textMuted">
+                                                        {new Date(c.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                                    </span>
+                                                </div>
+                                                <span
+                                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium border"
+                                                    style={{ color: st.color, borderColor: `${st.color}40`, backgroundColor: `${st.color}15` }}
+                                                >
+                                                    {st.icon}
+                                                    {st.label}
+                                                </span>
+                                            </div>
+                                            {c.status_note && (
+                                                <p className="text-xs text-echo-textMuted mt-2 pl-1 border-l-2 border-white/10 ml-1">
+                                                    {c.status_note}
+                                                </p>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
 
                     {/* ===== Préférences de notification — masqué en attente de la newsletter ===== */}
 

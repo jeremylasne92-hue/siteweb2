@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.responses import StreamingResponse
-from models import TechCandidature, TechCandidatureRequest, User
-from routes.auth import get_db, require_admin
+from models import TechCandidature, TechCandidatureRequest, TechCandidatureStatusUpdate, TechCandidatureBatchStatusUpdate, User
+from routes.auth import get_db, require_admin, get_current_user
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from datetime import datetime, timedelta
 from email_service import send_email
@@ -68,13 +68,16 @@ async def submit_tech_candidature(
 @router.get("/admin/all")
 async def list_tech_candidatures(
     project: str = "all",
+    status: str = "all",
     admin: User = Depends(require_admin),
     db: AsyncIOMotorDatabase = Depends(get_db),
 ):
-    """List all tech candidatures (admin only), optionally filtered by project."""
+    """List all tech candidatures (admin only), optionally filtered by project and status."""
     query = {}
     if project in ("cognisphere", "echolink"):
         query["project"] = project
+    if status in ("pending", "entretien", "accepted", "rejected"):
+        query["status"] = status
 
     cursor = db.tech_candidatures.find(query).sort("created_at", -1)
     candidatures = []
@@ -112,7 +115,7 @@ async def export_tech_candidatures(
     output = io.StringIO()
     output.write("\ufeff")  # BOM UTF-8
     writer = csv.writer(output)
-    writer.writerow(["id", "name", "email", "project", "skills", "message", "created_at"])
+    writer.writerow(["id", "name", "email", "project", "skills", "message", "status", "status_note", "created_at"])
     for c in candidatures:
         created = c.get("created_at", "")
         if hasattr(created, "isoformat"):
@@ -124,6 +127,8 @@ async def export_tech_candidatures(
             c.get("project", ""),
             c.get("skills", ""),
             c.get("message", ""),
+            c.get("status", "pending"),
+            c.get("status_note", ""),
             created,
         ])
 
@@ -135,3 +140,58 @@ async def export_tech_candidatures(
         media_type="text/csv; charset=utf-8",
         headers={"Content-Disposition": "attachment; filename=candidatures-tech-export.csv"},
     )
+
+
+@router.put("/admin/{candidature_id}/status")
+async def update_candidature_status(
+    candidature_id: str,
+    data: TechCandidatureStatusUpdate,
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    """Update a tech candidature status (admin only)."""
+    update_fields = {"status": data.status, "updated_at": datetime.utcnow()}
+    if data.status_note is not None:
+        update_fields["status_note"] = data.status_note
+    result = await db.tech_candidatures.update_one(
+        {"id": candidature_id},
+        {"$set": update_fields},
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Candidature non trouvée")
+    logger.info(f"Admin {admin.id} updated candidature {candidature_id} to {data.status}")
+    return {"message": f"Statut mis à jour : {data.status}"}
+
+
+@router.put("/admin/batch-status")
+async def batch_update_candidature_status(
+    data: TechCandidatureBatchStatusUpdate,
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    """Batch update tech candidature statuses (admin only)."""
+    update_fields = {"status": data.status, "updated_at": datetime.utcnow()}
+    if data.status_note is not None:
+        update_fields["status_note"] = data.status_note
+    result = await db.tech_candidatures.update_many(
+        {"id": {"$in": data.ids}},
+        {"$set": update_fields},
+    )
+    logger.info(f"Admin {admin.id} batch-updated {result.modified_count} candidatures to {data.status}")
+    return {"message": f"{result.modified_count} candidature(s) mise(s) à jour", "count": result.modified_count}
+
+
+@router.get("/me")
+async def get_my_candidatures(
+    current_user: User = Depends(get_current_user),
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    """Get candidatures for the current authenticated user (matched by email)."""
+    cursor = db.tech_candidatures.find(
+        {"email": current_user.email},
+        {"_id": 0, "ip_address": 0},
+    ).sort("created_at", -1)
+    candidatures = []
+    async for doc in cursor:
+        candidatures.append(doc)
+    return candidatures

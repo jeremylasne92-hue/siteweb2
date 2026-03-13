@@ -1,10 +1,12 @@
 """
-Tests for Story 2.3: Candidatures Techniques Anti-Spam.
+Tests for Story 2.3: Candidatures Techniques Anti-Spam + Status Workflow.
 """
 from fastapi.testclient import TestClient
 from unittest.mock import AsyncMock, MagicMock, patch
 from server import app
-from routes.auth import get_db
+from routes.auth import get_db, require_admin, get_current_user
+from models import User, UserRole
+from datetime import datetime
 
 client = TestClient(app)
 
@@ -100,3 +102,113 @@ def test_candidature_validation_short_message():
     app.dependency_overrides.clear()
 
     assert response.status_code == 422
+
+
+# --- Status workflow tests ---
+
+ADMIN_USER = User(
+    id="admin-test-id",
+    username="admin",
+    email="admin@echo.fr",
+    role=UserRole.ADMIN,
+    created_at=datetime.utcnow(),
+)
+
+REGULAR_USER = User(
+    id="user-test-id",
+    username="testuser",
+    email="john@example.com",
+    role=UserRole.USER,
+    created_at=datetime.utcnow(),
+)
+
+
+def test_update_candidature_status():
+    """PUT /candidatures/admin/{id}/status updates status."""
+    db = MagicMock()
+    update_result = MagicMock()
+    update_result.matched_count = 1
+    db.tech_candidatures.update_one = AsyncMock(return_value=update_result)
+
+    app.dependency_overrides[get_db] = lambda: db
+    app.dependency_overrides[require_admin] = lambda: ADMIN_USER
+
+    response = client.put(
+        "/api/candidatures/admin/cand-123/status",
+        json={"status": "entretien", "status_note": "Profil intéressant"},
+    )
+
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert "entretien" in response.json()["message"]
+    db.tech_candidatures.update_one.assert_called_once()
+
+
+def test_batch_update_candidature_status():
+    """PUT /candidatures/admin/batch-status updates multiple candidatures."""
+    db = MagicMock()
+    update_result = MagicMock()
+    update_result.modified_count = 3
+    db.tech_candidatures.update_many = AsyncMock(return_value=update_result)
+
+    app.dependency_overrides[get_db] = lambda: db
+    app.dependency_overrides[require_admin] = lambda: ADMIN_USER
+
+    response = client.put(
+        "/api/candidatures/admin/batch-status",
+        json={"ids": ["id-1", "id-2", "id-3"], "status": "entretien"},
+    )
+
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert response.json()["count"] == 3
+
+
+def test_get_my_candidatures():
+    """GET /candidatures/me returns candidatures matching user email."""
+    db = MagicMock()
+    fake_docs = [
+        {"id": "c1", "name": "John Doe", "email": "john@example.com", "project": "cognisphere",
+         "skills": "React", "message": "Motivation", "status": "pending", "created_at": datetime.utcnow()},
+    ]
+
+    class AsyncCursorMock:
+        def __init__(self, docs):
+            self._docs = docs
+        def sort(self, *args, **kwargs):
+            return self
+        async def __aiter__(self):
+            for doc in self._docs:
+                yield doc
+
+    db.tech_candidatures.find = MagicMock(return_value=AsyncCursorMock(fake_docs))
+
+    app.dependency_overrides[get_db] = lambda: db
+    app.dependency_overrides[get_current_user] = lambda: REGULAR_USER
+
+    response = client.get("/api/candidatures/me")
+
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 1
+    assert data[0]["project"] == "cognisphere"
+
+
+def test_update_status_unauthorized():
+    """PUT /candidatures/admin/{id}/status without admin returns 401/403."""
+    db = MagicMock()
+    app.dependency_overrides[get_db] = lambda: db
+    # Don't override require_admin — will fail auth
+
+    response = client.put(
+        "/api/candidatures/admin/cand-123/status",
+        json={"status": "entretien"},
+    )
+
+    app.dependency_overrides.clear()
+
+    assert response.status_code in (401, 403)

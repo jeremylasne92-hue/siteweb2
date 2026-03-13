@@ -9,7 +9,7 @@
 **Dernière mise à jour** : 2026-03-13
 **Phase actuelle** : Post-Epics — Pré-lancement (lancement 20 mars 2026)
 **Statut** : ✅ Opérationnel — Refonte pages CogniSphère + ECHOLink
-**Dernier milestone** : Refonte pages CogniSphère + ECHOLink (contenu enrichi depuis documents de référence)
+**Dernier milestone** : Workflow candidatures techniques (validation/batch/suivi profil)
 
 ### ⚠️ Rappels Pré-Lancement (20 mars 2026)
 - [ ] **Revoir le Dashboard Partenaire** avant la sortie officielle (UX, données, design)
@@ -149,6 +149,7 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-13 | Workflow candidatures techniques : ajout status (pending/entretien/accepted/rejected), status_note, updated_at au modèle TechCandidature. 3 nouveaux endpoints (PUT admin/{id}/status, PUT admin/batch-status, GET /me). Admin : badges statut, sélection batch avec checkbox, actions groupées, filtres par statut, note admin dans modale. Profil utilisateur : section "Mes candidatures" (match par email, badges statut colorés, note admin). 4 nouveaux tests backend. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-13 | Refonte page ECHOLink : 8 sections (hero, constat, 3 piliers overview, 3 fonctionnalités détaillées avec exemples concrets, valeurs, origine ECHO, candidature). Contenu aligné avec document de référence ECHOLink (énigmes/QR codes, hubs collaboratifs/Kanban/matching, économie alternative/monnaie numérique). Ajustements : suppression section Stack/Contribuer/GitHub, correction "documentaire" → "série", exemple concret quête mythologique urbaine + ECHOSystem, "pour le bien commun". 3 mockups Hub intégrés. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-13 | Refonte page CogniSphère : mockups interactifs desktop/mobile (5 écrans switchables), suppression section pricing, roadmap mise à jour (bêta Juin 2026, Phase 2 Déc 2026, Phase 3+ 2027), texte aligné avec candidature Émergence IDF, section Origine ECHO enrichie (lien série, parcours thématiques, hiver 2025), image mobile dédiée. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-12 | Dashboard Partenaire : tracking vues/clics (partner_id dans AnalyticsEvent), endpoint /partners/me/stats (MongoDB Aggregate 30j), composant PartnerAnalytics.tsx (Recharts), hook useAnalytics.ts (SendBeacon). Onglet Dashboard dans MyPartnerAccount avec export CSV. | Antigravity (Gemini) |
@@ -194,6 +195,7 @@ frontend/src/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-13 | 🟡 STANDARD | Workflow candidatures techniques (statut, batch, suivi profil, 4 tests) | ~30min | Claude Code (Opus 4.6) |
 | 2026-03-13 | 🟡 STANDARD | Refonte page ECHOLink (8 sections, 3 fonctionnalités détaillées, exemples concrets) | ~30min | Claude Code (Opus 4.6) |
 | 2026-03-13 | 🟡 STANDARD | Refonte page CogniSphère (mockups, texte, roadmap, mobile) | ~1h | Claude Code (Opus 4.6) |
 | 2026-03-12 | 🔴 MAJEUR | Dashboard Partenaire (analytics, Recharts, hook tracking, onglet) | ~1h30 | Antigravity (Gemini) |
@@ -301,7 +303,7 @@ _Aucune spec en cours._
 | # | Tâche | Priorité | Statut |
 |---|-------|----------|--------|
 | 1 | ~~RGPD compliance~~ | Critique | ✅ Done |
-| 2 | Vue admin candidatures techniques (collection `tech_candidatures`) | Haute | À faire |
+| 2 | ~~Vue admin candidatures techniques~~ | Haute | ✅ Done (déjà implémenté : AdminCandidatures.tsx + 4 endpoints + route admin + export CSV) |
 | 3 | Admin événements : drag & drop image + autocomplétion adresse | Moyenne | À faire |
 | 4 | Vérifier tous les parcours utilisateurs et boutons | Haute | À faire |
 | 5 | Design responsive mobile | Haute | À faire |

@@ -160,8 +160,11 @@ class TechCandidature(BaseModel):
     project: Literal["cognisphere", "echolink"]
     skills: str
     message: str
+    status: Literal["pending", "entretien", "accepted", "rejected"] = "pending"
+    status_note: Optional[str] = None
     ip_address: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = None
 
 
 class TechCandidatureRequest(BaseModel):
@@ -171,6 +174,17 @@ class TechCandidatureRequest(BaseModel):
     skills: str = Field(min_length=2, max_length=500)
     message: str = Field(min_length=10, max_length=2000)
     website: str = ""  # honeypot field
+
+
+class TechCandidatureStatusUpdate(BaseModel):
+    status: Literal["pending", "entretien", "accepted", "rejected"]
+    status_note: Optional[str] = None
+
+
+class TechCandidatureBatchStatusUpdate(BaseModel):
+    ids: list[str] = Field(min_length=1)
+    status: Literal["pending", "entretien", "accepted", "rejected"]
+    status_note: Optional[str] = None
 
 
 class EventType(str, Enum):

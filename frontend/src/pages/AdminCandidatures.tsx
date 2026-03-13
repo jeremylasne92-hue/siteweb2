@@ -2,10 +2,13 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
     FileText, RefreshCw, ArrowLeft, Trash2, X,
-    Brain, Share2, Clock, AlertTriangle
+    Brain, Share2, Clock, AlertTriangle, CheckCircle2,
+    XCircle, Users, MessageSquare
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { CANDIDATURES_API } from '../config/api';
+
+type CandidatureStatus = 'pending' | 'entretien' | 'accepted' | 'rejected';
 
 interface TechCandidature {
     id: string;
@@ -14,31 +17,65 @@ interface TechCandidature {
     project: 'cognisphere' | 'echolink';
     skills: string;
     message: string;
+    status: CandidatureStatus;
+    status_note?: string;
     ip_address?: string;
     created_at: string;
+    updated_at?: string;
 }
 
 type ProjectFilter = 'all' | 'cognisphere' | 'echolink';
+type StatusFilter = 'all' | CandidatureStatus;
 
 const projectConfig = {
     cognisphere: { label: 'CogniSphère', color: '#A78BFA', icon: <Brain size={14} /> },
     echolink: { label: 'ECHOLink', color: '#60A5FA', icon: <Share2 size={14} /> },
 };
 
+const statusConfig: Record<CandidatureStatus, { label: string; color: string; icon: React.ReactNode }> = {
+    pending: { label: 'En attente', color: '#F59E0B', icon: <Clock size={14} /> },
+    entretien: { label: 'Entretien', color: '#3B82F6', icon: <Users size={14} /> },
+    accepted: { label: 'Acceptée', color: '#10B981', icon: <CheckCircle2 size={14} /> },
+    rejected: { label: 'Rejetée', color: '#EF4444', icon: <XCircle size={14} /> },
+};
+
+function StatusBadge({ status }: { status: CandidatureStatus }) {
+    const config = statusConfig[status] || statusConfig.pending;
+    return (
+        <span
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border"
+            style={{
+                color: config.color,
+                borderColor: `${config.color}40`,
+                backgroundColor: `${config.color}15`,
+            }}
+        >
+            {config.icon}
+            {config.label}
+        </span>
+    );
+}
+
 export default function AdminCandidatures() {
     const [candidatures, setCandidatures] = useState<TechCandidature[]>([]);
-    const [filter, setFilter] = useState<ProjectFilter>('all');
+    const [projectFilter, setProjectFilter] = useState<ProjectFilter>('all');
+    const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
     const [selected, setSelected] = useState<TechCandidature | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [actionLoading, setActionLoading] = useState(false);
+    const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
+    const [statusNote, setStatusNote] = useState('');
 
     const fetchCandidatures = async () => {
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch(`${CANDIDATURES_API}/admin/all?project=${filter}`, {
+            const params = new URLSearchParams();
+            if (projectFilter !== 'all') params.set('project', projectFilter);
+            if (statusFilter !== 'all') params.set('status', statusFilter);
+            const res = await fetch(`${CANDIDATURES_API}/admin/all?${params}`, {
                 credentials: 'include',
             });
             if (res.status === 401 || res.status === 403) {
@@ -48,6 +85,7 @@ export default function AdminCandidatures() {
             if (!res.ok) throw new Error('Erreur serveur');
             const data = await res.json();
             setCandidatures(data);
+            setCheckedIds(new Set());
         } catch {
             setError('Impossible de charger les candidatures.');
         } finally {
@@ -58,7 +96,57 @@ export default function AdminCandidatures() {
     useEffect(() => {
         fetchCandidatures();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [filter]);
+    }, [projectFilter, statusFilter]);
+
+    const handleStatusUpdate = async (id: string, status: CandidatureStatus, note?: string) => {
+        setActionLoading(true);
+        try {
+            const body: Record<string, unknown> = { status };
+            if (note) body.status_note = note;
+            const res = await fetch(`${CANDIDATURES_API}/admin/${id}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(body),
+            });
+            if (res.ok) {
+                setCandidatures(prev => prev.map(c =>
+                    c.id === id ? { ...c, status, status_note: note || c.status_note } : c
+                ));
+                if (selected?.id === id) {
+                    setSelected(prev => prev ? { ...prev, status, status_note: note || prev.status_note } : null);
+                }
+                setStatusNote('');
+            }
+        } catch {
+            // silent
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const handleBatchStatus = async (status: CandidatureStatus) => {
+        if (checkedIds.size === 0) return;
+        setActionLoading(true);
+        try {
+            const res = await fetch(`${CANDIDATURES_API}/admin/batch-status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ ids: Array.from(checkedIds), status }),
+            });
+            if (res.ok) {
+                setCandidatures(prev => prev.map(c =>
+                    checkedIds.has(c.id) ? { ...c, status } : c
+                ));
+                setCheckedIds(new Set());
+            }
+        } catch {
+            // silent
+        } finally {
+            setActionLoading(false);
+        }
+    };
 
     const handleDelete = async (id: string) => {
         setActionLoading(true);
@@ -79,13 +167,35 @@ export default function AdminCandidatures() {
         }
     };
 
-    const cogniCount = candidatures.filter(c => c.project === 'cognisphere').length;
-    const echoCount = candidatures.filter(c => c.project === 'echolink').length;
+    const toggleCheck = (id: string) => {
+        setCheckedIds(prev => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
+    };
 
-    const filters: { key: ProjectFilter; label: string; count?: number }[] = [
-        { key: 'all', label: 'Toutes', count: candidatures.length },
-        { key: 'cognisphere', label: 'CogniSphère', count: filter === 'all' ? cogniCount : undefined },
-        { key: 'echolink', label: 'ECHOLink', count: filter === 'all' ? echoCount : undefined },
+    const toggleAll = () => {
+        if (checkedIds.size === candidatures.length) {
+            setCheckedIds(new Set());
+        } else {
+            setCheckedIds(new Set(candidatures.map(c => c.id)));
+        }
+    };
+
+    const projectFilters: { key: ProjectFilter; label: string }[] = [
+        { key: 'all', label: 'Tous projets' },
+        { key: 'cognisphere', label: 'CogniSphère' },
+        { key: 'echolink', label: 'ECHOLink' },
+    ];
+
+    const statusFilters: { key: StatusFilter; label: string }[] = [
+        { key: 'all', label: 'Tous statuts' },
+        { key: 'pending', label: 'En attente' },
+        { key: 'entretien', label: 'Entretien' },
+        { key: 'accepted', label: 'Acceptées' },
+        { key: 'rejected', label: 'Rejetées' },
     ];
 
     return (
@@ -104,7 +214,9 @@ export default function AdminCandidatures() {
                         </div>
                         <div>
                             <h1 className="text-2xl font-serif text-white">Candidatures techniques</h1>
-                            <p className="text-sm text-echo-textMuted">CogniSphère & ECHOLink</p>
+                            <p className="text-sm text-echo-textMuted">
+                                {candidatures.length} candidature{candidatures.length !== 1 ? 's' : ''}
+                            </p>
                         </div>
                     </div>
                     <button
@@ -117,24 +229,74 @@ export default function AdminCandidatures() {
                 </div>
 
                 {/* Filters */}
-                <div className="flex gap-2 mb-6">
-                    {filters.map(f => (
+                <div className="flex flex-wrap gap-2 mb-4">
+                    {projectFilters.map(f => (
                         <button
                             key={f.key}
-                            onClick={() => setFilter(f.key)}
+                            onClick={() => setProjectFilter(f.key)}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                                filter === f.key
+                                projectFilter === f.key
                                     ? 'bg-echo-gold/20 text-echo-gold border border-echo-gold/30'
                                     : 'bg-white/5 text-echo-textMuted border border-white/10 hover:bg-white/10'
                             }`}
                         >
                             {f.label}
-                            {f.count !== undefined && (
-                                <span className="ml-2 text-xs opacity-70">({f.count})</span>
-                            )}
                         </button>
                     ))}
                 </div>
+                <div className="flex flex-wrap gap-2 mb-6">
+                    {statusFilters.map(f => (
+                        <button
+                            key={f.key}
+                            onClick={() => setStatusFilter(f.key)}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                                statusFilter === f.key
+                                    ? 'bg-white/15 text-white border border-white/20'
+                                    : 'bg-white/5 text-echo-textMuted border border-white/10 hover:bg-white/10'
+                            }`}
+                        >
+                            {f.label}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Batch Action Bar */}
+                {checkedIds.size > 0 && (
+                    <div className="flex items-center gap-3 mb-4 p-3 bg-echo-gold/10 border border-echo-gold/20 rounded-xl">
+                        <span className="text-sm text-echo-gold font-medium">
+                            {checkedIds.size} sélectionnée{checkedIds.size > 1 ? 's' : ''}
+                        </span>
+                        <div className="flex gap-2 ml-auto">
+                            <Button
+                                variant="outline"
+                                onClick={() => handleBatchStatus('entretien')}
+                                disabled={actionLoading}
+                                className="!text-blue-400 !border-blue-400/30 text-xs px-3 py-1"
+                            >
+                                <Users size={14} className="mr-1" />
+                                Convoquer en entretien
+                            </Button>
+                            <Button
+                                variant="outline"
+                                onClick={() => handleBatchStatus('accepted')}
+                                disabled={actionLoading}
+                                className="!text-green-400 !border-green-400/30 text-xs px-3 py-1"
+                            >
+                                <CheckCircle2 size={14} className="mr-1" />
+                                Accepter
+                            </Button>
+                            <Button
+                                variant="outline"
+                                onClick={() => handleBatchStatus('rejected')}
+                                disabled={actionLoading}
+                                className="!text-red-400 !border-red-400/30 text-xs px-3 py-1"
+                            >
+                                <XCircle size={14} className="mr-1" />
+                                Rejeter
+                            </Button>
+                        </div>
+                    </div>
+                )}
 
                 {/* Error */}
                 {error && (
@@ -150,9 +312,17 @@ export default function AdminCandidatures() {
                         <table className="w-full">
                             <thead>
                                 <tr className="border-b border-white/10">
+                                    <th className="px-4 py-3 w-10">
+                                        <input
+                                            type="checkbox"
+                                            checked={candidatures.length > 0 && checkedIds.size === candidatures.length}
+                                            onChange={toggleAll}
+                                            className="accent-echo-gold"
+                                        />
+                                    </th>
                                     <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3">Nom</th>
-                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3">Email</th>
                                     <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3">Projet</th>
+                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3">Statut</th>
                                     <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3">Compétences</th>
                                     <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3">Date</th>
                                 </tr>
@@ -160,45 +330,57 @@ export default function AdminCandidatures() {
                             <tbody>
                                 {loading ? (
                                     <tr>
-                                        <td colSpan={5} className="text-center text-echo-textMuted py-12">
+                                        <td colSpan={6} className="text-center text-echo-textMuted py-12">
                                             <RefreshCw size={20} className="animate-spin inline mr-2" />
                                             Chargement...
                                         </td>
                                     </tr>
                                 ) : candidatures.length === 0 ? (
                                     <tr>
-                                        <td colSpan={5} className="text-center text-echo-textMuted py-12">
+                                        <td colSpan={6} className="text-center text-echo-textMuted py-12">
                                             Aucune candidature pour le moment.
                                         </td>
                                     </tr>
                                 ) : (
                                     candidatures.map(c => {
-                                        const config = projectConfig[c.project];
+                                        const pConfig = projectConfig[c.project];
                                         return (
                                             <tr
                                                 key={c.id}
-                                                onClick={() => setSelected(c)}
                                                 className="border-b border-white/5 hover:bg-white/5 cursor-pointer transition-colors"
                                             >
-                                                <td className="px-4 py-3 text-sm text-white font-medium">{c.name}</td>
-                                                <td className="px-4 py-3 text-sm text-echo-textMuted">{c.email}</td>
-                                                <td className="px-4 py-3">
+                                                <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={checkedIds.has(c.id)}
+                                                        onChange={() => toggleCheck(c.id)}
+                                                        className="accent-echo-gold"
+                                                    />
+                                                </td>
+                                                <td className="px-4 py-3" onClick={() => setSelected(c)}>
+                                                    <div className="text-sm text-white font-medium">{c.name}</div>
+                                                    <div className="text-xs text-echo-textMuted">{c.email}</div>
+                                                </td>
+                                                <td className="px-4 py-3" onClick={() => setSelected(c)}>
                                                     <span
                                                         className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border"
                                                         style={{
-                                                            color: config.color,
-                                                            borderColor: `${config.color}40`,
-                                                            backgroundColor: `${config.color}15`,
+                                                            color: pConfig.color,
+                                                            borderColor: `${pConfig.color}40`,
+                                                            backgroundColor: `${pConfig.color}15`,
                                                         }}
                                                     >
-                                                        {config.icon}
-                                                        {config.label}
+                                                        {pConfig.icon}
+                                                        {pConfig.label}
                                                     </span>
                                                 </td>
-                                                <td className="px-4 py-3 text-sm text-echo-textMuted max-w-[200px] truncate">
+                                                <td className="px-4 py-3" onClick={() => setSelected(c)}>
+                                                    <StatusBadge status={c.status || 'pending'} />
+                                                </td>
+                                                <td className="px-4 py-3 text-sm text-echo-textMuted max-w-[180px] truncate" onClick={() => setSelected(c)}>
                                                     {c.skills}
                                                 </td>
-                                                <td className="px-4 py-3 text-sm text-echo-textMuted whitespace-nowrap">
+                                                <td className="px-4 py-3 text-sm text-echo-textMuted whitespace-nowrap" onClick={() => setSelected(c)}>
                                                     <Clock size={12} className="inline mr-1" />
                                                     {new Date(c.created_at).toLocaleDateString('fr-FR')}
                                                 </td>
@@ -213,45 +395,59 @@ export default function AdminCandidatures() {
 
                 {/* Detail Modal */}
                 {selected && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => { setSelected(null); setDeleteConfirm(null); }}>
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => { setSelected(null); setDeleteConfirm(null); setStatusNote(''); }}>
                         <div
                             className="bg-echo-dark border border-white/10 rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6"
                             onClick={e => e.stopPropagation()}
                         >
                             {/* Modal Header */}
-                            <div className="flex items-start justify-between mb-6">
+                            <div className="flex items-start justify-between mb-4">
                                 <div>
                                     <h2 className="text-xl font-serif text-white">{selected.name}</h2>
                                     <p className="text-sm text-echo-textMuted mt-1">{selected.email}</p>
                                 </div>
-                                <button onClick={() => { setSelected(null); setDeleteConfirm(null); }} className="p-1 text-echo-textMuted hover:text-white transition-colors">
+                                <button onClick={() => { setSelected(null); setDeleteConfirm(null); setStatusNote(''); }} className="p-1 text-echo-textMuted hover:text-white transition-colors">
                                     <X size={20} />
                                 </button>
                             </div>
 
-                            {/* Project Badge */}
-                            {(() => {
-                                const config = projectConfig[selected.project];
-                                return (
-                                    <span
-                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border mb-6"
-                                        style={{
-                                            color: config.color,
-                                            borderColor: `${config.color}40`,
-                                            backgroundColor: `${config.color}15`,
-                                        }}
-                                    >
-                                        {config.icon}
-                                        {config.label}
-                                    </span>
-                                );
-                            })()}
+                            {/* Badges */}
+                            <div className="flex items-center gap-2 mb-4">
+                                {(() => {
+                                    const config = projectConfig[selected.project];
+                                    return (
+                                        <span
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border"
+                                            style={{
+                                                color: config.color,
+                                                borderColor: `${config.color}40`,
+                                                backgroundColor: `${config.color}15`,
+                                            }}
+                                        >
+                                            {config.icon}
+                                            {config.label}
+                                        </span>
+                                    );
+                                })()}
+                                <StatusBadge status={selected.status || 'pending'} />
+                            </div>
 
                             {/* Date */}
                             <div className="flex items-center gap-2 text-sm text-echo-textMuted mb-6">
                                 <Clock size={14} />
                                 <span>Soumise le {new Date(selected.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                             </div>
+
+                            {/* Status Note (if exists) */}
+                            {selected.status_note && (
+                                <div className="mb-6 p-3 bg-blue-400/10 border border-blue-400/20 rounded-lg">
+                                    <div className="flex items-center gap-1.5 text-xs text-blue-400 font-medium mb-1">
+                                        <MessageSquare size={12} />
+                                        Note admin
+                                    </div>
+                                    <p className="text-sm text-echo-textMuted">{selected.status_note}</p>
+                                </div>
+                            )}
 
                             {/* Skills */}
                             <div className="mb-6">
@@ -269,7 +465,67 @@ export default function AdminCandidatures() {
                                 </p>
                             </div>
 
-                            {/* Actions */}
+                            {/* Status Note Input */}
+                            <div className="mb-4">
+                                <label className="text-xs text-echo-textMuted block mb-1">Note (optionnelle)</label>
+                                <textarea
+                                    value={statusNote}
+                                    onChange={e => setStatusNote(e.target.value)}
+                                    placeholder="Commentaire sur cette candidature..."
+                                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-echo-textMuted/50 resize-none focus:outline-none focus:border-echo-gold/40"
+                                    rows={2}
+                                />
+                            </div>
+
+                            {/* Status Actions */}
+                            <div className="flex flex-wrap gap-2 mb-4">
+                                {selected.status !== 'entretien' && (
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => handleStatusUpdate(selected.id, 'entretien', statusNote || undefined)}
+                                        disabled={actionLoading}
+                                        className="!text-blue-400 !border-blue-400/30 text-sm"
+                                    >
+                                        <Users size={14} className="mr-1.5" />
+                                        Convoquer en entretien
+                                    </Button>
+                                )}
+                                {selected.status !== 'accepted' && (
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => handleStatusUpdate(selected.id, 'accepted', statusNote || undefined)}
+                                        disabled={actionLoading}
+                                        className="!text-green-400 !border-green-400/30 text-sm"
+                                    >
+                                        <CheckCircle2 size={14} className="mr-1.5" />
+                                        Accepter
+                                    </Button>
+                                )}
+                                {selected.status !== 'rejected' && (
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => handleStatusUpdate(selected.id, 'rejected', statusNote || undefined)}
+                                        disabled={actionLoading}
+                                        className="!text-red-400 !border-red-400/30 text-sm"
+                                    >
+                                        <XCircle size={14} className="mr-1.5" />
+                                        Rejeter
+                                    </Button>
+                                )}
+                                {selected.status !== 'pending' && (
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => handleStatusUpdate(selected.id, 'pending', statusNote || undefined)}
+                                        disabled={actionLoading}
+                                        className="!text-yellow-400 !border-yellow-400/30 text-sm"
+                                    >
+                                        <Clock size={14} className="mr-1.5" />
+                                        Remettre en attente
+                                    </Button>
+                                )}
+                            </div>
+
+                            {/* Bottom Actions */}
                             <div className="flex items-center justify-between pt-4 border-t border-white/10">
                                 <a
                                     href={`mailto:${selected.email}?subject=Candidature ${projectConfig[selected.project].label} — Mouvement ECHO`}
