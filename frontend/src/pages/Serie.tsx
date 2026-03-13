@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Play, BookOpen, Facebook, Linkedin, Twitter, Flame, Mountain, Star, Instagram, Palette, Gamepad2, Bell, BellRing } from 'lucide-react';
+import { Play, BookOpen, Facebook, Linkedin, Twitter, Flame, Mountain, Star, Instagram, Palette, Gamepad2, Bell, BellRing, X } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
 import { SEO } from '../components/seo/SEO';
+import { ScenaristApplicationForm } from '../components/forms/ScenaristApplicationForm';
 import { useAuthStore } from '../features/auth/store';
 import { API_URL } from '../config/api';
 
@@ -135,9 +135,9 @@ export function Serie() {
     const [activeSection, setActiveSection] = useState('apercu');
     const [activeSeason, setActiveSeason] = useState(1);
     const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null);
+    const [showScenaristForm, setShowScenaristForm] = useState(false);
     const [myOptins, setMyOptins] = useState<{ season: number; episode: number }[]>([]);
     const [optinLoading, setOptinLoading] = useState(false);
-    const navigate = useNavigate();
     const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
     // Fetch user opt-ins on mount (if authenticated)
@@ -342,7 +342,7 @@ export function Serie() {
                         </p>
                         <Button
                             className="bg-[#D4AF37] text-[#0A0A0A] hover:bg-[#FFD700] hover:shadow-[0_0_24px_rgba(212,175,55,0.6)] px-8 py-4 text-sm font-bold tracking-widest uppercase rounded-lg transition-all transform hover:scale-105"
-                            onClick={() => navigate('/contact')}
+                            onClick={() => setShowScenaristForm(true)}
                         >
                             Rejoindre l'aventure
                         </Button>
@@ -734,6 +734,24 @@ export function Serie() {
                     </div>
                 </div>
             </section>
+
+            {/* MODALE CANDIDATURE SCÉNARISTE */}
+            {showScenaristForm && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowScenaristForm(false)}>
+                    <div
+                        className="bg-[#121212] border border-[#D4AF37]/30 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-serif text-white">Candidature Scénariste</h2>
+                            <button onClick={() => setShowScenaristForm(false)} className="p-1 text-[#D1D5DB] hover:text-white transition-colors">
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <ScenaristApplicationForm />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
