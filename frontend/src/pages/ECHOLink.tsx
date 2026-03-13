@@ -8,7 +8,7 @@ export function ECHOLink() {
     return (
         <div className="flex flex-col min-h-screen bg-echo-darker text-white">
             {/* Hero */}
-            <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
+            <section className="relative h-[60vh] sm:h-[70vh] md:h-[80vh] flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-echo-darker">
                     <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2629&auto=format&fit=crop')] bg-cover bg-center opacity-10" />
                     <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.15)_0%,transparent_70%)]" />
@@ -19,10 +19,10 @@ export function ECHOLink() {
                     <div className="inline-block p-4 rounded-full bg-echo-blue/10 mb-6 border border-echo-blue/30 shadow-[0_0_30px_rgba(59,130,246,0.2)]">
                         <Network className="w-12 h-12 text-echo-blueLight" />
                     </div>
-                    <h1 className="text-4xl sm:text-6xl md:text-8xl font-serif font-bold text-white mb-6 tracking-tighter">
+                    <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white mb-4 sm:mb-6 tracking-tighter">
                         ECHO<span className="text-echo-blueLight">Link</span>
                     </h1>
-                    <p className="text-xl md:text-2xl text-echo-textMuted mb-4 font-light">
+                    <p className="text-base sm:text-xl md:text-2xl text-echo-textMuted mb-4 font-light">
                         La <span className="text-echo-blueLight font-medium">plateforme collaborative</span> qui transforme
                         l'expérience spectateur en action concrète.
                     </p>
@@ -50,7 +50,7 @@ export function ECHOLink() {
                         <span className="text-echo-blueLight uppercase tracking-widest text-sm font-bold mb-4 block">Le constat</span>
                         <h2 className="text-3xl md:text-5xl font-serif text-white mb-8">Regarder ne suffit plus</h2>
                     </div>
-                    <div className="grid md:grid-cols-2 gap-12 items-center">
+                    <div className="grid md:grid-cols-2 gap-6 md:gap-12 items-center">
                         <div>
                             <p className="text-neutral-400 leading-relaxed mb-4">
                                 On regarde une série, on est touché, on veut agir... mais comment ?
@@ -85,7 +85,7 @@ export function ECHOLink() {
                         </p>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-8 mb-16">
+                    <div className="grid md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-12 sm:mb-16">
                         <FeatureCard
                             icon={<Puzzle size={32} />}
                             title="Énigmes et apprentissage"
@@ -114,7 +114,7 @@ export function ECHOLink() {
             {/* Détail: Énigmes */}
             <section className="py-24">
                 <div className="container mx-auto px-4 max-w-5xl">
-                    <div className="grid md:grid-cols-2 gap-16 items-center">
+                    <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
                         <div>
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="w-12 h-12 rounded-full bg-echo-gold/10 flex items-center justify-center">
@@ -151,7 +151,7 @@ export function ECHOLink() {
             {/* Détail: Hubs */}
             <section className="py-24 bg-white/[0.02]">
                 <div className="container mx-auto px-4 max-w-5xl">
-                    <div className="grid md:grid-cols-2 gap-16 items-center">
+                    <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
                         <div className="order-2 md:order-1 rounded-2xl overflow-hidden border border-echo-blueLight/20">
                             <img
                                 src="/images/echolink/hub-carte.png"
@@ -203,7 +203,7 @@ export function ECHOLink() {
             {/* Détail: Économie */}
             <section className="py-24">
                 <div className="container mx-auto px-4 max-w-5xl">
-                    <div className="grid md:grid-cols-2 gap-16 items-center">
+                    <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
                         <div>
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="w-12 h-12 rounded-full bg-echo-greenLight/10 flex items-center justify-center">
@@ -281,7 +281,7 @@ export function ECHOLink() {
                         </p>
                     </div>
 
-                    <div className="max-w-2xl mx-auto bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
+                    <div className="max-w-2xl mx-auto bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6 md:p-8 shadow-2xl">
                         <h3 className="text-2xl font-serif text-white mb-6 text-center">Candidature technique</h3>
                         <TechApplicationForm project="echolink" accentColor="echo-blueLight" accentHex="#60A5FA" />
                     </div>

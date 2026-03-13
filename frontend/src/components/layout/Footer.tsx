@@ -7,11 +7,11 @@ export function Footer() {
     return (
         <footer className="bg-black border-t border-white/10 pt-10 sm:pt-16 pb-8">
             <div className="container mx-auto px-4">
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12 mb-10 lg:mb-16">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-12 mb-8 lg:mb-16">
 
                     {/* Brand Column */}
                     <div className="col-span-2 lg:col-span-2 mb-2 lg:mb-0">
-                        <Link to="/" className="text-3xl font-serif font-bold text-white mb-4 lg:mb-6 block">ECHO</Link>
+                        <Link to="/" className="text-2xl sm:text-3xl font-serif font-bold text-white mb-4 lg:mb-6 block">ECHO</Link>
                         <p className="text-echo-textMuted mb-4 lg:mb-6 max-w-sm text-sm">
                             Une websérie sociale, éducative et interactive qui s'inspire de La Divine Comédie pour décrypter les défis contemporains et fédérer une communauté engagée.
                         </p>

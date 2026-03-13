@@ -24,10 +24,10 @@ export function Mouvement() {
                     />
                 </div>
 
-                <div className="relative z-20 text-center max-w-4xl px-6">
-                    <img src="/logo-mouvement.png" alt="Mouvement ECHO" className="h-32 md:h-44 w-auto object-contain mx-auto mb-4" />
+                <div className="relative z-20 text-center max-w-4xl px-4 sm:px-6">
+                    <img src="/logo-mouvement.png" alt="Mouvement ECHO" className="h-20 sm:h-28 md:h-44 w-auto object-contain mx-auto mb-4" />
 
-                    <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold text-white mb-6 tracking-tight animate-fade-in-up delay-100">
+                    <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-4 sm:mb-6 tracking-tight animate-fade-in-up delay-100">
                         Mouvement ECHO
                     </h1>
 
@@ -158,7 +158,7 @@ export function Mouvement() {
                     <p className="text-amber-500 text-lg mb-16">Une dizaine de membres actifs portés par la même sève.</p>
 
                     {/* Main Team */}
-                    <div className="flex flex-wrap justify-center gap-12 mb-16">
+                    <div className="flex flex-wrap justify-center gap-6 sm:gap-8 md:gap-12 mb-12 sm:mb-16">
                         {[
                             { name: "Jérémy Lasne", role: "Fondateur & Réalisateur" },
                             { name: "Eddyson Koffi", role: "Directeur Artistique" },
@@ -166,7 +166,7 @@ export function Mouvement() {
                             { name: "Marc Aurel", role: "Développeur" }
                         ].map((member, i) => (
                             <div key={i} className="flex flex-col items-center group">
-                                <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-stone-800 group-hover:border-amber-500 transition-colors mb-4">
+                                <div className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-stone-800 group-hover:border-amber-500 transition-colors mb-3 sm:mb-4">
                                     <div className="w-full h-full bg-stone-800 flex items-center justify-center text-stone-600">
                                         <Users className="w-12 h-12" />
                                     </div>
@@ -182,12 +182,12 @@ export function Mouvement() {
 
             {/* --- CTA --- */}
             <section className="py-24 px-4 container mx-auto">
-                <div className="relative rounded-3xl overflow-hidden bg-stone-900 border border-amber-500/20 p-8 md:p-20 text-center">
+                <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-stone-900 border border-amber-500/20 p-6 sm:p-8 md:p-12 lg:p-20 text-center">
                     {/* Background Texture */}
                     <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-repeat" />
 
                     <div className="relative z-10 max-w-3xl mx-auto">
-                        <h2 className="text-4xl md:text-5xl font-bold text-white mb-8">
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 sm:mb-8">
                             Ne Soyez Pas Spectateur. <br />
                             <span className="text-amber-500">Écrivez l'Histoire avec Nous.</span>
                         </h2>
@@ -226,7 +226,7 @@ function TimelineItem({ side, icon: Icon, title, subtitle, children }: TimelineI
     const isLeft = side === 'left';
 
     return (
-        <div className={`flex flex-col md:flex-row items-center gap-8 md:gap-16 ${isLeft ? '' : 'md:flex-row-reverse'}`}>
+        <div className={`flex flex-col md:flex-row items-center gap-6 sm:gap-8 md:gap-16 ${isLeft ? '' : 'md:flex-row-reverse'}`}>
 
             {/* Content */}
             <div className={`flex-1 text-center ${isLeft ? 'md:text-right' : 'md:text-left'}`}>

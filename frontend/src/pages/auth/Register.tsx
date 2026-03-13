@@ -11,7 +11,7 @@ export const Register = () => {
             <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-echo-gold/10 rounded-full blur-[100px] -z-10" />
             <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-900/10 rounded-full blur-[100px] -z-10" />
 
-            <div className="max-w-md w-full space-y-8 bg-black/40 p-8 sm:p-10 rounded-2xl border border-white/10 backdrop-blur-md shadow-2xl relative z-10">
+            <div className="max-w-md w-full space-y-6 sm:space-y-8 bg-black/40 p-5 sm:p-8 md:p-10 rounded-2xl border border-white/10 backdrop-blur-md shadow-2xl relative z-10">
                 <button
                     onClick={() => navigate(-1)}
                     aria-label="Fermer"
@@ -20,7 +20,7 @@ export const Register = () => {
                     <X size={20} />
                 </button>
                 <div>
-                    <h2 className="mt-2 text-center text-4xl font-extrabold text-white tracking-tight">
+                    <h2 className="mt-2 text-center text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
                         Rejoindre le Mouvement
                     </h2>
                     <p className="mt-4 text-center text-base text-echo-textMuted">

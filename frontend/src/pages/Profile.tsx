@@ -235,7 +235,7 @@ export default function Profile() {
                 <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 
                     {/* ===== En-tête Profil ===== */}
-                    <div className="flex items-start gap-5 mb-10">
+                    <div className="flex items-start gap-3 sm:gap-5 mb-10">
                         {/* Avatar */}
                         <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-echo-gold/30 to-echo-gold/10 border border-echo-gold/20 flex items-center justify-center shrink-0">
                             {userData.avatar_url || userData.picture ? (

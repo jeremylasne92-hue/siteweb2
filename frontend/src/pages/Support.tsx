@@ -60,8 +60,8 @@ export function Support() {
                     <div className="inline-block p-4 rounded-full bg-echo-gold/10 mb-6 animate-pulse">
                         <Heart className="w-12 h-12 text-echo-gold" />
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-serif text-white mb-6">Soutenir ECHO</h1>
-                    <p className="text-xl text-neutral-300 mb-8">
+                    <h1 className="text-3xl sm:text-4xl md:text-6xl font-serif text-white mb-4 sm:mb-6">Soutenir ECHO</h1>
+                    <p className="text-base sm:text-xl text-neutral-300 mb-6 sm:mb-8">
                         ECHO est un projet indépendant, libre et sans publicité. <br />
                         Votre soutien est notre seule énergie.
                     </p>
@@ -90,9 +90,9 @@ export function Support() {
             <section className="py-20 px-4 bg-black/50">
                 <div className="container mx-auto max-w-6xl text-center">
                     <h2 className="text-3xl font-serif text-white mb-12">Choisissez votre impact</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
                         {donationTiers.map((tier, i) => (
-                            <Card key={i} className={`p-8 flex flex-col items-center relative overflow-hidden transition-all duration-300 hover:-translate-y-2 ${i === 1 ? 'border-echo-gold shadow-[0_0_30px_rgba(255,215,0,0.1)]' : 'border-white/10'}`}>
+                            <Card key={i} className={`p-6 sm:p-8 flex flex-col items-center relative overflow-hidden transition-all duration-300 hover:-translate-y-2 ${i === 1 ? 'border-echo-gold shadow-[0_0_30px_rgba(255,215,0,0.1)]' : 'border-white/10'}`}>
                                 {i === 1 && (
                                     <div className="absolute top-0 inset-x-0 h-1 bg-echo-gold shadow-[0_0_10px_#ffd700]" />
                                 )}
@@ -132,7 +132,7 @@ export function Support() {
                             <div key={i} className="bg-white/5 rounded-lg border border-white/5 overflow-hidden">
                                 <button
                                     onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                                    className="w-full flex items-center justify-between p-6 text-left hover:bg-white/5 transition-colors"
+                                    className="w-full flex items-center justify-between p-4 sm:p-6 text-left hover:bg-white/5 transition-colors"
                                 >
                                     <span className="font-medium text-white">{faq.q}</span>
                                     <ChevronDown className={`w-5 h-5 text-neutral-500 transition-transform duration-200 ${openFaq === i ? 'rotate-180' : ''}`} />

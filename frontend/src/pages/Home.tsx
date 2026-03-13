@@ -17,10 +17,10 @@ export function Home() {
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2672&auto=format&fit=crop')] bg-cover bg-center opacity-30 animate-pulse" />
 
                 <div className="relative z-20 text-center max-w-4xl px-4 animate-fade-in">
-                    <h1 className="text-4xl sm:text-6xl md:text-8xl font-serif font-bold text-white mb-6 tracking-tighter text-shadow">
+                    <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white mb-4 sm:mb-6 tracking-tighter text-shadow">
                         ECHO
                     </h1>
-                    <p className="text-xl md:text-2xl text-echo-textMuted mb-8 italic font-serif">
+                    <p className="text-base sm:text-xl md:text-2xl text-echo-textMuted mb-6 sm:mb-8 italic font-serif">
                         "Au milieu de mon chemin de vie, je me suis retrouvé dans une forêt en feu,<br />
                         car la voie droite était perdue."
                     </p>
@@ -50,23 +50,23 @@ export function Home() {
             <section className="py-24 bg-echo-dark relative z-10">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-16">
-                        <h2 className="text-[48px] font-serif font-bold text-[#D4AF37] mb-4 text-center text-shadow-[0_0_20px_rgba(212,175,55,0.3)]">
+                        <h2 className="text-3xl sm:text-4xl md:text-[48px] font-serif font-bold text-[#D4AF37] mb-4 text-center text-shadow-[0_0_20px_rgba(212,175,55,0.3)]">
                             L'Expérience ECHO
                         </h2>
-                        <p className="text-[#D1D5DB] text-[18px] font-normal leading-[1.6] max-w-[800px] mx-auto text-center mb-16">
+                        <p className="text-[#D1D5DB] text-base sm:text-[18px] font-normal leading-[1.6] max-w-[800px] mx-auto text-center mb-10 sm:mb-16">
                             Une vision capable d'impulser une évolution des mentalités et des comportements pour faire société autrement. Une vision qui s'appuie sur trois piliers :
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center items-stretch">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-center items-stretch">
                         {/* Pilier 1 */}
-                        <div className="group relative flex flex-col justify-between min-h-[420px] p-10 rounded-[16px] bg-[rgba(18,18,18,0.6)] backdrop-blur-[16px] border border-[rgba(212,175,55,0.2)] hover:border-[rgba(212,175,55,0.5)] shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_48px_rgba(0,0,0,0.6)] hover:-translate-y-2 transition-all duration-300">
+                        <div className="group relative flex flex-col justify-between min-h-[360px] sm:min-h-[420px] p-6 sm:p-8 md:p-10 rounded-[16px] bg-[rgba(18,18,18,0.6)] backdrop-blur-[16px] border border-[rgba(212,175,55,0.2)] hover:border-[rgba(212,175,55,0.5)] shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_48px_rgba(0,0,0,0.6)] hover:-translate-y-2 transition-all duration-300">
                             <div>
                                 <div className="w-[56px] h-[56px] rounded-full mx-auto mb-5 text-[#DC143C] flex items-center justify-center shadow-[0_0_24px_rgba(220,20,60,0.4)]">
                                     <Play size={32} />
                                 </div>
                                 <div className="text-[14px] font-bold tracking-[2px] text-[#DC143C] uppercase mb-2">INFORMER</div>
-                                <h3 className="text-[32px] font-serif font-semibold text-white my-4">La Série</h3>
+                                <h3 className="text-2xl sm:text-[32px] font-serif font-semibold text-white my-3 sm:my-4">La Série</h3>
                                 <p className="text-[#D1D5DB] text-[16px] font-normal leading-[1.6] mb-6 font-sans">
                                     Une websérie unique pour décrypter les défis sociaux, sociétaux, et existentiels de notre époque.
                                 </p>
@@ -82,13 +82,13 @@ export function Home() {
                         </div>
 
                         {/* Pilier 2 */}
-                        <div className="group relative flex flex-col justify-between min-h-[420px] p-10 rounded-[16px] bg-[rgba(18,18,18,0.6)] backdrop-blur-[16px] border border-[rgba(212,175,55,0.2)] hover:border-[rgba(212,175,55,0.5)] shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_48px_rgba(0,0,0,0.6)] hover:-translate-y-2 transition-all duration-300">
+                        <div className="group relative flex flex-col justify-between min-h-[360px] sm:min-h-[420px] p-6 sm:p-8 md:p-10 rounded-[16px] bg-[rgba(18,18,18,0.6)] backdrop-blur-[16px] border border-[rgba(212,175,55,0.2)] hover:border-[rgba(212,175,55,0.5)] shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_48px_rgba(0,0,0,0.6)] hover:-translate-y-2 transition-all duration-300">
                             <div>
                                 <div className="w-[56px] h-[56px] rounded-full mx-auto mb-5 text-[#10B981] flex items-center justify-center shadow-[0_0_24px_rgba(16,185,129,0.4)]">
                                     <Users size={32} />
                                 </div>
                                 <div className="text-[14px] font-bold tracking-[2px] text-[#10B981] uppercase mb-2">FÉDÉRER</div>
-                                <h3 className="text-[32px] font-serif font-semibold text-white my-4">ECHOSystem</h3>
+                                <h3 className="text-2xl sm:text-[32px] font-serif font-semibold text-white my-3 sm:my-4">ECHOSystem</h3>
                                 <p className="text-[#D1D5DB] text-[16px] font-normal leading-[1.6] mb-6 font-sans">
                                     Un écosystème de partenaires engagés qui tentent de changer positivement ce monde. Rejoignez-les selon votre élan pour construire ensemble une société plus juste et durable.
                                 </p>
@@ -104,13 +104,13 @@ export function Home() {
                         </div>
 
                         {/* Pilier 3 */}
-                        <div className="group relative flex flex-col justify-between min-h-[420px] p-10 rounded-[16px] bg-[rgba(18,18,18,0.6)] backdrop-blur-[16px] border border-[rgba(212,175,55,0.2)] hover:border-[rgba(212,175,55,0.5)] shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_48px_rgba(0,0,0,0.6)] hover:-translate-y-2 transition-all duration-300">
+                        <div className="group relative flex flex-col justify-between min-h-[360px] sm:min-h-[420px] p-6 sm:p-8 md:p-10 rounded-[16px] bg-[rgba(18,18,18,0.6)] backdrop-blur-[16px] border border-[rgba(212,175,55,0.2)] hover:border-[rgba(212,175,55,0.5)] shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_48px_rgba(0,0,0,0.6)] hover:-translate-y-2 transition-all duration-300">
                             <div>
                                 <div className="w-[56px] h-[56px] rounded-full mx-auto mb-5 text-[#3B82F6] flex items-center justify-center shadow-[0_0_24px_rgba(59,130,246,0.4)]">
                                     <LinkIcon size={32} />
                                 </div>
                                 <div className="text-[14px] font-bold tracking-[2px] text-[#3B82F6] uppercase mb-2">AGIR</div>
-                                <h3 className="text-[32px] font-serif font-semibold text-white my-4">Plateformes</h3>
+                                <h3 className="text-2xl sm:text-[32px] font-serif font-semibold text-white my-3 sm:my-4">Plateformes</h3>
                                 <p className="text-[#D1D5DB] text-[16px] font-normal leading-[1.6] mb-6 font-sans">
                                     <strong>Cognisphère</strong> pour maîtriser vos connaissances, <strong>ECHOLink</strong> pour agir concrètement. Deux outils numériques au service de votre transformation et du bien commun.
                                 </p>

@@ -73,32 +73,32 @@ export function CookieBanner() {
     if (!visible) return null;
 
     return (
-        <div className="fixed bottom-0 inset-x-0 z-50 bg-[#121212]/95 backdrop-blur-sm border-t border-white/10 p-4 sm:p-6">
+        <div className="fixed bottom-0 inset-x-0 z-50 bg-[#121212]/95 backdrop-blur-sm border-t border-white/10 p-3 sm:p-4 md:p-6">
             <div className="container mx-auto">
                 {!showCustomize ? (
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <p className="text-sm text-gray-300 text-center sm:text-left">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+                        <p className="text-xs sm:text-sm text-gray-300 text-center sm:text-left">
                             Ce site utilise des cookies essentiels au fonctionnement et des cookies d'analyse optionnels.{' '}
                             <Link to="/politique-de-confidentialite" className="text-echo-gold hover:underline">
                                 En savoir plus
                             </Link>
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-3 shrink-0 w-full sm:w-auto">
+                        <div className="flex flex-row gap-2 sm:gap-3 shrink-0 w-full sm:w-auto">
                             <button
                                 onClick={refuseAll}
-                                className="px-5 py-2 rounded-lg text-sm font-medium border border-white/20 text-white hover:bg-white/10 transition-colors"
+                                className="flex-1 sm:flex-none px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-medium border border-white/20 text-white hover:bg-white/10 transition-colors"
                             >
                                 Tout refuser
                             </button>
                             <button
                                 onClick={() => setShowCustomize(true)}
-                                className="px-5 py-2 rounded-lg text-sm font-medium border border-white/20 text-white hover:bg-white/10 transition-colors"
+                                className="flex-1 sm:flex-none px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-medium border border-white/20 text-white hover:bg-white/10 transition-colors"
                             >
                                 Personnaliser
                             </button>
                             <button
                                 onClick={acceptAll}
-                                className="px-5 py-2 rounded-lg text-sm font-medium border border-echo-gold text-echo-gold hover:bg-echo-gold hover:text-black transition-colors"
+                                className="flex-1 sm:flex-none px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-medium border border-echo-gold text-echo-gold hover:bg-echo-gold hover:text-black transition-colors"
                             >
                                 Tout accepter
                             </button>

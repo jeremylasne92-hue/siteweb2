@@ -79,7 +79,7 @@ export default function Partners() {
 
             <PartnersStats stats={stats} />
 
-            <div className="max-w-7xl mx-auto px-6 lg:px-8 pb-32 z-10 relative">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 sm:pb-32 z-10 relative">
                 <PartnersFilters
                     searchQuery={searchQuery}
                     setSearchQuery={setSearchQuery}

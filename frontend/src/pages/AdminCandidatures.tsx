@@ -200,14 +200,14 @@ export default function AdminCandidatures() {
 
     return (
         <div className="min-h-screen bg-echo-dark pt-24 pb-16">
-            <div className="max-w-6xl mx-auto px-6 lg:px-8">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 <Link to="/admin" className="inline-flex items-center gap-1.5 text-sm text-echo-textMuted hover:text-echo-gold transition-colors mb-6">
                     <ArrowLeft size={16} />
                     Retour au dashboard
                 </Link>
 
                 {/* Header */}
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-echo-gold/20 rounded-lg">
                             <FileText className="text-echo-gold" size={24} />
@@ -262,11 +262,11 @@ export default function AdminCandidatures() {
 
                 {/* Batch Action Bar */}
                 {checkedIds.size > 0 && (
-                    <div className="flex items-center gap-3 mb-4 p-3 bg-echo-gold/10 border border-echo-gold/20 rounded-xl">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4 p-3 bg-echo-gold/10 border border-echo-gold/20 rounded-xl">
                         <span className="text-sm text-echo-gold font-medium">
                             {checkedIds.size} sélectionnée{checkedIds.size > 1 ? 's' : ''}
                         </span>
-                        <div className="flex gap-2 ml-auto">
+                        <div className="flex flex-wrap gap-2 sm:ml-auto">
                             <Button
                                 variant="outline"
                                 onClick={() => handleBatchStatus('entretien')}
@@ -308,8 +308,8 @@ export default function AdminCandidatures() {
 
                 {/* Table */}
                 {!error && (
-                    <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
-                        <table className="w-full">
+                    <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden overflow-x-auto">
+                        <table className="w-full min-w-[600px]">
                             <thead>
                                 <tr className="border-b border-white/10">
                                     <th className="px-4 py-3 w-10">
@@ -323,7 +323,7 @@ export default function AdminCandidatures() {
                                     <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3">Nom</th>
                                     <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3">Projet</th>
                                     <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3">Statut</th>
-                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3">Compétences</th>
+                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3 hidden md:table-cell">Compétences</th>
                                     <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3">Date</th>
                                 </tr>
                             </thead>
@@ -377,7 +377,7 @@ export default function AdminCandidatures() {
                                                 <td className="px-4 py-3" onClick={() => setSelected(c)}>
                                                     <StatusBadge status={c.status || 'pending'} />
                                                 </td>
-                                                <td className="px-4 py-3 text-sm text-echo-textMuted max-w-[180px] truncate" onClick={() => setSelected(c)}>
+                                                <td className="px-4 py-3 text-sm text-echo-textMuted max-w-[180px] truncate hidden md:table-cell" onClick={() => setSelected(c)}>
                                                     {c.skills}
                                                 </td>
                                                 <td className="px-4 py-3 text-sm text-echo-textMuted whitespace-nowrap" onClick={() => setSelected(c)}>
@@ -397,7 +397,7 @@ export default function AdminCandidatures() {
                 {selected && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => { setSelected(null); setDeleteConfirm(null); setStatusNote(''); }}>
                         <div
-                            className="bg-echo-dark border border-white/10 rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6"
+                            className="bg-echo-dark border border-white/10 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6"
                             onClick={e => e.stopPropagation()}
                         >
                             {/* Modal Header */}

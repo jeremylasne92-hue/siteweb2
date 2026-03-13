@@ -18,7 +18,7 @@ export function Cognisphere() {
     return (
         <div className="flex flex-col min-h-screen bg-echo-darker text-white">
             {/* Hero */}
-            <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
+            <section className="relative h-[60vh] sm:h-[70vh] md:h-[80vh] flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-echo-darker">
                     <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=2765&auto=format&fit=crop')] bg-cover bg-center opacity-10" />
                     <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(139,92,246,0.15)_0%,transparent_70%)]" />
@@ -29,10 +29,10 @@ export function Cognisphere() {
                     <div className="inline-block p-4 rounded-full bg-violet-500/10 mb-6 border border-violet-500/30 shadow-[0_0_30px_rgba(139,92,246,0.2)]">
                         <Brain className="w-12 h-12 text-violet-400" />
                     </div>
-                    <h1 className="text-4xl sm:text-6xl md:text-8xl font-serif font-bold text-white mb-6 tracking-tighter">
+                    <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white mb-4 sm:mb-6 tracking-tighter">
                         Cogni<span className="text-violet-400">sphère</span>
                     </h1>
-                    <p className="text-xl md:text-2xl text-echo-textMuted mb-4 font-light">
+                    <p className="text-base sm:text-xl md:text-2xl text-echo-textMuted mb-4 font-light">
                         Le <span className="text-violet-300 font-medium">système d'apprentissage intelligent</span> qui transforme
                         n'importe quel contenu en connaissance durable.
                     </p>
@@ -66,7 +66,7 @@ export function Cognisphere() {
                         </p>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    <div className="grid md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-5xl mx-auto">
                         <ProblemCard
                             emoji="🧠"
                             problem="L'oubli massif"
@@ -150,7 +150,7 @@ export function Cognisphere() {
                     </div>
 
                     {/* Mobile + Desktop Side by Side */}
-                    <div className="mt-20 flex flex-col md:flex-row items-center justify-center gap-12">
+                    <div className="mt-12 sm:mt-20 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12">
                         {/* Phone Mockup */}
                         <div className="relative w-[220px] flex-shrink-0">
                             <div className="bg-neutral-800 rounded-[2rem] p-2 pt-8 pb-8 shadow-2xl border border-neutral-700">
@@ -329,7 +329,7 @@ export function Cognisphere() {
             {/* Origine ECHO */}
             <section className="py-24 border-t border-white/5">
                 <div className="container mx-auto px-4 max-w-4xl">
-                    <div className="flex flex-col md:flex-row gap-12 items-center">
+                    <div className="flex flex-col md:flex-row gap-6 md:gap-12 items-center">
                         <div className="md:w-1/3 flex justify-center">
                             <div className="w-32 h-32 rounded-full bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
                                 <Repeat className="w-16 h-16 text-violet-400" />
@@ -366,7 +366,7 @@ export function Cognisphere() {
                             contribuez à un projet open-source à fort impact social.
                         </p>
                     </div>
-                    <div className="relative bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
+                    <div className="relative bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6 md:p-8 shadow-2xl">
                         <TechApplicationForm project="cognisphere" accentColor="violet-500" accentHex="#8B5CF6" />
                     </div>
                 </div>

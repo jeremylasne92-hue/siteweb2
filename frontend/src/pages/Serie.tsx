@@ -224,12 +224,12 @@ export function Serie() {
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1517604931442-710e8cd52285?q=80&w=2670&auto=format&fit=crop')] bg-cover bg-center opacity-30 mix-blend-overlay" />
 
                 <div className="relative z-20 text-center max-w-4xl px-4 animate-fade-in">
-                    <img src="/logo-echo.jpg" alt="ECHO" className="h-32 md:h-44 w-auto object-contain mix-blend-lighten mx-auto mb-2" />
-                    <span className="text-[#DC143C] uppercase tracking-[0.3em] text-sm font-bold mb-4 block">La Websérie Événement</span>
-                    <h1 className="text-4xl sm:text-6xl md:text-8xl font-serif font-bold text-white mb-6 tracking-tighter text-shadow-lg">
+                    <img src="/logo-echo.jpg" alt="ECHO" className="h-20 sm:h-28 md:h-44 w-auto object-contain mix-blend-lighten mx-auto mb-2" />
+                    <span className="text-[#DC143C] uppercase tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm font-bold mb-3 sm:mb-4 block">La Websérie Événement</span>
+                    <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white mb-4 sm:mb-6 tracking-tighter text-shadow-lg">
                         La Série ECHO
                     </h1>
-                    <p className="text-xl text-[#D1D5DB] max-w-2xl mx-auto italic font-serif mb-8">
+                    <p className="text-base sm:text-xl text-[#D1D5DB] max-w-2xl mx-auto italic font-serif mb-6 sm:mb-8">
                         "Une encyclopédie moderne. Trois saisons pour comprendre, ressentir et agir."
                     </p>
                     <Button variant="primary" size="lg" onClick={() => scrollToSection('apercu')}>
@@ -246,8 +246,8 @@ export function Serie() {
             </section>
 
             {/* STICKY SUB-MENU */}
-            <nav className="sticky top-0 md:top-[80px] z-40 bg-[#0A0A0A]/90 backdrop-blur-md border-y border-white/10 transition-all duration-300">
-                <div className="container mx-auto px-4 overflow-x-auto">
+            <nav className="sticky top-14 sm:top-16 md:top-[80px] z-40 bg-[#0A0A0A]/90 backdrop-blur-md border-y border-white/10 transition-all duration-300">
+                <div className="container mx-auto px-2 sm:px-4 overflow-x-auto">
                     <div className="flex justify-center min-w-max">
                         {['apercu', 'prologue', 'saisons', 'personnages'].map((section) => (
                             <button
@@ -274,8 +274,8 @@ export function Serie() {
                 <div className="container mx-auto px-4 relative z-10">
                     {/* SYNOPSIS */}
                     <div className="mb-24 text-center max-w-4xl mx-auto">
-                        <h2 className="text-[48px] font-serif font-bold text-[#D4AF37] mb-12">Aperçu</h2>
-                        <div className="space-y-8 text-[18px] text-[#D1D5DB] leading-[1.8] font-sans">
+                        <h2 className="text-3xl sm:text-4xl md:text-[48px] font-serif font-bold text-[#D4AF37] mb-8 sm:mb-12">Aperçu</h2>
+                        <div className="space-y-6 sm:space-y-8 text-base sm:text-[18px] text-[#D1D5DB] leading-[1.8] font-sans">
                             <p>
                                 <strong className="text-white">Et si tout s'effondrait demain ?</strong><br />
                                 Si vous deviez choisir entre votre confort et un avenir vivable ?<br />
@@ -628,10 +628,10 @@ export function Serie() {
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,_var(--tw-gradient-stops))] from-echo-blue/5 via-transparent to-transparent pointer-events-none" />
 
                 <div className="container mx-auto px-4 relative z-10">
-                    <h2 className="text-[48px] font-serif font-bold text-white mb-4 text-center">Les Personnages</h2>
-                    <p className="text-[#D1D5DB] text-center max-w-2xl mx-auto mb-16 italic font-serif">"Ils sont le reflet de nos vices, de nos peurs, mais aussi de nos espoirs."</p>
+                    <h2 className="text-3xl sm:text-4xl md:text-[48px] font-serif font-bold text-white mb-4 text-center">Les Personnages</h2>
+                    <p className="text-[#D1D5DB] text-center max-w-2xl mx-auto mb-10 sm:mb-16 italic font-serif text-sm sm:text-base">"Ils sont le reflet de nos vices, de nos peurs, mais aussi de nos espoirs."</p>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                         {/* SACHA */}
                         <CharacterCard
                             name="SACHA"
@@ -755,8 +755,8 @@ function CharacterCard({ name, role, description, image }: { name: string, role:
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent opacity-80" />
 
                 {/* Text Overlay (Default Visible) */}
-                <div className="absolute bottom-0 left-0 w-full p-6 transform transition-transform duration-500 group-hover:-translate-y-2">
-                    <h3 className="text-2xl font-serif font-bold text-white mb-1">{name}</h3>
+                <div className="absolute bottom-0 left-0 w-full p-4 sm:p-6 transform transition-transform duration-500 group-hover:-translate-y-2">
+                    <h3 className="text-lg sm:text-2xl font-serif font-bold text-white mb-1">{name}</h3>
                     <p className="text-[#D4AF37] text-sm font-bold uppercase tracking-widest">{role}</p>
                 </div>
 

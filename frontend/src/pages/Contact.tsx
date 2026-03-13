@@ -28,7 +28,7 @@ export function Contact() {
                 <div className="max-w-5xl mx-auto bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row">
 
                     {/* Contact Info Side */}
-                    <div className="md:w-1/3 bg-echo-darker p-10 flex flex-col justify-between border-r border-white/5">
+                    <div className="md:w-1/3 bg-echo-darker p-6 sm:p-8 md:p-10 flex flex-col justify-between border-r border-white/5">
                         <div>
                             <h2 className="text-2xl font-serif text-white mb-6">Contactez-nous</h2>
                             <p className="text-neutral-400 mb-8 text-sm leading-relaxed">
@@ -66,7 +66,7 @@ export function Contact() {
                     </div>
 
                     {/* Form Side */}
-                    <div className="md:w-2/3 p-10 bg-white/[0.02]">
+                    <div className="md:w-2/3 p-6 sm:p-8 md:p-10 bg-white/[0.02]">
                         {submitted ? (
                             <div className="flex flex-col items-center justify-center h-full text-center py-16">
                                 <div className="w-16 h-16 rounded-full bg-echo-green/20 flex items-center justify-center mb-6">

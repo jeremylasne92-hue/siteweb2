@@ -868,7 +868,7 @@ export default function AdminPartners() {
     return (
         <Layout>
             <div className="min-h-screen bg-echo-dark pt-24 pb-16">
-                <div className="max-w-7xl mx-auto px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Header */}
                     <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center gap-3">

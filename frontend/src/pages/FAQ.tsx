@@ -170,7 +170,7 @@ export function FAQ() {
                     <div className="inline-block p-4 rounded-full bg-echo-gold/10 mb-6">
                         <HelpCircle className="w-12 h-12 text-echo-gold" />
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-serif text-white mb-6">
+                    <h1 className="text-3xl sm:text-4xl md:text-6xl font-serif text-white mb-4 sm:mb-6">
                         Questions Fréquentes
                     </h1>
                     <p className="text-xl text-neutral-300 mb-10">
@@ -232,7 +232,7 @@ export function FAQ() {
                                                 >
                                                     <button
                                                         onClick={() => toggleItem(catIdx, itemIdx)}
-                                                        className="w-full flex items-center justify-between p-6 text-left hover:bg-white/5 transition-colors"
+                                                        className="w-full flex items-center justify-between p-4 sm:p-6 text-left hover:bg-white/5 transition-colors"
                                                     >
                                                         <span className="font-medium text-white pr-4">{item.q}</span>
                                                         <ChevronDown
@@ -240,7 +240,7 @@ export function FAQ() {
                                                         />
                                                     </button>
                                                     {isOpen && (
-                                                        <div className="px-6 pb-6 text-neutral-400 text-sm leading-relaxed">
+                                                        <div className="px-4 pb-4 sm:px-6 sm:pb-6 text-neutral-400 text-sm leading-relaxed">
                                                             {item.a}
                                                         </div>
                                                     )}

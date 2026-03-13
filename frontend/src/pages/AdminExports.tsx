@@ -82,7 +82,7 @@ export default function AdminExports() {
 
     return (
         <div className="min-h-screen bg-echo-dark pt-24 pb-16">
-            <div className="max-w-3xl mx-auto px-6 lg:px-8">
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                 <Link to="/admin" className="inline-flex items-center gap-1.5 text-sm text-echo-textMuted hover:text-echo-gold transition-colors mb-6">
                     <ArrowLeft size={16} />
                     Retour au dashboard

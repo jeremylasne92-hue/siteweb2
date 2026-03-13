@@ -71,7 +71,7 @@ export function Resources() {
             {/* Hero Section */}
             <section className="relative py-20 bg-echo-darker border-b border-white/5">
                 <div className="container mx-auto px-4 max-w-4xl text-center">
-                    <h1 className="text-4xl md:text-6xl font-serif text-white mb-6">Médiathèque</h1>
+                    <h1 className="text-3xl sm:text-4xl md:text-6xl font-serif text-white mb-4 sm:mb-6">Médiathèque</h1>
                     <p className="text-xl text-neutral-400 max-w-2xl mx-auto">
                         Accédez à l'ensemble nos ressources pour comprendre, se former et agir.
                         Libre d'accès et de partage.
@@ -84,7 +84,7 @@ export function Resources() {
                 <div className="container mx-auto max-w-7xl">
 
                     {/* Filters */}
-                    <div className="flex flex-wrap items-center gap-4 mb-10 overflow-x-auto pb-4 hide-scrollbar">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 mb-8 sm:mb-10 overflow-x-auto pb-4 hide-scrollbar">
                         <span className="flex items-center gap-2 text-neutral-500 mr-4">
                             <Filter className="w-4 h-4" /> Filtres :
                         </span>
