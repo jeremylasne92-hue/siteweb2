@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, Field, EmailStr, field_validator
 from typing import Optional, Literal
 from datetime import datetime
 import uuid
@@ -157,11 +157,13 @@ class TechCandidature(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     email: EmailStr
-    project: Literal["cognisphere", "echolink"]
+    project: Literal["cognisphere", "echolink", "scenariste"]
     skills: str
     message: str
     status: Literal["pending", "entretien", "accepted", "rejected"] = "pending"
     status_note: Optional[str] = None
+    portfolio_url: Optional[str] = None
+    creative_interests: Optional[str] = None
     ip_address: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: Optional[datetime] = None
@@ -170,10 +172,23 @@ class TechCandidature(BaseModel):
 class TechCandidatureRequest(BaseModel):
     name: str = Field(min_length=2, max_length=100)
     email: EmailStr
-    project: Literal["cognisphere", "echolink"]
+    project: Literal["cognisphere", "echolink", "scenariste"]
     skills: str = Field(min_length=2, max_length=500)
     message: str = Field(min_length=10, max_length=2000)
     website: str = ""  # honeypot field
+    portfolio_url: Optional[str] = Field(None, max_length=500)
+    creative_interests: Optional[str] = Field(None, max_length=500)
+
+    @field_validator("portfolio_url")
+    @classmethod
+    def validate_portfolio_url(cls, v):
+        if v is None or v == "":
+            return v
+        from urllib.parse import urlparse
+        parsed = urlparse(v)
+        if parsed.scheme not in ("http", "https"):
+            raise ValueError("L'URL doit commencer par http:// ou https://")
+        return v
 
 
 class TechCandidatureStatusUpdate(BaseModel):
