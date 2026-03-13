@@ -19,6 +19,17 @@ VALID_DATA = {
     "website": "",
 }
 
+VALID_SCENARISTE_DATA = {
+    "name": "Marie Dupont",
+    "email": "marie@example.com",
+    "project": "scenariste",
+    "skills": "Écriture créative, dramaturgie, dialogue",
+    "message": "Je souhaite contribuer à l'écriture de la série ECHO car je partage les valeurs du Mouvement.",
+    "website": "",
+    "portfolio_url": "https://marie-portfolio.com",
+    "creative_interests": "Fiction, Écologie, Philosophie",
+}
+
 
 def make_mock_db(recent_count=0):
     """Create a mock database for candidatures."""
@@ -196,6 +207,54 @@ def test_get_my_candidatures():
     data = response.json()
     assert len(data) == 1
     assert data[0]["project"] == "cognisphere"
+
+
+def test_scenariste_candidature_success():
+    """POST /candidatures/tech with scenariste project and portfolio_url stores candidature."""
+    db = make_mock_db()
+    app.dependency_overrides[get_db] = lambda: db
+
+    with patch("routes.candidatures.send_email", new_callable=AsyncMock):
+        response = client.post("/api/candidatures/tech", json=VALID_SCENARISTE_DATA)
+
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert response.json()["message"] == "Candidature envoyée avec succès"
+    db.tech_candidatures.insert_one.assert_called_once()
+    stored = db.tech_candidatures.insert_one.call_args[0][0]
+    assert stored["project"] == "scenariste"
+    assert stored["portfolio_url"] == "https://marie-portfolio.com"
+    assert stored["creative_interests"] == "Fiction, Écologie, Philosophie"
+
+
+def test_scenariste_invalid_portfolio_url():
+    """POST /candidatures/tech with javascript: URL returns 422."""
+    db = make_mock_db()
+    app.dependency_overrides[get_db] = lambda: db
+
+    data = {**VALID_SCENARISTE_DATA, "portfolio_url": "javascript:alert(1)"}
+    response = client.post("/api/candidatures/tech", json=data)
+
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 422
+
+
+def test_scenariste_without_portfolio():
+    """POST /candidatures/tech with scenariste and no portfolio_url succeeds."""
+    db = make_mock_db()
+    app.dependency_overrides[get_db] = lambda: db
+
+    data = {**VALID_SCENARISTE_DATA, "portfolio_url": None, "creative_interests": None}
+
+    with patch("routes.candidatures.send_email", new_callable=AsyncMock):
+        response = client.post("/api/candidatures/tech", json=data)
+
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert response.json()["message"] == "Candidature envoyée avec succès"
 
 
 def test_update_status_unauthorized():
