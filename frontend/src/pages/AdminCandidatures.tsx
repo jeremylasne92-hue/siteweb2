@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import {
     FileText, RefreshCw, ArrowLeft, Trash2, X,
     Brain, Share2, Clock, AlertTriangle, CheckCircle2,
-    XCircle, Users, MessageSquare
+    XCircle, Users, MessageSquare, PenTool, ExternalLink
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { CANDIDATURES_API } from '../config/api';
@@ -14,22 +14,25 @@ interface TechCandidature {
     id: string;
     name: string;
     email: string;
-    project: 'cognisphere' | 'echolink';
+    project: 'cognisphere' | 'echolink' | 'scenariste';
     skills: string;
     message: string;
     status: CandidatureStatus;
     status_note?: string;
+    portfolio_url?: string;
+    creative_interests?: string;
     ip_address?: string;
     created_at: string;
     updated_at?: string;
 }
 
-type ProjectFilter = 'all' | 'cognisphere' | 'echolink';
+type ProjectFilter = 'all' | 'cognisphere' | 'echolink' | 'scenariste';
 type StatusFilter = 'all' | CandidatureStatus;
 
-const projectConfig = {
+const projectConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
     cognisphere: { label: 'CogniSphère', color: '#A78BFA', icon: <Brain size={14} /> },
     echolink: { label: 'ECHOLink', color: '#60A5FA', icon: <Share2 size={14} /> },
+    scenariste: { label: 'Scénariste', color: '#F59E0B', icon: <PenTool size={14} /> },
 };
 
 const statusConfig: Record<CandidatureStatus, { label: string; color: string; icon: React.ReactNode }> = {
@@ -188,6 +191,7 @@ export default function AdminCandidatures() {
         { key: 'all', label: 'Tous projets' },
         { key: 'cognisphere', label: 'CogniSphère' },
         { key: 'echolink', label: 'ECHOLink' },
+        { key: 'scenariste', label: 'Scénaristes' },
     ];
 
     const statusFilters: { key: StatusFilter; label: string }[] = [
@@ -457,6 +461,39 @@ export default function AdminCandidatures() {
                                 </p>
                             </div>
 
+                            {/* Portfolio URL (scenariste) */}
+                            {selected.portfolio_url && (
+                                <div className="mb-6">
+                                    <h3 className="text-sm font-medium text-white mb-2">Portfolio</h3>
+                                    <a
+                                        href={selected.portfolio_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 text-sm text-echo-gold hover:underline bg-white/5 border border-white/10 rounded-lg px-4 py-3"
+                                    >
+                                        <ExternalLink size={14} />
+                                        {selected.portfolio_url}
+                                    </a>
+                                </div>
+                            )}
+
+                            {/* Creative Interests (scenariste) */}
+                            {selected.creative_interests && (
+                                <div className="mb-6">
+                                    <h3 className="text-sm font-medium text-white mb-2">Intérêts créatifs</h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        {selected.creative_interests.split(',').map((interest, i) => (
+                                            <span
+                                                key={i}
+                                                className="px-3 py-1 rounded-full text-xs font-medium bg-amber-500/15 text-amber-400 border border-amber-500/30"
+                                            >
+                                                {interest.trim()}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Message */}
                             <div className="mb-6">
                                 <h3 className="text-sm font-medium text-white mb-2">Message</h3>
@@ -528,7 +565,7 @@ export default function AdminCandidatures() {
                             {/* Bottom Actions */}
                             <div className="flex items-center justify-between pt-4 border-t border-white/10">
                                 <a
-                                    href={`mailto:${selected.email}?subject=Candidature ${projectConfig[selected.project].label} — Mouvement ECHO`}
+                                    href={`mailto:${selected.email}?subject=Candidature ${projectConfig[selected.project]?.label ?? selected.project} — Mouvement ECHO`}
                                     className="text-sm text-echo-gold hover:underline"
                                 >
                                     Répondre par email

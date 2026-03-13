@@ -8,8 +8,8 @@
 
 **Dernière mise à jour** : 2026-03-13
 **Phase actuelle** : Post-Epics — Pré-lancement (lancement 20 mars 2026)
-**Statut** : ✅ Opérationnel — Refonte pages CogniSphère + ECHOLink
-**Dernier milestone** : Workflow candidatures techniques (validation/batch/suivi profil)
+**Statut** : ✅ Opérationnel — Responsive mobile + Refonte Mouvement
+**Dernier milestone** : Refonte page Mouvement (7 étapes) + ScrollToTop + photos équipe
 
 ### ⚠️ Rappels Pré-Lancement (20 mars 2026)
 - [ ] **Revoir le Dashboard Partenaire** avant la sortie officielle (UX, données, design)
@@ -93,7 +93,7 @@ frontend/src/
 |------|-------|--------|
 | Accueil | `/` | ✅ Complète + Landing Dynamique (compteurs + mode Mon ECHO) |
 | La Série | `/serie` | ✅ Complète |
-| Le Mouvement | `/mouvement` | ✅ Complète |
+| Le Mouvement | `/mouvement` | ✅ Complète (refonte 2026-03-13 : 7 étapes Graine→Fructification, photos équipe, ScrollToTop) |
 | Cognisphère | `/cognisphere` | ✅ Complète (refonte 2026-03-13 : mockups interactifs, texte candidature Émergence, roadmap bêta Juin 2026) |
 | ECHOLink | `/echolink` | ✅ Complète (refonte 2026-03-13 : 3 fonctionnalités détaillées, section valeurs, origine ECHO, exemples concrets) |
 | ECHOsystem | `/partenaires` | ✅ Complète |
@@ -149,6 +149,8 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-13 | Candidatures scénaristes : extension du système candidatures tech pour le projet "scenariste". Nouveau formulaire 4 étapes (Identité/Compétences/Intérêts/Motivation) sur page Série via modal, portfolio_url validé (http/https), creative_interests tags, admin console étendue (filtre, badge PenTool, affichage portfolio/intérêts). 3 tests backend ajoutés (71 total). Niveau STANDARD. | Claude Code (Opus 4.6) |
+| 2026-03-13 | Refonte page Mouvement : 7 étapes (Graine→Fructification), photos équipe réelles (5 membres), suppression PhaseCard, CTA → /register. Ajout ScrollToTop dans App.tsx. Design responsive mobile 375px+ sur toutes les pages (26 fichiers). Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-13 | Workflow candidatures techniques : ajout status (pending/entretien/accepted/rejected), status_note, updated_at au modèle TechCandidature. 3 nouveaux endpoints (PUT admin/{id}/status, PUT admin/batch-status, GET /me). Admin : badges statut, sélection batch avec checkbox, actions groupées, filtres par statut, note admin dans modale. Profil utilisateur : section "Mes candidatures" (match par email, badges statut colorés, note admin). 4 nouveaux tests backend. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-13 | Refonte page ECHOLink : 8 sections (hero, constat, 3 piliers overview, 3 fonctionnalités détaillées avec exemples concrets, valeurs, origine ECHO, candidature). Contenu aligné avec document de référence ECHOLink (énigmes/QR codes, hubs collaboratifs/Kanban/matching, économie alternative/monnaie numérique). Ajustements : suppression section Stack/Contribuer/GitHub, correction "documentaire" → "série", exemple concret quête mythologique urbaine + ECHOSystem, "pour le bien commun". 3 mockups Hub intégrés. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-13 | Refonte page CogniSphère : mockups interactifs desktop/mobile (5 écrans switchables), suppression section pricing, roadmap mise à jour (bêta Juin 2026, Phase 2 Déc 2026, Phase 3+ 2027), texte aligné avec candidature Émergence IDF, section Origine ECHO enrichie (lien série, parcours thématiques, hiver 2025), image mobile dédiée. Niveau STANDARD. | Claude Code (Opus 4.6) |
@@ -195,6 +197,7 @@ frontend/src/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-13 | 🟡 STANDARD | Candidatures scénaristes (modèles, API, formulaire 4 étapes, admin, 3 tests) | ~40min | Claude Code (Opus 4.6) |
 | 2026-03-13 | 🟡 STANDARD | Workflow candidatures techniques (statut, batch, suivi profil, 4 tests) | ~30min | Claude Code (Opus 4.6) |
 | 2026-03-13 | 🟡 STANDARD | Refonte page ECHOLink (8 sections, 3 fonctionnalités détaillées, exemples concrets) | ~30min | Claude Code (Opus 4.6) |
 | 2026-03-13 | 🟡 STANDARD | Refonte page CogniSphère (mockups, texte, roadmap, mobile) | ~1h | Claude Code (Opus 4.6) |
@@ -306,11 +309,11 @@ _Aucune spec en cours._
 | 2 | ~~Vue admin candidatures techniques~~ | Haute | ✅ Done (déjà implémenté : AdminCandidatures.tsx + 4 endpoints + route admin + export CSV) |
 | 3 | Admin événements : drag & drop image + autocomplétion adresse | Moyenne | À faire |
 | 4 | Vérifier tous les parcours utilisateurs et boutons | Haute | À faire |
-| 5 | Design responsive mobile | Haute | À faire |
+| 5 | ~~Design responsive mobile~~ | Haute | ✅ Done (375px+ toutes pages, commit 41044de) |
 | 6 | Formulaire d'adhésion membre | Moyenne | À faire |
 | 7 | Page profil utilisateur | Moyenne | À faire |
 | 8 | Page Soutenir avec nouveaux niveaux | Basse | À faire |
-| 9 | Modifier pages contenu (Ressources, Mouvement, ~~CogniSphère~~, ~~ECHOLink~~) | Moyenne | 🔄 CogniSphère + ECHOLink done, Ressources + Mouvement restants |
+| 9 | Modifier pages contenu (Ressources, ~~Mouvement~~, ~~CogniSphère~~, ~~ECHOLink~~) | Moyenne | 🔄 CogniSphère + ECHOLink + Mouvement done, Ressources restant |
 | 10 | Modifier formulaires candidature | Moyenne | À faire |
 | 11 | Modifier images personnages | Basse | À faire |
 | 12 | Corriger logo ECHO série | Basse | À faire |
