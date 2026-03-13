@@ -11,7 +11,7 @@ import logging
 from pathlib import Path
 
 # Import routes
-from routes import auth, episodes, progress, videos, users, thematics, resources, partners, candidatures, events, analytics
+from routes import auth, episodes, progress, videos, users, thematics, resources, partners, candidatures, events, analytics, contact
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -44,6 +44,7 @@ api_router.include_router(episodes.router)
 api_router.include_router(candidatures.router)
 api_router.include_router(events.router)
 api_router.include_router(analytics.router)
+api_router.include_router(contact.router)
 
 # Health check endpoint
 @api_router.get("/")
@@ -96,6 +97,7 @@ async def startup_indexes():
     # Data retention TTL indexes (RGPD)
     try:
         await db.tech_candidatures.create_index("created_at", expireAfterSeconds=15552000)  # 6 months
+        await db.contact_messages.create_index("created_at", expireAfterSeconds=15552000)  # 6 months
         await db.analytics_events.create_index("created_at", expireAfterSeconds=31536000)  # 1 year
         await db.password_reset_tokens.create_index("created_at", expireAfterSeconds=86400)  # 24h
     except Exception as e:

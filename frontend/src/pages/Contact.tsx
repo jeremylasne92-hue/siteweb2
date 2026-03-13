@@ -3,16 +3,70 @@ import { Mail, MapPin, Send, Instagram, Twitter, Linkedin, Facebook } from 'luci
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { SEO } from '../components/seo/SEO';
+import { API_URL } from '../config/api';
+
+type FormStatus = 'idle' | 'loading' | 'success' | 'error';
+
+const SUBJECT_MAP: Record<string, string> = {
+    'Question générale': 'question_generale',
+    'Presse & Média': 'presse_media',
+    'Partenariat': 'partenariat',
+    'Autre': 'autre',
+};
 
 export function Contact() {
-    const [submitted, setSubmitted] = useState(false);
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [subject, setSubject] = useState('Question générale');
+    const [message, setMessage] = useState('');
     const [consentRGPD, setConsentRGPD] = useState(false);
+    const [website, setWebsite] = useState(''); // honeypot
+    const [status, setStatus] = useState<FormStatus>('idle');
+    const [errorMsg, setErrorMsg] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!consentRGPD) return;
-        setSubmitted(true);
-        setConsentRGPD(false);
+
+        setStatus('loading');
+        setErrorMsg('');
+
+        try {
+            const res = await fetch(`${API_URL}/contact`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    subject: SUBJECT_MAP[subject] || 'autre',
+                    message,
+                    consent_rgpd: consentRGPD,
+                    website,
+                }),
+            });
+
+            if (res.status === 429) {
+                setStatus('error');
+                setErrorMsg('Trop de messages envoyés. Réessayez plus tard.');
+                return;
+            }
+
+            if (!res.ok) {
+                setStatus('error');
+                setErrorMsg('Une erreur est survenue. Veuillez réessayer.');
+                return;
+            }
+
+            setStatus('success');
+            setName('');
+            setEmail('');
+            setSubject('Question générale');
+            setMessage('');
+            setConsentRGPD(false);
+        } catch {
+            setStatus('error');
+            setErrorMsg('Impossible de contacter le serveur. Vérifiez votre connexion.');
+        }
     };
 
     return (
@@ -67,7 +121,7 @@ export function Contact() {
 
                     {/* Form Side */}
                     <div className="md:w-2/3 p-6 sm:p-8 md:p-10 bg-white/[0.02]">
-                        {submitted ? (
+                        {status === 'success' ? (
                             <div className="flex flex-col items-center justify-center h-full text-center py-16">
                                 <div className="w-16 h-16 rounded-full bg-echo-green/20 flex items-center justify-center mb-6">
                                     <Send className="w-8 h-8 text-echo-greenLight" />
@@ -79,7 +133,7 @@ export function Contact() {
                                 <Button
                                     variant="outline"
                                     className="mt-8"
-                                    onClick={() => setSubmitted(false)}
+                                    onClick={() => setStatus('idle')}
                                 >
                                     Envoyer un autre message
                                 </Button>
@@ -87,13 +141,43 @@ export function Contact() {
                         ) : (
                             <form className="space-y-6" onSubmit={handleSubmit}>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <Input label="Nom" placeholder="Votre nom" />
-                                    <Input label="Email" type="email" placeholder="votre@email.com" />
+                                    <Input
+                                        label="Nom"
+                                        placeholder="Votre nom"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        required
+                                        minLength={2}
+                                        maxLength={100}
+                                    />
+                                    <Input
+                                        label="Email"
+                                        type="email"
+                                        placeholder="votre@email.com"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                    />
                                 </div>
+
+                                {/* Honeypot field */}
+                                <input
+                                    type="text"
+                                    name="website"
+                                    value={website}
+                                    onChange={(e) => setWebsite(e.target.value)}
+                                    style={{ position: 'absolute', left: '-9999px', tabIndex: -1 } as React.CSSProperties}
+                                    autoComplete="off"
+                                    aria-hidden="true"
+                                />
 
                                 <div>
                                     <label className="block text-sm font-medium text-neutral-300 mb-1">Sujet</label>
-                                    <select className="w-full bg-black/20 border border-white/10 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-1 focus:ring-echo-gold text-sm">
+                                    <select
+                                        className="w-full bg-black/20 border border-white/10 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-1 focus:ring-echo-gold text-sm"
+                                        value={subject}
+                                        onChange={(e) => setSubject(e.target.value)}
+                                    >
                                         <option>Question générale</option>
                                         <option>Presse & Média</option>
                                         <option>Partenariat</option>
@@ -106,6 +190,11 @@ export function Contact() {
                                     <textarea
                                         className="w-full bg-black/20 border border-white/10 rounded-md py-2 px-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-echo-gold min-h-[150px] text-sm resize-y"
                                         placeholder="Comment pouvons-nous vous aider ?"
+                                        value={message}
+                                        onChange={(e) => setMessage(e.target.value)}
+                                        required
+                                        minLength={10}
+                                        maxLength={5000}
                                     />
                                 </div>
 
@@ -126,9 +215,18 @@ export function Contact() {
                                     </span>
                                 </label>
 
+                                {status === 'error' && (
+                                    <p className="text-red-400 text-sm">{errorMsg}</p>
+                                )}
+
                                 <div className="flex justify-end">
-                                    <Button variant="primary" className="flex items-center gap-2" disabled={!consentRGPD}>
-                                        Envoyer <Send className="w-4 h-4" />
+                                    <Button
+                                        variant="primary"
+                                        className="flex items-center gap-2"
+                                        disabled={!consentRGPD || status === 'loading'}
+                                    >
+                                        {status === 'loading' ? 'Envoi en cours...' : 'Envoyer'}
+                                        <Send className="w-4 h-4" />
                                     </Button>
                                 </div>
                             </form>

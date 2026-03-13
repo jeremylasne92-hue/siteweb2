@@ -241,6 +241,33 @@ class Pending2FA(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
+class ContactMessageRequest(BaseModel):
+    name: str = Field(min_length=2, max_length=100)
+    email: EmailStr
+    subject: Literal["question_generale", "presse_media", "partenariat", "autre"]
+    message: str = Field(min_length=10, max_length=5000)
+    consent_rgpd: bool
+    website: str = ""  # honeypot field
+
+    @field_validator("consent_rgpd")
+    @classmethod
+    def validate_consent(cls, v):
+        if not v:
+            raise ValueError("Le consentement RGPD est obligatoire")
+        return v
+
+
+class ContactMessage(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    email: EmailStr
+    subject: str
+    message: str
+    ip_address: str  # anonymisé
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    read: bool = False
+
+
 class AnalyticsEventCreate(BaseModel):
     category: str = Field(min_length=1, max_length=50)
     action: str = Field(min_length=1, max_length=50)
