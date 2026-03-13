@@ -49,17 +49,26 @@ async def submit_tech_candidature(
         project=data.project,
         skills=data.skills,
         message=data.message,
+        portfolio_url=data.portfolio_url,
+        creative_interests=data.creative_interests,
         ip_address=anonymize_ip(client_ip),
     )
     await db.tech_candidatures.insert_one(candidature.model_dump())
     logger.info(f"New tech candidature from {data.name} for {data.project}")
 
     # Notify team via email
-    project_label = "CogniSphère" if data.project == "cognisphere" else "ECHOLink"
+    project_labels = {"cognisphere": "CogniSphère", "echolink": "ECHOLink", "scenariste": "Scénariste"}
+    project_label = project_labels.get(data.project, data.project)
+    email_body = f"Nom: {data.name}\nEmail: {data.email}\nProjet: {project_label}\nCompétences: {data.skills}"
+    if data.portfolio_url:
+        email_body += f"\nPortfolio: {data.portfolio_url}"
+    if data.creative_interests:
+        email_body += f"\nIntérêts créatifs: {data.creative_interests}"
+    email_body += f"\n\nMessage:\n{data.message}"
     await send_email(
         "mouvement.echo.france@gmail.com",
-        f"Nouvelle candidature technique — {project_label}",
-        f"Nom: {data.name}\nEmail: {data.email}\nProjet: {project_label}\nCompétences: {data.skills}\n\nMessage:\n{data.message}"
+        f"Nouvelle candidature — {project_label}",
+        email_body
     )
 
     return {"message": "Candidature envoyée avec succès"}
@@ -74,7 +83,7 @@ async def list_tech_candidatures(
 ):
     """List all tech candidatures (admin only), optionally filtered by project and status."""
     query = {}
-    if project in ("cognisphere", "echolink"):
+    if project in ("cognisphere", "echolink", "scenariste"):
         query["project"] = project
     if status in ("pending", "entretien", "accepted", "rejected"):
         query["status"] = status
@@ -115,7 +124,7 @@ async def export_tech_candidatures(
     output = io.StringIO()
     output.write("\ufeff")  # BOM UTF-8
     writer = csv.writer(output)
-    writer.writerow(["id", "name", "email", "project", "skills", "message", "status", "status_note", "created_at"])
+    writer.writerow(["id", "name", "email", "project", "skills", "message", "portfolio_url", "creative_interests", "status", "status_note", "created_at"])
     for c in candidatures:
         created = c.get("created_at", "")
         if hasattr(created, "isoformat"):
@@ -127,6 +136,8 @@ async def export_tech_candidatures(
             c.get("project", ""),
             c.get("skills", ""),
             c.get("message", ""),
+            c.get("portfolio_url", ""),
+            c.get("creative_interests", ""),
             c.get("status", "pending"),
             c.get("status_note", ""),
             created,
