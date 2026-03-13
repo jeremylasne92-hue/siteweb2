@@ -3,15 +3,15 @@ import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { SEO } from '../components/seo/SEO';
 
-// Images Unsplash — croissance du pommier (licence libre, pas d'attribution requise)
+// Images locales — croissance de l'arbre (7 étapes)
 const TREE_STAGES = {
-    graine: 'https://images.unsplash.com/photo-1748176934921-bb88b4d92fd5?w=200&h=200&fit=crop&crop=center',
-    germination: 'https://images.unsplash.com/photo-1557234195-bd9f290f0e4d?w=200&h=200&fit=crop&crop=center',
-    enracinement: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=200&h=200&fit=crop&crop=center',
-    emergence: 'https://images.unsplash.com/photo-1759390304078-98e9bd547fec?w=200&h=200&fit=crop&crop=center',
-    branches: 'https://images.unsplash.com/photo-1763213129391-855c61ba0a64?w=200&h=200&fit=crop&crop=center',
-    floraison: 'https://images.unsplash.com/photo-1745922692298-7c236458de42?w=200&h=200&fit=crop&crop=center',
-    fructification: 'https://images.unsplash.com/photo-1745962417587-365bef211257?w=200&h=200&fit=crop&crop=center',
+    graine: '/images/Image arbre en croissance/Graine.jpeg',
+    germination: '/images/Image arbre en croissance/Germination.jpeg',
+    enracinement: '/images/Image arbre en croissance/Enracimennt.jpeg',
+    emergence: "/images/Image arbre en croissance/L'émergence ECHO.jpeg",
+    branches: '/images/Image arbre en croissance/Branches.png',
+    floraison: '/images/Image arbre en croissance/Floraison.jpeg',
+    fructification: '/images/Image arbre en croissance/Pommes.jpeg',
 };
 
 export function Mouvement() {
@@ -226,10 +226,10 @@ function TimelineItem({ side, image, imageAlt, step, title, subtitle, children }
     const isLeft = side === 'left';
 
     return (
-        <div className={`flex flex-col md:flex-row items-start gap-6 sm:gap-8 md:gap-16 ${isLeft ? '' : 'md:flex-row-reverse'}`}>
+        <div className={`flex flex-col md:flex-row items-stretch gap-6 sm:gap-8 md:gap-12 pl-12 md:pl-0 ${isLeft ? '' : 'md:flex-row-reverse'}`}>
 
             {/* Content */}
-            <div className={`flex-1 pl-16 md:pl-0 ${isLeft ? 'md:text-right' : 'md:text-left'}`}>
+            <div className={`flex-1 ${isLeft ? 'md:text-right' : 'md:text-left'}`}>
                 <div className={`flex items-center gap-3 mb-3 md:mb-4 flex-wrap ${isLeft ? 'md:justify-end' : ''}`}>
                     <span className="text-xs font-mono text-amber-600/60 tracking-widest">{step}</span>
                     <span className="px-3 py-1 bg-amber-500/10 text-amber-500 rounded-full text-xs font-bold uppercase tracking-wider">
@@ -242,18 +242,18 @@ function TimelineItem({ side, image, imageAlt, step, title, subtitle, children }
                 </div>
             </div>
 
-            {/* Photo Node on the Line */}
-            <div className="absolute left-0 md:relative md:left-auto shrink-0 w-10 h-10 md:w-24 md:h-24 rounded-full overflow-hidden border-2 border-amber-500/50 z-10 shadow-[0_0_20px_rgba(245,158,11,0.15)] mt-1 md:mt-2">
+            {/* Timeline dot (mobile: absolute left, desktop: hidden — line still visible) */}
+            <div className="absolute left-[14px] md:hidden w-3 h-3 rounded-full bg-amber-500 border-2 border-stone-950 z-10 mt-2" />
+
+            {/* Image panel */}
+            <div className="w-full md:w-[380px] lg:w-[440px] shrink-0 rounded-xl overflow-hidden border border-white/10 shadow-lg shadow-amber-900/10">
                 <img
                     src={image}
                     alt={imageAlt}
-                    className="w-full h-full object-cover brightness-90 saturate-[1.15] sepia-[0.08]"
+                    className="w-full h-48 sm:h-56 md:h-full object-cover"
                     loading="lazy"
                 />
             </div>
-
-            {/* Empty space for the other side */}
-            <div className="flex-1 hidden md:block" />
         </div>
     );
 }
