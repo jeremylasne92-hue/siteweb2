@@ -1,7 +1,18 @@
-import { Sprout, TreePine, TreeDeciduous, Network, Flower2, Apple, Play, CircleDot } from 'lucide-react';
+import { Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { SEO } from '../components/seo/SEO';
+
+// Images Unsplash — croissance du pommier (licence libre, pas d'attribution requise)
+const TREE_STAGES = {
+    graine: 'https://images.unsplash.com/photo-1748176934921-bb88b4d92fd5?w=200&h=200&fit=crop&crop=center',
+    germination: 'https://images.unsplash.com/photo-1557234195-bd9f290f0e4d?w=200&h=200&fit=crop&crop=center',
+    enracinement: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=200&h=200&fit=crop&crop=center',
+    emergence: 'https://images.unsplash.com/photo-1759390304078-98e9bd547fec?w=200&h=200&fit=crop&crop=center',
+    branches: 'https://images.unsplash.com/photo-1763213129391-855c61ba0a64?w=200&h=200&fit=crop&crop=center',
+    floraison: 'https://images.unsplash.com/photo-1745922692298-7c236458de42?w=200&h=200&fit=crop&crop=center',
+    fructification: 'https://images.unsplash.com/photo-1745962417587-365bef211257?w=200&h=200&fit=crop&crop=center',
+};
 
 export function Mouvement() {
     return (
@@ -56,7 +67,7 @@ export function Mouvement() {
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="space-y-24 sm:space-y-32">
                         {/* 1. La Graine */}
-                        <TimelineItem side="left" icon={CircleDot} step="01" title="La Graine" subtitle="Notre Origine">
+                        <TimelineItem side="left" image={TREE_STAGES.graine} imageAlt="Graine de pommier dans la terre" step="01" title="La Graine" subtitle="Notre Origine">
                             <p>
                                 Tout commence par une graine, une question : <em className="text-amber-400/80">Quel monde je souhaite laisser aux futures générations ?</em> À l'intérieur de cette graine réside l'essence de notre potentiel, de toute notre volonté : celle d'agir pour défendre et préserver le vivant.
                             </p>
@@ -66,7 +77,7 @@ export function Mouvement() {
                         </TimelineItem>
 
                         {/* 2. La Germination */}
-                        <TimelineItem side="right" icon={Sprout} step="02" title="La Germination" subtitle="Notre Raison d'Être">
+                        <TimelineItem side="right" image={TREE_STAGES.germination} imageAlt="Jeune pousse perçant le sol" step="02" title="La Germination" subtitle="Notre Raison d'Être">
                             <p>
                                 Sous la surface, l'invisible se met en mouvement. La graine craque, l'énergie de vie latente jaillit et traverse l'obscurité pour retrouver la lumière. C'est le passage de l'idée à l'action, porté par <em className="text-amber-400/80">l'amour qui meut le ciel et les étoiles</em>.
                             </p>
@@ -76,7 +87,7 @@ export function Mouvement() {
                         </TimelineItem>
 
                         {/* 3. L'Enracinement */}
-                        <TimelineItem side="left" icon={TreePine} step="03" title="L'Enracinement" subtitle="Notre Mission">
+                        <TimelineItem side="left" image={TREE_STAGES.enracinement} imageAlt="Jeunes plants enracinés dans le sol" step="03" title="L'Enracinement" subtitle="Notre Mission">
                             <p>
                                 Dans la forêt, aucun arbre ne grandit seul. Ses racines communiquent, échangent et s'entraident grâce à un vaste réseau souterrain symbiotique. Notre mission s'inspire directement de cette intelligence collective.
                             </p>
@@ -86,7 +97,7 @@ export function Mouvement() {
                         </TimelineItem>
 
                         {/* 4. L'Émergence */}
-                        <TimelineItem side="right" icon={TreeDeciduous} step="04" title="L'Émergence" subtitle="Notre Ambition">
+                        <TimelineItem side="right" image={TREE_STAGES.emergence} imageAlt="Jeune arbre émergeant près d'un tronc" step="04" title="L'Émergence" subtitle="Notre Ambition">
                             <p>
                                 Portée par ses racines, la jeune pousse perce le sol pour former un axe central capable de soutenir tout un écosystème. Ce tronc inébranlable, c'est l'association Mouvement ECHO.
                             </p>
@@ -96,7 +107,7 @@ export function Mouvement() {
                         </TimelineItem>
 
                         {/* 5. Les Branches */}
-                        <TimelineItem side="left" icon={Network} step="05" title="Les Branches" subtitle="L'Écosystème en Action">
+                        <TimelineItem side="left" image={TREE_STAGES.branches} imageAlt="Canopée d'arbre et branches vers la lumière" step="05" title="Les Branches" subtitle="L'Écosystème en Action">
                             <p>
                                 L'arbre ne conserve pas sa sève pour lui-même : il la distribue jusqu'à l'extrémité de son feuillage. Ces ramifications sont les projets qui découlent de notre Mouvement et prennent vie grâce à ECHOLink.
                             </p>
@@ -106,7 +117,7 @@ export function Mouvement() {
                         </TimelineItem>
 
                         {/* 6. La Floraison */}
-                        <TimelineItem side="right" icon={Flower2} step="06" title="La Floraison" subtitle="L'Attraction du Vivant">
+                        <TimelineItem side="right" image={TREE_STAGES.floraison} imageAlt="Fleurs de pommier en pleine floraison" step="06" title="La Floraison" subtitle="L'Attraction du Vivant">
                             <p>
                                 Un arbre en fleurs déploie ses couleurs pour attirer la vie. Avec cette même intention, notre websérie met en lumière la diversité de notre écosystème. Le Mouvement ECHO utilise la puissance de la fiction pour sublimer le travail des acteurs de terrain.
                             </p>
@@ -116,7 +127,7 @@ export function Mouvement() {
                         </TimelineItem>
 
                         {/* 7. La Fructification */}
-                        <TimelineItem side="left" icon={Apple} step="07" title="La Fructification" subtitle="Notre Impact">
+                        <TimelineItem side="left" image={TREE_STAGES.fructification} imageAlt="Pommes rouges mûres sur la branche" step="07" title="La Fructification" subtitle="Notre Impact">
                             <p>
                                 L'aboutissement de l'arbre n'est pas la beauté de la fleur, c'est l'utilité du fruit. La fructification incarne notre but ultime, à savoir <em className="text-amber-400/80">la régénération du vivant</em>.
                             </p>
@@ -203,21 +214,22 @@ export function Mouvement() {
 
 interface TimelineItemProps {
     side: string;
-    icon: React.ElementType;
+    image: string;
+    imageAlt: string;
     step: string;
     title: string;
     subtitle: string;
     children: React.ReactNode;
 }
 
-function TimelineItem({ side, icon: Icon, step, title, subtitle, children }: TimelineItemProps) {
+function TimelineItem({ side, image, imageAlt, step, title, subtitle, children }: TimelineItemProps) {
     const isLeft = side === 'left';
 
     return (
         <div className={`flex flex-col md:flex-row items-start gap-6 sm:gap-8 md:gap-16 ${isLeft ? '' : 'md:flex-row-reverse'}`}>
 
             {/* Content */}
-            <div className={`flex-1 pl-12 md:pl-0 ${isLeft ? 'md:text-right' : 'md:text-left'}`}>
+            <div className={`flex-1 pl-16 md:pl-0 ${isLeft ? 'md:text-right' : 'md:text-left'}`}>
                 <div className={`flex items-center gap-3 mb-3 md:mb-4 flex-wrap ${isLeft ? 'md:justify-end' : ''}`}>
                     <span className="text-xs font-mono text-amber-600/60 tracking-widest">{step}</span>
                     <span className="px-3 py-1 bg-amber-500/10 text-amber-500 rounded-full text-xs font-bold uppercase tracking-wider">
@@ -230,9 +242,14 @@ function TimelineItem({ side, icon: Icon, step, title, subtitle, children }: Tim
                 </div>
             </div>
 
-            {/* Icon/Node on the Line */}
-            <div className="absolute left-[8px] md:relative md:left-auto shrink-0 w-[25px] h-[25px] md:w-16 md:h-16 rounded-full bg-stone-900 border-2 border-amber-500/50 flex items-center justify-center z-10 shadow-[0_0_20px_rgba(245,158,11,0.15)] mt-1 md:mt-2">
-                <Icon className="w-3 h-3 md:w-7 md:h-7 text-amber-500" />
+            {/* Photo Node on the Line */}
+            <div className="absolute left-0 md:relative md:left-auto shrink-0 w-10 h-10 md:w-24 md:h-24 rounded-full overflow-hidden border-2 border-amber-500/50 z-10 shadow-[0_0_20px_rgba(245,158,11,0.15)] mt-1 md:mt-2">
+                <img
+                    src={image}
+                    alt={imageAlt}
+                    className="w-full h-full object-cover brightness-90 saturate-[1.15] sepia-[0.08]"
+                    loading="lazy"
+                />
             </div>
 
             {/* Empty space for the other side */}
