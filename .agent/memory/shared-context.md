@@ -6,10 +6,10 @@
 
 ## 📋 État du Projet
 
-**Dernière mise à jour** : 2026-03-12
+**Dernière mise à jour** : 2026-03-13
 **Phase actuelle** : Post-Epics — Pré-lancement (lancement 20 mars 2026)
-**Statut** : ✅ Opérationnel — Features P1 (Dashboard Partenaire + Landing Page Dynamique)
-**Dernier milestone** : Dashboard Partenaire + Landing Page + Fix menu utilisateur + Lien Espace Partenaire Header
+**Statut** : ✅ Opérationnel — Refonte pages CogniSphère + ECHOLink
+**Dernier milestone** : Refonte pages CogniSphère + ECHOLink (contenu enrichi depuis documents de référence)
 
 ### ⚠️ Rappels Pré-Lancement (20 mars 2026)
 - [ ] **Revoir le Dashboard Partenaire** avant la sortie officielle (UX, données, design)
@@ -94,8 +94,8 @@ frontend/src/
 | Accueil | `/` | ✅ Complète + Landing Dynamique (compteurs + mode Mon ECHO) |
 | La Série | `/serie` | ✅ Complète |
 | Le Mouvement | `/mouvement` | ✅ Complète |
-| Cognisphère | `/cognisphere` | ✅ Complète |
-| ECHOLink | `/echolink` | 🔄 WIP |
+| Cognisphère | `/cognisphere` | ✅ Complète (refonte 2026-03-13 : mockups interactifs, texte candidature Émergence, roadmap bêta Juin 2026) |
+| ECHOLink | `/echolink` | ✅ Complète (refonte 2026-03-13 : 3 fonctionnalités détaillées, section valeurs, origine ECHO, exemples concrets) |
 | ECHOsystem | `/partenaires` | ✅ Complète |
 | Événements | `/agenda` | ✅ Complète |
 | Ressources | `/ressources` | ✅ Complète |
@@ -149,6 +149,8 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-13 | Refonte page ECHOLink : 8 sections (hero, constat, 3 piliers overview, 3 fonctionnalités détaillées avec exemples concrets, valeurs, origine ECHO, candidature). Contenu aligné avec document de référence ECHOLink (énigmes/QR codes, hubs collaboratifs/Kanban/matching, économie alternative/monnaie numérique). Ajustements : suppression section Stack/Contribuer/GitHub, correction "documentaire" → "série", exemple concret quête mythologique urbaine + ECHOSystem, "pour le bien commun". 3 mockups Hub intégrés. Niveau STANDARD. | Claude Code (Opus 4.6) |
+| 2026-03-13 | Refonte page CogniSphère : mockups interactifs desktop/mobile (5 écrans switchables), suppression section pricing, roadmap mise à jour (bêta Juin 2026, Phase 2 Déc 2026, Phase 3+ 2027), texte aligné avec candidature Émergence IDF, section Origine ECHO enrichie (lien série, parcours thématiques, hiver 2025), image mobile dédiée. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-12 | Dashboard Partenaire : tracking vues/clics (partner_id dans AnalyticsEvent), endpoint /partners/me/stats (MongoDB Aggregate 30j), composant PartnerAnalytics.tsx (Recharts), hook useAnalytics.ts (SendBeacon). Onglet Dashboard dans MyPartnerAccount avec export CSV. | Antigravity (Gemini) |
 | 2026-03-12 | Landing Page Dynamique : endpoint /analytics/stats/public (cache mémoire 30min), compteurs communautaires dynamiques (membres, partenaires, événements), mode "Mon ECHO" pour les utilisateurs connectés dans Home.tsx. | Antigravity (Gemini) |
 | 2026-03-12 | Brainstorming Features Site Web : 20 idées générées (S-C-A-M-P-E-R + Cross-Pollination). 7 idées critiques bonifiées via Role Playing (9 personas). Focus : Navigation Informer/Fédérer/Agir, Dashboard Partenaire, Expérience Post-Épisode, La Fabrique ECHO. | Antigravity (Gemini) |
@@ -192,6 +194,8 @@ frontend/src/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-13 | 🟡 STANDARD | Refonte page ECHOLink (8 sections, 3 fonctionnalités détaillées, exemples concrets) | ~30min | Claude Code (Opus 4.6) |
+| 2026-03-13 | 🟡 STANDARD | Refonte page CogniSphère (mockups, texte, roadmap, mobile) | ~1h | Claude Code (Opus 4.6) |
 | 2026-03-12 | 🔴 MAJEUR | Dashboard Partenaire (analytics, Recharts, hook tracking, onglet) | ~1h30 | Antigravity (Gemini) |
 | 2026-03-12 | 🟡 STANDARD | Landing Page Dynamique (API stats/public + personnalisation) | ~30min | Antigravity (Gemini) |
 | 2026-03-11 | 🔴 MAJEUR | RGPD Compliance (12 tâches, 5 blocs) | ~2h (Frontend + Backend) | Claude Code (Opus 4.6) |
@@ -304,7 +308,7 @@ _Aucune spec en cours._
 | 6 | Formulaire d'adhésion membre | Moyenne | À faire |
 | 7 | Page profil utilisateur | Moyenne | À faire |
 | 8 | Page Soutenir avec nouveaux niveaux | Basse | À faire |
-| 9 | Modifier pages contenu (Ressources, Mouvement, CogniSphère, ECHOLink) | Moyenne | À faire |
+| 9 | Modifier pages contenu (Ressources, Mouvement, ~~CogniSphère~~, ~~ECHOLink~~) | Moyenne | 🔄 CogniSphère + ECHOLink done, Ressources + Mouvement restants |
 | 10 | Modifier formulaires candidature | Moyenne | À faire |
 | 11 | Modifier images personnages | Basse | À faire |
 | 12 | Corriger logo ECHO série | Basse | À faire |
