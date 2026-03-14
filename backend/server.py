@@ -47,6 +47,7 @@ api_router.include_router(analytics.router)
 api_router.include_router(contact.router)
 api_router.include_router(volunteers.router)
 api_router.include_router(members.router)
+api_router.include_router(members.admin_router)
 
 # Health check endpoint
 @api_router.get("/")
