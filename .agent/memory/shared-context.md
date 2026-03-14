@@ -6,10 +6,10 @@
 
 ## 📋 État du Projet
 
-**Dernière mise à jour** : 2026-03-13
+**Dernière mise à jour** : 2026-03-14
 **Phase actuelle** : Post-Epics — Pré-lancement (lancement 20 mars 2026)
-**Statut** : ✅ Opérationnel — Logo ECHO transparent + Contact form backend
-**Dernier milestone** : Remplacement logo ECHO série (fond noir → PNG transparent) sur Header, Serie, SEO
+**Statut** : ✅ Opérationnel — Events overhaul + Partners suspend fix
+**Dernier milestone** : Refonte système événements (images, réservation, dates multiples, organizer, past/upcoming)
 
 ### ⚠️ Rappels Pré-Lancement (20 mars 2026)
 - [ ] **Revoir le Dashboard Partenaire** avant la sortie officielle (UX, données, design)
@@ -150,6 +150,7 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-14 | Refonte système événements : modèle Event étendu (images[] jusqu'à 10, date_end, booking_enabled, booking_url, organizer), endpoint upload-image (MIME+5Mo), drag & drop images admin, toggle réservation, séparation past/upcoming sur page publique Agenda, compteur "X à venir · Y passés", organizer personnalisable, error feedback admin. Fix select dropdown global (CSS). Fix bouton masquer partenaires (stopPropagation). Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-14 | Images personnages série ECHO : remplacement des 15 photos Unsplash par les vraies images des personnages (dossier "images personnages série ECHO"). Noms normalisés en minuscules dans /images/characters/. Nettoyage anciens fichiers "Personnage ..." et dossier source. Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-14 | Logo ECHO série : remplacement du logo JPEG (fond noir) par un PNG transparent (removebg). Suppression du hack CSS mix-blend-lighten. Agrandissement taille logo (Header h-12/14/16, Serie h-28/40/56). Ajustement espacement vertical Serie hero (-mb-6). Mise à jour référence OG image dans SEO.tsx. Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-13 | Images page Mouvement : remplacement des thumbnails Unsplash ronds par des images locales rectangulaires du dossier "Image arbre en croissance" (7 étapes). Layout redesigné : texte + image côte à côte alternés (gauche/droite). Responsive mobile (empilé). Niveau HOTFIX. | Claude Code (Opus 4.6) |
@@ -202,6 +203,7 @@ frontend/src/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-14 | 🟡 STANDARD | Refonte événements (modèle, upload, drag&drop, réservation, past/upcoming, organizer, error feedback, select fix, suspend fix) | ~1h30 | Claude Code (Opus 4.6) |
 | 2026-03-13 | 🟢 HOTFIX | Images Mouvement (remplacement Unsplash → images locales, layout rectangulaire) | ~10min | Claude Code (Opus 4.6) |
 | 2026-03-13 | 🟡 STANDARD | Formulaire contact backend (endpoint, modèles, frontend, 7 tests) | ~20min | Claude Code (Opus 4.6) |
 | 2026-03-13 | 🟡 STANDARD | Candidatures scénaristes (modèles, API, formulaire 4 étapes, admin, 3 tests) | ~40min | Claude Code (Opus 4.6) |
@@ -314,7 +316,7 @@ _Aucune spec en cours._
 |---|-------|----------|--------|
 | 1 | ~~RGPD compliance~~ | Critique | ✅ Done |
 | 2 | ~~Vue admin candidatures techniques~~ | Haute | ✅ Done (déjà implémenté : AdminCandidatures.tsx + 4 endpoints + route admin + export CSV) |
-| 3 | Admin événements : drag & drop image + autocomplétion adresse | Moyenne | À faire |
+| 3 | ~~Admin événements : drag & drop image + autocomplétion adresse~~ | Moyenne | ✅ Done (drag & drop images, upload endpoint, pas d'autocomplétion adresse) |
 | 4 | ~~Vérifier tous les parcours utilisateurs et boutons~~ | Haute | ✅ Done (27 routes vérifiées, 0 bouton cassé, contact form connecté) |
 | 5 | ~~Design responsive mobile~~ | Haute | ✅ Done (375px+ toutes pages, commit 41044de) |
 | 6 | Formulaire d'adhésion membre | Moyenne | À faire |
