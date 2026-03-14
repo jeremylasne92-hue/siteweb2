@@ -1,5 +1,4 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
-import { Layout } from '../components/layout/Layout';
 import { PartnersHero } from '../components/partners/PartnersHero';
 import { PartnersStats } from '../components/partners/PartnersStats';
 import { PartnersFilters, PartnersViewSwitch } from '../components/partners/PartnersFilters';
@@ -104,7 +103,7 @@ export default function PartnersPage() {
     }, [selectedCategory, selectedThematics, searchQuery]);
 
     return (
-        <Layout>
+        <>
             <SEO
                 title="L'Écosystème"
                 description="Découvrez l'ECHOSystem : un réseau de partenaires engagés qui tentent de changer positivement ce monde."
@@ -168,6 +167,6 @@ export default function PartnersPage() {
                 onClose={() => setIsFormOpen(false)}
                 thematicsList={thematicsList}
             />
-        </Layout>
+        </>
     );
 }

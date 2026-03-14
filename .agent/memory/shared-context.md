@@ -343,3 +343,5 @@ _Aucune spec en cours._
 | 18 | ~~Dashboard partenaire avec métriques (clics site, etc.)~~ | Moyenne | ✅ Done (PartnerAnalytics.tsx, Recharts, 3 métriques, 30j) |
 | 19 | ~~Rédiger les emails définitifs pour les 4 notifications candidature~~ | Moyenne | ✅ Done |
 | 20 | Audit backend MongoDB + brainstorming améliorations (inclut review routes/members.py, optimisation requêtes, indexes) | Moyenne | À faire — utiliser skill `superpowers:brainstorming` puis `superpowers:systematic-debugging` |
+| 21 | Modifier crédits série + vidéo prologue → bande-annonce (prévue terminée le 18 mars 2026) | Haute | À faire |
+| 22 | Refonte section "L'Émergence" page Mouvement : ajouter un tronc (image droite, texte milieu), déplacer texte jeune pousse en dessous, flèche vers "Ce tronc inébranlable, c'est l'association Mouvement ECHO" | Moyenne | À faire |

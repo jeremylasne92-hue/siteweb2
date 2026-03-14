@@ -336,8 +336,8 @@ export function Serie() {
                     </div>
 
                     {/* CTA - REJOINDRE */}
-                    <div className="text-center max-w-2xl mx-auto">
-                        <p className="text-xl text-[#D1D5DB] mb-8 font-serif italic">
+                    <div className="text-center max-w-3xl mx-auto">
+                        <p className="text-2xl md:text-3xl text-[#D1D5DB] mb-8 font-serif italic leading-snug">
                             Les scénarios sont en cours d'écriture. Vous avez une plume et des convictions ?<br />Participez à la création d'ECHO.
                         </p>
                         <Button

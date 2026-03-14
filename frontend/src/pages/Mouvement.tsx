@@ -106,7 +106,7 @@ export function Mouvement() {
                                 Portée par ses racines, la jeune pousse perce le sol pour former un axe central capable de soutenir tout un écosystème. Ce tronc inébranlable, c'est l'association Mouvement ECHO.
                             </p>
                             <p>
-                                Notre ambition suit une logique de croissance pérenne : élargir nos anneaux année après année pour bâtir une alliance robuste. En devenant le pilier d'un nouveau récit sociétal et en traçant une voie inédite entre spectateurs et acteurs engagés, nous voulons prouver qu'une société basée sur la coopération et le respect du vivant est non seulement possible, mais absolument nécessaire.
+                                Notre ambition suit une logique de croissance pérenne : élargir nos anneaux mois après mois et bâtir une alliance robuste. En devenant le pilier d'un nouveau récit sociétal et en traçant une voie inédite entre spectateurs et acteurs engagés, nous voulons prouver qu'une société basée sur la coopération et le respect du vivant est non seulement possible, mais absolument nécessaire.
                             </p>
                         </TimelineItem>
 
