@@ -140,6 +140,12 @@ def test_update_candidature_status():
     update_result = MagicMock()
     update_result.matched_count = 1
     db.tech_candidatures.update_one = AsyncMock(return_value=update_result)
+    db.tech_candidatures.find_one = AsyncMock(return_value={
+        "id": "cand-123",
+        "email": "alice@example.com",
+        "name": "Alice",
+        "project": "cognisphere",
+    })
 
     app.dependency_overrides[get_db] = lambda: db
     app.dependency_overrides[require_admin] = lambda: ADMIN_USER

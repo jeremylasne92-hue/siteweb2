@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi import APIRouter, Request, Depends, HTTPException, BackgroundTasks
 from fastapi.responses import StreamingResponse
 from models import TechCandidature, TechCandidatureRequest, TechCandidatureStatusUpdate, TechCandidatureBatchStatusUpdate, User
 from routes.auth import get_db, require_admin, get_current_user
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from datetime import datetime, timedelta
-from email_service import send_email
+from email_service import send_email, send_candidature_confirmation, send_candidature_interview, send_candidature_accepted, send_candidature_rejected
+from core.config import settings
 from utils.rate_limit import anonymize_ip
 import csv
 import io
@@ -22,7 +23,8 @@ RATE_LIMIT_WINDOW_HOURS = 1
 async def submit_tech_candidature(
     data: TechCandidatureRequest,
     request: Request,
-    db: AsyncIOMotorDatabase = Depends(get_db)
+    background_tasks: BackgroundTasks,
+    db: AsyncIOMotorDatabase = Depends(get_db),
 ):
     """Submit a tech candidature for CogniSphère or ECHOLink (public, anti-spam protected)"""
     client_ip = request.client.host if request.client else "unknown"
@@ -65,11 +67,13 @@ async def submit_tech_candidature(
     if data.creative_interests:
         email_body += f"\nIntérêts créatifs: {data.creative_interests}"
     email_body += f"\n\nMessage:\n{data.message}"
-    await send_email(
+    background_tasks.add_task(
+        send_email,
         "mouvement.echo.france@gmail.com",
         f"Nouvelle candidature — {project_label}",
-        email_body
+        email_body,
     )
+    background_tasks.add_task(send_candidature_confirmation, data.email, data.name, data.project)
 
     return {"message": "Candidature envoyée avec succès"}
 
@@ -157,6 +161,7 @@ async def export_tech_candidatures(
 async def update_candidature_status(
     candidature_id: str,
     data: TechCandidatureStatusUpdate,
+    background_tasks: BackgroundTasks,
     admin: User = Depends(require_admin),
     db: AsyncIOMotorDatabase = Depends(get_db),
 ):
@@ -171,6 +176,20 @@ async def update_candidature_status(
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Candidature non trouvée")
     logger.info(f"Admin {admin.id} updated candidature {candidature_id} to {data.status}")
+
+    # Send status notification email
+    candidature = await db.tech_candidatures.find_one({"id": candidature_id})
+    if candidature:
+        c_email = candidature["email"]
+        c_name = candidature["name"]
+        c_project = candidature.get("project", "")
+        if data.status == "entretien":
+            background_tasks.add_task(send_candidature_interview, c_email, c_name, settings.BOOKING_URL)
+        elif data.status == "accepted":
+            background_tasks.add_task(send_candidature_accepted, c_email, c_name, c_project)
+        elif data.status == "rejected":
+            background_tasks.add_task(send_candidature_rejected, c_email, c_name, data.status_note)
+
     return {"message": f"Statut mis à jour : {data.status}"}
 
 
