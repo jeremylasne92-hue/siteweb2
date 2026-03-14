@@ -321,17 +321,18 @@ _Aucune spec en cours._
 | 3 | ~~Admin événements : drag & drop image + autocomplétion adresse~~ | Moyenne | ✅ Done (drag & drop images, upload endpoint, pas d'autocomplétion adresse) |
 | 4 | ~~Vérifier tous les parcours utilisateurs et boutons~~ | Haute | ✅ Done (27 routes vérifiées, 0 bouton cassé, contact form connecté) |
 | 5 | ~~Design responsive mobile~~ | Haute | ✅ Done (375px+ toutes pages, commit 41044de) |
-| 6 | Formulaire d'adhésion membre | Moyenne | À faire |
-| 7 | Page profil utilisateur | Moyenne | À faire |
-| 8 | Page Soutenir avec nouveaux niveaux | Basse | À faire |
+| 6 | ~~Formulaire d'adhésion membre~~ | Moyenne | ✅ Done (4 étapes, 7 endpoints, admin /admin/benevoles, export CSV, 4 emails, profil) |
+| 7 | ~~Page profil utilisateur~~ | Moyenne | ✅ Done (Profile.tsx complet : infos, bio, intérêts, candidatures, RGPD) |
+| 8 | ~~Page Soutenir avec nouveaux niveaux~~ | Basse | ✅ Done (3 paliers Graine/Racine/Canopée, FAQ, HelloAsso) |
 | 9 | Modifier pages contenu (Ressources, ~~Mouvement~~, ~~CogniSphère~~, ~~ECHOLink~~) | Moyenne | 🔄 CogniSphère + ECHOLink + Mouvement done, Ressources restant |
-| 10 | Modifier formulaires candidature | Moyenne | À faire |
-| 11 | Modifier images personnages | Basse | À faire |
-| 12 | Corriger logo ECHO série | Basse | À faire |
+| 10 | ~~Modifier formulaires candidature~~ | Moyenne | ✅ Done (TechForm compétences structurées + expérience, ScenaristForm genres/expérience + endpoint dédié, AdminCandidatures enrichi) |
+| 11 | ~~Modifier images personnages~~ | Basse | ✅ Done (15 personnages remplacés, noms normalisés) |
+| 12 | ~~Corriger logo ECHO série~~ | Basse | ✅ Done (PNG transparent, mix-blend supprimé) |
 | 13 | Nouvelle charte graphique | Basse | À faire |
 | 14 | Configurer SendGrid en production | Haute | À faire |
 | 15 | Liens sociaux (12 href="#") — URLs à fournir | Moyenne | À faire |
-| 16 | Vérifier la barre en bas (footer) avec les liens | Moyenne | À faire |
-| 17 | Rédiger et compléter la FAQ | Moyenne | À faire |
-| 18 | Dashboard partenaire avec métriques (clics site, etc.) | Moyenne | À faire |
-| 19 | Rédiger les emails définitifs pour les 4 notifications candidature | Moyenne | À faire |
+| 16 | ~~Vérifier la barre en bas (footer) avec les liens~~ | Moyenne | ✅ Done (footer OK, seuls liens sociaux restent = #15) |
+| 17 | ~~Rédiger et compléter la FAQ~~ | Moyenne | ✅ Done |
+| 18 | ~~Dashboard partenaire avec métriques (clics site, etc.)~~ | Moyenne | ✅ Done (PartnerAnalytics.tsx, Recharts, 3 métriques, 30j) |
+| 19 | ~~Rédiger les emails définitifs pour les 4 notifications candidature~~ | Moyenne | ✅ Done |
+| 20 | Audit backend MongoDB + brainstorming améliorations | Moyenne | À faire |
