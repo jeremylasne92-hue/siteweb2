@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
-import { Send, CheckCircle, ChevronRight, ChevronLeft, ChevronDown, UserPlus } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Send, CheckCircle, ChevronRight, ChevronLeft, ChevronDown } from 'lucide-react';
+import { ApplicationSuccessCTA } from './ApplicationSuccessCTA';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { StepProgress } from '../ui/StepProgress';
@@ -132,20 +132,7 @@ export function TechApplicationForm({ project, accentHex }: TechApplicationFormP
                 <p className="text-neutral-400 max-w-md">
                     Merci pour votre intérêt. Notre équipe examinera votre profil et vous contactera prochainement.
                 </p>
-                <div className="mt-6 p-4 bg-white/5 border border-white/10 rounded-lg max-w-md">
-                    <div className="flex items-center gap-2 mb-2">
-                        <UserPlus className="w-4 h-4" style={{ color: accentHex }} />
-                        <p className="text-sm font-medium text-white">Suivez votre candidature</p>
-                    </div>
-                    <p className="text-xs text-neutral-400 mb-3">
-                        Créez un compte avec la même adresse email pour suivre l'avancement de votre candidature en temps réel.
-                    </p>
-                    <Link to="/register">
-                        <Button type="button" variant="outline" className="w-full text-sm">
-                            Créer un compte
-                        </Button>
-                    </Link>
-                </div>
+                <ApplicationSuccessCTA accentColor={accentHex} />
             </div>
         );
     }

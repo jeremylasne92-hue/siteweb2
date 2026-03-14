@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import type { PartnerCategory } from './PartnerCard';
 import type { Thematic } from './ThematicTag';
-import { MapPin, Upload, ChevronRight, ChevronLeft, CheckCircle2, CalendarDays, Mail, Clock, UserPlus } from 'lucide-react';
+import { MapPin, Upload, ChevronRight, ChevronLeft, CheckCircle2, CalendarDays, Mail, Clock } from 'lucide-react';
+import { ApplicationSuccessCTA } from '../forms/ApplicationSuccessCTA';
 import { PARTNERS_API } from '../../config/api';
 import { BOOKING_URL } from '../../config/booking';
 
@@ -372,19 +372,8 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
                         </div>
                     </div>
 
-                    <div className="flex items-start gap-3 p-3 bg-white/5 border border-white/10 rounded-lg max-w-md mx-auto">
-                        <UserPlus size={18} className="text-echo-gold mt-0.5 shrink-0" />
-                        <div>
-                            <p className="text-sm text-white font-medium">Suivez votre candidature</p>
-                            <p className="text-xs text-echo-textMuted mt-0.5 mb-2">
-                                Créez un compte avec la même adresse email pour suivre l'avancement de votre demande en temps réel.
-                            </p>
-                            <Link to="/register" onClick={onClose}>
-                                <Button type="button" variant="outline" className="w-full text-xs">
-                                    Créer un compte
-                                </Button>
-                            </Link>
-                        </div>
+                    <div className="max-w-md mx-auto">
+                        <ApplicationSuccessCTA onNavigate={onClose} />
                     </div>
 
                     <div className="text-center pt-2">

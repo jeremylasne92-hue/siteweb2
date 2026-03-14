@@ -31,12 +31,7 @@ interface Volunteer {
 type StatusFilter = 'all' | VolunteerStatus;
 type AvailabilityFilter = 'all' | AvailabilityType;
 
-const EXP_LABELS: Record<string, string> = {
-    professional: 'Professionnel',
-    student: 'Étudiant',
-    self_taught: 'Autodidacte',
-    motivated: 'Motivé',
-};
+import { EXPERIENCE_LABELS as EXP_LABELS } from '../config/candidatures';
 
 const AVAIL_LABELS: Record<string, string> = {
     punctual: 'Ponctuel',

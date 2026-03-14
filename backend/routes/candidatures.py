@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from email_service import send_email, send_candidature_confirmation, send_candidature_interview, send_candidature_accepted, send_candidature_rejected
 from core.config import settings
 from utils.rate_limit import anonymize_ip
+import asyncio
 import csv
 import io
 import logging
@@ -246,16 +247,15 @@ async def get_accepted_members(
 ):
     """Public endpoint: list accepted members (name, project, skills only)."""
     projection = {"_id": 0, "name": 1, "project": 1, "skills": 1, "experience_level": 1, "created_at": 1}
-    members = []
 
-    # Accepted tech/scenarist candidatures
-    cursor = db.tech_candidatures.find({"status": "accepted"}, projection).sort("created_at", -1)
-    async for doc in cursor:
-        members.append({**doc, "type": "candidature"})
+    # Fetch both collections in parallel
+    tech_docs, volunteer_docs = await asyncio.gather(
+        db.tech_candidatures.find({"status": "accepted"}, projection).sort("created_at", -1).to_list(length=None),
+        db.volunteer_applications.find({"status": "accepted"}, projection).sort("created_at", -1).to_list(length=None),
+    )
 
-    # Accepted volunteer applications
-    cursor = db.volunteer_applications.find({"status": "accepted"}, projection).sort("created_at", -1)
-    async for doc in cursor:
+    members = [{**doc, "type": "candidature"} for doc in tech_docs]
+    for doc in volunteer_docs:
         skills = doc.get("skills", [])
         members.append({
             "name": doc["name"],
