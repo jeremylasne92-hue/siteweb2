@@ -8,8 +8,8 @@
 
 **Dernière mise à jour** : 2026-03-13
 **Phase actuelle** : Post-Epics — Pré-lancement (lancement 20 mars 2026)
-**Statut** : ✅ Opérationnel — Responsive mobile + Refonte Mouvement
-**Dernier milestone** : Refonte page Mouvement (7 étapes) + ScrollToTop + photos équipe
+**Statut** : ✅ Opérationnel — Logo ECHO transparent + Contact form backend
+**Dernier milestone** : Remplacement logo ECHO série (fond noir → PNG transparent) sur Header, Serie, SEO
 
 ### ⚠️ Rappels Pré-Lancement (20 mars 2026)
 - [ ] **Revoir le Dashboard Partenaire** avant la sortie officielle (UX, données, design)
@@ -130,6 +130,7 @@ frontend/src/
 
 | Tâche | Niveau | Justification |
 |-------|--------|---------------|
+| Logo ECHO série transparent | 🟢 HOTFIX | Remplacement logo JPEG fond noir par PNG transparent. 3 fichiers (Header, Serie, SEO). |
 | Proposition 4 (SEO OpenGraph) | 🟡 STANDARD | Injection dynamique de meta tags react-helmet-async dans le routeur et les pages. |
 | Proposition 3 (Micro-Analytique) | 🟡 STANDARD | Endpoint Custom Event Tracking (MongoDB) + Hook Frontend (sendBeacon). |
 | Proposition 1 (UX Onboarding Gamification) | 🟡 STANDARD | Refonte des formulaires d'inscription et de candidature en multi-étapes. |
@@ -149,6 +150,9 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-14 | Logo ECHO série : remplacement du logo JPEG (fond noir) par un PNG transparent (removebg). Suppression du hack CSS mix-blend-lighten. Agrandissement taille logo (Header h-12/14/16, Serie h-28/40/56). Ajustement espacement vertical Serie hero (-mb-6). Mise à jour référence OG image dans SEO.tsx. Niveau HOTFIX. | Claude Code (Opus 4.6) |
+| 2026-03-13 | Images page Mouvement : remplacement des thumbnails Unsplash ronds par des images locales rectangulaires du dossier "Image arbre en croissance" (7 étapes). Layout redesigné : texte + image côte à côte alternés (gauche/droite). Responsive mobile (empilé). Niveau HOTFIX. | Claude Code (Opus 4.6) |
+| 2026-03-13 | Formulaire contact backend : POST /api/contact avec rate limit 3/h/IP, honeypot, anonymisation IP, stockage MongoDB (contact_messages), double email (confirmation expéditeur + alerte équipe via SendGrid). Modèles Pydantic (ContactMessageRequest + ContactMessage). Frontend Contact.tsx converti en controlled inputs avec états idle/loading/success/error. 7 tests backend. TTL 6 mois RGPD. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-13 | Candidatures scénaristes : extension du système candidatures tech pour le projet "scenariste". Nouveau formulaire 4 étapes (Identité/Compétences/Intérêts/Motivation) sur page Série via modal, portfolio_url validé (http/https), creative_interests tags, admin console étendue (filtre, badge PenTool, affichage portfolio/intérêts). 3 tests backend ajoutés (71 total). Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-13 | Refonte page Mouvement : 7 étapes (Graine→Fructification), photos équipe réelles (5 membres), suppression PhaseCard, CTA → /register. Ajout ScrollToTop dans App.tsx. Design responsive mobile 375px+ sur toutes les pages (26 fichiers). Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-13 | Workflow candidatures techniques : ajout status (pending/entretien/accepted/rejected), status_note, updated_at au modèle TechCandidature. 3 nouveaux endpoints (PUT admin/{id}/status, PUT admin/batch-status, GET /me). Admin : badges statut, sélection batch avec checkbox, actions groupées, filtres par statut, note admin dans modale. Profil utilisateur : section "Mes candidatures" (match par email, badges statut colorés, note admin). 4 nouveaux tests backend. Niveau STANDARD. | Claude Code (Opus 4.6) |
@@ -197,6 +201,8 @@ frontend/src/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-13 | 🟢 HOTFIX | Images Mouvement (remplacement Unsplash → images locales, layout rectangulaire) | ~10min | Claude Code (Opus 4.6) |
+| 2026-03-13 | 🟡 STANDARD | Formulaire contact backend (endpoint, modèles, frontend, 7 tests) | ~20min | Claude Code (Opus 4.6) |
 | 2026-03-13 | 🟡 STANDARD | Candidatures scénaristes (modèles, API, formulaire 4 étapes, admin, 3 tests) | ~40min | Claude Code (Opus 4.6) |
 | 2026-03-13 | 🟡 STANDARD | Workflow candidatures techniques (statut, batch, suivi profil, 4 tests) | ~30min | Claude Code (Opus 4.6) |
 | 2026-03-13 | 🟡 STANDARD | Refonte page ECHOLink (8 sections, 3 fonctionnalités détaillées, exemples concrets) | ~30min | Claude Code (Opus 4.6) |
@@ -308,7 +314,7 @@ _Aucune spec en cours._
 | 1 | ~~RGPD compliance~~ | Critique | ✅ Done |
 | 2 | ~~Vue admin candidatures techniques~~ | Haute | ✅ Done (déjà implémenté : AdminCandidatures.tsx + 4 endpoints + route admin + export CSV) |
 | 3 | Admin événements : drag & drop image + autocomplétion adresse | Moyenne | À faire |
-| 4 | Vérifier tous les parcours utilisateurs et boutons | Haute | À faire |
+| 4 | ~~Vérifier tous les parcours utilisateurs et boutons~~ | Haute | ✅ Done (27 routes vérifiées, 0 bouton cassé, contact form connecté) |
 | 5 | ~~Design responsive mobile~~ | Haute | ✅ Done (375px+ toutes pages, commit 41044de) |
 | 6 | Formulaire d'adhésion membre | Moyenne | À faire |
 | 7 | Page profil utilisateur | Moyenne | À faire |
