@@ -4,7 +4,7 @@ import {
     CheckCircle2, XCircle, Star, StarOff, Clock,
     Shield, Users, RefreshCw, AlertTriangle,
     Globe, Phone, ExternalLink, MapPin, Calendar, Eye, Pencil, EyeOff, RotateCcw, Save,
-    X
+    X, Trash2, ArrowUpDown
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { cn } from '../components/ui/Button';
@@ -140,15 +140,18 @@ function AdminPartnerDetail({
         const changes: Record<string, unknown> = {};
         for (const [key, value] of Object.entries(editData)) {
             const original = (partner as AdminPartner & Record<string, unknown>)[key];
-            if (Array.isArray(value)) {
-                if (JSON.stringify(value) !== JSON.stringify(original)) {
-                    changes[key] = value;
+            // Normalize empty strings to null for optional fields
+            const normalizedValue = value === '' ? null : value;
+            const normalizedOriginal = original === '' ? null : (original ?? null);
+            if (Array.isArray(normalizedValue)) {
+                if (JSON.stringify(normalizedValue) !== JSON.stringify(normalizedOriginal)) {
+                    changes[key] = normalizedValue;
                 }
-            } else if (value !== original && value !== '' && value !== null) {
-                changes[key] = value;
+            } else if (normalizedValue !== normalizedOriginal) {
+                changes[key] = normalizedValue;
             }
         }
-        if (Object.keys(changes).length > 0) {
+        if (Object.keys(changes).length > 0 && partner.id) {
             onEdit(partner.id, changes);
         }
         setIsEditing(false);
@@ -734,10 +737,14 @@ export default function AdminPartners() {
     const [isLoading, setIsLoading] = useState(true);
     const [authError, setAuthError] = useState(false);
     const [statusFilter, setStatusFilter] = useState<PartnerStatus | 'all'>('all');
+    const [contractFilter, setContractFilter] = useState<ContractStatus | 'all'>('all');
     const [rejectModalId, setRejectModalId] = useState<string | null>(null);
     const [rejectReason, setRejectReason] = useState('');
     const [actionLoading, setActionLoading] = useState<string | null>(null);
     const [selectedPartner, setSelectedPartner] = useState<AdminPartner | null>(null);
+    const [deleteModalId, setDeleteModalId] = useState<string | null>(null);
+    const [sortKey, setSortKey] = useState<'name' | 'city' | 'category' | 'status' | 'contract_status' | 'created_at'>('created_at');
+    const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
     const fetchPartners = async () => {
         setIsLoading(true);
@@ -856,6 +863,10 @@ export default function AdminPartners() {
             await fetchPartners();
             return;
         }
+        if (!partnerId) {
+            console.error('Cannot edit partner: missing ID');
+            return;
+        }
         setActionLoading(partnerId);
         try {
             const res = await fetch(`${API_BASE}/admin/${partnerId}/edit`, {
@@ -878,6 +889,46 @@ export default function AdminPartners() {
         setSelectedPartner(null);
         setRejectModalId(partnerId);
     };
+
+    const handleDelete = async (partnerId: string) => {
+        setActionLoading(partnerId);
+        try {
+            const res = await fetch(`${API_BASE}/admin/${partnerId}`, {
+                method: 'DELETE',
+                credentials: 'include',
+            });
+            if (res.ok) {
+                setDeleteModalId(null);
+                setSelectedPartner(null);
+                await fetchPartners();
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const toggleSort = (key: typeof sortKey) => {
+        if (sortKey === key) {
+            setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortKey(key);
+            setSortDir('asc');
+        }
+    };
+
+    const filteredPartners = partners.filter(p => {
+        if (contractFilter !== 'all' && p.contract_status !== contractFilter) return false;
+        return true;
+    });
+
+    const sortedPartners = [...filteredPartners].sort((a, b) => {
+        const valA = (a[sortKey] ?? '') as string;
+        const valB = (b[sortKey] ?? '') as string;
+        const cmp = valA < valB ? -1 : valA > valB ? 1 : 0;
+        return sortDir === 'asc' ? cmp : -cmp;
+    });
 
     const counts = {
         all: partners.length,
@@ -949,26 +1000,59 @@ export default function AdminPartners() {
                         ))}
                     </div>
 
+                    {/* Contract Status Filter */}
+                    <div className="flex items-center gap-3 mb-4">
+                        <span className="text-xs text-echo-textMuted uppercase tracking-wider">Contrat :</span>
+                        {(['all', 'accord_principe', 'en_attente_contrat', 'contractualise'] as const).map(cs => (
+                            <button
+                                key={cs}
+                                onClick={() => setContractFilter(cs)}
+                                className={cn(
+                                    "px-3 py-1 rounded-full text-xs border transition-colors",
+                                    contractFilter === cs
+                                        ? "bg-echo-gold/15 border-echo-gold/40 text-echo-gold"
+                                        : "bg-white/5 border-white/10 text-echo-textMuted hover:bg-white/10"
+                                )}
+                            >
+                                {cs === 'all' ? 'Tous' : contractStatusConfig[cs]?.label || cs}
+                            </button>
+                        ))}
+                    </div>
+
                     {/* Table */}
                     <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
                                 <thead>
                                     <tr className="border-b border-white/10 bg-white/5">
-                                        <th className="px-4 py-3 text-xs font-medium text-echo-textMuted uppercase tracking-wider">Partenaire</th>
-                                        <th className="px-4 py-3 text-xs font-medium text-echo-textMuted uppercase tracking-wider">Catégorie</th>
-                                        <th className="px-4 py-3 text-xs font-medium text-echo-textMuted uppercase tracking-wider">Ville</th>
-                                        <th className="px-4 py-3 text-xs font-medium text-echo-textMuted uppercase tracking-wider">Statut</th>
+                                        {([
+                                            ['name', 'Partenaire'],
+                                            ['category', 'Catégorie'],
+                                            ['city', 'Ville'],
+                                            ['status', 'Statut'],
+                                            ['contract_status', 'Contrat'],
+                                        ] as const).map(([key, label]) => (
+                                            <th
+                                                key={key}
+                                                onClick={() => toggleSort(key)}
+                                                className="px-4 py-3 text-xs font-medium text-echo-textMuted uppercase tracking-wider cursor-pointer hover:text-white transition-colors select-none"
+                                            >
+                                                <span className="inline-flex items-center gap-1">
+                                                    {label}
+                                                    <ArrowUpDown size={12} className={sortKey === key ? 'text-echo-gold' : 'opacity-30'} />
+                                                </span>
+                                            </th>
+                                        ))}
                                         <th className="px-4 py-3 text-xs font-medium text-echo-textMuted uppercase tracking-wider">Vedette</th>
                                         <th className="px-4 py-3 text-xs font-medium text-echo-textMuted uppercase tracking-wider text-right">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {isLoading ? (
-                                        <tr><td colSpan={6} className="px-4 py-12 text-center text-echo-textMuted">Chargement...</td></tr>
-                                    ) : partners.length === 0 ? (
-                                        <tr><td colSpan={6} className="px-4 py-12 text-center text-echo-textMuted">Aucun partenaire trouvé</td></tr>
-                                    ) : partners.map(partner => (
+                                        <tr><td colSpan={7} className="px-4 py-12 text-center text-echo-textMuted">Chargement...</td></tr>
+                                    ) : sortedPartners.length === 0 ? (
+                                        <tr><td colSpan={7} className="px-4 py-12 text-center text-echo-textMuted">Aucun partenaire trouvé</td></tr>
+                                    ) : sortedPartners.map(partner => (
                                         <tr
                                             key={partner.id}
                                             className="border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer"
@@ -1010,6 +1094,23 @@ export default function AdminPartners() {
                                                     {statusConfig[partner.status]?.icon}
                                                     {statusConfig[partner.status]?.label || partner.status}
                                                 </span>
+                                            </td>
+                                            {/* Contract Status */}
+                                            <td className="px-4 py-3">
+                                                {partner.contract_status ? (
+                                                    <span
+                                                        className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border"
+                                                        style={{
+                                                            color: contractStatusConfig[partner.contract_status]?.color,
+                                                            borderColor: `${contractStatusConfig[partner.contract_status]?.color}40`,
+                                                            backgroundColor: `${contractStatusConfig[partner.contract_status]?.color}15`,
+                                                        }}
+                                                    >
+                                                        {contractStatusConfig[partner.contract_status]?.label}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-xs text-echo-textMuted/40">—</span>
+                                                )}
                                             </td>
                                             {/* Featured */}
                                             <td className="px-4 py-3">
@@ -1055,14 +1156,13 @@ export default function AdminPartners() {
                                                             </button>
                                                         </>
                                                     )}
-                                                    {partner.status === 'approved' && (
-                                                        <span className="text-xs text-green-500/60">✓ Actif</span>
-                                                    )}
-                                                    {partner.status === 'rejected' && (
-                                                        <span className="text-xs text-red-500/60" title={partner.rejection_reason}>
-                                                            Motif: {partner.rejection_reason?.substring(0, 30) || '—'}
-                                                        </span>
-                                                    )}
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); setDeleteModalId(partner.id); }}
+                                                        className="p-1.5 rounded-md bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                                                        title="Supprimer"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -1110,6 +1210,40 @@ export default function AdminPartners() {
                                 className="bg-red-500 hover:bg-red-600"
                             >
                                 Confirmer le refus
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {deleteModalId && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setDeleteModalId(null)} />
+                    <div className="relative w-full max-w-md bg-echo-darker border border-red-500/20 rounded-xl shadow-2xl p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="p-2 bg-red-500/10 rounded-lg">
+                                <Trash2 className="text-red-400" size={20} />
+                            </div>
+                            <h3 className="text-lg font-serif text-white">Supprimer le partenaire</h3>
+                        </div>
+                        <p className="text-sm text-echo-textMuted mb-2">
+                            Cette action est <strong className="text-red-400">irréversible</strong>. Le partenaire et son compte utilisateur associé seront définitivement supprimés.
+                        </p>
+                        <p className="text-sm text-white mb-6">
+                            {partners.find(p => p.id === deleteModalId)?.name}
+                        </p>
+                        <div className="flex justify-end gap-3">
+                            <Button variant="outline" onClick={() => setDeleteModalId(null)}>
+                                Annuler
+                            </Button>
+                            <Button
+                                onClick={() => handleDelete(deleteModalId)}
+                                disabled={actionLoading === deleteModalId}
+                                className="bg-red-500 hover:bg-red-600"
+                            >
+                                <Trash2 size={16} className="mr-2" />
+                                Supprimer
                             </Button>
                         </div>
                     </div>

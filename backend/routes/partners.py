@@ -492,9 +492,15 @@ async def admin_get_all_partners(
     query = {}
     if status:
         query["status"] = status
-        
-    cursor = db.partners.find(query, {"_id": 0}).sort("created_at", -1)
-    return await cursor.to_list(length=1000)
+
+    cursor = db.partners.find(query).sort("created_at", -1)
+    results = await cursor.to_list(length=1000)
+    # Ensure every document has an 'id' field (legacy docs may only have _id)
+    for doc in results:
+        if "id" not in doc and "_id" in doc:
+            doc["id"] = str(doc["_id"])
+        doc.pop("_id", None)
+    return results
 
 @router.put("/admin/{partner_id}/approve")
 async def admin_approve_partner(
@@ -601,6 +607,34 @@ async def admin_suspend_partner(
     return {"success": True, "message": f"Partenaire {label}"}
 
 
+@router.delete("/admin/{partner_id}")
+async def admin_delete_partner(
+    partner_id: str,
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Permanently delete a partner and their associated user account"""
+    partner = await db.partners.find_one({"id": partner_id})
+    if not partner:
+        raise HTTPException(status_code=404, detail="Partner not found")
+
+    # Delete associated user account if exists
+    if partner.get("user_id"):
+        await db.users.delete_one({"id": partner["user_id"]})
+        await db.user_sessions.delete_many({"user_id": partner["user_id"]})
+
+    # Delete partner logo file if exists
+    if partner.get("logo_url"):
+        logo_path = partner["logo_url"].replace("/api/uploads/", "uploads/")
+        if os.path.exists(logo_path):
+            os.remove(logo_path)
+
+    await db.partners.delete_one({"id": partner_id})
+    logger.info(f"Admin {admin.id} deleted partner {partner_id} ({partner.get('name', 'unknown')})")
+
+    return {"success": True, "message": "Partenaire supprimé définitivement"}
+
+
 class AdminPartnerEdit(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
@@ -632,7 +666,7 @@ async def admin_edit_partner(
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
     """Admin can edit any partner field"""
-    updates = {k: v for k, v in body.model_dump().items() if v is not None}
+    updates = body.model_dump(exclude_unset=True)
     if not updates:
         raise HTTPException(status_code=400, detail="No fields to update")
 
