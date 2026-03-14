@@ -11,7 +11,7 @@ import logging
 from pathlib import Path
 
 # Import routes
-from routes import auth, episodes, progress, videos, users, thematics, resources, partners, candidatures, events, analytics, contact, volunteers
+from routes import auth, episodes, progress, videos, users, thematics, resources, partners, candidatures, events, analytics, contact, volunteers, members
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -46,6 +46,7 @@ api_router.include_router(events.router)
 api_router.include_router(analytics.router)
 api_router.include_router(contact.router)
 api_router.include_router(volunteers.router)
+api_router.include_router(members.router)
 
 # Health check endpoint
 @api_router.get("/")
