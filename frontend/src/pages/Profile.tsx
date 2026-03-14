@@ -59,11 +59,16 @@ export default function Profile() {
         id: string; project: string; status: string; status_note?: string; created_at: string;
     }[]>([]);
 
+    const [myVolunteerCandidature, setMyVolunteerCandidature] = useState<{
+        id: string; status: string; status_note?: string; created_at: string; availability?: string;
+    } | null>(null);
+
     const logout = useAuthStore((s) => s.logout);
 
     useEffect(() => {
         fetchUser();
         fetchMyCandidatures();
+        fetchMyVolunteerCandidature();
     }, []);
 
     const fetchUser = async () => {
@@ -96,6 +101,18 @@ export default function Profile() {
             if (res.ok) {
                 const data = await res.json();
                 setMyCandidatures(data);
+            }
+        } catch {
+            // silent — not critical
+        }
+    };
+
+    const fetchMyVolunteerCandidature = async () => {
+        try {
+            const res = await fetch(`${API_URL}/volunteers/me`, { credentials: 'include' });
+            if (res.ok) {
+                const data = await res.json();
+                setMyVolunteerCandidature(data);
             }
         } catch {
             // silent — not critical
@@ -360,12 +377,64 @@ export default function Profile() {
                     <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
                         <h2 className="text-lg font-serif text-white mb-4 flex items-center gap-2">
                             <FileText size={18} className="text-echo-gold" />
-                            Mes candidatures techniques
+                            Mes candidatures
                         </h2>
-                        {myCandidatures.length === 0 ? (
+                        {myCandidatures.length === 0 && !myVolunteerCandidature ? (
                             <p className="text-sm text-neutral-400 italic">Vous n&apos;avez pas encore soumis de candidature.</p>
                         ) : (
                             <div className="space-y-3">
+                                {/* Volunteer candidature */}
+                                {myVolunteerCandidature && (() => {
+                                    const statusMap: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
+                                        pending: { label: 'En attente', color: '#F59E0B', icon: <Clock size={12} /> },
+                                        entretien: { label: 'Entretien', color: '#3B82F6', icon: <Users size={12} /> },
+                                        accepted: { label: 'Acceptée', color: '#10B981', icon: <CheckCircle2 size={12} /> },
+                                        rejected: { label: 'Non retenue', color: '#EF4444', icon: <XCircle size={12} /> },
+                                    };
+                                    const st = statusMap[myVolunteerCandidature.status] || statusMap.pending;
+                                    return (
+                                        <div key={myVolunteerCandidature.id} className="p-4 bg-white/5 border border-white/10 rounded-lg">
+                                            <div className="flex items-center justify-between flex-wrap gap-2">
+                                                <div className="flex items-center gap-2">
+                                                    <span
+                                                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border"
+                                                        style={{ color: '#10B981', borderColor: '#10B98140', backgroundColor: '#10B98115' }}
+                                                    >
+                                                        <Heart size={12} />
+                                                        Bénévole
+                                                    </span>
+                                                    <span className="text-xs text-echo-textMuted">
+                                                        {new Date(myVolunteerCandidature.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                                    </span>
+                                                </div>
+                                                <span
+                                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium border"
+                                                    style={{ color: st.color, borderColor: `${st.color}40`, backgroundColor: `${st.color}15` }}
+                                                >
+                                                    {st.icon}
+                                                    {st.label}
+                                                </span>
+                                            </div>
+                                            {myVolunteerCandidature.status === 'entretien' && (
+                                                <a
+                                                    href="https://calendar.app.google/GSpXrQq72uqWhhSx9"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-echo-gold/20 text-echo-gold border border-echo-gold/30 hover:bg-echo-gold/30 transition-colors mt-2"
+                                                >
+                                                    <Calendar size={12} />
+                                                    Réserver un créneau d&apos;entretien
+                                                </a>
+                                            )}
+                                            {myVolunteerCandidature.status_note && (
+                                                <p className="text-xs text-echo-textMuted mt-2 pl-1 border-l-2 border-white/10 ml-1">
+                                                    {myVolunteerCandidature.status_note}
+                                                </p>
+                                            )}
+                                        </div>
+                                    );
+                                })()}
+                                {/* Tech candidatures */}
                                 {myCandidatures.map(c => {
                                     const projectLabels: Record<string, string> = { cognisphere: 'CogniSphère', echolink: 'ECHOLink', scenariste: 'Scénariste' };
                                     const projectColors: Record<string, string> = { cognisphere: '#A78BFA', echolink: '#60A5FA', scenariste: '#F59E0B' };
