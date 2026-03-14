@@ -37,6 +37,9 @@ class Settings:
     EMAIL_FROM: str = os.environ.get("EMAIL_FROM", "noreply@mouvement-echo.fr")
     EMAIL_FROM_NAME: str = os.environ.get("EMAIL_FROM_NAME", "Mouvement ECHO")
 
+    # Booking (Google Calendar appointment link)
+    BOOKING_URL: str = os.environ.get("BOOKING_URL", "https://calendar.app.google/GSpXrQq72uqWhhSx9")
+
     # Unsubscribe
     UNSUBSCRIBE_SECRET: str = os.environ.get("UNSUBSCRIBE_SECRET", "echo-unsubscribe-secret-change-me")
 
