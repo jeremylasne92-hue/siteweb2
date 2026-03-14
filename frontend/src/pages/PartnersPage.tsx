@@ -5,6 +5,7 @@ import { PartnersStats } from '../components/partners/PartnersStats';
 import { PartnersFilters, PartnersViewSwitch } from '../components/partners/PartnersFilters';
 import { PartnersGrid } from '../components/partners/PartnersGrid';
 import { PartnerModal } from '../components/partners/PartnerModal';
+import { MemberModal } from '../components/partners/MemberModal';
 import { SEO } from '../components/seo/SEO';
 
 // Lazy-load map component (Leaflet ~180 KB, only needed for map view)
@@ -15,7 +16,8 @@ import { PartnerFormModal } from '../components/partners/PartnerFormModal';
 import { MembersSection } from '../components/partners/MembersSection';
 import type { Partner, PartnerCategory } from '../components/partners/PartnerCard';
 import type { Thematic } from '../components/partners/ThematicTag';
-import { PARTNERS_API, CANDIDATURES_API } from '../config/api';
+import type { MemberProfile } from '../types/member';
+import { PARTNERS_API, MEMBERS_API } from '../config/api';
 
 export default function PartnersPage() {
     const [partners, setPartners] = useState<Partner[]>([]);
@@ -32,7 +34,20 @@ export default function PartnersPage() {
 
     // Modal State
     const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
+    const [selectedMember, setSelectedMember] = useState<MemberProfile | null>(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
+
+    const handleMemberClick = async (slug: string) => {
+        if (!slug) return;
+        try {
+            const res = await fetch(`${MEMBERS_API}/${slug}`);
+            if (res.ok) {
+                setSelectedMember(await res.json());
+            }
+        } catch (err) {
+            console.error("Failed to fetch member profile", err);
+        }
+    };
 
     // Fetch reference data on mount
     useEffect(() => {
@@ -41,14 +56,14 @@ export default function PartnersPage() {
                 const [statsRes, thematicsRes, membersRes] = await Promise.all([
                     fetch(`${PARTNERS_API}/stats`),
                     fetch(`${PARTNERS_API}/thematics`),
-                    fetch(`${CANDIDATURES_API}/members`),
+                    fetch(`${MEMBERS_API}?limit=1`),
                 ]);
 
                 if (statsRes.ok) setStats(await statsRes.json());
                 if (thematicsRes.ok) setThematicsList(await thematicsRes.json());
                 if (membersRes.ok) {
-                    const members = await membersRes.json();
-                    setMembersCount(Array.isArray(members) ? members.length : 0);
+                    const data = await membersRes.json();
+                    setMembersCount(data.total || 0);
                 }
             } catch (err) {
                 console.error("Failed to fetch initial partner data", err);
@@ -134,12 +149,18 @@ export default function PartnersPage() {
                 </div>
             </div>
 
-            <MembersSection />
+            <MembersSection onMemberClick={handleMemberClick} />
 
             <PartnerModal
                 partner={selectedPartner}
                 isOpen={!!selectedPartner}
                 onClose={() => setSelectedPartner(null)}
+            />
+
+            <MemberModal
+                member={selectedMember}
+                isOpen={!!selectedMember}
+                onClose={() => setSelectedMember(null)}
             />
 
             <PartnerFormModal

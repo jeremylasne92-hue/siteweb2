@@ -11,7 +11,7 @@ import logging
 from pathlib import Path
 
 # Import routes
-from routes import auth, episodes, progress, videos, users, thematics, resources, partners, candidatures, events, analytics, contact, volunteers
+from routes import auth, episodes, progress, videos, users, thematics, resources, partners, candidatures, events, analytics, contact, volunteers, members
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -46,6 +46,8 @@ api_router.include_router(events.router)
 api_router.include_router(analytics.router)
 api_router.include_router(contact.router)
 api_router.include_router(volunteers.router)
+api_router.include_router(members.router)
+api_router.include_router(members.admin_router)
 
 # Health check endpoint
 @api_router.get("/")
@@ -103,6 +105,15 @@ async def startup_indexes():
         await db.password_reset_tokens.create_index("created_at", expireAfterSeconds=86400)  # 24h
     except Exception as e:
         logger.warning(f"TTL index creation: {e}")
+
+    # Member profiles indexes
+    try:
+        await db.member_profiles.create_index("user_id", unique=True)
+        await db.member_profiles.create_index("slug", unique=True)
+        await db.member_profiles.create_index([("visible", 1), ("project", 1)])
+        await db.member_profiles.create_index("membership_status")
+    except Exception as e:
+        logger.warning(f"Member profiles index creation: {e}")
 
     logger.info("Rate limit and retention indexes ensured")
 
