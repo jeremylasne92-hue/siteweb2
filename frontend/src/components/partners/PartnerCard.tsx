@@ -4,6 +4,7 @@ import { MapPin, ExternalLink, Mail, Phone } from 'lucide-react';
 import { ThematicTag } from './ThematicTag';
 
 export type PartnerCategory = 'expert' | 'financier' | 'audiovisuel' | 'education' | 'membre';
+export type ContractStatus = 'accord_principe' | 'en_attente_contrat' | 'contractualise';
 
 export interface Partner {
     id: string;
@@ -17,6 +18,7 @@ export interface Partner {
     city: string;
     country: string;
     is_featured?: boolean;
+    contract_status?: ContractStatus | null;
     latitude?: number;
     longitude?: number;
     // Contact
@@ -82,12 +84,19 @@ export const PartnerCard: React.FC<PartnerCardProps> = ({ partner, onClick }) =>
                         <h3 className="font-serif text-lg font-bold text-white line-clamp-2 group-hover:text-echo-gold transition-colors">
                             {partner.name}
                         </h3>
-                        <div
-                            className="inline-flex items-center gap-1.5 mt-1 text-xs px-2 py-0.5 rounded-full bg-white/5 border border-white/10"
-                            style={{ color: catConfig.color }}
-                        >
-                            <span>{catConfig.emoji}</span>
-                            <span className="font-medium">{catConfig.label}</span>
+                        <div className="flex flex-wrap gap-1.5 mt-1">
+                            <div
+                                className="inline-flex items-center gap-1.5 text-xs px-2 py-0.5 rounded-full bg-white/5 border border-white/10"
+                                style={{ color: catConfig.color }}
+                            >
+                                <span>{catConfig.emoji}</span>
+                                <span className="font-medium">{catConfig.label}</span>
+                            </div>
+                            {partner.contract_status === 'accord_principe' && (
+                                <div className="inline-flex items-center text-xs px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 font-medium">
+                                    Accord de principe
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

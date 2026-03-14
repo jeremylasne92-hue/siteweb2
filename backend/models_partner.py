@@ -17,6 +17,11 @@ class PartnerStatus(str, Enum):
     REJECTED = "rejected"       # Refusé
     SUSPENDED = "suspended"     # Suspendu
 
+class ContractStatus(str, Enum):
+    ACCORD_PRINCIPE = "accord_principe"             # Accord verbal / de principe
+    EN_ATTENTE_CONTRAT = "en_attente_contrat"       # En attente de contractualisation
+    CONTRACTUALISE = "contractualise"               # Contrat signé
+
 class Partner(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     
@@ -56,6 +61,7 @@ class Partner(BaseModel):
     
     # Statut & modération
     status: PartnerStatus = PartnerStatus.PENDING
+    contract_status: Optional[ContractStatus] = None  # Statut contractuel
     is_featured: bool = False                    # Mis en avant sur la page
     rejection_reason: Optional[str] = None       # Motif si refusé
     

@@ -14,6 +14,13 @@ import { PARTNERS_API } from '../config/api';
 const API_BASE = PARTNERS_API;
 
 type PartnerStatus = 'pending' | 'approved' | 'rejected' | 'suspended';
+type ContractStatus = 'accord_principe' | 'en_attente_contrat' | 'contractualise';
+
+const contractStatusConfig: Record<ContractStatus, { label: string; color: string }> = {
+    accord_principe: { label: 'Accord de principe', color: '#F59E0B' },
+    en_attente_contrat: { label: 'En attente de contractualisation', color: '#3B82F6' },
+    contractualise: { label: 'Contractualisé', color: '#10B981' },
+};
 
 interface AdminPartner {
     id: string;
@@ -39,6 +46,7 @@ interface AdminPartner {
     instagram_url?: string;
     twitter_url?: string;
     status: PartnerStatus;
+    contract_status?: ContractStatus | null;
     is_featured: boolean;
     created_at: string;
     validated_at?: string;
@@ -108,6 +116,7 @@ function AdminPartnerDetail({
             description: partner.description || '',
             description_long: partner.description_long || '',
             category: partner.category || '',
+            contract_status: partner.contract_status || '',
             thematics: partner.thematics || [],
             contact_name: partner.contact_name || '',
             contact_email: partner.contact_email || '',
@@ -394,6 +403,37 @@ function AdminPartnerDetail({
                                 </span>
                             )}
                         </div>
+
+                        {/* Contract Status */}
+                        {isEditing ? (
+                            <div>
+                                <h4 className="text-xs uppercase tracking-wider text-echo-textMuted mb-2">Statut contractuel</h4>
+                                <select
+                                    value={editData.contract_status as string}
+                                    onChange={(e) => updateField('contract_status', e.target.value || '')}
+                                    className="w-full text-sm bg-white/5 border border-white/10 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-echo-gold/50"
+                                >
+                                    <option value="">Non défini</option>
+                                    <option value="accord_principe">Accord de principe</option>
+                                    <option value="en_attente_contrat">En attente de contractualisation</option>
+                                    <option value="contractualise">Contractualisé</option>
+                                </select>
+                            </div>
+                        ) : partner.contract_status ? (
+                            <div>
+                                <h4 className="text-xs uppercase tracking-wider text-echo-textMuted mb-1">Statut contractuel</h4>
+                                <span
+                                    className="inline-block px-2 py-0.5 text-xs rounded-full border"
+                                    style={{
+                                        color: contractStatusConfig[partner.contract_status]?.color,
+                                        borderColor: `${contractStatusConfig[partner.contract_status]?.color}40`,
+                                        backgroundColor: `${contractStatusConfig[partner.contract_status]?.color}15`,
+                                    }}
+                                >
+                                    {contractStatusConfig[partner.contract_status]?.label}
+                                </span>
+                            </div>
+                        ) : null}
 
                         {/* Thematics */}
                         {isEditing ? (

@@ -150,6 +150,7 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-14 | Images personnages série ECHO : remplacement des 15 photos Unsplash par les vraies images des personnages (dossier "images personnages série ECHO"). Noms normalisés en minuscules dans /images/characters/. Nettoyage anciens fichiers "Personnage ..." et dossier source. Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-14 | Logo ECHO série : remplacement du logo JPEG (fond noir) par un PNG transparent (removebg). Suppression du hack CSS mix-blend-lighten. Agrandissement taille logo (Header h-12/14/16, Serie h-28/40/56). Ajustement espacement vertical Serie hero (-mb-6). Mise à jour référence OG image dans SEO.tsx. Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-13 | Images page Mouvement : remplacement des thumbnails Unsplash ronds par des images locales rectangulaires du dossier "Image arbre en croissance" (7 étapes). Layout redesigné : texte + image côte à côte alternés (gauche/droite). Responsive mobile (empilé). Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-13 | Formulaire contact backend : POST /api/contact avec rate limit 3/h/IP, honeypot, anonymisation IP, stockage MongoDB (contact_messages), double email (confirmation expéditeur + alerte équipe via SendGrid). Modèles Pydantic (ContactMessageRequest + ContactMessage). Frontend Contact.tsx converti en controlled inputs avec états idle/loading/success/error. 7 tests backend. TTL 6 mois RGPD. Niveau STANDARD. | Claude Code (Opus 4.6) |

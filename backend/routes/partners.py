@@ -606,6 +606,7 @@ class AdminPartnerEdit(BaseModel):
     description: Optional[str] = None
     description_long: Optional[str] = None
     category: Optional[PartnerCategory] = None
+    contract_status: Optional[str] = None
     thematics: Optional[List[str]] = None
     address: Optional[str] = None
     city: Optional[str] = None
