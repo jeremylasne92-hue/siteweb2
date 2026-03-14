@@ -119,3 +119,83 @@ async def send_email(email: str, subject: str, message: str, user_id: str = None
     if _use_sendgrid():
         return await _send_via_sendgrid(email, subject, html)
     return await _log_email(email, subject, message)
+
+
+# --- Candidature email functions ---
+
+PROJECT_LABELS = {
+    "cognisphere": "CogniSphère",
+    "echolink": "ECHOLink",
+    "scenariste": "Scénariste",
+}
+
+
+async def send_candidature_confirmation(email: str, name: str, project: str) -> bool:
+    """Send confirmation email when a candidature is submitted."""
+    label = PROJECT_LABELS.get(project, project)
+    subject = f"Candidature reçue — {label}"
+    html = (
+        f"<h2>Merci pour votre candidature, {name} !</h2>"
+        f"<p>Nous avons bien reçu votre candidature pour le projet <strong>{label}</strong>.</p>"
+        f"<p>Notre équipe examinera votre profil et reviendra vers vous dans les meilleurs délais.</p>"
+        f"<p>À bientôt,<br>L'équipe Mouvement ECHO</p>"
+    )
+    if _use_sendgrid():
+        return await _send_via_sendgrid(email, subject, html)
+    return await _log_email(email, subject, f"Confirmation candidature {label} pour {name}")
+
+
+async def send_candidature_interview(email: str, name: str, booking_url: str) -> bool:
+    """Send interview invitation with a booking link."""
+    subject = "Entretien — Mouvement ECHO"
+    html = (
+        f"<h2>Félicitations, {name} !</h2>"
+        f"<p>Votre candidature a retenu notre attention et nous aimerions vous rencontrer.</p>"
+        f"<p>Réservez un créneau pour votre entretien :</p>"
+        f"<p style='text-align:center;margin:24px 0;'>"
+        f"<a href='{booking_url}' style='background:#D4AF37;color:#fff;padding:12px 32px;"
+        f"text-decoration:none;border-radius:6px;font-weight:bold;'>Réserver mon entretien</a></p>"
+        f"<p>Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :</p>"
+        f"<p>{booking_url}</p>"
+        f"<p>À bientôt,<br>L'équipe Mouvement ECHO</p>"
+    )
+    if _use_sendgrid():
+        return await _send_via_sendgrid(email, subject, html)
+    return await _log_email(email, subject, f"Invitation entretien pour {name} — {booking_url}")
+
+
+async def send_candidature_accepted(email: str, name: str, project: str) -> bool:
+    """Send acceptance notification email."""
+    label = PROJECT_LABELS.get(project, project)
+    subject = f"Candidature acceptée — {label}"
+    html = (
+        f"<h2>Bienvenue dans l'équipe, {name} !</h2>"
+        f"<p>Nous avons le plaisir de vous informer que votre candidature pour "
+        f"le projet <strong>{label}</strong> a été acceptée.</p>"
+        f"<p>Un membre de l'équipe vous contactera prochainement pour les prochaines étapes.</p>"
+        f"<p>À très bientôt,<br>L'équipe Mouvement ECHO</p>"
+    )
+    if _use_sendgrid():
+        return await _send_via_sendgrid(email, subject, html)
+    return await _log_email(email, subject, f"Candidature acceptée — {label} pour {name}")
+
+
+async def send_candidature_rejected(email: str, name: str, status_note: str | None) -> bool:
+    """Send rejection notification with optional reason."""
+    subject = "Candidature — Mouvement ECHO"
+    reason_html = ""
+    reason_text = ""
+    if status_note:
+        reason_html = f"<p><strong>Motif :</strong> {status_note}</p>"
+        reason_text = f"\nMotif : {status_note}"
+    html = (
+        f"<h2>Merci pour votre intérêt, {name}</h2>"
+        f"<p>Après examen attentif de votre candidature, nous ne sommes malheureusement "
+        f"pas en mesure de donner suite pour le moment.</p>"
+        f"{reason_html}"
+        f"<p>Nous vous encourageons à suivre nos prochains appels à candidatures.</p>"
+        f"<p>Cordialement,<br>L'équipe Mouvement ECHO</p>"
+    )
+    if _use_sendgrid():
+        return await _send_via_sendgrid(email, subject, html)
+    return await _log_email(email, subject, f"Candidature non retenue pour {name}{reason_text}")
