@@ -4,10 +4,15 @@ import { CANDIDATURES_API } from '../../config/api';
 
 interface Member {
     name: string;
+    slug?: string;
     project: string;
     skills: string;
     experience_level?: string;
     type: 'candidature' | 'volunteer';
+}
+
+interface MembersSectionProps {
+    onMemberClick?: (slug: string) => void;
 }
 
 const PROJECT_CONFIG: Record<string, { label: string; color: string; icon: typeof Code }> = {
@@ -24,7 +29,7 @@ const EXPERIENCE_LABELS: Record<string, string> = {
     motivated: 'Motivé',
 };
 
-export function MembersSection() {
+export function MembersSection({ onMemberClick }: MembersSectionProps = {}) {
     const [members, setMembers] = useState<Member[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -69,7 +74,8 @@ export function MembersSection() {
                         return (
                             <div
                                 key={`${member.name}-${i}`}
-                                className="p-4 rounded-xl bg-[#1A1A1A] border border-white/5 hover:border-white/15 transition-colors"
+                                className="p-4 rounded-xl bg-[#1A1A1A] border border-white/5 hover:border-white/15 transition-colors cursor-pointer"
+                                onClick={() => onMemberClick?.(member.slug || '')}
                             >
                                 <div className="flex items-start gap-3">
                                     <div
