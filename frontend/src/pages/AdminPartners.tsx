@@ -1156,6 +1156,21 @@ export default function AdminPartners() {
                                                             </button>
                                                         </>
                                                     )}
+                                                    {(partner.status === 'approved' || partner.status === 'suspended') && (
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); handleSuspend(partner.id); }}
+                                                            disabled={actionLoading === partner.id}
+                                                            className={cn(
+                                                                "p-1.5 rounded-md transition-colors disabled:opacity-50",
+                                                                partner.status === 'suspended'
+                                                                    ? "bg-green-500/10 text-green-400 hover:bg-green-500/20"
+                                                                    : "bg-gray-500/10 text-gray-400 hover:bg-gray-500/20"
+                                                            )}
+                                                            title={partner.status === 'suspended' ? 'Réactiver' : 'Masquer'}
+                                                        >
+                                                            {partner.status === 'suspended' ? <RotateCcw size={16} /> : <EyeOff size={16} />}
+                                                        </button>
+                                                    )}
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); setDeleteModalId(partner.id); }}
                                                         className="p-1.5 rounded-md bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
