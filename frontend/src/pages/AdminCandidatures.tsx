@@ -21,6 +21,7 @@ interface TechCandidature {
     status_note?: string;
     portfolio_url?: string;
     creative_interests?: string;
+    experience_level?: string;
     ip_address?: string;
     created_at: string;
     updated_at?: string;
@@ -33,6 +34,13 @@ const projectConfig: Record<string, { label: string; color: string; icon: React.
     cognisphere: { label: 'CogniSphère', color: '#A78BFA', icon: <Brain size={14} /> },
     echolink: { label: 'ECHOLink', color: '#60A5FA', icon: <Share2 size={14} /> },
     scenariste: { label: 'Scénariste', color: '#F59E0B', icon: <PenTool size={14} /> },
+};
+
+const experienceLabelMap: Record<string, string> = {
+    professional: 'Professionnel',
+    student: 'Étudiant·e',
+    self_taught: 'Autodidacte',
+    motivated: 'Motivé·e',
 };
 
 const statusConfig: Record<CandidatureStatus, { label: string; color: string; icon: React.ReactNode }> = {
@@ -491,6 +499,16 @@ export default function AdminCandidatures() {
                                             </span>
                                         ))}
                                     </div>
+                                </div>
+                            )}
+
+                            {/* Experience Level */}
+                            {selected.experience_level && (
+                                <div className="mb-6">
+                                    <h3 className="text-sm font-medium text-white mb-2">Niveau d'expérience</h3>
+                                    <span className="inline-flex px-3 py-1.5 rounded-full text-sm font-medium bg-white/10 text-white border border-white/20">
+                                        {experienceLabelMap[selected.experience_level] || selected.experience_level}
+                                    </span>
                                 </div>
                             )}
 
