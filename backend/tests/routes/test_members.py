@@ -164,7 +164,7 @@ def test_get_my_profile_not_found():
 
 
 def test_update_my_profile():
-    """PUT /api/members/me updates profile and returns updated doc."""
+    """PATCH /api/members/me updates profile and returns updated doc."""
     db = MagicMock()
     updated_profile = {**SAMPLE_PROFILE, "bio": "Updated bio"}
     update_result = MagicMock()
@@ -174,7 +174,7 @@ def test_update_my_profile():
 
     app.dependency_overrides[get_db] = lambda: db
     app.dependency_overrides[get_current_user] = lambda: REGULAR_USER
-    response = client.put("/api/members/me", json={"bio": "Updated bio"})
+    response = client.patch("/api/members/me", json={"bio": "Updated bio"})
     app.dependency_overrides.clear()
 
     assert response.status_code == 200
@@ -183,7 +183,7 @@ def test_update_my_profile():
 
 
 def test_update_my_profile_not_found():
-    """PUT /api/members/me returns 404 if no profile exists."""
+    """PATCH /api/members/me returns 404 if no profile exists."""
     db = MagicMock()
     update_result = MagicMock()
     update_result.matched_count = 0
@@ -191,7 +191,7 @@ def test_update_my_profile_not_found():
 
     app.dependency_overrides[get_db] = lambda: db
     app.dependency_overrides[get_current_user] = lambda: REGULAR_USER
-    response = client.put("/api/members/me", json={"bio": "New bio"})
+    response = client.patch("/api/members/me", json={"bio": "New bio"})
     app.dependency_overrides.clear()
 
     assert response.status_code == 404

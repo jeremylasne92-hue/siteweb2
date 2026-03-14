@@ -6,6 +6,7 @@ from models import User
 from models_member import MemberProfileUpdate, VisibilityUpdate
 from datetime import datetime
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +47,7 @@ async def get_my_profile(
     return profile
 
 
-@router.put("/me")
+@router.patch("/me")
 async def update_my_profile(
     data: MemberProfileUpdate,
     current_user: User = Depends(get_current_user),
@@ -116,10 +117,11 @@ async def list_members(
     if skill:
         query["skills"] = skill.lower()
     if search:
+        safe_search = re.escape(search)
         query["$or"] = [
-            {"display_name": {"$regex": search, "$options": "i"}},
-            {"bio": {"$regex": search, "$options": "i"}},
-            {"skills": {"$regex": search, "$options": "i"}},
+            {"display_name": {"$regex": safe_search, "$options": "i"}},
+            {"bio": {"$regex": safe_search, "$options": "i"}},
+            {"skills": {"$regex": safe_search, "$options": "i"}},
         ]
 
     total = await db.member_profiles.count_documents(query)
