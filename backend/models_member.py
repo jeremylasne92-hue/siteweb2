@@ -1,5 +1,5 @@
 """Pydantic models for the member_profiles collection."""
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional, Literal
 from datetime import datetime
 import re
@@ -77,7 +77,7 @@ class MemberProfileCreate(BaseModel):
     professional_sector: Optional[ProfessionalSector] = None
     gender: Optional[Gender] = None
 
-    contact_email: Optional[str] = None
+    contact_email: Optional[EmailStr] = None
     social_links: list[SocialLink] = Field(default_factory=list)
 
     def __init__(self, **data):
@@ -113,8 +113,15 @@ class MemberProfileUpdate(BaseModel):
     professional_sector: Optional[ProfessionalSector] = None
     gender: Optional[Gender] = None
 
-    contact_email: Optional[str] = None
+    contact_email: Optional[EmailStr] = None
     social_links: Optional[list[SocialLink]] = None
+
+    @field_validator("skills", mode="before")
+    @classmethod
+    def normalize_skills(cls, v):
+        if isinstance(v, list):
+            return [s.strip().lower() for s in v if s.strip()]
+        return v
 
 
 class VisibilityUpdate(BaseModel):
@@ -146,7 +153,7 @@ class MemberProfile(BaseModel):
     professional_sector: Optional[ProfessionalSector] = None
     gender: Optional[Gender] = None
 
-    contact_email: Optional[str] = None
+    contact_email: Optional[EmailStr] = None
     social_links: list[SocialLink] = Field(default_factory=list)
 
     visible: bool = False
