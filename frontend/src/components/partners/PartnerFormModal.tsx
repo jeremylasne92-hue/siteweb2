@@ -20,7 +20,6 @@ const CATEGORIES: { value: PartnerCategory; label: string }[] = [
     { value: 'financier', label: "Financier / Investisseur" },
     { value: 'audiovisuel', label: "Audiovisuel / Studio" },
     { value: 'education', label: "Éducation / Culture" },
-    { value: 'membre', label: "Membre ECHO / Ambassadeur" },
 ];
 
 export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerFormModalProps) {

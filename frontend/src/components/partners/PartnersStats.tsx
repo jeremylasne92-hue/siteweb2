@@ -6,6 +6,7 @@ interface PartnersStatsProps {
         total: number;
         by_category: Record<string, number>;
     } | null;
+    membersCount?: number;
 }
 
 const statCategories = [
@@ -16,7 +17,7 @@ const statCategories = [
     { id: 'membre', label: 'Membres', emoji: '🤝', color: '#DC143C' },
 ];
 
-export const PartnersStats: React.FC<PartnersStatsProps> = ({ stats }) => {
+export const PartnersStats: React.FC<PartnersStatsProps> = ({ stats, membersCount = 0 }) => {
     if (!stats) return null;
 
     return (
@@ -45,7 +46,7 @@ export const PartnersStats: React.FC<PartnersStatsProps> = ({ stats }) => {
                             <div className="flex items-center gap-2 mb-1">
                                 <span className="text-xl" aria-hidden="true">{cat.emoji}</span>
                                 <span className="text-2xl font-serif font-bold text-white relative z-10 transition-transform group-hover:scale-110 duration-300" style={{ color: cat.color }}>
-                                    {stats.by_category[cat.id] || 0}
+                                    {(stats.by_category[cat.id] || 0) + (cat.id === 'membre' ? membersCount : 0)}
                                 </span>
                             </div>
 

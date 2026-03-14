@@ -15,13 +15,14 @@ import { PartnerFormModal } from '../components/partners/PartnerFormModal';
 import { MembersSection } from '../components/partners/MembersSection';
 import type { Partner, PartnerCategory } from '../components/partners/PartnerCard';
 import type { Thematic } from '../components/partners/ThematicTag';
-import { PARTNERS_API } from '../config/api';
+import { PARTNERS_API, CANDIDATURES_API } from '../config/api';
 
 export default function PartnersPage() {
     const [partners, setPartners] = useState<Partner[]>([]);
     const [stats, setStats] = useState<{ total: number; by_category: Record<string, number> } | null>(null);
     const [thematicsList, setThematicsList] = useState<Thematic[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [membersCount, setMembersCount] = useState(0);
 
     // Filters State
     const [searchQuery, setSearchQuery] = useState('');
@@ -37,13 +38,18 @@ export default function PartnersPage() {
     useEffect(() => {
         const fetchInitData = async () => {
             try {
-                const [statsRes, thematicsRes] = await Promise.all([
+                const [statsRes, thematicsRes, membersRes] = await Promise.all([
                     fetch(`${PARTNERS_API}/stats`),
-                    fetch(`${PARTNERS_API}/thematics`)
+                    fetch(`${PARTNERS_API}/thematics`),
+                    fetch(`${CANDIDATURES_API}/members`),
                 ]);
 
                 if (statsRes.ok) setStats(await statsRes.json());
                 if (thematicsRes.ok) setThematicsList(await thematicsRes.json());
+                if (membersRes.ok) {
+                    const members = await membersRes.json();
+                    setMembersCount(Array.isArray(members) ? members.length : 0);
+                }
             } catch (err) {
                 console.error("Failed to fetch initial partner data", err);
             }
@@ -91,7 +97,7 @@ export default function PartnersPage() {
             />
             <PartnersHero onApplyClick={() => setIsFormOpen(true)} />
 
-            <PartnersStats stats={stats} />
+            <PartnersStats stats={stats} membersCount={membersCount} />
 
             <div className="max-w-7xl mx-auto px-6 lg:px-8 pb-32 z-10 relative">
                 <PartnersFilters
