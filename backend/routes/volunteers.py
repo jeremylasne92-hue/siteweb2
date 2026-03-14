@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from email_service import send_email, send_volunteer_confirmation, send_volunteer_interview, send_volunteer_accepted, send_volunteer_rejected
 from core.config import settings
 from utils.rate_limit import anonymize_ip
+from routes.members import auto_seed_member_profile
 import csv
 import io
 import logging
@@ -201,6 +202,13 @@ async def update_volunteer_status(
             background_tasks.add_task(send_volunteer_accepted, a_email, a_name)
         elif data.status == "rejected":
             background_tasks.add_task(send_volunteer_rejected, a_email, a_name, data.status_note)
+
+        # Auto-seed member profile on acceptance
+        if data.status == "accepted":
+            try:
+                await auto_seed_member_profile(db, application, "volunteer")
+            except Exception as e:
+                logger.error(f"Auto-seed failed for volunteer {application_id}: {e}")
 
     return {"message": f"Statut mis à jour : {data.status}"}
 

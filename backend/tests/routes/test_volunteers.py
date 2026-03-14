@@ -111,3 +111,47 @@ def test_admin_export_volunteers_unauthorized():
     app.dependency_overrides.clear()
 
     assert response.status_code in (401, 403)
+
+
+def test_accept_volunteer_triggers_auto_seed():
+    """PUT /volunteers/admin/{id}/status with accepted triggers auto_seed_member_profile."""
+    from models import User, UserRole
+    from datetime import datetime
+
+    mock_admin = User(
+        id="admin-1",
+        username="admin",
+        email="admin@example.com",
+        password_hash="hashed",
+        role=UserRole.ADMIN,
+    )
+
+    candidature_doc = {
+        "id": "vol-1",
+        "name": "Alice Martin",
+        "email": "alice@example.com",
+        "phone": "0612345678",
+        "city": "Lyon",
+        "skills": ["communication"],
+        "experience_level": "professional",
+        "availability": "regular",
+        "status": "accepted",
+        "created_at": datetime(2026, 1, 1),
+    }
+
+    db = MagicMock()
+    update_result = MagicMock()
+    update_result.matched_count = 1
+    db.volunteer_applications.update_one = AsyncMock(return_value=update_result)
+    db.volunteer_applications.find_one = AsyncMock(return_value=candidature_doc)
+
+    app.dependency_overrides[get_db] = lambda: db
+    app.dependency_overrides[require_admin] = lambda: mock_admin
+
+    with patch("routes.volunteers.auto_seed_member_profile", new_callable=AsyncMock) as mock_seed:
+        response = client.put("/api/volunteers/admin/vol-1/status", json={"status": "accepted"})
+
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    mock_seed.assert_called_once_with(db, candidature_doc, "volunteer")
