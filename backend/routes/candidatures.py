@@ -67,6 +67,9 @@ async def submit_tech_candidature(
         email_body += f"\nPortfolio: {data.portfolio_url}"
     if data.creative_interests:
         email_body += f"\nIntérêts créatifs: {data.creative_interests}"
+    if data.experience_level:
+        level_labels = {"professional": "Professionnel", "student": "Étudiant", "self_taught": "Autodidacte", "motivated": "Motivé"}
+        email_body += f"\nNiveau d'expérience: {level_labels.get(data.experience_level, data.experience_level)}"
     email_body += f"\n\nMessage:\n{data.message}"
     background_tasks.add_task(
         send_email,
