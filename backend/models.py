@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, EmailStr, field_validator
-from typing import Optional, Literal
+from typing import Optional, Literal, List
 from datetime import datetime
 import uuid
 import secrets
@@ -212,12 +212,17 @@ class EventType(str, Enum):
 class Event(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     title: str
-    description: str
+    description: Optional[str] = None
     date: datetime  # ISO 8601
-    time: str  # "20:00"
+    date_end: Optional[datetime] = None
+    time: Optional[str] = None  # "20:00"
     location: str
     type: EventType
-    image_url: Optional[str] = None
+    image_url: Optional[str] = None  # legacy single image
+    images: List[str] = Field(default_factory=list)  # up to 10 images
+    booking_enabled: bool = False
+    booking_url: Optional[str] = None
+    organizer: Optional[str] = None
     is_published: bool = True
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
@@ -225,12 +230,17 @@ class Event(BaseModel):
 
 class EventCreate(BaseModel):
     title: str = Field(min_length=3, max_length=200)
-    description: str = Field(min_length=10, max_length=2000)
+    description: Optional[str] = Field(default=None, max_length=2000)
     date: datetime
-    time: str = Field(pattern=r"^\d{2}:\d{2}$")
+    date_end: Optional[datetime] = None
+    time: Optional[str] = Field(default=None, pattern=r"^\d{2}:\d{2}$")
     location: str = Field(min_length=3, max_length=200)
     type: EventType
     image_url: Optional[str] = None
+    images: List[str] = Field(default_factory=list, max_length=10)
+    booking_enabled: bool = False
+    booking_url: Optional[str] = None
+    organizer: Optional[str] = Field(default=None, max_length=200)
 
 
 class Pending2FA(BaseModel):

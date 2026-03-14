@@ -32,10 +32,14 @@ CREATED_EVENT_DOC = {
     "title": "Avant-première Saison 1",
     "description": "Projection de lancement de la Saison 1 en présence de l'équipe.",
     "date": datetime(2026, 5, 15, 20, 0),
+    "date_end": None,
     "time": "20:00",
     "location": "Paris, Le Grand Rex",
     "type": "Projection",
     "image_url": None,
+    "images": [],
+    "booking_enabled": False,
+    "booking_url": None,
     "is_published": True,
     "created_at": datetime.utcnow(),
     "updated_at": datetime.utcnow(),
@@ -104,6 +108,7 @@ def test_create_event_unauthorized():
 def test_delete_event_admin():
     """DELETE /events/{id} with admin token deletes event."""
     db = make_mock_db()
+    db.events.find_one = AsyncMock(return_value=CREATED_EVENT_DOC)
     app.dependency_overrides[get_db] = lambda: db
     app.dependency_overrides[require_admin] = lambda: ADMIN_USER
 
