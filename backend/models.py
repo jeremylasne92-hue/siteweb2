@@ -288,3 +288,56 @@ class AnalyticsEventCreate(BaseModel):
 class AnalyticsEvent(AnalyticsEventCreate):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+# --- Volunteer Application Models ---
+
+class VolunteerApplication(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    email: EmailStr
+    phone: Optional[str] = None
+    city: str
+    motivation: list[str] = Field(default_factory=list)
+    skills: list[str] = Field(default_factory=list)
+    experience_level: Literal["professional", "student", "self_taught", "motivated"]
+    availability: Literal["punctual", "regular", "active"]
+    values_accepted: bool = True
+    message: Optional[str] = None
+    status: Literal["pending", "entretien", "accepted", "rejected"] = "pending"
+    status_note: Optional[str] = None
+    ip_address: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = None
+
+
+class VolunteerApplicationRequest(BaseModel):
+    name: str = Field(min_length=2, max_length=100)
+    email: EmailStr
+    phone: Optional[str] = Field(None, max_length=20)
+    city: str = Field(min_length=2, max_length=100)
+    motivation: list[str] = Field(default_factory=list, max_length=10)
+    skills: list[str] = Field(min_length=1, max_length=50)
+    experience_level: Literal["professional", "student", "self_taught", "motivated"]
+    availability: Literal["punctual", "regular", "active"]
+    values_accepted: bool
+    message: Optional[str] = Field(None, max_length=2000)
+    website: str = ""  # honeypot field
+
+    @field_validator("values_accepted")
+    @classmethod
+    def validate_values(cls, v):
+        if not v:
+            raise ValueError("L'adhésion aux valeurs est obligatoire")
+        return v
+
+
+class VolunteerStatusUpdate(BaseModel):
+    status: Literal["pending", "entretien", "accepted", "rejected"]
+    status_note: Optional[str] = None
+
+
+class VolunteerBatchStatusUpdate(BaseModel):
+    ids: list[str] = Field(min_length=1)
+    status: Literal["pending", "entretien", "accepted", "rejected"]
+    status_note: Optional[str] = None
