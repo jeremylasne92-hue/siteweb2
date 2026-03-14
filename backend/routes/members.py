@@ -274,6 +274,9 @@ async def admin_seed_profile(
     if not candidature:
         raise HTTPException(status_code=404, detail="Candidature non trouvee")
 
+    if candidature.get("status") != "accepted":
+        raise HTTPException(status_code=400, detail="Candidature non acceptee")
+
     # Find linked user
     user = await db.users.find_one({"email": candidature["email"]})
     if not user:
@@ -294,12 +297,20 @@ async def admin_seed_profile(
     else:
         skills = [s.strip().lower() for s in skills_raw if s.strip()]
 
+    # Generate unique slug
+    base_slug = _slugify(display_name)
+    slug = base_slug
+    counter = 1
+    while await db.member_profiles.find_one({"slug": slug}):
+        slug = f"{base_slug}-{counter}"
+        counter += 1
+
     now = datetime.utcnow()
     profile = {
         "id": str(uuid.uuid4()),
         "user_id": user_id,
         "display_name": display_name,
-        "slug": _slugify(display_name),
+        "slug": slug,
         "bio": candidature.get("bio"),
         "avatar_url": candidature.get("avatar_url"),
         "city": candidature.get("city"),
