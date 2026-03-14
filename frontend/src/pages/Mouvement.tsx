@@ -11,10 +11,135 @@ const TREE_STAGES = {
     germination: '/images/Image arbre en croissance/Germination.jpeg',
     enracinement: '/images/Image arbre en croissance/Enracimennt.jpeg',
     emergence: "/images/Image arbre en croissance/L'émergence ECHO.jpeg",
+    tronc: '/images/Image arbre en croissance/Tronc.png',
     branches: '/images/Image arbre en croissance/Branches.png',
     floraison: '/images/Image arbre en croissance/Floraison.jpeg',
     fructification: '/images/Image arbre en croissance/Pommes.jpeg',
 };
+
+
+// --- Subcomponents (defined before Mouvement for HMR compatibility) ---
+
+interface TimelineItemProps {
+    side: string;
+    image: string;
+    imageAlt: string;
+    step: string;
+    title: string;
+    subtitle: string;
+    children: React.ReactNode;
+}
+
+function TimelineItem({ side, image, imageAlt, step, title, subtitle, children }: TimelineItemProps) {
+    const isLeft = side === 'left';
+
+    return (
+        <div className={`flex flex-col md:flex-row items-stretch gap-6 sm:gap-8 md:gap-12 pl-12 md:pl-0 ${isLeft ? '' : 'md:flex-row-reverse'}`}>
+
+            {/* Content */}
+            <div className={`flex-1 ${isLeft ? 'md:text-right' : 'md:text-left'}`}>
+                <div className={`flex items-center gap-3 mb-3 md:mb-4 flex-wrap ${isLeft ? 'md:justify-end' : ''}`}>
+                    <span className="text-xs font-mono text-amber-600/60 tracking-widest">{step}</span>
+                    <span className="px-3 py-1 bg-amber-500/10 text-amber-500 rounded-full text-xs font-bold uppercase tracking-wider">
+                        {subtitle}
+                    </span>
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4 sm:mb-6">{title}</h3>
+                <div className="text-stone-400 space-y-4 leading-relaxed text-sm sm:text-base">
+                    {children}
+                </div>
+            </div>
+
+            {/* Timeline dot (mobile: absolute left, desktop: hidden — line still visible) */}
+            <div className="absolute left-[14px] md:hidden w-3 h-3 rounded-full bg-amber-500 border-2 border-stone-950 z-10 mt-2" />
+
+            {/* Image panel */}
+            <div className="w-full md:w-[380px] lg:w-[440px] shrink-0 rounded-xl overflow-hidden border border-white/10 shadow-lg shadow-amber-900/10">
+                <img
+                    src={image}
+                    alt={imageAlt}
+                    className="w-full h-48 sm:h-56 md:h-full object-cover"
+                    loading="lazy"
+                />
+            </div>
+        </div>
+    );
+}
+
+
+// --- Émergence custom section ---
+
+function EmergenceSection() {
+    return (
+        <div className="flex flex-col items-center text-center pl-12 md:pl-0">
+            {/* Timeline dot (mobile) */}
+            <div className="absolute left-[14px] md:hidden w-3 h-3 rounded-full bg-amber-500 border-2 border-stone-950 z-10 mt-2" />
+
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-3 md:mb-4 flex-wrap justify-center">
+                <span className="text-xs font-mono text-amber-600/60 tracking-widest">04</span>
+                <span className="px-3 py-1 bg-amber-500/10 text-amber-500 rounded-full text-xs font-bold uppercase tracking-wider">
+                    Notre Ambition
+                </span>
+            </div>
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-8 sm:mb-10">L'Émergence</h3>
+
+            {/* Image 1: Jeune Pousse */}
+            <div className="w-full max-w-lg rounded-xl overflow-hidden border border-white/10 shadow-lg shadow-amber-900/10">
+                <img
+                    src={TREE_STAGES.emergence}
+                    alt="Jeune pousse perçant le sol"
+                    className="w-full h-56 sm:h-64 md:h-72 object-cover"
+                    loading="lazy"
+                />
+            </div>
+
+            {/* Caption under pousse */}
+            <p className="mt-5 sm:mt-6 text-amber-400/90 italic text-base sm:text-lg md:text-xl max-w-xl leading-relaxed font-light">
+                "Portée par ses racines, la jeune pousse perce le sol pour former un axe central capable de soutenir tout un écosystème."
+            </p>
+
+            {/* Spacer */}
+            <div className="py-6 sm:py-8" />
+
+            {/* Central text — ambition (encadré avec accroche) */}
+            <div className="max-w-2xl px-4 w-full">
+                <div className="relative border-l-4 border-amber-500 bg-white/[0.03] rounded-r-xl pl-6 sm:pl-8 pr-6 py-6 sm:py-8 text-left">
+                    {/* Accroche forte */}
+                    <p className="text-white font-serif text-xl sm:text-2xl md:text-[1.7rem] leading-snug mb-5 font-semibold tracking-tight">
+                        Prouver qu'une société basée sur la <span className="text-amber-500">coopération</span> et le <span className="text-amber-500">respect du vivant</span> est non seulement possible, mais <em className="not-italic text-amber-400">absolument nécessaire</em>.
+                    </p>
+                    {/* Développement */}
+                    <p className="text-stone-400 text-sm sm:text-base leading-relaxed">
+                        Notre ambition suit une logique de <span className="text-stone-300 font-medium">croissance pérenne</span> : élargir nos anneaux mois après mois, bâtir une <span className="text-stone-300 font-medium">alliance robuste</span>. Devenir le pilier d'un <span className="text-stone-300 font-medium">nouveau récit sociétal</span> et d'un <span className="text-stone-300 font-medium">nouveau contrat social</span>. Proposer une voie inédite entre spectateurs et acteurs engagés.
+                    </p>
+                </div>
+            </div>
+
+            {/* Spacer */}
+            <div className="py-6 sm:py-8" />
+
+            {/* Image 2: Le Tronc */}
+            <div className="w-full max-w-lg rounded-xl overflow-hidden border border-white/10 shadow-lg shadow-emerald-900/10">
+                <img
+                    src={TREE_STAGES.tronc}
+                    alt="Tronc massif d'arbre enraciné"
+                    className="w-full h-56 sm:h-64 md:h-72 object-cover"
+                    loading="lazy"
+                />
+            </div>
+
+            {/* Caption under tronc */}
+            <p className="mt-5 sm:mt-6 text-white font-bold text-base sm:text-lg md:text-xl max-w-xl leading-relaxed">
+                Ce tronc inébranlable, c'est l'association{' '}
+                <span className="text-amber-500">Mouvement ECHO</span>.
+            </p>
+        </div>
+    );
+}
+
+
+// --- Main Component ---
 
 export function Mouvement() {
     const [showVolunteerForm, setShowVolunteerForm] = useState(false);
@@ -100,15 +225,8 @@ export function Mouvement() {
                             </p>
                         </TimelineItem>
 
-                        {/* 4. L'Émergence */}
-                        <TimelineItem side="right" image={TREE_STAGES.emergence} imageAlt="Jeune arbre émergeant près d'un tronc" step="04" title="L'Émergence" subtitle="Notre Ambition">
-                            <p>
-                                Portée par ses racines, la jeune pousse perce le sol pour former un axe central capable de soutenir tout un écosystème. Ce tronc inébranlable, c'est l'association Mouvement ECHO.
-                            </p>
-                            <p>
-                                Notre ambition suit une logique de croissance pérenne : élargir nos anneaux mois après mois et bâtir une alliance robuste. En devenant le pilier d'un nouveau récit sociétal et en traçant une voie inédite entre spectateurs et acteurs engagés, nous voulons prouver qu'une société basée sur la coopération et le respect du vivant est non seulement possible, mais absolument nécessaire.
-                            </p>
-                        </TimelineItem>
+                        {/* 4. L'Émergence — Layout unique vertical */}
+                        <EmergenceSection />
 
                         {/* 5. Les Branches */}
                         <TimelineItem side="left" image={TREE_STAGES.branches} imageAlt="Canopée d'arbre et branches vers la lumière" step="05" title="Les Branches" subtitle="L'Écosystème en Action">
@@ -226,55 +344,6 @@ export function Mouvement() {
                     </div>
                 </div>
             )}
-        </div>
-    );
-}
-
-
-// --- Subcomponents ---
-
-interface TimelineItemProps {
-    side: string;
-    image: string;
-    imageAlt: string;
-    step: string;
-    title: string;
-    subtitle: string;
-    children: React.ReactNode;
-}
-
-function TimelineItem({ side, image, imageAlt, step, title, subtitle, children }: TimelineItemProps) {
-    const isLeft = side === 'left';
-
-    return (
-        <div className={`flex flex-col md:flex-row items-stretch gap-6 sm:gap-8 md:gap-12 pl-12 md:pl-0 ${isLeft ? '' : 'md:flex-row-reverse'}`}>
-
-            {/* Content */}
-            <div className={`flex-1 ${isLeft ? 'md:text-right' : 'md:text-left'}`}>
-                <div className={`flex items-center gap-3 mb-3 md:mb-4 flex-wrap ${isLeft ? 'md:justify-end' : ''}`}>
-                    <span className="text-xs font-mono text-amber-600/60 tracking-widest">{step}</span>
-                    <span className="px-3 py-1 bg-amber-500/10 text-amber-500 rounded-full text-xs font-bold uppercase tracking-wider">
-                        {subtitle}
-                    </span>
-                </div>
-                <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4 sm:mb-6">{title}</h3>
-                <div className="text-stone-400 space-y-4 leading-relaxed text-sm sm:text-base">
-                    {children}
-                </div>
-            </div>
-
-            {/* Timeline dot (mobile: absolute left, desktop: hidden — line still visible) */}
-            <div className="absolute left-[14px] md:hidden w-3 h-3 rounded-full bg-amber-500 border-2 border-stone-950 z-10 mt-2" />
-
-            {/* Image panel */}
-            <div className="w-full md:w-[380px] lg:w-[440px] shrink-0 rounded-xl overflow-hidden border border-white/10 shadow-lg shadow-amber-900/10">
-                <img
-                    src={image}
-                    alt={imageAlt}
-                    className="w-full h-48 sm:h-56 md:h-full object-cover"
-                    loading="lazy"
-                />
-            </div>
         </div>
     );
 }
