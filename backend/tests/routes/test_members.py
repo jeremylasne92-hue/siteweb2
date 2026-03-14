@@ -2,11 +2,13 @@
 Tests for member profiles public + authenticated endpoints.
 """
 from fastapi.testclient import TestClient
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 from server import app
 from routes.auth import get_db, get_current_user, require_admin
+from routes.members import auto_seed_member_profile
 from models import User, UserRole
 from datetime import datetime
+import pytest
 
 client = TestClient(app)
 
@@ -277,8 +279,7 @@ def test_admin_seed_profile():
         "_id": "mongo-id",
         "id": "cand-99",
         "email": "bob@example.com",
-        "first_name": "Bob",
-        "last_name": "Dupont",
+        "name": "Bob Dupont",
         "city": "Paris",
         "region": "ile_de_france",
         "department": "75",
@@ -371,3 +372,62 @@ def test_admin_analytics():
     assert "by_experience" in data
     assert "total_active" in data
     assert "total_visible" in data
+
+
+# ---- auto_seed_member_profile helper tests ----
+
+
+@pytest.mark.asyncio
+async def test_auto_seed_creates_profile_with_name_field():
+    """auto_seed_member_profile creates a profile using candidature's name field."""
+    candidature = {
+        "id": "cand-42",
+        "email": "marie@example.com",
+        "name": "Marie Curie",
+        "skills": "python, chimie",
+        "city": "Paris",
+        "region": "ile_de_france",
+        "project": "cognisphere",
+    }
+
+    insert_result = MagicMock()
+    insert_result.inserted_id = "new-mongo-id"
+
+    db = MagicMock()
+    db.member_profiles.find_one = AsyncMock(return_value=None)  # no existing profile
+    db.member_profiles.insert_one = AsyncMock(return_value=insert_result)
+    db.users.find_one = AsyncMock(return_value=None)  # no user account
+    db.users.update_one = AsyncMock()
+
+    result = await auto_seed_member_profile(db, candidature, "tech")
+
+    assert result is not None
+    assert result["display_name"] == "Marie Curie"
+    assert result["visible"] is True
+    assert result["membership_status"] == "active"
+    assert result["slug"] == "marie-curie"
+    assert result["candidature_type"] == "tech"
+    assert result["candidature_id"] == "cand-42"
+    assert result["skills"] == ["python", "chimie"]
+    db.member_profiles.insert_one.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_auto_seed_skips_if_profile_exists():
+    """auto_seed_member_profile returns None if profile already exists for candidature."""
+    candidature = {
+        "id": "cand-42",
+        "email": "marie@example.com",
+        "name": "Marie Curie",
+    }
+
+    existing_profile = {"id": "existing-profile", "candidature_id": "cand-42"}
+
+    db = MagicMock()
+    db.member_profiles.find_one = AsyncMock(return_value=existing_profile)
+    db.member_profiles.insert_one = AsyncMock()
+
+    result = await auto_seed_member_profile(db, candidature, "volunteer")
+
+    assert result is None
+    db.member_profiles.insert_one.assert_not_called()

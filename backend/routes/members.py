@@ -163,7 +163,7 @@ class StatusUpdate(BaseModel):
 
 
 class SeedRequest(BaseModel):
-    candidature_type: Literal["tech", "volunteer"]
+    candidature_type: Literal["tech", "volunteer", "scenariste"]
 
 
 @admin_router.get("/")
@@ -260,37 +260,50 @@ async def admin_update_status(
     return {"status": "updated", "membership_status": body.membership_status}
 
 
-@admin_router.post("/seed/{candidature_id}", status_code=201)
-async def admin_seed_profile(
-    candidature_id: str,
-    body: SeedRequest,
-    admin: User = Depends(require_admin),
-    db: AsyncIOMotorDatabase = Depends(get_db),
-):
-    """Create a member profile from an accepted candidature. Admin only."""
-    # Look up candidature
-    collection = "tech_candidatures" if body.candidature_type == "tech" else "volunteer_applications"
-    candidature = await db[collection].find_one({"id": candidature_id})
-    if not candidature:
-        raise HTTPException(status_code=404, detail="Candidature non trouvee")
+# ---- auto_seed helper ----
 
-    if candidature.get("status") != "accepted":
-        raise HTTPException(status_code=400, detail="Candidature non acceptee")
 
-    # Find linked user
-    user = await db.users.find_one({"email": candidature["email"]})
-    if not user:
-        raise HTTPException(status_code=404, detail="Utilisateur non trouve")
+def _map_role_title(candidature: dict, candidature_type: str) -> str:
+    """Map candidature_type to an appropriate role_title."""
+    if candidature_type == "volunteer":
+        return "Bénévole"
+    if candidature_type == "scenariste":
+        return "Scénariste"
+    # tech: use the project name from candidature
+    return candidature.get("project", "tech")
 
-    user_id = user["id"]
 
-    # Check no existing profile
-    existing = await db.member_profiles.find_one({"user_id": user_id})
+def _map_project(candidature: dict, candidature_type: str) -> str:
+    """Map candidature_type to project field."""
+    if candidature_type == "volunteer":
+        return "benevole"
+    return candidature.get("project", "benevole")
+
+
+async def auto_seed_member_profile(
+    db: AsyncIOMotorDatabase,
+    candidature: dict,
+    candidature_type: str,
+) -> dict | None:
+    """Create a member profile from a candidature dict.
+
+    Returns the created profile dict, or None if a profile already exists
+    for this candidature_id.
+    """
+    candidature_id = candidature["id"]
+
+    # Check for existing profile by candidature_id
+    existing = await db.member_profiles.find_one({"candidature_id": candidature_id})
     if existing:
-        raise HTTPException(status_code=409, detail="Profil deja existant")
+        return None
 
-    # Build profile
-    display_name = f"{candidature.get('first_name', '')} {candidature.get('last_name', '')}".strip()
+    # Build display_name from name field, fallback to email prefix
+    display_name = (candidature.get("name") or "").strip()
+    if not display_name:
+        email = candidature.get("email", "")
+        display_name = email.split("@")[0] if email else "membre"
+
+    # Normalize skills
     skills_raw = candidature.get("skills", [])
     if isinstance(skills_raw, str):
         skills = [s.strip().lower() for s in skills_raw.split(",") if s.strip()]
@@ -308,7 +321,7 @@ async def admin_seed_profile(
     now = datetime.utcnow()
     profile = {
         "id": str(uuid.uuid4()),
-        "user_id": user_id,
+        "user_id": None,
         "display_name": display_name,
         "slug": slug,
         "bio": candidature.get("bio"),
@@ -316,8 +329,8 @@ async def admin_seed_profile(
         "city": candidature.get("city"),
         "region": candidature.get("region"),
         "department": candidature.get("department"),
-        "project": candidature.get("project", "benevole"),
-        "role_title": candidature.get("role_title"),
+        "project": _map_project(candidature, candidature_type),
+        "role_title": _map_role_title(candidature, candidature_type),
         "skills": skills,
         "experience_level": candidature.get("experience_level"),
         "availability": candidature.get("availability"),
@@ -326,7 +339,7 @@ async def admin_seed_profile(
         "gender": candidature.get("gender"),
         "contact_email": candidature.get("email"),
         "social_links": candidature.get("social_links", []),
-        "visible": False,
+        "visible": True,
         "visibility_overrides": {
             "contact_email": False,
             "city": True,
@@ -335,19 +348,56 @@ async def admin_seed_profile(
             "professional_sector": False,
         },
         "candidature_id": candidature_id,
-        "candidature_type": body.candidature_type,
+        "candidature_type": candidature_type,
         "membership_status": "active",
         "joined_at": now,
         "created_at": now,
         "updated_at": now,
     }
 
+    # Look up user by email — if found, link profile and mark as member
+    email = candidature.get("email")
+    if email:
+        user = await db.users.find_one({"email": email})
+        if user:
+            profile["user_id"] = user["id"]
+            await db.users.update_one(
+                {"id": user["id"]},
+                {"$set": {"is_member": True, "member_since": now}},
+            )
+        else:
+            logger.warning("No user account for email %s — profile created without user link", email)
+
     await db.member_profiles.insert_one(profile)
+    logger.info("Member profile created: %s (slug=%s)", display_name, slug)
 
-    # Mark user as member
-    await db.users.update_one(
-        {"id": user_id},
-        {"$set": {"is_member": True, "member_since": now}},
-    )
+    return profile
 
-    return {"profile_id": profile["id"], "slug": profile["slug"]}
+
+@admin_router.post("/seed/{candidature_id}", status_code=201)
+async def admin_seed_profile(
+    candidature_id: str,
+    body: SeedRequest,
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    """Create a member profile from an accepted candidature. Admin only."""
+    # Look up candidature
+    collection_map = {
+        "tech": "tech_candidatures",
+        "volunteer": "volunteer_applications",
+        "scenariste": "scenariste_candidatures",
+    }
+    collection = collection_map.get(body.candidature_type, "volunteer_applications")
+    candidature = await db[collection].find_one({"id": candidature_id})
+    if not candidature:
+        raise HTTPException(status_code=404, detail="Candidature non trouvee")
+
+    if candidature.get("status") != "accepted":
+        raise HTTPException(status_code=400, detail="Candidature non acceptee")
+
+    result = await auto_seed_member_profile(db, candidature, body.candidature_type)
+    if result is None:
+        raise HTTPException(status_code=409, detail="Profil deja existant")
+
+    return {"profile_id": result["id"], "slug": result["slug"]}
