@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 from unittest.mock import AsyncMock, MagicMock, patch
 from server import app
 from routes.auth import get_db, get_current_user, require_admin
-from routes.members import auto_seed_member_profile
+from routes.members import auto_seed_member_profile, deactivate_member_profile
 from models import User, UserRole
 from datetime import datetime
 import pytest
@@ -413,15 +413,20 @@ async def test_auto_seed_creates_profile_with_name_field():
 
 
 @pytest.mark.asyncio
-async def test_auto_seed_skips_if_profile_exists():
-    """auto_seed_member_profile returns None if profile already exists for candidature."""
+async def test_auto_seed_skips_if_profile_already_active():
+    """auto_seed_member_profile returns None if profile already active for candidature."""
     candidature = {
         "id": "cand-42",
         "email": "marie@example.com",
         "name": "Marie Curie",
     }
 
-    existing_profile = {"id": "existing-profile", "candidature_id": "cand-42"}
+    existing_profile = {
+        "id": "existing-profile",
+        "candidature_id": "cand-42",
+        "visible": True,
+        "membership_status": "active",
+    }
 
     db = MagicMock()
     db.member_profiles.find_one = AsyncMock(return_value=existing_profile)
@@ -431,3 +436,74 @@ async def test_auto_seed_skips_if_profile_exists():
 
     assert result is None
     db.member_profiles.insert_one.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_auto_seed_reactivates_inactive_profile():
+    """auto_seed_member_profile reactivates an inactive profile instead of creating new."""
+    candidature = {
+        "id": "cand-42",
+        "email": "marie@example.com",
+        "name": "Marie Curie",
+    }
+
+    existing_profile = {
+        "id": "existing-profile",
+        "candidature_id": "cand-42",
+        "visible": False,
+        "membership_status": "inactive",
+        "display_name": "Marie Curie",
+    }
+
+    update_result = MagicMock()
+    update_result.matched_count = 1
+
+    db = MagicMock()
+    db.member_profiles.find_one = AsyncMock(return_value=existing_profile)
+    db.member_profiles.update_one = AsyncMock(return_value=update_result)
+    db.member_profiles.insert_one = AsyncMock()
+
+    result = await auto_seed_member_profile(db, candidature, "volunteer")
+
+    assert result is not None
+    assert result["visible"] is True
+    assert result["membership_status"] == "active"
+    db.member_profiles.update_one.assert_called_once()
+    db.member_profiles.insert_one.assert_not_called()
+
+
+# ---- deactivate_member_profile helper tests ----
+
+
+@pytest.mark.asyncio
+async def test_deactivate_member_profile():
+    """deactivate_member_profile sets visible=False and membership_status=inactive."""
+    update_result = MagicMock()
+    update_result.matched_count = 1
+
+    db = MagicMock()
+    db.member_profiles.update_one = AsyncMock(return_value=update_result)
+
+    result = await deactivate_member_profile(db, "cand-42")
+
+    assert result is True
+    db.member_profiles.update_one.assert_called_once()
+    call_args = db.member_profiles.update_one.call_args
+    assert call_args[0][0] == {"candidature_id": "cand-42"}
+    update_set = call_args[0][1]["$set"]
+    assert update_set["visible"] is False
+    assert update_set["membership_status"] == "inactive"
+
+
+@pytest.mark.asyncio
+async def test_deactivate_member_profile_no_match():
+    """deactivate_member_profile returns False if no profile found."""
+    update_result = MagicMock()
+    update_result.matched_count = 0
+
+    db = MagicMock()
+    db.member_profiles.update_one = AsyncMock(return_value=update_result)
+
+    result = await deactivate_member_profile(db, "nonexistent")
+
+    assert result is False

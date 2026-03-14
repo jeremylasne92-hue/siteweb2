@@ -345,3 +345,4 @@ _Aucune spec en cours._
 | 20 | Audit backend MongoDB + brainstorming améliorations (inclut review routes/members.py, optimisation requêtes, indexes) | Moyenne | À faire — utiliser skill `superpowers:brainstorming` puis `superpowers:systematic-debugging` |
 | 21 | Modifier crédits série + vidéo prologue → bande-annonce (prévue terminée le 18 mars 2026) | Haute | À faire |
 | 22 | Refonte section "L'Émergence" page Mouvement : ajouter un tronc (image droite, texte milieu), déplacer texte jeune pousse en dessous, flèche vers "Ce tronc inébranlable, c'est l'association Mouvement ECHO" | Moyenne | À faire |
+| 23 | Nettoyer les données de test avant publication (événements, comptes partenaires, bénévoles, candidatures, profils membres de test) | Haute | À faire avant le 20 mars 2026 |

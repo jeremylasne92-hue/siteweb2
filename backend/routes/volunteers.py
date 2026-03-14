@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from email_service import send_email, send_volunteer_confirmation, send_volunteer_interview, send_volunteer_accepted, send_volunteer_rejected
 from core.config import settings
 from utils.rate_limit import anonymize_ip
-from routes.members import auto_seed_member_profile
+from routes.members import auto_seed_member_profile, deactivate_member_profile
 import csv
 import io
 import logging
@@ -209,6 +209,13 @@ async def update_volunteer_status(
                 await auto_seed_member_profile(db, application, "volunteer")
             except Exception as e:
                 logger.error(f"Auto-seed failed for volunteer {application_id}: {e}")
+
+        # Deactivate member profile on rejection
+        if data.status == "rejected":
+            try:
+                await deactivate_member_profile(db, application_id)
+            except Exception as e:
+                logger.error(f"Deactivate profile failed for volunteer {application_id}: {e}")
 
     return {"message": f"Statut mis à jour : {data.status}"}
 

@@ -285,17 +285,27 @@ async def auto_seed_member_profile(
     candidature: dict,
     candidature_type: str,
 ) -> dict | None:
-    """Create a member profile from a candidature dict.
+    """Create or reactivate a member profile from a candidature dict.
 
-    Returns the created profile dict, or None if a profile already exists
-    for this candidature_id.
+    If a profile already exists for this candidature_id and is inactive,
+    reactivate it. Returns the profile dict, or None if already active.
     """
     candidature_id = candidature["id"]
 
     # Check for existing profile by candidature_id
     existing = await db.member_profiles.find_one({"candidature_id": candidature_id})
     if existing:
-        return None
+        if existing.get("membership_status") == "active" and existing.get("visible"):
+            return None  # Already active, nothing to do
+        # Reactivate the existing profile
+        await db.member_profiles.update_one(
+            {"candidature_id": candidature_id},
+            {"$set": {"visible": True, "membership_status": "active", "updated_at": datetime.utcnow()}},
+        )
+        logger.info("Member profile reactivated for candidature %s", candidature_id)
+        existing["visible"] = True
+        existing["membership_status"] = "active"
+        return existing
 
     # Build display_name from name field, fallback to email prefix
     display_name = (candidature.get("name") or "").strip()
@@ -372,6 +382,24 @@ async def auto_seed_member_profile(
     logger.info("Member profile created: %s (slug=%s)", display_name, slug)
 
     return profile
+
+
+async def deactivate_member_profile(
+    db: AsyncIOMotorDatabase,
+    candidature_id: str,
+) -> bool:
+    """Deactivate (hide) a member profile linked to a candidature.
+
+    Returns True if a profile was deactivated, False if none found.
+    """
+    result = await db.member_profiles.update_one(
+        {"candidature_id": candidature_id},
+        {"$set": {"visible": False, "membership_status": "inactive", "updated_at": datetime.utcnow()}},
+    )
+    if result.matched_count > 0:
+        logger.info("Member profile deactivated for candidature %s", candidature_id)
+        return True
+    return False
 
 
 @admin_router.post("/seed/{candidature_id}", status_code=201)

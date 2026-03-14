@@ -155,3 +155,139 @@ def test_accept_volunteer_triggers_auto_seed():
 
     assert response.status_code == 200
     mock_seed.assert_called_once_with(db, candidature_doc, "volunteer")
+
+
+def test_reject_volunteer_triggers_deactivate():
+    """PUT /volunteers/admin/{id}/status with rejected deactivates member profile."""
+    from models import User, UserRole
+
+    mock_admin = User(
+        id="admin-1",
+        username="admin",
+        email="admin@example.com",
+        password_hash="hashed",
+        role=UserRole.ADMIN,
+    )
+
+    application_doc = {
+        "id": "vol-2",
+        "name": "Bob Martin",
+        "email": "bob@example.com",
+        "skills": ["communication"],
+    }
+
+    db = MagicMock()
+    update_result = MagicMock()
+    update_result.matched_count = 1
+    db.volunteer_applications.update_one = AsyncMock(return_value=update_result)
+    db.volunteer_applications.find_one = AsyncMock(return_value=application_doc)
+
+    app.dependency_overrides[get_db] = lambda: db
+    app.dependency_overrides[require_admin] = lambda: mock_admin
+
+    with patch("routes.volunteers.deactivate_member_profile", new_callable=AsyncMock) as mock_deactivate:
+        response = client.put("/api/volunteers/admin/vol-2/status", json={"status": "rejected"})
+
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    mock_deactivate.assert_called_once_with(db, "vol-2")
+
+
+def test_full_admin_lifecycle_accept_reject_reaccept():
+    """Full lifecycle: accept → profile created → reject → profile deactivated → re-accept → reactivated."""
+    from models import User, UserRole
+    from datetime import datetime
+
+    mock_admin = User(
+        id="admin-1",
+        username="admin",
+        email="admin@example.com",
+        password_hash="hashed",
+        role=UserRole.ADMIN,
+    )
+
+    application_doc = {
+        "id": "vol-lifecycle",
+        "name": "Lifecycle Test",
+        "email": "lifecycle@example.com",
+        "phone": "0600000000",
+        "city": "Paris",
+        "skills": ["communication"],
+        "experience_level": "professional",
+        "availability": "regular",
+        "status": "pending",
+        "created_at": datetime(2026, 1, 1),
+    }
+
+    # Track member_profiles state in-memory
+    profiles_store = {}
+
+    async def mock_find_one_profile(query):
+        cid = query.get("candidature_id")
+        if cid and cid in profiles_store:
+            return profiles_store[cid].copy()
+        slug = query.get("slug")
+        if slug:
+            for p in profiles_store.values():
+                if p.get("slug") == slug:
+                    return p.copy()
+        return None
+
+    async def mock_insert_one_profile(doc):
+        profiles_store[doc["candidature_id"]] = doc.copy()
+        result = MagicMock()
+        result.inserted_id = "new-id"
+        return result
+
+    async def mock_update_one_profile(query, update):
+        cid = query.get("candidature_id")
+        result = MagicMock()
+        if cid and cid in profiles_store:
+            for key, val in update.get("$set", {}).items():
+                profiles_store[cid][key] = val
+            result.matched_count = 1
+        else:
+            result.matched_count = 0
+        return result
+
+    update_result = MagicMock()
+    update_result.matched_count = 1
+
+    db = MagicMock()
+    db.volunteer_applications.update_one = AsyncMock(return_value=update_result)
+    db.volunteer_applications.find_one = AsyncMock(return_value=application_doc)
+    db.member_profiles.find_one = AsyncMock(side_effect=mock_find_one_profile)
+    db.member_profiles.insert_one = AsyncMock(side_effect=mock_insert_one_profile)
+    db.member_profiles.update_one = AsyncMock(side_effect=mock_update_one_profile)
+    db.users.find_one = AsyncMock(return_value=None)
+    db.users.update_one = AsyncMock()
+
+    app.dependency_overrides[get_db] = lambda: db
+    app.dependency_overrides[require_admin] = lambda: mock_admin
+
+    try:
+        # Step 1: ACCEPT — profile should be created
+        with patch("routes.volunteers.send_volunteer_accepted", new_callable=AsyncMock):
+            resp = client.put("/api/volunteers/admin/vol-lifecycle/status", json={"status": "accepted"})
+        assert resp.status_code == 200, f"Accept failed: {resp.json()}"
+        assert "vol-lifecycle" in profiles_store, "Profile was NOT created on accept"
+        assert profiles_store["vol-lifecycle"]["visible"] is True
+        assert profiles_store["vol-lifecycle"]["membership_status"] == "active"
+
+        # Step 2: REJECT — profile should be deactivated
+        with patch("routes.volunteers.send_volunteer_rejected", new_callable=AsyncMock):
+            resp = client.put("/api/volunteers/admin/vol-lifecycle/status", json={"status": "rejected"})
+        assert resp.status_code == 200, f"Reject failed: {resp.json()}"
+        assert profiles_store["vol-lifecycle"]["visible"] is False, "Profile still visible after reject!"
+        assert profiles_store["vol-lifecycle"]["membership_status"] == "inactive", "Profile still active after reject!"
+
+        # Step 3: RE-ACCEPT — profile should be reactivated
+        with patch("routes.volunteers.send_volunteer_accepted", new_callable=AsyncMock):
+            resp = client.put("/api/volunteers/admin/vol-lifecycle/status", json={"status": "accepted"})
+        assert resp.status_code == 200, f"Re-accept failed: {resp.json()}"
+        assert profiles_store["vol-lifecycle"]["visible"] is True, "Profile not reactivated!"
+        assert profiles_store["vol-lifecycle"]["membership_status"] == "active", "Profile not reactivated!"
+
+    finally:
+        app.dependency_overrides.clear()

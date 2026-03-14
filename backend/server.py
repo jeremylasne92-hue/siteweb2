@@ -108,7 +108,10 @@ async def startup_indexes():
 
     # Member profiles indexes
     try:
-        await db.member_profiles.create_index("user_id", unique=True)
+        await db.member_profiles.create_index(
+            "user_id", unique=True,
+            partialFilterExpression={"user_id": {"$type": "string"}},
+        )
         await db.member_profiles.create_index("slug", unique=True)
         await db.member_profiles.create_index([("visible", 1), ("project", 1)])
         await db.member_profiles.create_index("membership_status")
