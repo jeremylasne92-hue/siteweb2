@@ -17,7 +17,7 @@ import { MembersSection } from '../components/partners/MembersSection';
 import type { Partner, PartnerCategory } from '../components/partners/PartnerCard';
 import type { Thematic } from '../components/partners/ThematicTag';
 import type { MemberProfile } from '../types/member';
-import { PARTNERS_API, CANDIDATURES_API, MEMBERS_API } from '../config/api';
+import { PARTNERS_API, MEMBERS_API } from '../config/api';
 
 export default function PartnersPage() {
     const [partners, setPartners] = useState<Partner[]>([]);
@@ -56,14 +56,14 @@ export default function PartnersPage() {
                 const [statsRes, thematicsRes, membersRes] = await Promise.all([
                     fetch(`${PARTNERS_API}/stats`),
                     fetch(`${PARTNERS_API}/thematics`),
-                    fetch(`${CANDIDATURES_API}/members`),
+                    fetch(`${MEMBERS_API}?limit=1`),
                 ]);
 
                 if (statsRes.ok) setStats(await statsRes.json());
                 if (thematicsRes.ok) setThematicsList(await thematicsRes.json());
                 if (membersRes.ok) {
-                    const members = await membersRes.json();
-                    setMembersCount(Array.isArray(members) ? members.length : 0);
+                    const data = await membersRes.json();
+                    setMembersCount(data.total || 0);
                 }
             } catch (err) {
                 console.error("Failed to fetch initial partner data", err);

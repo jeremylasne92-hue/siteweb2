@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Users, Code, Pen, Heart } from 'lucide-react';
 import { PROJECT_LABELS, EXPERIENCE_LABELS } from '../../config/candidatures';
-import { CANDIDATURES_API } from '../../config/api';
+import { MEMBERS_API } from '../../config/api';
+import type { MemberProfile } from '../../types/member';
 
 export interface Member {
     name: string;
@@ -30,9 +31,18 @@ export function MembersSection({ onMemberClick }: MembersSectionProps) {
     useEffect(() => {
         const fetchMembers = async () => {
             try {
-                const res = await fetch(`${CANDIDATURES_API}/members`);
+                const res = await fetch(`${MEMBERS_API}?limit=100`);
                 if (res.ok) {
-                    setMembers(await res.json());
+                    const data = await res.json();
+                    const mapped = (data.members || []).map((m: MemberProfile) => ({
+                        name: m.display_name,
+                        slug: m.slug,
+                        project: m.project,
+                        skills: m.skills.join(', '),
+                        experience_level: m.experience_level,
+                        type: 'candidature' as const,
+                    }));
+                    setMembers(mapped);
                 }
             } catch {
                 // Silently fail — section simply won't show
