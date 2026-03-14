@@ -5,10 +5,24 @@ import { Input } from '../ui/Input';
 import { StepProgress } from '../ui/StepProgress';
 import { API_URL } from '../../config/api';
 
-const INTEREST_TAGS = [
-    'Fiction', 'Documentaire', 'Écologie', 'Sciences',
-    'Philosophie', 'Société', 'Technologie', 'Arts',
+const WRITING_GENRES = [
+    'Scénario', 'Fiction', 'Documentaire', 'Poésie',
+    'Narration', 'Dialogue', 'Dramaturgie', 'Analyse littéraire',
 ];
+
+const INTEREST_TAGS = [
+    'Écologie', 'Sciences', 'Philosophie', 'Société',
+    'Technologie', 'Arts', 'Politique', 'Spiritualité',
+];
+
+const EXPERIENCE_LEVELS = [
+    { value: 'professional', label: 'Professionnel·le', desc: 'Publication, production ou commande professionnelle' },
+    { value: 'student', label: 'Étudiant·e', desc: 'En formation écriture, lettres ou cinéma' },
+    { value: 'self_taught', label: 'Autodidacte', desc: 'Écriture régulière, ateliers, projets personnels' },
+    { value: 'motivated', label: 'Passionné·e', desc: 'Envie de se lancer dans l\'écriture' },
+];
+
+const accentHex = '#D4AF37';
 
 export function ScenaristApplicationForm() {
     const [submitted, setSubmitted] = useState(false);
@@ -16,15 +30,13 @@ export function ScenaristApplicationForm() {
     const [error, setError] = useState('');
     const [step, setStep] = useState(1);
     const [consentRGPD, setConsentRGPD] = useState(false);
+    const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
     const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+    const [experienceLevel, setExperienceLevel] = useState('');
     const formRef = useRef<HTMLFormElement>(null);
 
-    const accentHex = '#D4AF37';
-
-    const toggleInterest = (tag: string) => {
-        setSelectedInterests(prev =>
-            prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
-        );
+    const toggleTag = (tag: string, list: string[], setter: React.Dispatch<React.SetStateAction<string[]>>) => {
+        setter(list.includes(tag) ? list.filter(t => t !== tag) : [...list, tag]);
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -36,18 +48,19 @@ export function ScenaristApplicationForm() {
         const formData = new FormData(form);
 
         try {
-            const res = await fetch(`${API_URL}/candidatures/tech`, {
+            const res = await fetch(`${API_URL}/candidatures/scenariste`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name: formData.get('name'),
                     email: formData.get('email'),
-                    skills: formData.get('skills'),
+                    skills: selectedGenres.join(', '),
                     message: formData.get('message'),
                     project: 'scenariste',
                     website: formData.get('website') || '',
                     portfolio_url: formData.get('portfolio_url') || null,
                     creative_interests: selectedInterests.length > 0 ? selectedInterests.join(', ') : null,
+                    experience_level: experienceLevel || null,
                 }),
             });
 
@@ -78,8 +91,15 @@ export function ScenaristApplicationForm() {
             if (!emailInput?.checkValidity()) { emailInput?.reportValidity(); return; }
         }
         if (step === 2) {
-            const skillsInput = form.querySelector('textarea[name="skills"]') as HTMLTextAreaElement;
-            if (!skillsInput?.checkValidity()) { skillsInput?.reportValidity(); return; }
+            if (selectedGenres.length === 0) {
+                setError('Sélectionnez au moins un genre d\'écriture.');
+                return;
+            }
+            if (!experienceLevel) {
+                setError('Sélectionnez votre niveau d\'expérience.');
+                return;
+            }
+            setError('');
         }
         setStep(prev => prev + 1);
     };
@@ -96,7 +116,7 @@ export function ScenaristApplicationForm() {
                 </div>
                 <h3 className="text-2xl font-serif text-white mb-3">Candidature envoyée !</h3>
                 <p className="text-neutral-400 max-w-md">
-                    Merci pour votre intérêt. Notre équipe examinera votre profil et vous contactera prochainement.
+                    Merci pour votre intérêt. Notre équipe examinera votre profil créatif et vous contactera prochainement.
                 </p>
             </div>
         );
@@ -104,44 +124,72 @@ export function ScenaristApplicationForm() {
 
     return (
         <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
-            <StepProgress currentStep={step} totalSteps={4} labels={['Identité', 'Compétences', 'Intérêts', 'Motivation']} />
+            <StepProgress currentStep={step} totalSteps={4} labels={['Identité', 'Profil créatif', 'Thématiques', 'Motivation']} />
 
             {/* Step 1: Identity */}
             <div className={`space-y-5 flex flex-col ${step !== 1 ? 'hidden' : 'animate-fade-in delay-100'}`}>
                 <div className="grid grid-cols-1 gap-5">
                     <Input label="Nom complet" name="name" placeholder="Votre prénom et nom" required minLength={2} maxLength={100} />
                     <Input label="Email de contact" name="email" type="email" placeholder="votre@email.com" required />
+                    <Input label="Portfolio / travaux en ligne (optionnel)" name="portfolio_url" type="url" placeholder="https://votre-site.com, Wattpad, blog..." />
                 </div>
                 <div className="text-sm text-neutral-400 p-4 border border-white/5 rounded-md bg-white/5 mt-2">
-                    Votre adresse email sera utilisée pour vous recontacter concernant votre candidature pour contribuer comme <strong>scénariste</strong> à la série ECHO.
+                    Votre adresse email sera utilisée pour vous recontacter concernant votre candidature comme <strong>scénariste</strong> pour la série ECHO.
                 </div>
             </div>
 
-            {/* Step 2: Skills + Portfolio */}
+            {/* Step 2: Creative Profile — Genres + Experience */}
             <div className={`space-y-5 ${step !== 2 ? 'hidden' : 'animate-fade-in delay-100'}`}>
                 <div>
-                    <label className="block text-sm font-medium text-neutral-300 mb-1">Compétences d'écriture & parcours</label>
-                    <textarea
-                        name="skills"
-                        className="w-full bg-black/20 border border-white/10 rounded-md py-2 px-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-white/30 text-sm resize-y min-h-[140px]"
-                        placeholder="Décrivez votre expérience d'écriture : scénario, fiction, théâtre, journalisme, blogging..."
-                        required
-                        minLength={2}
-                        maxLength={500}
-                    />
+                    <label className="block text-sm font-medium text-neutral-300 mb-3">Genres d'écriture</label>
+                    <div className="flex flex-wrap gap-2">
+                        {WRITING_GENRES.map(genre => (
+                            <button
+                                key={genre}
+                                type="button"
+                                onClick={() => toggleTag(genre, selectedGenres, setSelectedGenres)}
+                                className={`px-4 py-2 rounded-full text-sm font-medium transition-all border ${
+                                    selectedGenres.includes(genre)
+                                        ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
+                                        : 'bg-white/5 text-neutral-400 border-white/10 hover:bg-white/10 hover:text-white'
+                                }`}
+                            >
+                                {genre}
+                            </button>
+                        ))}
+                    </div>
+                    <p className="text-xs text-neutral-500 mt-2">Sélectionnez un ou plusieurs genres.</p>
                 </div>
+
                 <div>
-                    <Input
-                        label="Lien portfolio / travaux (optionnel)"
-                        name="portfolio_url"
-                        type="url"
-                        placeholder="https://votre-site.com ou lien Wattpad, blog..."
-                    />
-                    <p className="text-xs text-neutral-500 mt-1">Partagez un lien vers vos travaux si vous en avez.</p>
+                    <label className="block text-sm font-medium text-neutral-300 mb-3">Niveau d'expérience</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {EXPERIENCE_LEVELS.map(level => (
+                            <button
+                                key={level.value}
+                                type="button"
+                                onClick={() => setExperienceLevel(level.value)}
+                                className={`p-3 rounded-lg border text-left transition-all ${
+                                    experienceLevel === level.value
+                                        ? 'bg-amber-500/15 border-amber-500/50'
+                                        : 'border-white/10 bg-white/5 hover:bg-white/10'
+                                }`}
+                            >
+                                <span className={`text-sm font-medium ${experienceLevel === level.value ? 'text-amber-400' : 'text-white'}`}>
+                                    {level.label}
+                                </span>
+                                <p className="text-xs text-neutral-500 mt-0.5">{level.desc}</p>
+                            </button>
+                        ))}
+                    </div>
                 </div>
+
+                {error && (
+                    <p className="text-sm text-red-400 bg-red-500/10 p-3 rounded border border-red-500/20">{error}</p>
+                )}
             </div>
 
-            {/* Step 3: Creative Interests (Tags) */}
+            {/* Step 3: Thematic Interests */}
             <div className={`space-y-5 ${step !== 3 ? 'hidden' : 'animate-fade-in delay-100'}`}>
                 <div>
                     <label className="block text-sm font-medium text-neutral-300 mb-3">Quelles thématiques vous passionnent ?</label>
@@ -150,7 +198,7 @@ export function ScenaristApplicationForm() {
                             <button
                                 key={tag}
                                 type="button"
-                                onClick={() => toggleInterest(tag)}
+                                onClick={() => toggleTag(tag, selectedInterests, setSelectedInterests)}
                                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all border ${
                                     selectedInterests.includes(tag)
                                         ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
@@ -161,7 +209,7 @@ export function ScenaristApplicationForm() {
                             </button>
                         ))}
                     </div>
-                    <p className="text-xs text-neutral-500 mt-2">Sélectionnez une ou plusieurs thématiques.</p>
+                    <p className="text-xs text-neutral-500 mt-2">Sélectionnez une ou plusieurs thématiques (optionnel).</p>
                 </div>
             </div>
 
