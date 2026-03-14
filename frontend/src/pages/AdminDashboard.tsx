@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
-    Shield, Users, Calendar, Download, FileText,
+    Shield, Users, Calendar, Download, FileText, Heart,
     Clock, ChevronRight, AlertTriangle
 } from 'lucide-react';
-import { PARTNERS_API, CANDIDATURES_API } from '../config/api';
+import { API_URL, PARTNERS_API, CANDIDATURES_API } from '../config/api';
 
 export default function AdminDashboard() {
     const [pendingCount, setPendingCount] = useState<number | null>(null);
     const [totalCount, setTotalCount] = useState<number | null>(null);
     const [candidatureCount, setCandidatureCount] = useState<number | null>(null);
+    const [volunteerCount, setVolunteerCount] = useState<number | null>(null);
     useEffect(() => {
         const fetchStats = async () => {
             try {
@@ -31,6 +32,17 @@ export default function AdminDashboard() {
                 if (res.ok) {
                     const candidatures = await res.json();
                     setCandidatureCount(candidatures.length);
+                }
+            } catch {
+                // silent
+            }
+            try {
+                const res = await fetch(`${API_URL}/volunteers/admin/all`, {
+                    credentials: 'include',
+                });
+                if (res.ok) {
+                    const volunteers = await res.json();
+                    setVolunteerCount(volunteers.length);
                 }
             } catch {
                 // silent
@@ -59,6 +71,15 @@ export default function AdminDashboard() {
             active: true,
             badge: candidatureCount !== null && candidatureCount > 0 ? `${candidatureCount} candidature${candidatureCount > 1 ? 's' : ''}` : undefined,
             badgeColor: '#A78BFA',
+        },
+        {
+            title: 'Candidatures bénévoles',
+            description: 'Gérer les candidatures bénévoles du mouvement',
+            icon: <Heart size={24} />,
+            href: '/admin/benevoles',
+            active: true,
+            badge: volunteerCount !== null && volunteerCount > 0 ? `${volunteerCount} candidature${volunteerCount > 1 ? 's' : ''}` : undefined,
+            badgeColor: '#10B981',
         },
         {
             title: 'Événements',
