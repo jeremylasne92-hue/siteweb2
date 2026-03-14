@@ -106,6 +106,15 @@ async def startup_indexes():
     except Exception as e:
         logger.warning(f"TTL index creation: {e}")
 
+    # Member profiles indexes
+    try:
+        await db.member_profiles.create_index("user_id", unique=True)
+        await db.member_profiles.create_index("slug", unique=True)
+        await db.member_profiles.create_index([("visible", 1), ("project", 1)])
+        await db.member_profiles.create_index("membership_status")
+    except Exception as e:
+        logger.warning(f"Member profiles index creation: {e}")
+
     logger.info("Rate limit and retention indexes ensured")
 
 
