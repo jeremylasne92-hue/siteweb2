@@ -637,49 +637,49 @@ export function Serie() {
                             name="SACHA"
                             role="Le Protagoniste"
                             description="Responsable administratif et financier, Sacha est doté d'une forte empathie et d'une capacité à appréhender les dynamiques systémiques. Il porte en lui le poids immense du « syndrome du sauveur ». Sa détermination à éveiller les consciences et à transformer radicalement la société provient de ses prises de conscience sur l'avenir incertain du monde."
-                            image="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=2574&auto=format&fit=crop"
+                            image="/images/characters/sacha.jpeg"
                         />
                         {/* PHILIPPE */}
                         <CharacterCard
                             name="PHILIPPE"
                             role="Le Prodigue"
                             description="Père de Sacha, Philippe est un homme dont les convictions radicales imprègnent chaque aspect de sa vie. Animé par des préjugés racistes et une mentalité matérialiste poussée à l'extrême, il affiche sans détour un caractère provocateur et agressif. Son autoritarisme et son intolérance sont autant de barrières qui le séparent de son fils."
-                            image="https://images.unsplash.com/photo-1562788869-4ed32648eb72?q=80&w=2672&auto=format&fit=crop"
+                            image="/images/characters/philippe.png"
                         />
                         {/* NADINE */}
                         <CharacterCard
                             name="NADINE"
                             role="Les Limbes"
                             description="Mère de Sacha, Nadine est profondément marquée par l'inquiétude et l'anxiété envers son fils. Bien qu'elle agisse toujours avec de bonnes intentions, son anxiété excessive la pousse souvent à étouffer et à entraver l'épanouissement de Sacha, compromettant parfois involontairement son ambition."
-                            image="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=2576&auto=format&fit=crop"
+                            image="/images/characters/nadine.jpeg"
                         />
                         {/* EVA */}
                         <CharacterCard
                             name="EVA"
                             role="L'Amour"
                             description="Petite amie de Sacha, Eva représente la douceur et l'amour au sein de la vie tumultueuse du héros. Elle est amoureuse, mais se trouve constamment tiraillée entre la quête idéaliste de Sacha et ses propres besoins. Cet équilibre délicat rend leur relation intense et complexe, parfois menacée par l'ampleur de la mission que Sacha s'impose."
-                            image="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=2574&auto=format&fit=crop"
+                            image="/images/characters/eva.jpeg"
                         />
                         {/* AKOU */}
                         <CharacterCard
                             name="AKOU"
                             role="Le Guide Spirituel"
                             description="Ami et guide spirituel de Sacha, Akou porte en lui une profonde sagesse et une compréhension intuitive du monde. Habité par une quête constante d'équilibre et d'unité, il devient le repère moral essentiel dans le voyage tumultueux de Sacha."
-                            image="https://images.unsplash.com/photo-1531384441138-2736e62e0919?q=80&w=2574&auto=format&fit=crop"
+                            image="/images/characters/akou.jpeg"
                         />
                         {/* LILY */}
                         <CharacterCard
                             name="LILY"
                             role="La Rebelle"
                             description="Rencontre inattendue dans le parcours de Sacha, Lily est une femme libre et intuitive portée par une énergie rebelle. Experte en construction durable, elle allie écologie et sensibilité artistique. Habituée à ne compter que sur elle, son indépendance dissimule une blessure, la peur d'ouvrir pleinement son coeur. Par la suite elle deviendra un moteur de transformation pour elle-même et pour ceux qui l'entourent."
-                            image="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=2664&auto=format&fit=crop"
+                            image="/images/characters/lily.png"
                         />
                         {/* NOUR */}
                         <CharacterCard
                             name="NOUR"
                             role="Le Soutien"
                             description="Femme de ménage au sein de l'entreprise, Nour est animée d'une générosité sincère et chaleureuse. Malgré une vie modeste marquée par l'exil, elle apporte à Sacha un soutien émotionnel précieux, incarnant l'empathie véritable. Toutefois, son dévouement absolu aux autres révèle aussi sa vulnérabilité : celle de négliger sa propre identité et ses propres besoins pour le bonheur des autres."
-                            image="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=2574&auto=format&fit=crop"
+                            image="/images/characters/nour.png"
                         />
 
                         {/* COLLÈGUES (VICES) */}
@@ -687,49 +687,49 @@ export function Serie() {
                             name="MARIANNE"
                             role="Luxure"
                             description="Responsable des Ressources Humaines. Incarne le vice de la luxure. Elle symbolise les dérives de l'industrie du luxe, des médias et de la mode, où l'image est valorisée au détriment de l'authenticité. Son parcours amorce une transformation vers la sobriété, réconciliant l'esthétique avec l'éthique, jusque dans sa manière de communiquer, de s'habiller et de vivre."
-                            image="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?q=80&w=2670&auto=format&fit=crop"
+                            image="/images/characters/marianne.png"
                         />
                         <CharacterCard
                             name="DOMINIQUE"
                             role="Gourmandise"
                             description="Responsable des services généraux, représente le vice de la gourmandise. Il reflète les problématiques de l'industrie agro-alimentaire ainsi que des excès d'une société consumériste. Figure de la résistance au changement, Dominique entame pourtant une métamorphose. Sa trajectoire est ciblée sur un retour à la terre, une consommation plus saine et respectueuse de l'environnement."
-                            image="https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?q=80&w=2680&auto=format&fit=crop"
+                            image="/images/characters/dominique.jpeg"
                         />
                         <CharacterCard
                             name="SOPHIE"
                             role="Avarice"
                             description="Responsable Marketing & Communication, personnifie le vice de l'avarice. Elle illustre les dérives de l'industrie marketing et publicitaire qui manipule nos esprits et nos comportements. Son évolution s'engage vers une approche centrée sur le sens, la transparence et intégrité."
-                            image="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2576&auto=format&fit=crop"
+                            image="/images/characters/sophie.jpeg"
                         />
                         <CharacterCard
                             name="ALEXANDRE"
                             role="Colère"
                             description="Responsable Achat & Ventes des composants chimiques médicaux, Incarne le vice de la colère. Il représente les abus de l'industrie pharmaceutique. Son cheminement l'amène à un apaisement progressif fondé sur l'utilisation des médecines douces et le sport pour redonner une place prépondérante à sa santé physique et mentale."
-                            image="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2670&auto=format&fit=crop"
+                            image="/images/characters/alexandre.jpeg"
                         />
                         <CharacterCard
                             name="SARA"
                             role="Hérésie"
                             description="Responsable Recherche & Développement, symbolise le vice de l'hérésie. Elle incarne les excès des industries de la tech et en particulier de l'intelligence artificielle, où le culte du progrès technique s'impose au détriment des limites planétaires. Son parcours la conduit à s'intéresser aux ponts entre la science et la spiritualité afin de répondre aux défis contemporains."
-                            image="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=2574&auto=format&fit=crop"
+                            image="/images/characters/sara.png"
                         />
                         <CharacterCard
                             name="ROHAN"
                             role="Violence"
                             description="Responsable Logistique, Rohan incarne le vice de la violence. Il reflète la violence à tous les niveaux (conjugale, l'armée, la géopolitique). Son parcours amorce une métamorphose, ouvrant un chemin vers l'écoute, l'empathie et la réconciliation familiale. Le sport sera son vecteur d'apaisement, d'émancipation et de rassemblement."
-                            image="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=2574&auto=format&fit=crop"
+                            image="/images/characters/rohan.png"
                         />
                         <CharacterCard
                             name="AYUMI"
                             role="Fraude"
                             description="Responsable Juridique spécialisée en droit des affaires et en homologation des médicaments, illustre le vice de la fraude. Elle évoque l'opacité du système juridique institutionnel, le lobbying et les systèmes normatifs. Son évolution sera marquée par la mise en place d'une justice socialement juste et respectueuse du vivant."
-                            image="https://images.unsplash.com/photo-1589156280159-27698a70f29e?q=80&w=2572&auto=format&fit=crop"
+                            image="/images/characters/ayumi.jpeg"
                         />
                         <CharacterCard
                             name="MATHIEU"
                             role="Trahison"
                             description="Directeur général, incarne le vice de la trahison. Il représente les intérêts privés, l'influence du pouvoir politique, du lobbying et du patronat. Sa réputation l'importe plus que tout. Ses mécanismes de domination, fondée sur le contrôle et la peur, se retourneront à terme contre lui."
-                            image="/images/characters/mathieu.png"
+                            image="/images/characters/mathieu.jpeg"
                         />
                     </div>
                 </div>
