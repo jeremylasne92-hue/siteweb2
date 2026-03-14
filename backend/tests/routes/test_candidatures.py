@@ -263,6 +263,36 @@ def test_scenariste_without_portfolio():
     assert response.json()["message"] == "Candidature envoyée avec succès"
 
 
+def test_scenariste_dedicated_endpoint():
+    """POST /candidatures/scenariste stores candidature with project=scenariste."""
+    db = make_mock_db()
+    app.dependency_overrides[get_db] = lambda: db
+
+    data = {
+        "name": "Marie Dupont",
+        "email": "marie@example.com",
+        "project": "scenariste",
+        "skills": "Écriture créative, dramaturgie",
+        "message": "Je souhaite contribuer à l'écriture de la série ECHO.",
+        "website": "",
+        "portfolio_url": "https://marie-portfolio.com",
+        "creative_interests": "Fiction, Écologie",
+        "experience_level": "professional",
+    }
+
+    with patch("routes.candidatures.send_email", new_callable=AsyncMock):
+        response = client.post("/api/candidatures/scenariste", json=data)
+
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert response.json()["message"] == "Candidature envoyée avec succès"
+    db.tech_candidatures.insert_one.assert_called_once()
+    stored = db.tech_candidatures.insert_one.call_args[0][0]
+    assert stored["project"] == "scenariste"
+    assert stored["experience_level"] == "professional"
+
+
 def test_update_status_unauthorized():
     """PUT /candidatures/admin/{id}/status without admin returns 401/403."""
     db = MagicMock()

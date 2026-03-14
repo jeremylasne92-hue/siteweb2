@@ -82,6 +82,65 @@ async def submit_tech_candidature(
     return {"message": "Candidature envoyée avec succès"}
 
 
+@router.post("/scenariste")
+async def submit_scenariste_candidature(
+    data: TechCandidatureRequest,
+    request: Request,
+    background_tasks: BackgroundTasks,
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    """Submit a scenarist candidature (public, anti-spam protected)"""
+    client_ip = request.client.host if request.client else "unknown"
+
+    # Anti-spam: honeypot check
+    if data.website:
+        logger.info(f"Honeypot triggered from {client_ip}")
+        return {"message": "Candidature envoyée avec succès"}
+
+    # Anti-spam: rate limiting
+    window_start = datetime.utcnow() - timedelta(hours=RATE_LIMIT_WINDOW_HOURS)
+    recent_count = await db.tech_candidatures.count_documents({
+        "ip_address": client_ip,
+        "created_at": {"$gte": window_start}
+    })
+    if recent_count >= RATE_LIMIT_MAX:
+        logger.warning(f"Rate limit exceeded for {client_ip}")
+        return {"message": "Trop de soumissions récentes. Réessayez plus tard.", "rate_limited": True}
+
+    candidature = TechCandidature(
+        name=data.name,
+        email=data.email,
+        project="scenariste",
+        skills=data.skills,
+        message=data.message,
+        portfolio_url=data.portfolio_url,
+        creative_interests=data.creative_interests,
+        experience_level=data.experience_level,
+        ip_address=anonymize_ip(client_ip),
+    )
+    await db.tech_candidatures.insert_one(candidature.model_dump())
+    logger.info(f"New scenarist candidature from {data.name}")
+
+    email_body = f"Nom: {data.name}\nEmail: {data.email}\nProjet: Scénariste\nCompétences: {data.skills}"
+    if data.portfolio_url:
+        email_body += f"\nPortfolio: {data.portfolio_url}"
+    if data.creative_interests:
+        email_body += f"\nIntérêts créatifs: {data.creative_interests}"
+    if data.experience_level:
+        level_labels = {"professional": "Professionnel", "student": "Étudiant", "self_taught": "Autodidacte", "motivated": "Motivé"}
+        email_body += f"\nNiveau d'expérience: {level_labels.get(data.experience_level, data.experience_level)}"
+    email_body += f"\n\nMessage:\n{data.message}"
+    background_tasks.add_task(
+        send_email,
+        "mouvement.echo.france@gmail.com",
+        "Nouvelle candidature — Scénariste",
+        email_body,
+    )
+    background_tasks.add_task(send_candidature_confirmation, data.email, data.name, "scenariste")
+
+    return {"message": "Candidature envoyée avec succès"}
+
+
 @router.get("/admin/all")
 async def list_tech_candidatures(
     project: str = "all",
