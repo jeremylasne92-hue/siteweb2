@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Users, Code, Pen, Heart } from 'lucide-react';
+import { PROJECT_LABELS, EXPERIENCE_LABELS } from '../../config/candidatures';
 import { CANDIDATURES_API } from '../../config/api';
 
-interface Member {
+export interface Member {
     name: string;
     slug?: string;
     project: string;
@@ -15,21 +16,14 @@ interface MembersSectionProps {
     onMemberClick?: (slug: string) => void;
 }
 
-const PROJECT_CONFIG: Record<string, { label: string; color: string; icon: typeof Code }> = {
-    cognisphere: { label: 'CogniSphère', color: '#8B5CF6', icon: Code },
-    echolink: { label: 'ECHOLink', color: '#3B82F6', icon: Code },
-    scenariste: { label: 'Scénariste', color: '#D4AF37', icon: Pen },
-    benevole: { label: 'Bénévole', color: '#10B981', icon: Heart },
+const PROJECT_ICONS: Record<string, typeof Code> = {
+    cognisphere: Code,
+    echolink: Code,
+    scenariste: Pen,
+    benevole: Heart,
 };
 
-const EXPERIENCE_LABELS: Record<string, string> = {
-    professional: 'Professionnel',
-    student: 'Étudiant',
-    self_taught: 'Autodidacte',
-    motivated: 'Motivé',
-};
-
-export function MembersSection({ onMemberClick }: MembersSectionProps = {}) {
+export function MembersSection({ onMemberClick }: MembersSectionProps) {
     const [members, setMembers] = useState<Member[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -69,31 +63,36 @@ export function MembersSection({ onMemberClick }: MembersSectionProps = {}) {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {members.map((member, i) => {
-                        const config = PROJECT_CONFIG[member.project] || PROJECT_CONFIG.benevole;
-                        const Icon = config.icon;
+                        const project = PROJECT_LABELS[member.project] || PROJECT_LABELS.benevole;
+                        const Icon = PROJECT_ICONS[member.project] || Heart;
+                        const isClickable = !!member.slug && !!onMemberClick;
+                        const skillsList = member.skills.split(', ');
                         return (
                             <div
                                 key={`${member.name}-${i}`}
-                                className="p-4 rounded-xl bg-[#1A1A1A] border border-white/5 hover:border-white/15 transition-colors cursor-pointer"
-                                onClick={() => onMemberClick?.(member.slug || '')}
+                                className={`p-4 rounded-xl bg-[#1A1A1A] border border-white/5 hover:border-white/15 transition-colors${isClickable ? ' cursor-pointer' : ''}`}
+                                onClick={isClickable ? () => onMemberClick(member.slug!) : undefined}
+                                onKeyDown={isClickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onMemberClick(member.slug!); } } : undefined}
+                                role={isClickable ? 'button' : undefined}
+                                tabIndex={isClickable ? 0 : undefined}
                             >
                                 <div className="flex items-start gap-3">
                                     <div
                                         className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-sm font-bold"
-                                        style={{ backgroundColor: `${config.color}20`, color: config.color }}
+                                        style={{ backgroundColor: `${project.color}20`, color: project.color }}
                                     >
                                         {member.name.charAt(0).toUpperCase()}
                                     </div>
                                     <div className="min-w-0">
                                         <p className="text-white font-medium text-sm truncate">{member.name}</p>
                                         <div className="flex items-center gap-1.5 mt-1">
-                                            <Icon size={12} style={{ color: config.color }} />
-                                            <span className="text-xs" style={{ color: config.color }}>{config.label}</span>
+                                            <Icon size={12} style={{ color: project.color }} />
+                                            <span className="text-xs" style={{ color: project.color }}>{project.label}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="mt-3 flex flex-wrap gap-1.5">
-                                    {member.skills.split(', ').slice(0, 3).map(skill => (
+                                    {skillsList.slice(0, 3).map(skill => (
                                         <span
                                             key={skill}
                                             className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/5 text-neutral-400 border border-white/10"
@@ -101,9 +100,9 @@ export function MembersSection({ onMemberClick }: MembersSectionProps = {}) {
                                             {skill}
                                         </span>
                                     ))}
-                                    {member.skills.split(', ').length > 3 && (
+                                    {skillsList.length > 3 && (
                                         <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/5 text-neutral-500">
-                                            +{member.skills.split(', ').length - 3}
+                                            +{skillsList.length - 3}
                                         </span>
                                     )}
                                 </div>
