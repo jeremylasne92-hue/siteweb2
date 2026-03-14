@@ -164,6 +164,7 @@ class TechCandidature(BaseModel):
     status_note: Optional[str] = None
     portfolio_url: Optional[str] = None
     creative_interests: Optional[str] = None
+    experience_level: Optional[str] = None
     ip_address: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: Optional[datetime] = None
@@ -178,6 +179,7 @@ class TechCandidatureRequest(BaseModel):
     website: str = ""  # honeypot field
     portfolio_url: Optional[str] = Field(None, max_length=500)
     creative_interests: Optional[str] = Field(None, max_length=500)
+    experience_level: Optional[Literal["professional", "student", "self_taught", "motivated"]] = None
 
     @field_validator("portfolio_url")
     @classmethod

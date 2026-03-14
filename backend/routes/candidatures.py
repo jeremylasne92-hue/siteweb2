@@ -53,6 +53,7 @@ async def submit_tech_candidature(
         message=data.message,
         portfolio_url=data.portfolio_url,
         creative_interests=data.creative_interests,
+        experience_level=data.experience_level,
         ip_address=anonymize_ip(client_ip),
     )
     await db.tech_candidatures.insert_one(candidature.model_dump())
@@ -128,7 +129,7 @@ async def export_tech_candidatures(
     output = io.StringIO()
     output.write("\ufeff")  # BOM UTF-8
     writer = csv.writer(output)
-    writer.writerow(["id", "name", "email", "project", "skills", "message", "portfolio_url", "creative_interests", "status", "status_note", "created_at"])
+    writer.writerow(["id", "name", "email", "project", "skills", "message", "portfolio_url", "creative_interests", "experience_level", "status", "status_note", "created_at"])
     for c in candidatures:
         created = c.get("created_at", "")
         if hasattr(created, "isoformat"):
@@ -142,6 +143,7 @@ async def export_tech_candidatures(
             c.get("message", ""),
             c.get("portfolio_url", ""),
             c.get("creative_interests", ""),
+            c.get("experience_level", ""),
             c.get("status", "pending"),
             c.get("status_note", ""),
             created,
