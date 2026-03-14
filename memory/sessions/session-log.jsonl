@@ -1,9 +1,7 @@
-{"ts": "2026-03-14T14:08:10Z", "cmd": "cd \"C:\\Dev\\Site web ECHO\" && git status"}
-{"ts": "2026-03-14T14:08:25Z", "cmd": "cd \"C:\\Dev\\Site web ECHO\" && git diff backend/email_service.py"}
-{"ts": "2026-03-14T14:08:54Z", "cmd": "cd \"C:\\Dev\\Site web ECHO\" && git log --oneline -5"}
-{"ts": "2026-03-14T14:09:21Z", "cmd": "cd \"C:\\Dev\\Site web ECHO\" && git add backend/email_service.py && git commit -m \"$(cat <<'EOF'\nfeat: polish candidature notification email texts\n\nReplace placeholder email content with definitive, professional\nFrench texts for all 4 candidature notification emails (confirmation,\ninterview invitation, acceptance, rejection).\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n)\""}
-{"ts": "2026-03-14T14:10:12Z", "cmd": "cd \"C:\\Dev\\Site web ECHO\" && git push"}
-{"ts": "2026-03-14T14:11:21Z", "cmd": "cd \"C:\\Dev\\Site web ECHO\" && git status"}
-{"ts": "2026-03-14T14:11:40Z", "cmd": "cd \"C:\\Dev\\Site web ECHO\" && ls \"frontend/public/images/Logo/\" && ls \"frontend/public/images/Nouveau dossier/\""}
-{"ts": "2026-03-14T14:11:42Z", "cmd": "cd \"C:\\Dev\\Site web ECHO\" && git diff memory/sessions/session-log.jsonl | head -20"}
-{"ts": "2026-03-14T14:12:11Z", "cmd": "cd \"C:\\Dev\\Site web ECHO\" && rm \"frontend/public/images/Nouveau dossier/ECHOLink - Document complet (\u00c3\u00a0 terminer).pdf\" && rmdir \"frontend/public/images/Nouveau dossier\""}
+{"ts": "2026-03-14T20:16:39Z", "cmd": "cd \"C:\\Dev\\Site web ECHO\" && git branch -a | head -20"}
+{"ts": "2026-03-14T20:16:41Z", "cmd": "cd \"C:\\Dev\\echo-member-profiles\" 2>/dev/null && git log --oneline -12 || echo \"Worktree not available\""}
+{"ts": "2026-03-14T20:17:08Z", "cmd": "cd \"C:\\Dev\\Site web ECHO\" && git status frontend/src/config/candidatures.ts"}
+{"ts": "2026-03-14T20:17:30Z", "cmd": "cd \"C:\\Dev\\Site web ECHO\" && git add frontend/src/config/candidatures.ts && git commit -m \"$(cat <<'EOF'\nchore: track candidatures config file\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n)\" && git merge feat/member-profiles --no-edit 2>&1"}
+{"ts": "2026-03-14T20:17:36Z", "cmd": "cd \"C:\\Dev\\Site web ECHO\" && git stash list"}
+{"ts": "2026-03-14T20:17:38Z", "cmd": "cd \"C:\\Dev\\Site web ECHO\" && ls .claude/hooks* 2>/dev/null; ls .claude/settings* 2>/dev/null; cat .claude/settings.json 2>/dev/null || echo \"No settings file\""}
+{"ts": "2026-03-14T20:19:20Z", "cmd": "cd \"C:\\Dev\\Site web ECHO\" && git stash show stash@{0} --stat"}

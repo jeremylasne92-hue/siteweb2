@@ -8,8 +8,8 @@
 
 **Dernière mise à jour** : 2026-03-14
 **Phase actuelle** : Post-Epics — Pré-lancement (lancement 20 mars 2026)
-**Statut** : ✅ Opérationnel — Notifications candidatures + page Mon Compte
-**Dernier milestone** : Emails transactionnels candidatures (confirmation, entretien, accepté, rejeté) + suivi candidatures dans profil utilisateur
+**Statut** : ✅ Opérationnel — Profils membres + Notifications candidatures + page Mon Compte
+**Dernier milestone** : Profils membres (collection member_profiles, endpoints publics/auth/admin, MemberModal, seeds depuis candidatures acceptées)
 
 ### ⚠️ Rappels Pré-Lancement (20 mars 2026)
 - [ ] **Revoir le Dashboard Partenaire** avant la sortie officielle (UX, données, design)
@@ -46,8 +46,10 @@ backend/
 │   ├── videos.py          # Upload/streaming vidéo
 │   ├── users.py           # Gestion utilisateurs (admin)
 │   ├── partners.py        # Gestion partenaires — /me/stats (agrégation analytics 30j)
+│   ├── members.py         # Profils membres (public /members, auth /me, admin /admin/members + seed)
 │   ├── thematics.py       # Thématiques
 │   └── resources.py       # Ressources
+├── models_member.py       # Pydantic models membres (ProjectType, SocialLink, VisibilityOverrides, etc.)
 ├── services/
 │   ├── auth_service.py    # Google OAuth service
 │   └── auth_local_service.py  # Register/Login local (Service Pattern)
@@ -66,6 +68,8 @@ frontend/src/
 └── components/partners/
     ├── PartnerAnalytics.tsx  # Graphiques Recharts (vues/clics 30j)
     ├── PartnerModal.tsx      # Fiche partenaire — tracking vues + clics site
+    ├── MemberModal.tsx       # Fiche membre — avatar, bio, skills, social links
+    ├── MembersSection.tsx    # Grille membres (fetch MEMBERS_API, clickable, a11y)
     └── PartnersMap.tsx      # Carte — tracking clics marker
 ```
 
@@ -150,6 +154,7 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-14 | Profils membres : collection member_profiles (MongoDB, 4 index), modèles Pydantic (models_member.py : ProjectType, ExperienceLevel, Availability, SocialLink, VisibilityOverrides, MemberProfile), routes publiques (GET / avec re.escape search, GET /{slug}), auth (GET/PATCH /me, PATCH /me/visibility), admin (GET /, GET /analytics avec asyncio.gather, PATCH /{id}/status, POST /seed/{candidature_id} avec vérif statut accepted + slug collision). Frontend : MemberModal.tsx (avatar, bio, skills, social links 11 plateformes), MembersSection.tsx (fetch MEMBERS_API, keyboard a11y), PartnersPage.tsx (membre clickable + compteur). Types TypeScript (member.ts). Config partagée candidatures.ts. 8 tests modèles + 13 tests routes. Subagent-Driven Development (9 tasks, 2-stage review). Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-14 | Notifications candidatures : 4 emails transactionnels (confirmation soumission, convocation entretien avec lien booking Google Calendar, acceptation, rejet avec motif optionnel) via BackgroundTasks dans routes candidatures. BOOKING_URL centralisé dans config. Profile.tsx étendu : support projet Scénariste (badge amber), bouton "Réserver un créneau" si statut entretien, section candidatures toujours visible avec état vide. 6 tests email + 81 tests backend total. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-14 | Refonte système événements : modèle Event étendu (images[] jusqu'à 10, date_end, booking_enabled, booking_url, organizer), endpoint upload-image (MIME+5Mo), drag & drop images admin, toggle réservation, séparation past/upcoming sur page publique Agenda, compteur "X à venir · Y passés", organizer personnalisable, error feedback admin. Fix select dropdown global (CSS). Fix bouton masquer partenaires (stopPropagation). Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-14 | Images personnages série ECHO : remplacement des 15 photos Unsplash par les vraies images des personnages (dossier "images personnages série ECHO"). Noms normalisés en minuscules dans /images/characters/. Nettoyage anciens fichiers "Personnage ..." et dossier source. Niveau HOTFIX. | Claude Code (Opus 4.6) |
@@ -204,6 +209,7 @@ frontend/src/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-14 | 🟡 STANDARD | Profils membres (models, 10 endpoints, MemberModal, MembersSection, seed, 21 tests) | ~1h30 | Claude Code (Opus 4.6) |
 | 2026-03-14 | 🟡 STANDARD | Notifications candidatures (4 emails, config booking, Profile.tsx Scénariste + bouton entretien) | ~30min | Claude Code (Opus 4.6) |
 | 2026-03-14 | 🟡 STANDARD | Refonte événements (modèle, upload, drag&drop, réservation, past/upcoming, organizer, error feedback, select fix, suspend fix) | ~1h30 | Claude Code (Opus 4.6) |
 | 2026-03-13 | 🟢 HOTFIX | Images Mouvement (remplacement Unsplash → images locales, layout rectangulaire) | ~10min | Claude Code (Opus 4.6) |
@@ -304,7 +310,8 @@ _Aucune spec en cours._
 ### Notes techniques
 
 - Frontend bundle : Code Splitting (React.lazy) en place pour différer le chargement des routes. L'index est à ~230kB `(gzip ~72kB)`.
-- Routes protégées : `/admin` (admin), `/admin/partenaires` (admin), `/admin/events` (admin), `/admin/exports` (admin), `/mon-compte/partenaire`
+- Routes protégées : `/admin` (admin), `/admin/partenaires` (admin), `/admin/events` (admin), `/admin/exports` (admin), `/admin/members` (admin), `/mon-compte/partenaire`
+- API membres : GET /api/members (public), GET /api/members/{slug} (public), GET/PATCH /api/members/me (auth), PATCH /api/members/me/visibility (auth), GET/PATCH /api/admin/members (admin), POST /api/admin/members/seed/{id} (admin)
 - Routes publiques (anciennement protégées) : `/cognisphere`, `/echolink`
 - Auth : cookie-only (httpOnly), pas de localStorage — `credentials: 'include'` sur tous les fetch
 - RGPD : bannière cookies (localStorage `echo-cookie-consent` + gtag consent API), consentement formulaires, export/suppression données, désinscription emails
@@ -335,4 +342,4 @@ _Aucune spec en cours._
 | 17 | ~~Rédiger et compléter la FAQ~~ | Moyenne | ✅ Done |
 | 18 | ~~Dashboard partenaire avec métriques (clics site, etc.)~~ | Moyenne | ✅ Done (PartnerAnalytics.tsx, Recharts, 3 métriques, 30j) |
 | 19 | ~~Rédiger les emails définitifs pour les 4 notifications candidature~~ | Moyenne | ✅ Done |
-| 20 | Audit backend MongoDB + brainstorming améliorations | Moyenne | À faire |
+| 20 | Audit backend MongoDB + brainstorming améliorations (inclut review routes/members.py, optimisation requêtes, indexes) | Moyenne | À faire — utiliser skill `superpowers:brainstorming` puis `superpowers:systematic-debugging` |
