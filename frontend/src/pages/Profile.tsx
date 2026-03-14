@@ -357,18 +357,22 @@ export default function Profile() {
                     </div>
 
                     {/* ===== Mes candidatures ===== */}
-                    {myCandidatures.length > 0 && (
-                        <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
-                            <h2 className="text-lg font-serif text-white mb-4 flex items-center gap-2">
-                                <FileText size={18} className="text-echo-gold" />
-                                Mes candidatures techniques
-                            </h2>
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
+                        <h2 className="text-lg font-serif text-white mb-4 flex items-center gap-2">
+                            <FileText size={18} className="text-echo-gold" />
+                            Mes candidatures techniques
+                        </h2>
+                        {myCandidatures.length === 0 ? (
+                            <p className="text-sm text-neutral-400 italic">Vous n&apos;avez pas encore soumis de candidature.</p>
+                        ) : (
                             <div className="space-y-3">
                                 {myCandidatures.map(c => {
-                                    const isCS = c.project === 'cognisphere';
-                                    const projectLabel = isCS ? 'CogniSphère' : 'ECHOLink';
-                                    const projectColor = isCS ? '#A78BFA' : '#60A5FA';
-                                    const ProjectIcon = isCS ? Brain : Share2;
+                                    const projectLabels: Record<string, string> = { cognisphere: 'CogniSphère', echolink: 'ECHOLink', scenariste: 'Scénariste' };
+                                    const projectColors: Record<string, string> = { cognisphere: '#A78BFA', echolink: '#60A5FA', scenariste: '#F59E0B' };
+                                    const projectIcons: Record<string, typeof Brain> = { cognisphere: Brain, echolink: Share2, scenariste: FileText };
+                                    const projectLabel = projectLabels[c.project] || c.project;
+                                    const projectColor = projectColors[c.project] || '#888';
+                                    const ProjectIcon = projectIcons[c.project] || FileText;
                                     const statusMap: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
                                         pending: { label: 'En attente', color: '#F59E0B', icon: <Clock size={12} /> },
                                         entretien: { label: 'Entretien', color: '#3B82F6', icon: <Users size={12} /> },
@@ -399,6 +403,17 @@ export default function Profile() {
                                                     {st.label}
                                                 </span>
                                             </div>
+                                            {c.status === 'entretien' && (
+                                                <a
+                                                    href="https://calendar.app.google/GSpXrQq72uqWhhSx9"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-echo-gold/20 text-echo-gold border border-echo-gold/30 hover:bg-echo-gold/30 transition-colors mt-2"
+                                                >
+                                                    <Calendar size={12} />
+                                                    Réserver un créneau d&apos;entretien
+                                                </a>
+                                            )}
                                             {c.status_note && (
                                                 <p className="text-xs text-echo-textMuted mt-2 pl-1 border-l-2 border-white/10 ml-1">
                                                     {c.status_note}
@@ -408,8 +423,8 @@ export default function Profile() {
                                     );
                                 })}
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
 
                     {/* ===== Préférences de notification — masqué en attente de la newsletter ===== */}
 
