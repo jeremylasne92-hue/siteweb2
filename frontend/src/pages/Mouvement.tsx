@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { SEO } from '../components/seo/SEO';
+import { VolunteerApplicationForm } from '../components/forms/VolunteerApplicationForm';
 
 // Images locales — croissance de l'arbre (7 étapes)
 const TREE_STAGES = {
@@ -15,6 +17,8 @@ const TREE_STAGES = {
 };
 
 export function Mouvement() {
+    const [showVolunteerForm, setShowVolunteerForm] = useState(false);
+
     return (
         <div className="bg-stone-950 text-stone-200 font-sans selection:bg-amber-500/30">
             <SEO
@@ -190,11 +194,14 @@ export function Mouvement() {
                             <span className="text-amber-500">Écrivez l'Histoire avec Nous.</span>
                         </h2>
                         <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-                            <Link to="/register">
-                                <Button variant="primary" size="lg" className="rounded-full px-8 bg-amber-600 hover:bg-amber-700 text-white border-none shadow-lg shadow-amber-900/20">
-                                    Rejoindre le Mouvement
-                                </Button>
-                            </Link>
+                            <Button
+                                variant="primary"
+                                size="lg"
+                                className="rounded-full px-8 bg-amber-600 hover:bg-amber-700 text-white border-none shadow-lg shadow-amber-900/20"
+                                onClick={() => setShowVolunteerForm(true)}
+                            >
+                                Rejoindre le Mouvement
+                            </Button>
                             <Link to="/serie">
                                 <Button variant="outline" size="lg" className="rounded-full px-8 py-3 h-auto text-base border-stone-600 text-stone-300 hover:text-white hover:border-white hover:bg-white/5">
                                     <Play className="w-4 h-4 mr-2" /> Découvrir la Série
@@ -205,6 +212,20 @@ export function Mouvement() {
                 </div>
             </section>
 
+            {showVolunteerForm && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+                     onClick={(e) => e.target === e.currentTarget && setShowVolunteerForm(false)}>
+                    <div className="relative bg-stone-900 border border-white/10 rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <button
+                            onClick={() => setShowVolunteerForm(false)}
+                            className="absolute top-4 right-4 text-stone-400 hover:text-white text-xl z-10"
+                        >
+                            ✕
+                        </button>
+                        <VolunteerApplicationForm />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
