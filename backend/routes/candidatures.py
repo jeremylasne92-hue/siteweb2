@@ -240,6 +240,35 @@ async def batch_update_candidature_status(
     return {"message": f"{result.modified_count} candidature(s) mise(s) à jour", "count": result.modified_count}
 
 
+@router.get("/members")
+async def get_accepted_members(
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    """Public endpoint: list accepted members (name, project, skills only)."""
+    projection = {"_id": 0, "name": 1, "project": 1, "skills": 1, "experience_level": 1, "created_at": 1}
+    members = []
+
+    # Accepted tech/scenarist candidatures
+    cursor = db.tech_candidatures.find({"status": "accepted"}, projection).sort("created_at", -1)
+    async for doc in cursor:
+        members.append({**doc, "type": "candidature"})
+
+    # Accepted volunteer applications
+    cursor = db.volunteer_applications.find({"status": "accepted"}, projection).sort("created_at", -1)
+    async for doc in cursor:
+        skills = doc.get("skills", [])
+        members.append({
+            "name": doc["name"],
+            "project": "benevole",
+            "skills": ", ".join(skills) if isinstance(skills, list) else skills,
+            "experience_level": doc.get("experience_level"),
+            "created_at": doc.get("created_at"),
+            "type": "volunteer",
+        })
+
+    return members
+
+
 @router.get("/me")
 async def get_my_candidatures(
     current_user: User = Depends(get_current_user),

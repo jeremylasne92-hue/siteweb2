@@ -12,6 +12,7 @@ const PartnersMap = lazy(() =>
     import('../components/partners/PartnersMap').then(m => ({ default: m.PartnersMap }))
 );
 import { PartnerFormModal } from '../components/partners/PartnerFormModal';
+import { MembersSection } from '../components/partners/MembersSection';
 import type { Partner, PartnerCategory } from '../components/partners/PartnerCard';
 import type { Thematic } from '../components/partners/ThematicTag';
 import { PARTNERS_API } from '../config/api';
@@ -126,6 +127,8 @@ export default function PartnersPage() {
                     )}
                 </div>
             </div>
+
+            <MembersSection />
 
             <PartnerModal
                 partner={selectedPartner}
