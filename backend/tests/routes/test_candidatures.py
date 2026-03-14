@@ -357,6 +357,36 @@ def test_invalid_experience_level():
     assert response.status_code == 422
 
 
+def test_accept_tech_candidature_triggers_auto_seed():
+    """PUT /candidatures/admin/{id}/status with accepted triggers auto_seed_member_profile."""
+    candidature_doc = {
+        "id": "tech-1",
+        "email": "alice@example.com",
+        "name": "Alice",
+        "project": "cognisphere",
+    }
+
+    db = MagicMock()
+    update_result = MagicMock()
+    update_result.matched_count = 1
+    db.tech_candidatures.update_one = AsyncMock(return_value=update_result)
+    db.tech_candidatures.find_one = AsyncMock(return_value=candidature_doc)
+
+    app.dependency_overrides[get_db] = lambda: db
+    app.dependency_overrides[require_admin] = lambda: ADMIN_USER
+
+    with patch("routes.candidatures.auto_seed_member_profile", new_callable=AsyncMock) as mock_seed:
+        response = client.put(
+            "/api/candidatures/admin/tech-1/status",
+            json={"status": "accepted"},
+        )
+
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    mock_seed.assert_called_once_with(db, candidature_doc, "tech")
+
+
 def test_export_csv_contains_experience_level():
     """GET /candidatures/admin/export includes experience_level column."""
     db = MagicMock()

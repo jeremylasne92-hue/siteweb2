@@ -5,6 +5,7 @@ from routes.auth import get_db, require_admin, get_current_user
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from datetime import datetime, timedelta
 from email_service import send_email, send_candidature_confirmation, send_candidature_interview, send_candidature_accepted, send_candidature_rejected
+from routes.members import auto_seed_member_profile
 from core.config import settings
 from utils.rate_limit import anonymize_ip
 import asyncio
@@ -219,6 +220,14 @@ async def update_candidature_status(
             background_tasks.add_task(send_candidature_accepted, c_email, c_name, c_project)
         elif data.status == "rejected":
             background_tasks.add_task(send_candidature_rejected, c_email, c_name, data.status_note)
+
+        # Auto-seed member profile on acceptance
+        if data.status == "accepted":
+            candidature_type = c_project if c_project == "scenariste" else "tech"
+            try:
+                await auto_seed_member_profile(db, candidature, candidature_type)
+            except Exception as e:
+                logger.error(f"Auto-seed failed for candidature {candidature_id}: {e}")
 
     return {"message": f"Statut mis à jour : {data.status}"}
 
