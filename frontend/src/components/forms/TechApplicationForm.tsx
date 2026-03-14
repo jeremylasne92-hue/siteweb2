@@ -41,7 +41,8 @@ export function TechApplicationForm({ project, accentHex }: TechApplicationFormP
     const [consentRGPD, setConsentRGPD] = useState(false);
     const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
     const [experienceLevel, setExperienceLevel] = useState('');
-    const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+    const firstCategory = Object.keys(SKILL_CATEGORIES[project] || SKILL_CATEGORIES.cognisphere)[0];
+    const [expandedCategory, setExpandedCategory] = useState<string | null>(firstCategory);
     const formRef = useRef<HTMLFormElement>(null);
 
     const categories = SKILL_CATEGORIES[project] || SKILL_CATEGORIES.cognisphere;
@@ -152,6 +153,10 @@ export function TechApplicationForm({ project, accentHex }: TechApplicationFormP
 
             {/* Step 2: Skills + Experience */}
             <div className={`space-y-5 ${step !== 2 ? 'hidden' : 'animate-fade-in delay-100'}`}>
+                {error && (
+                    <p className="text-sm text-red-400 bg-red-500/10 p-3 rounded border border-red-500/20">{error}</p>
+                )}
+
                 <div>
                     <label className="block text-sm font-medium text-neutral-300 mb-3">Compétences techniques</label>
                     <div className="space-y-2">
@@ -178,6 +183,7 @@ export function TechApplicationForm({ project, accentHex }: TechApplicationFormP
                                             <button
                                                 key={skill}
                                                 type="button"
+                                                aria-pressed={selectedSkills.includes(skill)}
                                                 onClick={() => toggleSkill(skill)}
                                                 className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
                                                     selectedSkills.includes(skill)
@@ -203,6 +209,7 @@ export function TechApplicationForm({ project, accentHex }: TechApplicationFormP
                             <button
                                 key={level.value}
                                 type="button"
+                                aria-pressed={experienceLevel === level.value}
                                 onClick={() => setExperienceLevel(level.value)}
                                 className={`p-3 rounded-lg border text-left transition-all ${
                                     experienceLevel === level.value
@@ -220,9 +227,6 @@ export function TechApplicationForm({ project, accentHex }: TechApplicationFormP
                     </div>
                 </div>
 
-                {error && (
-                    <p className="text-sm text-red-400 bg-red-500/10 p-3 rounded border border-red-500/20">{error}</p>
-                )}
             </div>
 
             {/* Step 3: Motivation */}
@@ -231,7 +235,8 @@ export function TechApplicationForm({ project, accentHex }: TechApplicationFormP
                     <label className="block text-sm font-medium text-neutral-300 mb-1">Lettre de motivation rapide</label>
                     <textarea
                         name="message"
-                        className="w-full bg-black/20 border border-white/10 rounded-md py-2 px-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-1 text-sm resize-y min-h-[140px]"
+                        className="w-full bg-black/20 border border-white/10 rounded-md py-2 px-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-current text-sm resize-y min-h-[140px]"
+                        style={{ ['--tw-ring-color' as string]: accentHex }}
                         placeholder={`Pourquoi souhaitez-vous intégrer l'équipe de développement de ${project === 'cognisphere' ? 'CogniSphère' : 'ECHOLink'} ?`}
                         required
                         minLength={10}

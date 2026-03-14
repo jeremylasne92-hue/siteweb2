@@ -18,17 +18,18 @@ router = APIRouter(prefix="/candidatures", tags=["Candidatures"])
 RATE_LIMIT_MAX = 3
 RATE_LIMIT_WINDOW_HOURS = 1
 
+PROJECT_LABELS = {"cognisphere": "CogniSphère", "echolink": "ECHOLink", "scenariste": "Scénariste"}
+EXPERIENCE_LABELS = {"professional": "Professionnel", "student": "Étudiant", "self_taught": "Autodidacte", "motivated": "Motivé"}
 
-@router.post("/tech")
-async def submit_tech_candidature(
+
+async def _process_candidature(
     data: TechCandidatureRequest,
-    request: Request,
+    project_override: str | None,
+    client_ip: str,
     background_tasks: BackgroundTasks,
-    db: AsyncIOMotorDatabase = Depends(get_db),
-):
-    """Submit a tech candidature for CogniSphère or ECHOLink (public, anti-spam protected)"""
-    client_ip = request.client.host if request.client else "unknown"
-
+    db: AsyncIOMotorDatabase,
+) -> dict:
+    """Shared logic for submitting a candidature (anti-spam, storage, notification)."""
     # Anti-spam: honeypot check (silent reject)
     if data.website:
         logger.info(f"Honeypot triggered from {client_ip}")
@@ -45,10 +46,11 @@ async def submit_tech_candidature(
         return {"message": "Trop de soumissions récentes. Réessayez plus tard.", "rate_limited": True}
 
     # Store candidature
+    project = project_override or data.project
     candidature = TechCandidature(
         name=data.name,
         email=data.email,
-        project=data.project,
+        project=project,
         skills=data.skills,
         message=data.message,
         portfolio_url=data.portfolio_url,
@@ -57,19 +59,17 @@ async def submit_tech_candidature(
         ip_address=anonymize_ip(client_ip),
     )
     await db.tech_candidatures.insert_one(candidature.model_dump())
-    logger.info(f"New tech candidature from {data.name} for {data.project}")
+    logger.info(f"New candidature from {data.name} for {project}")
 
     # Notify team via email
-    project_labels = {"cognisphere": "CogniSphère", "echolink": "ECHOLink", "scenariste": "Scénariste"}
-    project_label = project_labels.get(data.project, data.project)
+    project_label = PROJECT_LABELS.get(project, project)
     email_body = f"Nom: {data.name}\nEmail: {data.email}\nProjet: {project_label}\nCompétences: {data.skills}"
     if data.portfolio_url:
         email_body += f"\nPortfolio: {data.portfolio_url}"
     if data.creative_interests:
         email_body += f"\nIntérêts créatifs: {data.creative_interests}"
     if data.experience_level:
-        level_labels = {"professional": "Professionnel", "student": "Étudiant", "self_taught": "Autodidacte", "motivated": "Motivé"}
-        email_body += f"\nNiveau d'expérience: {level_labels.get(data.experience_level, data.experience_level)}"
+        email_body += f"\nNiveau d'expérience: {EXPERIENCE_LABELS.get(data.experience_level, data.experience_level)}"
     email_body += f"\n\nMessage:\n{data.message}"
     background_tasks.add_task(
         send_email,
@@ -77,9 +77,21 @@ async def submit_tech_candidature(
         f"Nouvelle candidature — {project_label}",
         email_body,
     )
-    background_tasks.add_task(send_candidature_confirmation, data.email, data.name, data.project)
+    background_tasks.add_task(send_candidature_confirmation, data.email, data.name, project)
 
     return {"message": "Candidature envoyée avec succès"}
+
+
+@router.post("/tech")
+async def submit_tech_candidature(
+    data: TechCandidatureRequest,
+    request: Request,
+    background_tasks: BackgroundTasks,
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    """Submit a tech candidature for CogniSphère or ECHOLink (public, anti-spam protected)"""
+    client_ip = request.client.host if request.client else "unknown"
+    return await _process_candidature(data, None, client_ip, background_tasks, db)
 
 
 @router.post("/scenariste")
@@ -91,54 +103,7 @@ async def submit_scenariste_candidature(
 ):
     """Submit a scenarist candidature (public, anti-spam protected)"""
     client_ip = request.client.host if request.client else "unknown"
-
-    # Anti-spam: honeypot check
-    if data.website:
-        logger.info(f"Honeypot triggered from {client_ip}")
-        return {"message": "Candidature envoyée avec succès"}
-
-    # Anti-spam: rate limiting
-    window_start = datetime.utcnow() - timedelta(hours=RATE_LIMIT_WINDOW_HOURS)
-    recent_count = await db.tech_candidatures.count_documents({
-        "ip_address": client_ip,
-        "created_at": {"$gte": window_start}
-    })
-    if recent_count >= RATE_LIMIT_MAX:
-        logger.warning(f"Rate limit exceeded for {client_ip}")
-        return {"message": "Trop de soumissions récentes. Réessayez plus tard.", "rate_limited": True}
-
-    candidature = TechCandidature(
-        name=data.name,
-        email=data.email,
-        project="scenariste",
-        skills=data.skills,
-        message=data.message,
-        portfolio_url=data.portfolio_url,
-        creative_interests=data.creative_interests,
-        experience_level=data.experience_level,
-        ip_address=anonymize_ip(client_ip),
-    )
-    await db.tech_candidatures.insert_one(candidature.model_dump())
-    logger.info(f"New scenarist candidature from {data.name}")
-
-    email_body = f"Nom: {data.name}\nEmail: {data.email}\nProjet: Scénariste\nCompétences: {data.skills}"
-    if data.portfolio_url:
-        email_body += f"\nPortfolio: {data.portfolio_url}"
-    if data.creative_interests:
-        email_body += f"\nIntérêts créatifs: {data.creative_interests}"
-    if data.experience_level:
-        level_labels = {"professional": "Professionnel", "student": "Étudiant", "self_taught": "Autodidacte", "motivated": "Motivé"}
-        email_body += f"\nNiveau d'expérience: {level_labels.get(data.experience_level, data.experience_level)}"
-    email_body += f"\n\nMessage:\n{data.message}"
-    background_tasks.add_task(
-        send_email,
-        "mouvement.echo.france@gmail.com",
-        "Nouvelle candidature — Scénariste",
-        email_body,
-    )
-    background_tasks.add_task(send_candidature_confirmation, data.email, data.name, "scenariste")
-
-    return {"message": "Candidature envoyée avec succès"}
+    return await _process_candidature(data, "scenariste", client_ip, background_tasks, db)
 
 
 @router.get("/admin/all")

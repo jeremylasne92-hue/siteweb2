@@ -307,3 +307,88 @@ def test_update_status_unauthorized():
     app.dependency_overrides.clear()
 
     assert response.status_code in (401, 403)
+
+
+# --- Scenariste endpoint anti-spam tests ---
+
+def test_scenariste_honeypot_rejected():
+    """POST /candidatures/scenariste with honeypot filled does NOT store candidature."""
+    db = make_mock_db()
+    app.dependency_overrides[get_db] = lambda: db
+
+    data = {**VALID_SCENARISTE_DATA, "website": "http://spam.com"}
+
+    with patch("routes.candidatures.send_email", new_callable=AsyncMock) as mock_email:
+        response = client.post("/api/candidatures/scenariste", json=data)
+
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert response.json()["message"] == "Candidature envoyée avec succès"
+    db.tech_candidatures.insert_one.assert_not_called()
+    mock_email.assert_not_called()
+
+
+def test_scenariste_rate_limited():
+    """POST /candidatures/scenariste when rate limit exceeded returns rate_limited."""
+    db = make_mock_db(recent_count=3)
+    app.dependency_overrides[get_db] = lambda: db
+
+    with patch("routes.candidatures.send_email", new_callable=AsyncMock):
+        response = client.post("/api/candidatures/scenariste", json=VALID_SCENARISTE_DATA)
+
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert response.json()["rate_limited"] is True
+    db.tech_candidatures.insert_one.assert_not_called()
+
+
+def test_invalid_experience_level():
+    """POST /candidatures/tech with invalid experience_level returns 422."""
+    db = make_mock_db()
+    app.dependency_overrides[get_db] = lambda: db
+
+    data = {**VALID_DATA, "experience_level": "expert"}
+    response = client.post("/api/candidatures/tech", json=data)
+
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 422
+
+
+def test_export_csv_contains_experience_level():
+    """GET /candidatures/admin/export includes experience_level column."""
+    db = MagicMock()
+    fake_docs = [
+        {"id": "c1", "name": "Test", "email": "t@t.com", "project": "cognisphere",
+         "skills": "React", "message": "Msg", "portfolio_url": None,
+         "creative_interests": None, "experience_level": "professional",
+         "status": "pending", "status_note": "", "created_at": datetime.utcnow()},
+    ]
+
+    class AsyncCursorMock:
+        def __init__(self, docs):
+            self._docs = docs
+        def sort(self, *args, **kwargs):
+            return self
+        async def __aiter__(self):
+            for doc in self._docs:
+                yield doc
+
+    db.tech_candidatures.find = MagicMock(return_value=AsyncCursorMock(fake_docs))
+
+    app.dependency_overrides[get_db] = lambda: db
+    app.dependency_overrides[require_admin] = lambda: ADMIN_USER
+
+    response = client.get("/api/candidatures/admin/export")
+
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    content = response.text
+    lines = content.strip().split("\n")
+    header = lines[0].replace("\ufeff", "")
+    assert "experience_level" in header
+    # Verify data row contains the experience level value
+    assert "professional" in lines[1]

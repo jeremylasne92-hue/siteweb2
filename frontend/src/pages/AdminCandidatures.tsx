@@ -71,6 +71,7 @@ export default function AdminCandidatures() {
     const [candidatures, setCandidatures] = useState<TechCandidature[]>([]);
     const [projectFilter, setProjectFilter] = useState<ProjectFilter>('all');
     const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+    const [experienceFilter, setExperienceFilter] = useState<string>('all');
     const [selected, setSelected] = useState<TechCandidature | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -210,6 +211,18 @@ export default function AdminCandidatures() {
         { key: 'rejected', label: 'Rejetées' },
     ];
 
+    const experienceFilters: { key: string; label: string }[] = [
+        { key: 'all', label: 'Tous niveaux' },
+        { key: 'professional', label: 'Professionnel' },
+        { key: 'student', label: 'Étudiant·e' },
+        { key: 'self_taught', label: 'Autodidacte' },
+        { key: 'motivated', label: 'Motivé·e' },
+    ];
+
+    const filteredCandidatures = experienceFilter === 'all'
+        ? candidatures
+        : candidatures.filter(c => c.experience_level === experienceFilter);
+
     return (
         <div className="min-h-screen bg-echo-dark pt-24 pb-16">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -227,7 +240,7 @@ export default function AdminCandidatures() {
                         <div>
                             <h1 className="text-2xl font-serif text-white">Candidatures techniques</h1>
                             <p className="text-sm text-echo-textMuted">
-                                {candidatures.length} candidature{candidatures.length !== 1 ? 's' : ''}
+                                {filteredCandidatures.length} candidature{filteredCandidatures.length !== 1 ? 's' : ''}{experienceFilter !== 'all' ? ` (${candidatures.length} total)` : ''}
                             </p>
                         </div>
                     </div>
@@ -256,7 +269,7 @@ export default function AdminCandidatures() {
                         </button>
                     ))}
                 </div>
-                <div className="flex flex-wrap gap-2 mb-6">
+                <div className="flex flex-wrap gap-2 mb-4">
                     {statusFilters.map(f => (
                         <button
                             key={f.key}
@@ -264,6 +277,21 @@ export default function AdminCandidatures() {
                             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                                 statusFilter === f.key
                                     ? 'bg-white/15 text-white border border-white/20'
+                                    : 'bg-white/5 text-echo-textMuted border border-white/10 hover:bg-white/10'
+                            }`}
+                        >
+                            {f.label}
+                        </button>
+                    ))}
+                </div>
+                <div className="flex flex-wrap gap-2 mb-6">
+                    {experienceFilters.map(f => (
+                        <button
+                            key={f.key}
+                            onClick={() => setExperienceFilter(f.key)}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                                experienceFilter === f.key
+                                    ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
                                     : 'bg-white/5 text-echo-textMuted border border-white/10 hover:bg-white/10'
                             }`}
                         >
@@ -347,14 +375,14 @@ export default function AdminCandidatures() {
                                             Chargement...
                                         </td>
                                     </tr>
-                                ) : candidatures.length === 0 ? (
+                                ) : filteredCandidatures.length === 0 ? (
                                     <tr>
                                         <td colSpan={6} className="text-center text-echo-textMuted py-12">
                                             Aucune candidature pour le moment.
                                         </td>
                                     </tr>
                                 ) : (
-                                    candidatures.map(c => {
+                                    filteredCandidatures.map(c => {
                                         const pConfig = projectConfig[c.project];
                                         return (
                                             <tr

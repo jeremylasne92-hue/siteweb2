@@ -140,6 +140,10 @@ export function ScenaristApplicationForm() {
 
             {/* Step 2: Creative Profile — Genres + Experience */}
             <div className={`space-y-5 ${step !== 2 ? 'hidden' : 'animate-fade-in delay-100'}`}>
+                {error && (
+                    <p className="text-sm text-red-400 bg-red-500/10 p-3 rounded border border-red-500/20">{error}</p>
+                )}
+
                 <div>
                     <label className="block text-sm font-medium text-neutral-300 mb-3">Genres d'écriture</label>
                     <div className="flex flex-wrap gap-2">
@@ -147,6 +151,7 @@ export function ScenaristApplicationForm() {
                             <button
                                 key={genre}
                                 type="button"
+                                aria-pressed={selectedGenres.includes(genre)}
                                 onClick={() => toggleTag(genre, selectedGenres, setSelectedGenres)}
                                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all border ${
                                     selectedGenres.includes(genre)
@@ -168,6 +173,7 @@ export function ScenaristApplicationForm() {
                             <button
                                 key={level.value}
                                 type="button"
+                                aria-pressed={experienceLevel === level.value}
                                 onClick={() => setExperienceLevel(level.value)}
                                 className={`p-3 rounded-lg border text-left transition-all ${
                                     experienceLevel === level.value
@@ -183,10 +189,6 @@ export function ScenaristApplicationForm() {
                         ))}
                     </div>
                 </div>
-
-                {error && (
-                    <p className="text-sm text-red-400 bg-red-500/10 p-3 rounded border border-red-500/20">{error}</p>
-                )}
             </div>
 
             {/* Step 3: Thematic Interests */}
@@ -198,6 +200,7 @@ export function ScenaristApplicationForm() {
                             <button
                                 key={tag}
                                 type="button"
+                                aria-pressed={selectedInterests.includes(tag)}
                                 onClick={() => toggleTag(tag, selectedInterests, setSelectedInterests)}
                                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all border ${
                                     selectedInterests.includes(tag)
@@ -219,7 +222,7 @@ export function ScenaristApplicationForm() {
                     <label className="block text-sm font-medium text-neutral-300 mb-1">Votre motivation</label>
                     <textarea
                         name="message"
-                        className="w-full bg-black/20 border border-white/10 rounded-md py-2 px-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-1 text-sm resize-y min-h-[140px]"
+                        className="w-full bg-black/20 border border-white/10 rounded-md py-2 px-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-amber-500/50 text-sm resize-y min-h-[140px]"
                         placeholder="Pourquoi souhaitez-vous participer à l'écriture de la série ECHO ? Que souhaitez-vous apporter au Mouvement ?"
                         required
                         minLength={10}
