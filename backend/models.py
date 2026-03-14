@@ -285,6 +285,12 @@ class AnalyticsEventCreate(BaseModel):
     action: str = Field(min_length=1, max_length=50)
     path: str = Field(min_length=1, max_length=200)
     partner_id: Optional[str] = None
+    session_id: Optional[str] = Field(None, max_length=36)
+    utm_source: Optional[str] = Field(None, max_length=100)
+    utm_medium: Optional[str] = Field(None, max_length=100)
+    utm_campaign: Optional[str] = Field(None, max_length=200)
+    referrer: Optional[str] = Field(None, max_length=500)
+    label: Optional[str] = Field(None, max_length=100)
 
 
 class AnalyticsEvent(AnalyticsEventCreate):
