@@ -135,10 +135,14 @@ async def send_candidature_confirmation(email: str, name: str, project: str) -> 
     label = PROJECT_LABELS.get(project, project)
     subject = f"Candidature reçue — {label}"
     html = (
-        f"<h2>Merci pour votre candidature, {name} !</h2>"
-        f"<p>Nous avons bien reçu votre candidature pour le projet <strong>{label}</strong>.</p>"
-        f"<p>Notre équipe examinera votre profil et reviendra vers vous dans les meilleurs délais.</p>"
-        f"<p>À bientôt,<br>L'équipe Mouvement ECHO</p>"
+        f"<h2>Bonjour {name},</h2>"
+        f"<p>Nous avons bien reçu votre candidature pour le projet <strong>{label}</strong> "
+        f"et nous vous remercions pour l'intérêt que vous portez au Mouvement ECHO.</p>"
+        f"<p>Notre équipe prendra le temps d'examiner votre profil avec attention. "
+        f"Nous reviendrons vers vous dans les meilleurs délais pour vous tenir "
+        f"informé(e) de la suite donnée à votre candidature.</p>"
+        f"<p>En attendant, n'hésitez pas à suivre nos actualités sur notre site.</p>"
+        f"<p>Bien cordialement,<br>L'équipe Mouvement ECHO</p>"
     )
     if _use_sendgrid():
         return await _send_via_sendgrid(email, subject, html)
@@ -147,17 +151,22 @@ async def send_candidature_confirmation(email: str, name: str, project: str) -> 
 
 async def send_candidature_interview(email: str, name: str, booking_url: str) -> bool:
     """Send interview invitation with a booking link."""
-    subject = "Entretien — Mouvement ECHO"
+    subject = "Invitation à un entretien — Mouvement ECHO"
     html = (
-        f"<h2>Félicitations, {name} !</h2>"
-        f"<p>Votre candidature a retenu notre attention et nous aimerions vous rencontrer.</p>"
-        f"<p>Réservez un créneau pour votre entretien :</p>"
+        f"<h2>Bonjour {name},</h2>"
+        f"<p>Bonne nouvelle ! Votre candidature a retenu toute notre attention "
+        f"et nous aimerions échanger avec vous lors d'un court entretien.</p>"
+        f"<p>Cet échange nous permettra de mieux comprendre vos motivations "
+        f"et de vous présenter le projet plus en détail. "
+        f"C'est avant tout une discussion ouverte et bienveillante.</p>"
         f"<p style='text-align:center;margin:24px 0;'>"
         f"<a href='{booking_url}' style='background:#D4AF37;color:#fff;padding:12px 32px;"
-        f"text-decoration:none;border-radius:6px;font-weight:bold;'>Réserver mon entretien</a></p>"
+        f"text-decoration:none;border-radius:6px;font-weight:bold;'>Réserver mon créneau d'entretien</a></p>"
         f"<p>Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :</p>"
         f"<p>{booking_url}</p>"
-        f"<p>À bientôt,<br>L'équipe Mouvement ECHO</p>"
+        f"<p>Si aucun créneau ne vous convient, répondez simplement à cet email "
+        f"et nous trouverons un moment adapté.</p>"
+        f"<p>À très bientôt,<br>L'équipe Mouvement ECHO</p>"
     )
     if _use_sendgrid():
         return await _send_via_sendgrid(email, subject, html)
@@ -167,13 +176,17 @@ async def send_candidature_interview(email: str, name: str, booking_url: str) ->
 async def send_candidature_accepted(email: str, name: str, project: str) -> bool:
     """Send acceptance notification email."""
     label = PROJECT_LABELS.get(project, project)
-    subject = f"Candidature acceptée — {label}"
+    subject = f"Bienvenue dans l'équipe — {label}"
     html = (
-        f"<h2>Bienvenue dans l'équipe, {name} !</h2>"
-        f"<p>Nous avons le plaisir de vous informer que votre candidature pour "
-        f"le projet <strong>{label}</strong> a été acceptée.</p>"
-        f"<p>Un membre de l'équipe vous contactera prochainement pour les prochaines étapes.</p>"
-        f"<p>À très bientôt,<br>L'équipe Mouvement ECHO</p>"
+        f"<h2>Bonjour {name},</h2>"
+        f"<p>Nous avons le plaisir de vous confirmer que votre candidature pour "
+        f"le projet <strong>{label}</strong> a été retenue. "
+        f"Bienvenue dans l'aventure ECHO !</p>"
+        f"<p>Un membre de notre équipe vous contactera très prochainement "
+        f"pour vous présenter les prochaines étapes et faciliter votre intégration.</p>"
+        f"<p>Nous sommes ravis de vous compter parmi nous "
+        f"et avons hâte de collaborer avec vous.</p>"
+        f"<p>Chaleureusement,<br>L'équipe Mouvement ECHO</p>"
     )
     if _use_sendgrid():
         return await _send_via_sendgrid(email, subject, html)
@@ -182,18 +195,24 @@ async def send_candidature_accepted(email: str, name: str, project: str) -> bool
 
 async def send_candidature_rejected(email: str, name: str, status_note: str | None) -> bool:
     """Send rejection notification with optional reason."""
-    subject = "Candidature — Mouvement ECHO"
+    subject = "Retour sur votre candidature — Mouvement ECHO"
     reason_html = ""
     reason_text = ""
     if status_note:
         reason_html = f"<p><strong>Motif :</strong> {status_note}</p>"
         reason_text = f"\nMotif : {status_note}"
     html = (
-        f"<h2>Merci pour votre intérêt, {name}</h2>"
-        f"<p>Après examen attentif de votre candidature, nous ne sommes malheureusement "
-        f"pas en mesure de donner suite pour le moment.</p>"
+        f"<h2>Bonjour {name},</h2>"
+        f"<p>Nous tenons à vous remercier pour le temps que vous avez consacré "
+        f"à votre candidature auprès du Mouvement ECHO.</p>"
+        f"<p>Après un examen attentif de votre profil, nous ne sommes malheureusement "
+        f"pas en mesure d'y donner une suite favorable pour le moment.</p>"
         f"{reason_html}"
-        f"<p>Nous vous encourageons à suivre nos prochains appels à candidatures.</p>"
+        f"<p>Cette décision ne remet en aucun cas en question vos compétences. "
+        f"Nous vous encourageons à rester attentif(ve) à nos prochains appels "
+        f"à candidatures — nos besoins évoluent et votre profil pourrait "
+        f"correspondre à de futures opportunités.</p>"
+        f"<p>Nous vous souhaitons le meilleur dans vos projets.</p>"
         f"<p>Cordialement,<br>L'équipe Mouvement ECHO</p>"
     )
     if _use_sendgrid():
