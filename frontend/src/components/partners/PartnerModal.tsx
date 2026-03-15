@@ -2,7 +2,7 @@ import React from 'react';
 import { Modal } from '../ui/Modal';
 import type { Partner, PartnerCategory } from './PartnerCard';
 import { ThematicTag } from './ThematicTag';
-import { MapPin, Globe, User, Mail, Phone, Linkedin, Instagram, Twitter, ExternalLink } from 'lucide-react';
+import { MapPin, Globe, User, Linkedin, Instagram, Twitter, ExternalLink } from 'lucide-react';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 import { useAnalytics } from '../../hooks/useAnalytics';
@@ -110,28 +110,22 @@ export const PartnerModal: React.FC<PartnerModalProps> = ({ partner, isOpen, onC
                             </div>
                         )}
 
-                        {/* Contact Info */}
-                        <div>
-                            <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Contact</h4>
-                            <ul className="space-y-3">
-                                {partner.contact_email && (
-                                    <li className="flex items-center gap-3 text-sm text-gray-300">
-                                        <Mail className="w-4 h-4 text-gray-500" />
-                                        <a href={`mailto:${partner.contact_email}`} className="hover:text-echo-gold transition-colors">
-                                            {partner.contact_email}
-                                        </a>
-                                    </li>
-                                )}
-                                {partner.contact_phone && (
-                                    <li className="flex items-center gap-3 text-sm text-gray-300">
-                                        <Phone className="w-4 h-4 text-gray-500" />
-                                        <a href={`tel:${partner.contact_phone}`} className="hover:text-echo-gold transition-colors">
-                                            {partner.contact_phone}
-                                        </a>
-                                    </li>
-                                )}
-                            </ul>
-                        </div>
+                        {/* Contact — website link only (RGPD art. 5) */}
+                        {partner.website_url && (
+                            <div>
+                                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Contact</h4>
+                                <a
+                                    href={partner.website_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10 hover:text-white transition-all"
+                                >
+                                    <Globe className="w-4 h-4" />
+                                    Contacter via le site
+                                    <ExternalLink className="w-3.5 h-3.5" />
+                                </a>
+                            </div>
+                        )}
 
                         {/* Web & Social */}
                         {(partner.website_url || partner.linkedin_url || partner.instagram_url || partner.twitter_url) && (

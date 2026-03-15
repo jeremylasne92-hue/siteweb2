@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from '../ui/Card';
-import { MapPin, ExternalLink, Mail, Phone } from 'lucide-react';
+import { MapPin, ExternalLink } from 'lucide-react';
 import { ThematicTag } from './ThematicTag';
 
 export type PartnerCategory = 'expert' | 'financier' | 'audiovisuel' | 'education' | 'membre';
@@ -131,23 +131,6 @@ export const PartnerCard: React.FC<PartnerCardProps> = ({ partner, onClick }) =>
                     </div>
                 </div>
 
-                {/* Contact direct */}
-                {(partner.contact_email || partner.contact_phone) && (
-                    <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
-                        {partner.contact_email && (
-                            <a href={`mailto:${partner.contact_email}`} className="flex items-center gap-1 hover:text-echo-gold transition-colors" onClick={(e) => e.stopPropagation()}>
-                                <Mail className="w-3.5 h-3.5" />
-                                <span>Email</span>
-                            </a>
-                        )}
-                        {partner.contact_phone && (
-                            <a href={`tel:${partner.contact_phone}`} className="flex items-center gap-1 hover:text-echo-gold transition-colors" onClick={(e) => e.stopPropagation()}>
-                                <Phone className="w-3.5 h-3.5" />
-                                <span>Appeler</span>
-                            </a>
-                        )}
-                    </div>
-                )}
             </div>
         </Card>
     );
