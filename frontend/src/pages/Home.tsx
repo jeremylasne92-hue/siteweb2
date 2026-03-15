@@ -2,8 +2,11 @@ import { Play, Users, Link as LinkIcon } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Link } from 'react-router-dom';
 import { SEO } from '../components/seo/SEO';
+import { useAnalytics } from '../hooks/useAnalytics';
 
 export function Home() {
+    const { trackEvent } = useAnalytics();
+
     return (
         <div className="flex flex-col">
             <SEO
@@ -25,12 +28,12 @@ export function Home() {
                         car la voie droite était perdue."
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link to="/serie">
+                        <Link to="/serie" onClick={() => trackEvent('cta_click', 'home_decouvrir_serie')}>
                             <Button variant="primary" size="lg" className="w-full sm:w-auto">
                                 <Play className="mr-2" size={20} /> Découvrir la Série
                             </Button>
                         </Link>
-                        <Link to="/mouvement">
+                        <Link to="/mouvement" onClick={() => trackEvent('cta_click', 'home_rejoindre')}>
                             <Button variant="secondary" size="lg" className="w-full sm:w-auto">
                                 <Users className="mr-2" size={20} /> Rejoindre le Mouvement
                             </Button>

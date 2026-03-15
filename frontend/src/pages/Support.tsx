@@ -3,11 +3,12 @@ import { Heart, Check, ChevronDown, ExternalLink } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { DONATION_URL } from '../config/donation';
-import { trackEvent } from '../utils/analytics';
+import { useAnalytics } from '../hooks/useAnalytics';
 import { SEO } from '../components/seo/SEO';
 
 export function Support() {
     const [openFaq, setOpenFaq] = useState<number | null>(null);
+    const { trackEvent } = useAnalytics();
 
     const donationTiers = [
         {
@@ -109,7 +110,7 @@ export function Support() {
                                     ))}
                                 </ul>
 
-                                <a href={DONATION_URL} target="_blank" rel="noopener noreferrer" className="w-full" onClick={() => trackEvent('Soutenir', `click_helloasso_tier_${tier.title}`, '/soutenir')}>
+                                <a href={DONATION_URL} target="_blank" rel="noopener noreferrer" className="w-full" onClick={() => trackEvent('cta_click', `soutenir_helloasso_${tier.title.toLowerCase()}`)}>
                                     <Button variant={i === 1 ? 'primary' : 'outline'} className="w-full">
                                         Je soutiens <ExternalLink className="w-4 h-4 ml-2 inline" />
                                     </Button>
@@ -118,7 +119,7 @@ export function Support() {
                         ))}
                     </div>
                     <p className="mt-8 text-neutral-500 text-sm">
-                        Paiement sécurisé via <a href={DONATION_URL} target="_blank" rel="noopener noreferrer" className="text-echo-gold hover:underline" onClick={() => trackEvent('Soutenir', 'click_helloasso_footer', '/soutenir')}>HelloAsso</a> — plateforme certifiée.
+                        Paiement sécurisé via <a href={DONATION_URL} target="_blank" rel="noopener noreferrer" className="text-echo-gold hover:underline" onClick={() => trackEvent('cta_click', 'soutenir_helloasso_footer')}>HelloAsso</a> — plateforme certifiée.
                     </p>
                 </div>
             </section>
