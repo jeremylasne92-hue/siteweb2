@@ -278,6 +278,32 @@ async def admin_update_status(
     return {"status": "updated", "membership_status": body.membership_status}
 
 
+@admin_router.patch("/{profile_id}")
+async def admin_update_member(
+    profile_id: str,
+    data: MemberProfileUpdate,
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    """Full update of a member profile. Admin only."""
+    update_data = data.model_dump(exclude_none=True)
+    if not update_data:
+        raise HTTPException(status_code=400, detail="Aucun champ à mettre à jour")
+    update_data["updated_at"] = datetime.utcnow()
+
+    result = await db.member_profiles.update_one(
+        {"id": profile_id},
+        {"$set": update_data},
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Profil non trouvé")
+
+    updated = await db.member_profiles.find_one({"id": profile_id})
+    updated.pop("_id", None)
+    logger.info(f"Admin {admin.id} updated member profile {profile_id}")
+    return updated
+
+
 # ---- auto_seed helper ----
 
 
