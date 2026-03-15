@@ -8,6 +8,7 @@ from starlette.staticfiles import StaticFiles
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
+from pymongo.errors import PyMongoError
 from pathlib import Path
 
 # Import routes
@@ -92,6 +93,21 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 app.add_middleware(SecurityHeadersMiddleware)
 
+class MongoDBErrorMiddleware(BaseHTTPMiddleware):
+    """Global safety net: catch unhandled MongoDB errors and return 503."""
+    async def dispatch(self, request: StarletteRequest, call_next):
+        try:
+            return await call_next(request)
+        except PyMongoError as e:
+            logger.error(f"Unhandled MongoDB error on {request.method} {request.url.path}: {e}")
+            from starlette.responses import JSONResponse
+            return JSONResponse(
+                status_code=503,
+                content={"detail": "Service temporairement indisponible. Veuillez réessayer."},
+            )
+
+app.add_middleware(MongoDBErrorMiddleware)
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -148,6 +164,42 @@ async def startup_indexes():
         await db.pending_2fa.create_index("user_id")
     except Exception as e:
         logger.warning(f"Performance index creation: {e}")
+
+    # Query indexes for hot paths (audit 2026-03-15)
+    try:
+        # Events: GET by id + public listing
+        await db.events.create_index("id")
+        await db.events.create_index([("is_published", 1), ("date", 1)])
+
+        # Partners: partner account lookups + admin filtering
+        await db.partners.create_index("user_id")
+        await db.partners.create_index("status")
+
+        # Video progress: user+episode compound (upsert pattern)
+        await db.video_progress.create_index(
+            [("user_id", 1), ("episode_id", 1)], unique=True
+        )
+
+        # Episode opt-ins: user lookup
+        await db.episode_optins.create_index("user_id")
+
+        # Tech candidatures: /me by email + admin filtering + rate limit
+        await db.tech_candidatures.create_index("email")
+        await db.tech_candidatures.create_index([("status", 1), ("project", 1)])
+        await db.tech_candidatures.create_index([("ip_address", 1), ("created_at", 1)])
+
+        # Volunteer applications: /me by email + admin filtering + rate limit
+        await db.volunteer_applications.create_index("email")
+        await db.volunteer_applications.create_index("status")
+        await db.volunteer_applications.create_index([("ip_address", 1), ("created_at", 1)])
+
+        # Contact messages: rate limiting
+        await db.contact_messages.create_index([("ip_address", 1), ("created_at", 1)])
+
+        # Pending 2FA: auto-expire codes after 10 minutes (security + cleanup)
+        await db.pending_2fa.create_index("created_at", expireAfterSeconds=600)
+    except Exception as e:
+        logger.warning(f"Audit index creation: {e}")
 
     logger.info("Rate limit and retention indexes ensured")
 

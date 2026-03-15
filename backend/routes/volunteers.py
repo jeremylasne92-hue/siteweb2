@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Request, Depends, HTTPException, BackgroundTasks
 from fastapi.responses import StreamingResponse
+from pymongo.errors import PyMongoError
 from models import VolunteerApplication, VolunteerApplicationRequest, VolunteerStatusUpdate, VolunteerBatchStatusUpdate, User
 from routes.auth import get_db, require_admin, get_current_user
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -68,7 +69,11 @@ async def submit_volunteer_application(
         application.latitude = coords[0]
         application.longitude = coords[1]
 
-    await db.volunteer_applications.insert_one(application.model_dump())
+    try:
+        await db.volunteer_applications.insert_one(application.model_dump())
+    except PyMongoError as e:
+        logger.error(f"Failed to save volunteer application: {e}")
+        raise HTTPException(status_code=503, detail="Impossible d'enregistrer votre candidature. Veuillez réessayer.")
     logger.info(f"New volunteer application from {data.name}")
 
     # Notify team via email
@@ -108,11 +113,10 @@ async def list_volunteer_applications(
         query["availability"] = availability
 
     cursor = db.volunteer_applications.find(query).sort("created_at", -1)
-    applications = []
-    async for doc in cursor:
+    docs = await cursor.to_list(length=500)
+    for doc in docs:
         doc["_id"] = str(doc["_id"])
-        applications.append(doc)
-    return applications
+    return docs
 
 
 @router.delete("/admin/{application_id}")

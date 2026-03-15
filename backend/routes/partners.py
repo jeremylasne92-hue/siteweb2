@@ -14,6 +14,7 @@ import uuid as uuid_mod
 import slugify
 from PIL import Image
 
+from pymongo.errors import PyMongoError
 from models import User, UserRole, UserCreate
 from models_partner import Partner, PartnerCategory, PartnerStatus, ThematicRef
 from routes.auth import get_current_user, require_admin, get_db, hash_password
@@ -262,7 +263,11 @@ async def apply_partnership(
         password_hash=hash_password(password),
         role=UserRole.PARTNER
     )
-    await db.users.insert_one(user_doc.model_dump())
+    try:
+        await db.users.insert_one(user_doc.model_dump())
+    except PyMongoError as e:
+        logger.error(f"Failed to create partner user account: {e}")
+        raise HTTPException(status_code=503, detail="Impossible de créer votre compte. Veuillez réessayer.")
 
     # Save logo file (after user creation, since we need user_doc.id)
     try:
@@ -320,8 +325,14 @@ async def apply_partnership(
         ip_address=anonymize_ip(client_ip)
     )
     
-    await db.partners.insert_one(partner.model_dump())
-    
+    try:
+        await db.partners.insert_one(partner.model_dump())
+    except PyMongoError as e:
+        # Rollback: delete the user we just created
+        await db.users.delete_one({"id": user_doc.id})
+        logger.error(f"Failed to create partner record, rolled back user: {e}")
+        raise HTTPException(status_code=503, detail="Impossible de soumettre votre candidature. Veuillez réessayer.")
+
     logger.info(f"New partner application from {name} ({contact_email})")
 
     # Send confirmation email to candidate (FR12)
@@ -523,13 +534,8 @@ async def admin_get_all_partners(
     if status:
         query["status"] = status
 
-    cursor = db.partners.find(query).sort("created_at", -1)
-    results = await cursor.to_list(length=1000)
-    # Ensure every document has an 'id' field (legacy docs may only have _id)
-    for doc in results:
-        if "id" not in doc and "_id" in doc:
-            doc["id"] = str(doc["_id"])
-        doc.pop("_id", None)
+    cursor = db.partners.find(query, {"_id": 0, "ip_address": 0}).sort("created_at", -1)
+    results = await cursor.to_list(length=500)
     return results
 
 @router.put("/admin/{partner_id}/approve")

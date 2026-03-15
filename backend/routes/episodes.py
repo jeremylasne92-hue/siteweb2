@@ -33,7 +33,7 @@ async def get_episodes(season: Optional[int] = None, db: AsyncIOMotorDatabase = 
     if season:
         query["season"] = season
     
-    episodes = await db.episodes.find(query).sort([("season", 1), ("episode", 1)]).to_list(1000)
+    episodes = await db.episodes.find(query).sort([("season", 1), ("episode", 1)]).to_list(length=100)
     return [Episode(**ep) for ep in episodes]
 
 

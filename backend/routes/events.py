@@ -21,7 +21,7 @@ MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5 MB
 @router.get("", response_model=List[Event])
 async def get_events(db: AsyncIOMotorDatabase = Depends(get_db)):
     """Get all published events, sorted by date ascending"""
-    events = await db.events.find({"is_published": True}).sort("date", 1).to_list(100)
+    events = await db.events.find({"is_published": True}, {"_id": 0}).sort("date", 1).to_list(length=100)
     return [Event(**e) for e in events]
 
 

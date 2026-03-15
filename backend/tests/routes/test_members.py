@@ -313,6 +313,10 @@ def test_admin_seed_profile():
     db.member_profiles.find_one = AsyncMock(return_value=None)  # no existing profile
     db.member_profiles.insert_one = AsyncMock(return_value=insert_result)
     db.users.update_one = AsyncMock()
+    # Mock the find().to_list() chain used by slug uniqueness check
+    find_cursor = MagicMock()
+    find_cursor.to_list = AsyncMock(return_value=[])
+    db.member_profiles.find = MagicMock(return_value=find_cursor)
 
     app.dependency_overrides[get_db] = lambda: db
     app.dependency_overrides[require_admin] = lambda: MOCK_ADMIN
@@ -398,6 +402,10 @@ async def test_auto_seed_creates_profile_with_name_field():
     db.member_profiles.insert_one = AsyncMock(return_value=insert_result)
     db.users.find_one = AsyncMock(return_value=None)  # no user account
     db.users.update_one = AsyncMock()
+    # Mock the find().to_list() chain used by slug uniqueness check
+    find_cursor = MagicMock()
+    find_cursor.to_list = AsyncMock(return_value=[])
+    db.member_profiles.find = MagicMock(return_value=find_cursor)
 
     result = await auto_seed_member_profile(db, candidature, "tech")
 

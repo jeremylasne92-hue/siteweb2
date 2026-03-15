@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import logging
 
+from pymongo.errors import PyMongoError
 from models import ContactMessageRequest
 from email_service import send_email
 from utils.rate_limit import anonymize_ip
@@ -55,7 +56,11 @@ async def submit_contact(
         "created_at": datetime.utcnow(),
         "read": False,
     }
-    await db.contact_messages.insert_one(doc)
+    try:
+        await db.contact_messages.insert_one(doc)
+    except PyMongoError as e:
+        logger.error(f"Failed to save contact message: {e}")
+        raise HTTPException(status_code=503, detail="Impossible d'envoyer votre message. Veuillez réessayer.")
 
     subject_label = SUBJECT_LABELS.get(data.subject, data.subject)
 

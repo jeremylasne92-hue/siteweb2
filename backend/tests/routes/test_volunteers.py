@@ -262,6 +262,10 @@ def test_full_admin_lifecycle_accept_reject_reaccept():
     db.member_profiles.update_one = AsyncMock(side_effect=mock_update_one_profile)
     db.users.find_one = AsyncMock(return_value=None)
     db.users.update_one = AsyncMock()
+    # Mock the find().to_list() chain used by slug uniqueness check
+    find_cursor = MagicMock()
+    find_cursor.to_list = AsyncMock(return_value=[])
+    db.member_profiles.find = MagicMock(return_value=find_cursor)
 
     app.dependency_overrides[get_db] = lambda: db
     app.dependency_overrides[require_admin] = lambda: mock_admin

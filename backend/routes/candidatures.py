@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Request, Depends, HTTPException, BackgroundTasks
 from fastapi.responses import StreamingResponse
+from pymongo.errors import PyMongoError
 from models import TechCandidature, TechCandidatureRequest, TechCandidatureStatusUpdate, TechCandidatureBatchStatusUpdate, User
 from routes.auth import get_db, require_admin, get_current_user
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -61,7 +62,11 @@ async def _process_candidature(
         experience_level=data.experience_level,
         ip_address=anonymize_ip(client_ip),
     )
-    await db.tech_candidatures.insert_one(candidature.model_dump())
+    try:
+        await db.tech_candidatures.insert_one(candidature.model_dump())
+    except PyMongoError as e:
+        logger.error(f"Failed to save candidature: {e}")
+        raise HTTPException(status_code=503, detail="Impossible d'enregistrer votre candidature. Veuillez réessayer.")
     logger.info(f"New candidature from {data.name} for {project}")
 
     # Notify team via email
@@ -124,11 +129,10 @@ async def list_tech_candidatures(
         query["status"] = status
 
     cursor = db.tech_candidatures.find(query).sort("created_at", -1)
-    candidatures = []
-    async for doc in cursor:
+    docs = await cursor.to_list(length=500)
+    for doc in docs:
         doc["_id"] = str(doc["_id"])
-        candidatures.append(doc)
-    return candidatures
+    return docs
 
 
 @router.delete("/admin/{candidature_id}")

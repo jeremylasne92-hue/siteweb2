@@ -6,6 +6,7 @@ from auth_utils import hash_password, verify_password, generate_session_token, g
 from services.auth_local_service import register_user, login_user
 from services.password_reset_service import request_reset, verify_token, reset_password as reset_pwd
 from email_service import send_2fa_code
+from pymongo.errors import PyMongoError
 from utils.rate_limit import check_rate_limit
 from core.config import settings
 from datetime import datetime, timedelta
@@ -83,7 +84,11 @@ async def require_admin(current_user: User = Depends(get_current_user)) -> User:
 async def register(request: Request, user_data: UserRegister, db: AsyncIOMotorDatabase = Depends(get_db)):
     """Register new user with email/password (Service Pattern)."""
     await check_rate_limit(db, request, "register", max_requests=5, window_minutes=15)
-    result = await register_user(user_data, db)
+    try:
+        result = await register_user(user_data, db)
+    except PyMongoError as e:
+        logger.error(f"Failed to register user: {e}")
+        raise HTTPException(status_code=503, detail="Impossible de créer votre compte. Veuillez réessayer.")
     return result
 
 
@@ -429,18 +434,19 @@ async def delete_user(
             detail="You can only delete your own account"
         )
     
-    # Delete user data
-    await db.users.delete_one({"id": user_id})
-    await db.user_sessions.delete_many({"user_id": user_id})
-    await db.video_progress.delete_many({"user_id": user_id})
-    await db.pending_2fa.delete_many({"user_id": user_id})
-    # Cascade: delete partner data
-    await db.partners.delete_many({"user_id": user_id})
-    # Cascade: delete tech candidatures by email
-    if current_user.email:
-        await db.tech_candidatures.delete_many({"email": current_user.email})
-    # Cascade: delete episode optins
-    await db.episode_optins.delete_many({"user_id": user_id})
+    # Delete user data (cascade)
+    try:
+        await db.users.delete_one({"id": user_id})
+        await db.user_sessions.delete_many({"user_id": user_id})
+        await db.video_progress.delete_many({"user_id": user_id})
+        await db.pending_2fa.delete_many({"user_id": user_id})
+        await db.partners.delete_many({"user_id": user_id})
+        if current_user.email:
+            await db.tech_candidatures.delete_many({"email": current_user.email})
+        await db.episode_optins.delete_many({"user_id": user_id})
+    except PyMongoError as e:
+        logger.error(f"Failed to delete user data for {user_id}: {e}")
+        raise HTTPException(status_code=503, detail="Impossible de supprimer votre compte. Veuillez réessayer.")
 
     logger.info(f"Deleted user account: {user_id}")
 

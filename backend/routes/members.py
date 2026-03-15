@@ -368,7 +368,13 @@ async def auto_seed_member_profile(
     base_slug = _slugify(display_name)
     slug = base_slug
     counter = 1
-    while await db.member_profiles.find_one({"slug": slug}):
+    # Check slug uniqueness with a single query instead of N+1
+    existing_slugs_docs = await db.member_profiles.find(
+        {"slug": {"$regex": f"^{re.escape(base_slug)}(-\\d+)?$"}},
+        {"slug": 1, "_id": 0},
+    ).to_list(length=100)
+    existing_slugs = {doc["slug"] for doc in existing_slugs_docs}
+    while slug in existing_slugs:
         slug = f"{base_slug}-{counter}"
         counter += 1
 
