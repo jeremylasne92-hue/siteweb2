@@ -339,6 +339,8 @@ async def auto_seed_member_profile(
         "city": candidature.get("city"),
         "region": candidature.get("region"),
         "department": candidature.get("department"),
+        "latitude": candidature.get("latitude"),
+        "longitude": candidature.get("longitude"),
         "project": _map_project(candidature, candidature_type),
         "role_title": _map_role_title(candidature, candidature_type),
         "skills": skills,
