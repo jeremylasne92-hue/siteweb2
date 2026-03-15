@@ -380,3 +380,4 @@ _Aucune spec en cours._
 | 45 | ~~RGPD Audit v2 — Accents page 404~~ | Mineur | ✅ Done (été, déplacée, à) |
 | 46 | ~~RGPD Audit v2 — Délai droits 3 mois → 1 mois dans PC~~ | Mineur | ✅ Done (Art. 12 RGPD, prorogeable 2 mois) |
 | 47 | ~~Scroll-to-hash : navigation anchor (#section) depuis sous-menus et liens piliers~~ | Moyenne | ✅ Done (ScrollToTop gère hash avec offset header 100px + délai lazy-load) |
+| 48 | Internationalisation (i18n) : sélecteur de langue (FR/EN minimum), traduction de tout le contenu utilisateur, persistance du choix (localStorage/URL) | Moyenne | À faire — nécessite choix lib (react-i18next ou react-intl), extraction de toutes les chaînes, fichiers de traduction |

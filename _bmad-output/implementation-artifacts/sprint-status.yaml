@@ -1,8 +1,8 @@
-# generated: 2026-03-05
+# generated: 2026-03-14
 # project: sitewebecho by emergent
 # project_key: NOKEY
 # tracking_system: file-system
-# story_location: c:/Users/JeReM/OneDrive/Bureau/sitewebecho by emergent/_bmad-output/implementation-artifacts
+# story_location: _bmad-output/implementation-artifacts
 
 # STATUS DEFINITIONS:
 # ==================
@@ -33,13 +33,14 @@
 # - SM typically creates next story after previous one is 'done' to incorporate learnings
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
-generated: 2026-03-05
+generated: 2026-03-14
 project: sitewebecho by emergent
 project_key: NOKEY
 tracking_system: file-system
-story_location: c:/Users/JeReM/OneDrive/Bureau/sitewebecho by emergent/_bmad-output/implementation-artifacts
+story_location: _bmad-output/implementation-artifacts
 
 development_status:
+  # Epic 1: Identité & Sécurité Utilisateur (Auth Core)
   epic-1: done
   1-1-inscription-via-google-oauth: done
   1-2-authentification-classique-securisee: done
@@ -47,6 +48,7 @@ development_status:
   1-4-isolation-des-vues-privees: done
   epic-1-retrospective: optional
 
+  # Epic 2: Découverte Publique & Acquisition (Media & Leads)
   epic-2: done
   2-1-vitrine-video-bande-annonce: done
   2-2-exploration-des-episodes-opt-in: done
@@ -54,6 +56,7 @@ development_status:
   2-4-passerelle-de-soutien-et-dons: done
   epic-2-retrospective: optional
 
+  # Epic 3: Espace Partenaires & ECHOSystem (Partner Onboarding)
   epic-3: done
   3-1-formulaire-de-candidature-partenaire: done
   3-2-notifications-transactionnelles: done
@@ -62,6 +65,7 @@ development_status:
   3-5-cartographie-et-listing-publique-echosystem: done
   epic-3-retrospective: optional
 
+  # Epic 4: Back-Office d'Administration (Control Tower)
   epic-4: done
   4-1-panel-administration-securise: done
   4-2-moderation-des-candidatures-partenaires: done

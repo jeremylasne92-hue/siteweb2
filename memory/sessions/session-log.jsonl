@@ -1,2 +1,28 @@
-{"ts": "2026-03-14T20:16:39Z", "cmd": "merge feat/member-profiles into main"}
-{"ts": "2026-03-14T20:20:36Z", "cmd": "cd \"C:\\Dev\\Site web ECHO\" && git add frontend/src/components/partners/MembersSection.tsx frontend/src/pages/PartnersPage.tsx memory/sessions/session-log.jsonl && git status --short"}
+{"ts": "2026-03-15T02:59:02Z", "cmd": "cd \"/c/Dev/Site web ECHO\" && git log --oneline -5"}
+{"ts": "2026-03-15T03:00:56Z", "cmd": "cd \"/c/Dev/Site web ECHO\" && git log --oneline -1 -- frontend/src/pages/AdminMembers.tsx"}
+{"ts": "2026-03-15T03:01:06Z", "cmd": "cd \"/c/Dev/Site web ECHO\" && git status --short frontend/src/pages/AdminMembers.tsx frontend/src/App.tsx frontend/src/pages/AdminDashboard.tsx"}
+{"ts": "2026-03-15T03:01:15Z", "cmd": "cd \"/c/Dev/Site web ECHO\" && git diff frontend/src/App.tsx"}
+{"ts": "2026-03-15T03:01:17Z", "cmd": "cd \"/c/Dev/Site web ECHO\" && git diff frontend/src/pages/AdminDashboard.tsx"}
+{"ts": "2026-03-15T03:01:30Z", "cmd": "cd \"/c/Dev/Site web ECHO\" && git add frontend/src/pages/AdminMembers.tsx frontend/src/App.tsx frontend/src/pages/AdminDashboard.tsx && git commit -m \"$(cat <<'EOF'\nfeat: add admin members page with full profile editing\n\n- New AdminMembers page with table, filters, and edit modal\n- Route at /admin/membres with link from admin dashboard\n- Edit all member fields: bio, city, region, skills, status, etc.\n- PATCH only changed fields, geocode button per member\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n)\""}
+{"ts": "2026-03-15T03:07:09Z", "cmd": "cd \"C:\\Dev\\Site web ECHO\" && git diff HEAD -- frontend/src/components/partners/PartnerFormModal.tsx | head -100"}
+{"ts": "2026-03-15T03:07:40Z", "cmd": "ls \"/c/Dev/Site web ECHO/frontend/public/images/team/\" | grep -i jeremy"}
+{"ts": "2026-03-15T03:07:45Z", "cmd": "find \"/c/Dev/Site web ECHO/frontend/public/images\" -iname \"*jeremy*\" 2>/dev/null"}
+{"ts": "2026-03-15T03:12:58Z", "cmd": "ls \"/c/Dev/Site web ECHO/frontend/public/images/Photo \u00c3\u00a9quipe/\" | grep -i jeremy"}
+{"ts": "2026-03-15T03:24:18Z", "cmd": "curl -s http://localhost:8000/api/members/map 2>&1 | head -5"}
+{"ts": "2026-03-15T03:32:11Z", "cmd": "curl -s http://localhost:8000/api/members/?limit=5 2>&1 | python -m json.tool 2>&1 | head -20"}
+{"ts": "2026-03-15T03:54:21Z", "cmd": "cd \"C:/Dev/Site web ECHO\" && git diff --name-only && echo \"---STAGED---\" && git diff --cached --name-only"}
+{"ts": "2026-03-15T03:54:48Z", "cmd": "cd \"C:/Dev/Site web ECHO\" && git log --oneline -5"}
+{"ts": "2026-03-15T03:56:01Z", "cmd": "cd \"C:/Dev/Site web ECHO\" && git diff frontend/src/components/partners/PartnersMap.tsx frontend/src/components/ui/CityAutocomplete.tsx frontend/src/pages/Mouvement.tsx"}
+{"ts": "2026-03-15T03:56:49Z", "cmd": "touch \"C:/Dev/Site web ECHO/frontend/src/components/partners/PartnersMap.tsx\""}
+{"ts": "2026-03-15T04:16:08Z", "cmd": "cd \"C:/Dev/Site web ECHO\" && git status"}
+{"ts": "2026-03-15T04:16:10Z", "cmd": "cd \"C:/Dev/Site web ECHO\" && git log --oneline -5"}
+{"ts": "2026-03-15T04:16:12Z", "cmd": "cd \"C:/Dev/Site web ECHO\" && git diff frontend/src/components/partners/PartnersMap.tsx frontend/src/components/ui/CityAutocomplete.tsx frontend/src/pages/Mouvement.tsx"}
+{"ts": "2026-03-15T04:16:20Z", "cmd": "cd \"C:/Dev/Site web ECHO\" && git add frontend/src/components/partners/PartnersMap.tsx frontend/src/components/ui/CityAutocomplete.tsx frontend/src/pages/Mouvement.tsx"}
+{"ts": "2026-03-15T04:16:32Z", "cmd": "cd \"C:/Dev/Site web ECHO\" && git commit -m \"$(cat <<'EOF'\nfix: improve map markers, city autocomplete, and team photo alignment\n\n- PartnersMap: replace blue dot member markers with Klein blue pin markers\n  (same SVG style as partners), add full 5-category legend, keep Dark Matter tiles\n- CityAutocomplete: fix missing suggestions by using same Nominatim approach\n  as partner form (addressdetails + countrycodes instead of featuretype)\n- Mouvement: use per-member objectPosition for team photo alignment\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n)\""}
+{"ts": "2026-03-15T04:16:39Z", "cmd": "cd \"C:/Dev/Site web ECHO\" && git status"}
+{"ts": "2026-03-15T04:17:32Z", "cmd": "cd \"C:/Dev/Site web ECHO\" && git status -u"}
+{"ts": "2026-03-15T04:19:12Z", "cmd": "cd \"C:/Dev/Site web ECHO\" && git add .agent/memory/shared-context.md && git commit -m \"$(cat <<'EOF'\ndocs: update shared-context with member map, admin members, city autocomplete\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n)\""}
+{"ts": "2026-03-15T04:19:46Z", "cmd": "cd \"C:/Dev/Site web ECHO\" && git log --oneline origin/main..HEAD | head -25"}
+{"ts": "2026-03-15T04:20:42Z", "cmd": "cd \"C:/Dev/Site web ECHO\" && git push origin main"}
+{"ts": "2026-03-15T04:22:34Z", "cmd": "cd \"C:/Dev/Site web ECHO\" && git status"}
+{"ts": "2026-03-15T04:22:45Z", "cmd": "cd \"C:/Dev/Site web ECHO\" && git log --oneline origin/main..HEAD"}
