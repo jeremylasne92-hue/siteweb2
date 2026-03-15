@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { cn } from '../components/ui/Button';
+import { CityAutocomplete } from '../components/ui/CityAutocomplete';
 import type { PartnerCategory } from '../components/partners/PartnerCard';
 import { PARTNERS_API } from '../config/api';
 
@@ -660,7 +661,13 @@ function AdminPartnerDetail({
                                 <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-2">
                                     <input value={editData.address as string} onChange={(e) => updateField('address', e.target.value)} placeholder="Adresse" className="w-full text-sm text-white bg-white/5 border border-white/10 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-echo-gold/50" />
                                     <div className="grid grid-cols-2 gap-2">
-                                        <input value={editData.city as string} onChange={(e) => updateField('city', e.target.value)} placeholder="Ville" className="text-sm text-white bg-white/5 border border-white/10 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-echo-gold/50" />
+                                        <CityAutocomplete
+                                            label=""
+                                            name="city"
+                                            value={(editData.city as string) || ''}
+                                            onChange={(city) => updateField('city', city)}
+                                            placeholder="Ville"
+                                        />
                                         <input value={editData.postal_code as string} onChange={(e) => updateField('postal_code', e.target.value)} placeholder="Code postal" className="text-sm text-white bg-white/5 border border-white/10 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-echo-gold/50" />
                                     </div>
                                     <input value={editData.country as string} onChange={(e) => updateField('country', e.target.value)} placeholder="Pays" className="w-full text-sm text-white bg-white/5 border border-white/10 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-echo-gold/50" />

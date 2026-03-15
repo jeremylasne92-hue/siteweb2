@@ -700,6 +700,20 @@ async def admin_edit_partner(
     if "name" in updates:
         updates["slug"] = slugify.slugify(updates["name"])
 
+    # Auto-geocode when city changes
+    if "city" in updates:
+        try:
+            from utils.geocode import geocode_city
+            coords = await geocode_city(updates["city"])
+            if coords:
+                updates["latitude"] = coords[0]
+                updates["longitude"] = coords[1]
+                logger.info(f"Partner geocoded city '{updates['city']}' → {coords}")
+            else:
+                logger.warning(f"Partner geocoding failed for city '{updates['city']}'")
+        except Exception as e:
+            logger.warning(f"Partner geocoding error for city '{updates['city']}': {e}")
+
     updates["updated_at"] = datetime.utcnow()
 
     result = await db.partners.update_one(
