@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, EmailStr, field_validator
+from pydantic import BaseModel, ConfigDict, Field, EmailStr, field_validator
 from typing import Optional, Literal, List
 from datetime import datetime
 import uuid
@@ -38,14 +38,13 @@ class User(BaseModel):
     is_member: bool = False
     member_since: Optional[datetime] = None
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "username": "john_doe",
-                "email": "john@example.com",
-                "role": "user"
-            }
+    model_config = ConfigDict(json_schema_extra={
+        "example": {
+            "username": "john_doe",
+            "email": "john@example.com",
+            "role": "user"
         }
+    })
 
 
 class UserCreate(BaseModel):
@@ -103,19 +102,18 @@ class Episode(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "season": 1,
-                "episode": 1,
-                "title": "Épisode 1 — Le Réveil",
-                "description": "Premier épisode...",
-                "duration": "52 min",
-                "thumbnail_url": "https://...",
-                "video_url": "/videos/s1e1.mp4",
-                "is_published": True
-            }
+    model_config = ConfigDict(json_schema_extra={
+        "example": {
+            "season": 1,
+            "episode": 1,
+            "title": "Épisode 1 — Le Réveil",
+            "description": "Premier épisode...",
+            "duration": "52 min",
+            "thumbnail_url": "https://...",
+            "video_url": "/videos/s1e1.mp4",
+            "is_published": True
         }
+    })
 
 
 class VideoProgress(BaseModel):

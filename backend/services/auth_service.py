@@ -130,14 +130,14 @@ async def google_callback_service(code: str, db) -> dict:
             picture=user_info.get("picture"),
             is_active=True
         )
-        await db.users.insert_one(user.dict())
+        await db.users.insert_one(user.model_dump())
 
     # 4. Create Session
     session = UserSession(
         user_id=user.id,
         expires_at=datetime.utcnow() + timedelta(days=7)
     )
-    await db.user_sessions.insert_one(session.dict())
+    await db.user_sessions.insert_one(session.model_dump())
 
     return {
         "user": {

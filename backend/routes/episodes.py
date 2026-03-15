@@ -70,7 +70,7 @@ async def create_episode(
             detail="Episode already exists"
         )
     
-    await db.episodes.insert_one(episode_data.dict())
+    await db.episodes.insert_one(episode_data.model_dump())
     logger.info(f"Created episode S{episode_data.season}E{episode_data.episode}")
     
     return episode_data
@@ -97,7 +97,7 @@ async def update_episode(
     
     await db.episodes.update_one(
         {"id": episode_id},
-        {"$set": episode_data.dict()}
+        {"$set": episode_data.model_dump()}
     )
     
     logger.info(f"Updated episode {episode_id}")
@@ -146,7 +146,7 @@ async def create_optin(
         season=data.season,
         episode=data.episode
     )
-    await db.episode_optins.insert_one(optin.dict())
+    await db.episode_optins.insert_one(optin.model_dump())
     logger.info(f"User {user.id} opted in for S{data.season}E{data.episode}")
     return {"message": "Subscribed successfully", "already_subscribed": False}
 

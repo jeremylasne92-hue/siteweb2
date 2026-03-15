@@ -33,7 +33,7 @@ async def create_thematic(
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
     """Create new thematic (admin only)"""
-    await db.thematics.insert_one(thematic.dict())
+    await db.thematics.insert_one(thematic.model_dump())
     logger.info(f"Created thematic: {thematic.title}")
     return thematic
 
@@ -48,7 +48,7 @@ async def update_thematic(
     """Update thematic (admin only)"""
     result = await db.thematics.update_one(
         {"id": thematic_id},
-        {"$set": thematic.dict()}
+        {"$set": thematic.model_dump()}
     )
     
     if result.modified_count == 0:

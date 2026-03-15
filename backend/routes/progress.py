@@ -95,7 +95,7 @@ async def save_progress(
             "user_id": current_user.id,
             "episode_id": progress_data.episode_id
         },
-        {"$set": full_progress.dict()},
+        {"$set": full_progress.model_dump()},
         upsert=True
     )
     

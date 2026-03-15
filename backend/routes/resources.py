@@ -31,7 +31,7 @@ async def create_resource(
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
     """Create new resource (admin only)"""
-    await db.resources.insert_one(resource.dict())
+    await db.resources.insert_one(resource.model_dump())
     logger.info(f"Created resource: {resource.title}")
     return resource
 
@@ -72,7 +72,7 @@ async def create_actor(
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
     """Create new actor (admin only)"""
-    await db.actors.insert_one(actor.dict())
+    await db.actors.insert_one(actor.model_dump())
     return actor
 
 

@@ -176,7 +176,7 @@ async def login(request: Request, credentials: UserLogin, response: Response, db
             code=code,
             expires_at=datetime.utcnow() + timedelta(minutes=10)
         )
-        await db.pending_2fa.insert_one(pending_2fa.dict())
+        await db.pending_2fa.insert_one(pending_2fa.model_dump())
         
         # Send email
         await send_2fa_code(user.email, code)
@@ -198,7 +198,7 @@ async def login(request: Request, credentials: UserLogin, response: Response, db
         user_id=user.id,
         expires_at=datetime.utcnow() + timedelta(days=7)
     )
-    await db.user_sessions.insert_one(session.dict())
+    await db.user_sessions.insert_one(session.model_dump())
     
     # Set session cookie
     response.set_cookie(
@@ -273,7 +273,7 @@ async def verify_2fa(data: Verify2FARequest, response: Response, request: Reques
         user_id=data.user_id,
         expires_at=datetime.utcnow() + timedelta(days=7)
     )
-    await db.user_sessions.insert_one(session.dict())
+    await db.user_sessions.insert_one(session.model_dump())
     
     # Set session cookie
     response.set_cookie(

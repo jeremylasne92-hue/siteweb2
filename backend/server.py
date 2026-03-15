@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, APIRouter
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -18,15 +19,103 @@ ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 from core.config import settings
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
 # MongoDB connection
 client = AsyncIOMotorClient(settings.MONGO_URL)
 db = client[settings.DB_NAME]
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan — startup indexes and shutdown cleanup."""
+    # --- Startup ---
+    from utils.rate_limit import ensure_rate_limit_indexes
+    app.db = db
+    settings.validate()
+    await ensure_rate_limit_indexes(db)
+
+    # Data retention TTL indexes (RGPD)
+    try:
+        await db.tech_candidatures.create_index("created_at", expireAfterSeconds=15552000)
+        await db.contact_messages.create_index("created_at", expireAfterSeconds=15552000)
+        await db.analytics_events.create_index("created_at", expireAfterSeconds=31536000)
+        await db.password_reset_tokens.create_index("created_at", expireAfterSeconds=86400)
+        await db.volunteer_applications.create_index("created_at", expireAfterSeconds=94608000)
+    except Exception as e:
+        logger.warning(f"TTL index creation: {e}")
+
+    # Member profiles indexes
+    try:
+        await db.member_profiles.create_index(
+            "user_id", unique=True,
+            partialFilterExpression={"user_id": {"$type": "string"}},
+        )
+        await db.member_profiles.create_index("slug", unique=True)
+        await db.member_profiles.create_index([("visible", 1), ("project", 1)])
+        await db.member_profiles.create_index("membership_status")
+    except Exception as e:
+        logger.warning(f"Member profiles index creation: {e}")
+
+    # Analytics query indexes
+    try:
+        await db.analytics_events.create_index([("category", 1), ("action", 1)])
+        await db.analytics_events.create_index("path")
+        await db.analytics_events.create_index("session_id")
+    except Exception as e:
+        logger.warning(f"Analytics index creation: {e}")
+
+    # Performance indexes for hot queries
+    try:
+        await db.user_sessions.create_index("session_token")
+        await db.user_sessions.create_index("user_id")
+        await db.users.create_index("email")
+        await db.users.create_index("username")
+        await db.users.create_index("id", unique=True)
+        await db.partners.create_index("slug", unique=True)
+        await db.pending_2fa.create_index("user_id")
+    except Exception as e:
+        logger.warning(f"Performance index creation: {e}")
+
+    # Query indexes for hot paths (audit 2026-03-15)
+    try:
+        await db.events.create_index("id")
+        await db.events.create_index([("is_published", 1), ("date", 1)])
+        await db.partners.create_index("user_id")
+        await db.partners.create_index("status")
+        await db.video_progress.create_index(
+            [("user_id", 1), ("episode_id", 1)], unique=True
+        )
+        await db.episode_optins.create_index("user_id")
+        await db.tech_candidatures.create_index("email")
+        await db.tech_candidatures.create_index([("status", 1), ("project", 1)])
+        await db.tech_candidatures.create_index([("ip_address", 1), ("created_at", 1)])
+        await db.volunteer_applications.create_index("email")
+        await db.volunteer_applications.create_index("status")
+        await db.volunteer_applications.create_index([("ip_address", 1), ("created_at", 1)])
+        await db.contact_messages.create_index([("ip_address", 1), ("created_at", 1)])
+        await db.pending_2fa.create_index("created_at", expireAfterSeconds=600)
+    except Exception as e:
+        logger.warning(f"Audit index creation: {e}")
+
+    logger.info("Rate limit and retention indexes ensured")
+
+    yield  # Application runs here
+
+    # --- Shutdown ---
+    client.close()
+
 
 # Create the main app without a prefix
 app = FastAPI(
     title="Mouvement ECHO API",
     description="API for ECHO series platform",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan,
 )
 
 # Create a router with the /api prefix
@@ -54,6 +143,20 @@ api_router.include_router(members.admin_router)
 @api_router.get("/")
 async def root():
     return {"message": "Mouvement ECHO API is running"}
+
+@api_router.get("/health")
+async def health_check():
+    """Health check endpoint — verifies MongoDB connectivity."""
+    try:
+        from server import db
+        await db.command("ping")
+        return {"status": "healthy", "database": "connected"}
+    except Exception as e:
+        from starlette.responses import JSONResponse
+        return JSONResponse(
+            status_code=503,
+            content={"status": "unhealthy", "database": str(e)},
+        )
 
 # Include the router in the main app
 app.include_router(api_router)
@@ -107,103 +210,3 @@ class MongoDBErrorMiddleware(BaseHTTPMiddleware):
             )
 
 app.add_middleware(MongoDBErrorMiddleware)
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
-@app.on_event("startup")
-async def startup_indexes():
-    """Create TTL and compound indexes for rate limiting and data retention."""
-    from utils.rate_limit import ensure_rate_limit_indexes
-    app.db = db
-    settings.validate()
-    await ensure_rate_limit_indexes(db)
-
-    # Data retention TTL indexes (RGPD)
-    try:
-        await db.tech_candidatures.create_index("created_at", expireAfterSeconds=15552000)  # 6 months
-        await db.contact_messages.create_index("created_at", expireAfterSeconds=15552000)  # 6 months
-        await db.analytics_events.create_index("created_at", expireAfterSeconds=31536000)  # 1 year
-        await db.password_reset_tokens.create_index("created_at", expireAfterSeconds=86400)  # 24h
-        await db.volunteer_applications.create_index("created_at", expireAfterSeconds=94608000)  # 3 years
-    except Exception as e:
-        logger.warning(f"TTL index creation: {e}")
-
-    # Member profiles indexes
-    try:
-        await db.member_profiles.create_index(
-            "user_id", unique=True,
-            partialFilterExpression={"user_id": {"$type": "string"}},
-        )
-        await db.member_profiles.create_index("slug", unique=True)
-        await db.member_profiles.create_index([("visible", 1), ("project", 1)])
-        await db.member_profiles.create_index("membership_status")
-    except Exception as e:
-        logger.warning(f"Member profiles index creation: {e}")
-
-    # Analytics query indexes
-    try:
-        await db.analytics_events.create_index([("category", 1), ("action", 1)])
-        await db.analytics_events.create_index("path")
-        await db.analytics_events.create_index("session_id")
-    except Exception as e:
-        logger.warning(f"Analytics index creation: {e}")
-
-    # Performance indexes for hot queries
-    try:
-        await db.user_sessions.create_index("session_token")
-        await db.user_sessions.create_index("user_id")
-        await db.users.create_index("email")
-        await db.users.create_index("username")
-        await db.users.create_index("id", unique=True)
-        await db.partners.create_index("slug", unique=True)
-        await db.pending_2fa.create_index("user_id")
-    except Exception as e:
-        logger.warning(f"Performance index creation: {e}")
-
-    # Query indexes for hot paths (audit 2026-03-15)
-    try:
-        # Events: GET by id + public listing
-        await db.events.create_index("id")
-        await db.events.create_index([("is_published", 1), ("date", 1)])
-
-        # Partners: partner account lookups + admin filtering
-        await db.partners.create_index("user_id")
-        await db.partners.create_index("status")
-
-        # Video progress: user+episode compound (upsert pattern)
-        await db.video_progress.create_index(
-            [("user_id", 1), ("episode_id", 1)], unique=True
-        )
-
-        # Episode opt-ins: user lookup
-        await db.episode_optins.create_index("user_id")
-
-        # Tech candidatures: /me by email + admin filtering + rate limit
-        await db.tech_candidatures.create_index("email")
-        await db.tech_candidatures.create_index([("status", 1), ("project", 1)])
-        await db.tech_candidatures.create_index([("ip_address", 1), ("created_at", 1)])
-
-        # Volunteer applications: /me by email + admin filtering + rate limit
-        await db.volunteer_applications.create_index("email")
-        await db.volunteer_applications.create_index("status")
-        await db.volunteer_applications.create_index([("ip_address", 1), ("created_at", 1)])
-
-        # Contact messages: rate limiting
-        await db.contact_messages.create_index([("ip_address", 1), ("created_at", 1)])
-
-        # Pending 2FA: auto-expire codes after 10 minutes (security + cleanup)
-        await db.pending_2fa.create_index("created_at", expireAfterSeconds=600)
-    except Exception as e:
-        logger.warning(f"Audit index creation: {e}")
-
-    logger.info("Rate limit and retention indexes ensured")
-
-
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()
