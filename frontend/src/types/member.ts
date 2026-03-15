@@ -19,6 +19,8 @@ export interface MemberProfile {
     bio?: string;
     avatar_url?: string;
     city?: string;
+    latitude?: number;
+    longitude?: number;
     region?: string;
     project: ProjectType;
     role_title?: string;
@@ -29,4 +31,10 @@ export interface MemberProfile {
     social_links: SocialLink[];
     joined_at: string;
     membership_status: string;
+}
+
+export interface MapMember {
+    city: string;
+    latitude: number;
+    longitude: number;
 }
