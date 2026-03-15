@@ -11,7 +11,7 @@ export function Home() {
         <div className="flex flex-col">
             <SEO
                 title="Accueil"
-                description="Découvrez ECHO, un mouvement citoyen né d'une websérie documentaire événement. Rejoignez-nous pour comprendre, fédérer et agir."
+                description="Mouvement ECHO : association citoyenne produisant une série documentaire de 33 épisodes sur la transition écologique. Série, CogniSphère, ECHOLink."
                 url="https://mouvementecho.fr/"
             />
             {/* Hero Section */}

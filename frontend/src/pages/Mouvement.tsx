@@ -3,6 +3,7 @@ import { Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { SEO } from '../components/seo/SEO';
+import { Breadcrumbs } from '../components/seo/Breadcrumbs';
 import { VolunteerApplicationForm } from '../components/forms/VolunteerApplicationForm';
 import { useAnalytics } from '../hooks/useAnalytics';
 
@@ -150,9 +151,10 @@ export function Mouvement() {
         <div className="bg-stone-950 text-stone-200 font-sans selection:bg-amber-500/30">
             <SEO
                 title="Le Mouvement"
-                description="Nous ne cherchons pas à réparer le vieux monde, mais à en faire pousser un nouveau. Rejoignez notre action citoyenne."
+                description="Le Mouvement ECHO : 7 étapes pour passer de la conscience à l'action. Rejoignez une communauté citoyenne engagée."
                 url="https://mouvementecho.fr/mouvement"
             />
+            <Breadcrumbs items={[{ label: 'Le Mouvement' }]} />
             {/* --- Hero Section --- */}
             <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
                 {/* Background Image with Overlay */}

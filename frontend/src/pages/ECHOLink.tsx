@@ -5,6 +5,7 @@ import { Button } from '../components/ui/Button';
 import { TechApplicationForm } from '../components/forms/TechApplicationForm';
 import { useAnalytics } from '../hooks/useAnalytics';
 import { SEO } from '../components/seo/SEO';
+import { Breadcrumbs } from '../components/seo/Breadcrumbs';
 
 export function ECHOLink() {
     const { trackEvent } = useAnalytics();
@@ -16,6 +17,7 @@ export function ECHOLink() {
                 description="ECHOLink : réseau de mise en relation des acteurs du changement. Passez de spectateur à acteur de la transition écologique."
                 url="https://mouvementecho.fr/echolink"
             />
+            <Breadcrumbs items={[{ label: 'ECHOLink' }]} />
             {/* Hero */}
             <section className="relative h-[60vh] sm:h-[70vh] md:h-[80vh] flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-echo-darker">
@@ -51,6 +53,14 @@ export function ECHOLink() {
                     </div>
                 </div>
             </section>
+
+            {/* Status badge */}
+            <div className="bg-amber-500/10 border-b border-amber-500/20">
+                <div className="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-center gap-2 text-sm text-amber-400">
+                    <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                    Plateforme en cours de développement — Lancement prévu : juin 2026
+                </div>
+            </div>
 
             {/* Le constat */}
             <section className="py-24 relative z-10">

@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { ChevronDown, HelpCircle, Search } from 'lucide-react';
 import { SEO } from '../components/seo/SEO';
+import { Breadcrumbs } from '../components/seo/Breadcrumbs';
 
 interface FAQItem {
     q: string;
@@ -159,9 +161,30 @@ export function FAQ() {
         <>
             <SEO
                 title="FAQ — Questions Fréquentes"
-                description="Trouvez les réponses à vos questions sur le Mouvement ECHO, la série documentaire, CogniSphère, ECHOLink et nos partenaires."
+                description="Questions fréquentes sur Mouvement ECHO : association, série documentaire, CogniSphère, ECHOLink, financement, équipe."
                 url="https://mouvementecho.fr/faq"
             />
+            <Helmet>
+                <script type="application/ld+json">
+                    {JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "FAQPage",
+                        "@id": "https://mouvementecho.fr/faq",
+                        "name": "Questions fréquentes — Mouvement ECHO",
+                        "mainEntity": faqData.flatMap(category =>
+                            category.items.map(item => ({
+                                "@type": "Question",
+                                "name": item.q,
+                                "acceptedAnswer": {
+                                    "@type": "Answer",
+                                    "text": item.a
+                                }
+                            }))
+                        )
+                    })}
+                </script>
+            </Helmet>
+            <Breadcrumbs items={[{ label: 'FAQ' }]} />
 
             {/* Hero */}
             <section className="relative py-20 bg-echo-darker">

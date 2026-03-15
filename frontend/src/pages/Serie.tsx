@@ -3,7 +3,9 @@ import { Play, BookOpen, Facebook, Linkedin, Twitter, Flame, Mountain, Star, Ins
 import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
 import { YouTubeEmbed } from '../components/ui/YouTubeEmbed';
+import { Helmet } from 'react-helmet-async';
 import { SEO } from '../components/seo/SEO';
+import { Breadcrumbs } from '../components/seo/Breadcrumbs';
 import { ScenaristApplicationForm } from '../components/forms/ScenaristApplicationForm';
 import { useAuthStore } from '../features/auth/store';
 import { API_URL } from '../config/api';
@@ -218,9 +220,55 @@ export function Serie() {
         <div className="flex flex-col min-h-screen bg-[#0A0A0A] text-white">
             <SEO
                 title="La Série"
-                description="33 épisodes inspirés de la Divine Comédie de Dante pour comprendre le monde, décrypter ses vices et identifier des solutions réelles."
+                description="Série documentaire ECHO : 33 épisodes en 3 saisons inspirées de Dante (Enfer, Purgatoire, Paradis). Écologie, justice sociale, prospective."
                 url="https://mouvementecho.fr/serie"
             />
+            <Helmet>
+                <script type="application/ld+json">
+                    {JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "CreativeWorkSeries",
+                        "@id": "https://mouvementecho.fr/serie#series",
+                        "name": "ECHO",
+                        "alternateName": "ECHO — La Série",
+                        "description": "Série documentaire de 33 épisodes en 3 saisons : S1 Enfer (diagnostic des crises), S2 Purgatoire (solutions du terrain), S3 Paradis (futurs souhaitables). Structure inspirée de la Divine Comédie de Dante.",
+                        "numberOfSeasons": 3,
+                        "genre": ["Documentary", "Drama"],
+                        "inLanguage": "fr-FR",
+                        "productionCompany": { "@id": "https://mouvementecho.fr/#organization" },
+                        "hasPart": [
+                            {
+                                "@type": "TVSeason",
+                                "@id": "https://mouvementecho.fr/serie#saison-1",
+                                "name": "Saison 1 — Enfer (diagnostic des crises)",
+                                "seasonNumber": 1,
+                                "numberOfEpisodes": 11,
+                                "description": "Diagnostic des dysfonctionnements systémiques. Décryptage des crises écologiques, sociales et économiques.",
+                                "partOfSeries": { "@id": "https://mouvementecho.fr/serie#series" }
+                            },
+                            {
+                                "@type": "TVSeason",
+                                "@id": "https://mouvementecho.fr/serie#saison-2",
+                                "name": "Saison 2 — Purgatoire (solutions du terrain)",
+                                "seasonNumber": 2,
+                                "numberOfEpisodes": 11,
+                                "description": "Solutions concrètes du terrain. Documentation des acteurs innovants et des alternatives viables.",
+                                "partOfSeries": { "@id": "https://mouvementecho.fr/serie#series" }
+                            },
+                            {
+                                "@type": "TVSeason",
+                                "@id": "https://mouvementecho.fr/serie#saison-3",
+                                "name": "Saison 3 — Paradis (futurs souhaitables)",
+                                "seasonNumber": 3,
+                                "numberOfEpisodes": 11,
+                                "description": "Prospective et imaginaires alternatifs. Projection vers les futurs souhaitables.",
+                                "partOfSeries": { "@id": "https://mouvementecho.fr/serie#series" }
+                            }
+                        ]
+                    })}
+                </script>
+            </Helmet>
+            <Breadcrumbs items={[{ label: 'La Série' }]} />
             {/* HERO SECTION */}
             <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-echo-red/20 via-black to-black z-10" />

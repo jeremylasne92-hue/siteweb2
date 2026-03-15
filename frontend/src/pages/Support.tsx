@@ -5,6 +5,7 @@ import { Card } from '../components/ui/Card';
 import { DONATION_URL } from '../config/donation';
 import { useAnalytics } from '../hooks/useAnalytics';
 import { SEO } from '../components/seo/SEO';
+import { Breadcrumbs } from '../components/seo/Breadcrumbs';
 
 export function Support() {
     const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -50,9 +51,10 @@ export function Support() {
         <>
             <SEO
                 title="Soutenir ECHO"
-                description="ECHO est un projet indépendant, libre et sans publicité. Votre soutien financier est notre seule énergie pour produire la série documentaire."
+                description="Soutenez Mouvement ECHO : dons à partir de 10 euros. Association loi 1901, série documentaire, plateformes citoyennes."
                 url="https://mouvementecho.fr/soutenir"
             />
+            <Breadcrumbs items={[{ label: 'Soutenir' }]} />
             {/* Hero Section */}
             <section className="relative py-20 bg-echo-darker">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-echo-gold/20 via-black to-black" />

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { SEO } from '../components/seo/SEO';
+import { Breadcrumbs } from '../components/seo/Breadcrumbs';
 import { Info, Film, BookOpen, Users, Shield, Mail } from 'lucide-react';
 
 export function AboutPage() {
@@ -29,6 +30,7 @@ export function AboutPage() {
                     })}
                 </script>
             </Helmet>
+            <Breadcrumbs items={[{ label: 'À propos' }]} />
 
             {/* Hero */}
             <section className="relative py-20 bg-echo-darker">

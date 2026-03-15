@@ -3,6 +3,7 @@ import { Download, FileText, Video, BookOpen, ExternalLink, Filter } from 'lucid
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { SEO } from '../components/seo/SEO';
+import { Breadcrumbs } from '../components/seo/Breadcrumbs';
 
 export function Resources() {
     const [activeCategory, setActiveCategory] = useState("Tous");
@@ -74,6 +75,7 @@ export function Resources() {
                 description="Ressources et documentation du Mouvement ECHO. Contenus pédagogiques sur la transition écologique et sociale."
                 url="https://mouvementecho.fr/ressources"
             />
+            <Breadcrumbs items={[{ label: 'Ressources' }]} />
             {/* Hero Section */}
             <section className="relative py-20 bg-echo-darker border-b border-white/5">
                 <div className="container mx-auto px-4 max-w-4xl text-center">
