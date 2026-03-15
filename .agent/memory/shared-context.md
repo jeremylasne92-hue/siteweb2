@@ -381,3 +381,16 @@ _Aucune spec en cours._
 | 46 | ~~RGPD Audit v2 — Délai droits 3 mois → 1 mois dans PC~~ | Mineur | ✅ Done (Art. 12 RGPD, prorogeable 2 mois) |
 | 47 | ~~Scroll-to-hash : navigation anchor (#section) depuis sous-menus et liens piliers~~ | Moyenne | ✅ Done (ScrollToTop gère hash avec offset header 100px + délai lazy-load) |
 | 48 | Internationalisation (i18n) : sélecteur de langue (FR/EN minimum), traduction de tout le contenu utilisateur, persistance du choix (localStorage/URL) | Moyenne | À faire — nécessite choix lib (react-i18next ou react-intl), extraction de toutes les chaînes, fichiers de traduction |
+
+### 📋 Backlog Post-Lancement — Admin Console Improvements
+
+| # | Tâche | Priorité | Statut |
+|---|-------|----------|--------|
+| 24 | Audit log structuré en MongoDB (collection admin_audit_log) — tracer toutes les actions admin (qui, quand, quoi) pour conformité RGPD | Haute | À faire |
+| 25 | Soft-delete sur candidatures et partenaires — remplacer les hard-delete par un champ deleted_at, ajouter une corbeille admin | Haute | À faire |
+| 26 | Pagination serveur sur les tableaux admin — remplacer les limit=500 par skip/limit avec compteur total | Moyenne | À faire |
+| 27 | Persistance des filtres admin dans l'URL — utiliser les query params pour conserver l'état des filtres au rechargement | Moyenne | À faire |
+| 28 | Graphiques d'évolution sur AdminAnalytics — line charts (recharts) pour inscriptions/jour, candidatures/semaine, funnel de conversion | Moyenne | À faire |
+| 29 | Gestion multi-admin — verrouillage optimiste et indicateur "en cours de traitement par X" sur les candidatures | Moyenne | À faire |
+| 30 | Scoring de candidature — indicateurs objectifs (compétences, portfolio, expérience) pour prioriser le traitement | Basse | À faire |
+| 31 | Relances automatiques email — candidature pending >7j → alerte admin, entretien >14j → relance candidat | Moyenne | À faire |

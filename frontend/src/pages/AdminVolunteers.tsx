@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
     Heart, RefreshCw, ArrowLeft, Trash2, X,
     Clock, AlertTriangle, CheckCircle2,
-    XCircle, Users, MessageSquare, Download
+    XCircle, Users, MessageSquare, Download, Search
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { API_URL } from '../config/api';
@@ -52,20 +52,38 @@ const availConfig: Record<AvailabilityType, { label: string; color: string }> = 
     active: { label: 'Moteur', color: '#F59E0B' },
 };
 
-function StatusBadge({ status }: { status: VolunteerStatus }) {
+const getDaysSince = (dateStr: string) => {
+    const days = Math.floor((Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24));
+    if (days === 0) return "aujourd'hui";
+    if (days === 1) return "hier";
+    return `${days}j`;
+};
+
+function StatusBadge({ status, createdAt }: { status: VolunteerStatus; createdAt?: string }) {
     const config = statusConfig[status] || statusConfig.pending;
+    const showDuration = createdAt && (status === 'pending' || status === 'entretien');
+    // eslint-disable-next-line react-hooks/purity -- Date.now() is acceptable here; value only matters at mount time
+    const days = useMemo(() => createdAt ? Math.floor((Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24)) : 0, [createdAt]);
+    const isWarning = (status === 'pending' && days > 7) || (status === 'entretien' && days > 14);
     return (
-        <span
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border"
-            style={{
-                color: config.color,
-                borderColor: `${config.color}40`,
-                backgroundColor: `${config.color}15`,
-            }}
-        >
-            {config.icon}
-            {config.label}
-        </span>
+        <div className="flex flex-col gap-0.5">
+            <span
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border"
+                style={{
+                    color: config.color,
+                    borderColor: `${config.color}40`,
+                    backgroundColor: `${config.color}15`,
+                }}
+            >
+                {config.icon}
+                {config.label}
+            </span>
+            {showDuration && (
+                <span className={`text-xs ${isWarning ? 'text-amber-400' : 'text-echo-textMuted'}`}>
+                    depuis {getDaysSince(createdAt)}
+                </span>
+            )}
+        </div>
     );
 }
 
@@ -96,7 +114,7 @@ export default function AdminVolunteers() {
     const [actionLoading, setActionLoading] = useState(false);
     const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
     const [statusNote, setStatusNote] = useState('');
-
+    const [searchQuery, setSearchQuery] = useState('');
 
     const fetchVolunteers = async () => {
         setLoading(true);
@@ -179,6 +197,7 @@ export default function AdminVolunteers() {
     };
 
     const handleDelete = async (id: string) => {
+        if (!window.confirm("Supprimer cette candidature bénévole ? Cette action est irréversible.")) return;
         setActionLoading(true);
         try {
             const res = await fetch(`${API_URL}/volunteers/admin/${id}`, {
@@ -250,6 +269,12 @@ export default function AdminVolunteers() {
         { key: 'active', label: 'Moteur' },
     ];
 
+    const filteredVolunteers = volunteers.filter(v => {
+        if (!searchQuery) return true;
+        const q = searchQuery.toLowerCase();
+        return (v.name?.toLowerCase().includes(q) || v.email?.toLowerCase().includes(q));
+    });
+
     const renderSkills = (skills: string[]) => {
         if (!skills || skills.length === 0) return <span className="text-echo-textMuted">—</span>;
         const shown = skills.slice(0, 3);
@@ -318,7 +343,7 @@ export default function AdminVolunteers() {
                         </button>
                     ))}
                 </div>
-                <div className="flex flex-wrap gap-2 mb-6">
+                <div className="flex flex-wrap gap-2 mb-4">
                     {availabilityFilters.map(f => (
                         <button
                             key={f.key}
@@ -332,6 +357,18 @@ export default function AdminVolunteers() {
                             {f.label}
                         </button>
                     ))}
+                </div>
+
+                {/* Search */}
+                <div className="relative mb-6">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-echo-textMuted" />
+                    <input
+                        type="text"
+                        placeholder="Rechercher par nom ou email..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-echo-textMuted/50 focus:border-echo-gold/40 focus:outline-none"
+                    />
                 </div>
 
                 {/* Batch Action Bar */}
@@ -411,14 +448,14 @@ export default function AdminVolunteers() {
                                             Chargement...
                                         </td>
                                     </tr>
-                                ) : volunteers.length === 0 ? (
+                                ) : filteredVolunteers.length === 0 ? (
                                     <tr>
                                         <td colSpan={8} className="text-center text-echo-textMuted py-12">
                                             Aucune candidature bénévole pour le moment.
                                         </td>
                                     </tr>
                                 ) : (
-                                    volunteers.map(v => (
+                                    filteredVolunteers.map(v => (
                                         <tr
                                             key={v.id}
                                             className="border-b border-white/5 hover:bg-white/5 cursor-pointer transition-colors"
@@ -447,7 +484,7 @@ export default function AdminVolunteers() {
                                                 <AvailBadge availability={v.availability} />
                                             </td>
                                             <td className="px-4 py-3" onClick={() => setSelected(v)}>
-                                                <StatusBadge status={v.status || 'pending'} />
+                                                <StatusBadge status={v.status || 'pending'} createdAt={v.created_at} />
                                             </td>
                                             <td className="px-4 py-3 text-sm text-echo-textMuted whitespace-nowrap" onClick={() => setSelected(v)}>
                                                 <Clock size={12} className="inline mr-1" />
@@ -485,7 +522,7 @@ export default function AdminVolunteers() {
                             {/* Badges */}
                             <div className="flex items-center gap-2 mb-4 flex-wrap">
                                 <AvailBadge availability={selected.availability} />
-                                <StatusBadge status={selected.status || 'pending'} />
+                                <StatusBadge status={selected.status || 'pending'} createdAt={selected.created_at} />
                                 {selected.city && (
                                     <span className="text-xs text-echo-textMuted">{selected.city}</span>
                                 )}

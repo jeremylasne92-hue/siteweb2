@@ -199,6 +199,7 @@ export default function AdminEvents() {
     };
 
     const handleDelete = async (id: string) => {
+        if (!window.confirm("Supprimer cet événement ? Cette action est irréversible.")) return;
         try {
             const res = await fetch(`${EVENTS_API}/${id}`, {
                 method: 'DELETE',

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
     Users, RefreshCw, ArrowLeft, X,
-    CheckCircle2, XCircle, MapPin, Save, Globe
+    CheckCircle2, XCircle, MapPin, Save, Globe, Search
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { API_URL } from '../config/api';
@@ -70,6 +70,7 @@ export default function AdminMembers() {
     const [saving, setSaving] = useState(false);
     const [saveMsg, setSaveMsg] = useState('');
     const [geocoding, setGeocoding] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const fetchMembers = async () => {
         setLoading(true);
@@ -204,6 +205,12 @@ export default function AdminMembers() {
         }
     };
 
+    const filteredMembers = members.filter(m => {
+        if (!searchQuery) return true;
+        const q = searchQuery.toLowerCase();
+        return (m.display_name?.toLowerCase().includes(q) || m.contact_email?.toLowerCase().includes(q));
+    });
+
     const projectFilters = [
         { key: 'all', label: 'Tous' },
         { key: 'benevole', label: 'Bénévoles' },
@@ -277,7 +284,7 @@ export default function AdminMembers() {
                         </button>
                     ))}
                 </div>
-                <div className="flex flex-wrap gap-2 mb-6">
+                <div className="flex flex-wrap gap-2 mb-4">
                     {statusFilters.map(f => (
                         <button
                             key={f.key}
@@ -291,6 +298,18 @@ export default function AdminMembers() {
                             {f.label}
                         </button>
                     ))}
+                </div>
+
+                {/* Search */}
+                <div className="relative mb-6">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-echo-textMuted" />
+                    <input
+                        type="text"
+                        placeholder="Rechercher par nom ou email..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-echo-textMuted/50 focus:border-echo-gold/40 focus:outline-none"
+                    />
                 </div>
 
                 {/* Error */}
@@ -324,14 +343,14 @@ export default function AdminMembers() {
                                             Chargement...
                                         </td>
                                     </tr>
-                                ) : members.length === 0 ? (
+                                ) : filteredMembers.length === 0 ? (
                                     <tr>
                                         <td colSpan={7} className="text-center text-echo-textMuted py-12">
                                             Aucun membre trouvé.
                                         </td>
                                     </tr>
                                 ) : (
-                                    members.map(m => {
+                                    filteredMembers.map(m => {
                                         const projectLabel = PROJECT_LABELS[m.project]?.label || m.project;
                                         const projectColor = PROJECT_LABELS[m.project]?.color || '#9CA3AF';
                                         const statusCfg = STATUS_CONFIG[m.membership_status] || STATUS_CONFIG.active;

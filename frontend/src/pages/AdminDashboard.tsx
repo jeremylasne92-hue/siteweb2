@@ -10,7 +10,9 @@ export default function AdminDashboard() {
     const [pendingCount, setPendingCount] = useState<number | null>(null);
     const [totalCount, setTotalCount] = useState<number | null>(null);
     const [candidatureCount, setCandidatureCount] = useState<number | null>(null);
+    const [pendingCandidatureCount, setPendingCandidatureCount] = useState<number>(0);
     const [volunteerCount, setVolunteerCount] = useState<number | null>(null);
+    const [pendingVolunteerCount, setPendingVolunteerCount] = useState<number>(0);
     useEffect(() => {
         const fetchStats = async () => {
             try {
@@ -32,6 +34,7 @@ export default function AdminDashboard() {
                 if (res.ok) {
                     const candidatures = await res.json();
                     setCandidatureCount(candidatures.length);
+                    setPendingCandidatureCount(candidatures.filter((c: { status: string }) => c.status === 'pending').length);
                 }
             } catch {
                 // silent
@@ -43,6 +46,7 @@ export default function AdminDashboard() {
                 if (res.ok) {
                     const volunteers = await res.json();
                     setVolunteerCount(volunteers.length);
+                    setPendingVolunteerCount(volunteers.filter((v: { status: string }) => v.status === 'pending').length);
                 }
             } catch {
                 // silent
@@ -71,6 +75,8 @@ export default function AdminDashboard() {
             active: true,
             badge: candidatureCount !== null && candidatureCount > 0 ? `${candidatureCount} candidature${candidatureCount > 1 ? 's' : ''}` : undefined,
             badgeColor: '#A78BFA',
+            notificationCount: pendingCandidatureCount,
+            notificationColor: 'bg-amber-500',
         },
         {
             title: 'Candidatures bénévoles',
@@ -80,6 +86,8 @@ export default function AdminDashboard() {
             active: true,
             badge: volunteerCount !== null && volunteerCount > 0 ? `${volunteerCount} candidature${volunteerCount > 1 ? 's' : ''}` : undefined,
             badgeColor: '#10B981',
+            notificationCount: pendingVolunteerCount,
+            notificationColor: 'bg-amber-500',
         },
         {
             title: 'Membres',
@@ -122,6 +130,11 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {sections.map(section => (
                         <div key={section.title} className="relative">
+                            {section.notificationCount != null && section.notificationCount > 0 && (
+                                <span className={`absolute -top-2 -right-2 ${section.notificationColor || 'bg-red-500'} text-white text-xs font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1 z-10`}>
+                                    {section.notificationCount}
+                                </span>
+                            )}
                             {section.active ? (
                                 <Link
                                     to={section.href}
@@ -157,7 +170,7 @@ export default function AdminDashboard() {
     );
 }
 
-function SectionContent({ section }: { section: { title: string; description: string; icon: React.ReactNode; active: boolean; badge?: string; badgeColor?: string } }) {
+function SectionContent({ section }: { section: { title: string; description: string; icon: React.ReactNode; active: boolean; badge?: string; badgeColor?: string; notificationCount?: number; notificationColor?: string } }) {
     return (
         <>
             <div className="flex items-start justify-between mb-4">

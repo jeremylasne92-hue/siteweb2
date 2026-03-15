@@ -3,7 +3,7 @@ import {
     CheckCircle2, XCircle, Star, StarOff, Clock,
     Shield, Users, RefreshCw, AlertTriangle,
     Globe, Phone, ExternalLink, MapPin, Calendar, Eye, Pencil, EyeOff, RotateCcw, Save,
-    X, Trash2, ArrowUpDown
+    X, Trash2, ArrowUpDown, Search
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { cn } from '../components/ui/Button';
@@ -744,6 +744,7 @@ export default function AdminPartners() {
     const [deleteModalId, setDeleteModalId] = useState<string | null>(null);
     const [sortKey, setSortKey] = useState<'name' | 'city' | 'category' | 'status' | 'contract_status' | 'created_at'>('created_at');
     const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+    const [searchQuery, setSearchQuery] = useState('');
 
     const fetchPartners = async () => {
         setIsLoading(true);
@@ -890,6 +891,7 @@ export default function AdminPartners() {
     };
 
     const handleDelete = async (partnerId: string) => {
+        if (!window.confirm("Supprimer ce partenaire et son compte ? Cette action est irréversible.")) return;
         setActionLoading(partnerId);
         try {
             const res = await fetch(`${API_BASE}/admin/${partnerId}`, {
@@ -919,6 +921,10 @@ export default function AdminPartners() {
 
     const filteredPartners = partners.filter(p => {
         if (contractFilter !== 'all' && p.contract_status !== contractFilter) return false;
+        if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            return (p.name?.toLowerCase().includes(q) || p.contact_email?.toLowerCase().includes(q));
+        }
         return true;
     });
 
@@ -1013,6 +1019,18 @@ export default function AdminPartners() {
                                 {cs === 'all' ? 'Tous' : contractStatusConfig[cs]?.label || cs}
                             </button>
                         ))}
+                    </div>
+
+                    {/* Search */}
+                    <div className="relative mb-4">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-echo-textMuted" />
+                        <input
+                            type="text"
+                            placeholder="Rechercher par nom ou email..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-echo-textMuted/50 focus:border-echo-gold/40 focus:outline-none"
+                        />
                     </div>
 
                     {/* Table */}

@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
     FileText, RefreshCw, ArrowLeft, Trash2, X,
     Brain, Share2, Clock, AlertTriangle, CheckCircle2,
-    XCircle, Users, MessageSquare, PenTool, ExternalLink
+    XCircle, Users, MessageSquare, PenTool, ExternalLink, Search
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { CANDIDATURES_API } from '../config/api';
@@ -50,20 +50,38 @@ const statusConfig: Record<CandidatureStatus, { label: string; color: string; ic
     rejected: { label: 'Rejetée', color: '#EF4444', icon: <XCircle size={14} /> },
 };
 
-function StatusBadge({ status }: { status: CandidatureStatus }) {
+const getDaysSince = (dateStr: string) => {
+    const days = Math.floor((Date.now() - new Date(dateStr).getTime()) / (1000 * 60 * 60 * 24));
+    if (days === 0) return "aujourd'hui";
+    if (days === 1) return "hier";
+    return `${days}j`;
+};
+
+function StatusBadge({ status, createdAt }: { status: CandidatureStatus; createdAt?: string }) {
     const config = statusConfig[status] || statusConfig.pending;
+    const showDuration = createdAt && (status === 'pending' || status === 'entretien');
+    // eslint-disable-next-line react-hooks/purity -- Date.now() is acceptable here; value only matters at mount time
+    const days = useMemo(() => createdAt ? Math.floor((Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24)) : 0, [createdAt]);
+    const isWarning = (status === 'pending' && days > 7) || (status === 'entretien' && days > 14);
     return (
-        <span
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border"
-            style={{
-                color: config.color,
-                borderColor: `${config.color}40`,
-                backgroundColor: `${config.color}15`,
-            }}
-        >
-            {config.icon}
-            {config.label}
-        </span>
+        <div className="flex flex-col gap-0.5">
+            <span
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border"
+                style={{
+                    color: config.color,
+                    borderColor: `${config.color}40`,
+                    backgroundColor: `${config.color}15`,
+                }}
+            >
+                {config.icon}
+                {config.label}
+            </span>
+            {showDuration && (
+                <span className={`text-xs ${isWarning ? 'text-amber-400' : 'text-echo-textMuted'}`}>
+                    depuis {getDaysSince(createdAt)}
+                </span>
+            )}
+        </div>
     );
 }
 
@@ -79,6 +97,7 @@ export default function AdminCandidatures() {
     const [actionLoading, setActionLoading] = useState(false);
     const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
     const [statusNote, setStatusNote] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
     const fetchCandidatures = async () => {
         setLoading(true);
@@ -161,6 +180,7 @@ export default function AdminCandidatures() {
     };
 
     const handleDelete = async (id: string) => {
+        if (!window.confirm("Supprimer cette candidature ? Cette action est irréversible.")) return;
         setActionLoading(true);
         try {
             const res = await fetch(`${CANDIDATURES_API}/admin/${id}`, {
@@ -219,9 +239,14 @@ export default function AdminCandidatures() {
         { key: 'motivated', label: 'Motivé·e' },
     ];
 
-    const filteredCandidatures = experienceFilter === 'all'
-        ? candidatures
-        : candidatures.filter(c => c.experience_level === experienceFilter);
+    const filteredCandidatures = candidatures.filter(c => {
+        if (experienceFilter !== 'all' && c.experience_level !== experienceFilter) return false;
+        if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            return (c.name?.toLowerCase().includes(q) || c.email?.toLowerCase().includes(q));
+        }
+        return true;
+    });
 
     return (
         <div className="min-h-screen bg-echo-dark pt-24 pb-16">
@@ -284,7 +309,7 @@ export default function AdminCandidatures() {
                         </button>
                     ))}
                 </div>
-                <div className="flex flex-wrap gap-2 mb-6">
+                <div className="flex flex-wrap gap-2 mb-4">
                     {experienceFilters.map(f => (
                         <button
                             key={f.key}
@@ -298,6 +323,18 @@ export default function AdminCandidatures() {
                             {f.label}
                         </button>
                     ))}
+                </div>
+
+                {/* Search */}
+                <div className="relative mb-6">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-echo-textMuted" />
+                    <input
+                        type="text"
+                        placeholder="Rechercher par nom ou email..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-echo-textMuted/50 focus:border-echo-gold/40 focus:outline-none"
+                    />
                 </div>
 
                 {/* Batch Action Bar */}
@@ -415,7 +452,7 @@ export default function AdminCandidatures() {
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-3" onClick={() => setSelected(c)}>
-                                                    <StatusBadge status={c.status || 'pending'} />
+                                                    <StatusBadge status={c.status || 'pending'} createdAt={c.created_at} />
                                                 </td>
                                                 <td className="px-4 py-3 text-sm text-echo-textMuted max-w-[180px] truncate hidden md:table-cell" onClick={() => setSelected(c)}>
                                                     {c.skills}
@@ -469,7 +506,7 @@ export default function AdminCandidatures() {
                                         </span>
                                     );
                                 })()}
-                                <StatusBadge status={selected.status || 'pending'} />
+                                <StatusBadge status={selected.status || 'pending'} createdAt={selected.created_at} />
                             </div>
 
                             {/* Date */}
