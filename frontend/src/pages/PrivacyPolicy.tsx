@@ -14,7 +14,7 @@ export function PrivacyPolicy() {
           Politique de Confidentialité
         </h1>
         <p className="text-gray-400 mb-12">
-          Dernière mise à jour : 11 mars 2026
+          Dernière mise à jour : 15 mars 2026
         </p>
 
         {/* Responsable du traitement */}
@@ -32,10 +32,10 @@ export function PrivacyPolicy() {
           <p className="text-gray-300 leading-relaxed mt-2">
             Contact :{' '}
             <a
-              href="mailto:mouvement.echo.france@gmail.com"
+              href="mailto:contact@mouvementecho.com"
               className="text-amber-500 hover:text-amber-400 underline"
             >
-              mouvement.echo.france@gmail.com
+              contact@mouvementecho.com
             </a>
           </p>
         </section>
@@ -119,18 +119,31 @@ export function PrivacyPolicy() {
           <h2 className="text-2xl font-serif text-amber-500 mb-4">
             5. Durée de conservation
           </h2>
+          <p className="text-gray-300 leading-relaxed mb-4">
+            Conformément au principe de limitation de la conservation (article 5(1)(e) du RGPD),
+            vos données sont conservées selon les durées suivantes :
+          </p>
           <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4">
             <li>
-              <strong className="text-white">Comptes utilisateurs :</strong>{' '}
-              conservés tant que le compte est actif, puis 3 ans après la
-              dernière activité
+              <strong className="text-white">Données de compte utilisateur :</strong>{' '}
+              conservées tant que le compte est actif, supprimées 3 ans après la
+              dernière connexion
             </li>
             <li>
-              <strong className="text-white">Logs de sécurité :</strong> 1 an
+              <strong className="text-white">Messages de contact :</strong>{' '}
+              conservés 3 ans puis supprimés
             </li>
             <li>
-              <strong className="text-white">Candidatures :</strong> 2 ans après
-              la dernière interaction
+              <strong className="text-white">Données d'analytics :</strong>{' '}
+              conservées 1 an (TTL automatique)
+            </li>
+            <li>
+              <strong className="text-white">Candidatures (bénévoles, scénaristes, partenaires) :</strong>{' '}
+              conservées 3 ans après la décision
+            </li>
+            <li>
+              <strong className="text-white">Cookies de session :</strong>{' '}
+              durée de la session navigateur
             </li>
           </ul>
         </section>
@@ -175,15 +188,16 @@ export function PrivacyPolicy() {
           <p className="text-gray-300 leading-relaxed mt-4">
             Pour exercer vos droits, contactez-nous à{' '}
             <a
-              href="mailto:mouvement.echo.france@gmail.com"
+              href="mailto:contact@mouvementecho.com"
               className="text-amber-500 hover:text-amber-400 underline"
             >
-              mouvement.echo.france@gmail.com
+              contact@mouvementecho.com
             </a>
-            . Nous répondrons dans un délai de 30 jours.
+            . Nous nous engageons à répondre à toute demande d'exercice de vos
+            droits dans un délai maximum de 3 mois.
           </p>
           <p className="text-gray-300 leading-relaxed mt-2">
-            Vous pouvez également introduire une réclamation auprès de la CNIL
+            Vous avez le droit d'introduire une réclamation auprès de la CNIL
             (Commission Nationale de l'Informatique et des Libertés) :{' '}
             <a
               href="https://www.cnil.fr"
@@ -193,16 +207,25 @@ export function PrivacyPolicy() {
             >
               www.cnil.fr
             </a>
+            {' '}ou de l'APD (Autorité de protection des données) :{' '}
+            <a
+              href="https://www.autoriteprotectiondonnees.be"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-amber-500 hover:text-amber-400 underline"
+            >
+              www.autoriteprotectiondonnees.be
+            </a>
           </p>
         </section>
 
-        {/* Cookies */}
+        {/* Cookies et technologies tierces */}
         <section className="mb-12">
           <h2 className="text-2xl font-serif text-amber-500 mb-4">
-            7. Cookies
+            7. Cookies et technologies tierces
           </h2>
           <p className="text-gray-300 leading-relaxed mb-4">
-            La plateforme utilise les cookies suivants :
+            La plateforme utilise les cookies et technologies suivants :
           </p>
           <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4">
             <li>
@@ -220,6 +243,23 @@ export function PrivacyPolicy() {
               utilisé en mode cookieless (sans dépôt de cookies) pour des
               statistiques anonymes de fréquentation. Aucun cookie tiers n'est
               déposé.
+            </li>
+            <li>
+              <strong className="text-white">
+                Google reCAPTCHA v3 :
+              </strong>{' '}
+              ce site utilise Google reCAPTCHA v3 pour protéger contre le spam.
+              Cette technologie collecte des données techniques (adresse IP,
+              cookies, comportement de navigation) transmises à Google Inc.
+              Consultez la{' '}
+              <a
+                href="https://policies.google.com/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-amber-500 hover:text-amber-400 underline"
+              >
+                Politique de confidentialité de Google
+              </a>.
             </li>
           </ul>
         </section>
@@ -284,18 +324,92 @@ export function PrivacyPolicy() {
           </p>
         </section>
 
+        {/* HelloAsso — sous-traitant paiement */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-serif text-amber-500 mb-4">
+            11. Dons et paiements — HelloAsso
+          </h2>
+          <p className="text-gray-300 leading-relaxed">
+            Les dons sont traités par{' '}
+            <strong className="text-white">HelloAsso</strong>, plateforme de
+            paiement. En effectuant un don, vos données de paiement sont
+            traitées directement par HelloAsso selon leur propre{' '}
+            <a
+              href="https://www.helloasso.com/confidentialite"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-amber-500 hover:text-amber-400 underline"
+            >
+              politique de confidentialité
+            </a>.
+            Mouvement ECHO ne stocke aucune donnée bancaire.
+          </p>
+        </section>
+
+        {/* Sécurité des données */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-serif text-amber-500 mb-4">
+            12. Sécurité des données
+          </h2>
+          <p className="text-gray-300 leading-relaxed mb-4">
+            Conformément à l'article 32 du RGPD, nous mettons en place les
+            mesures techniques et organisationnelles suivantes pour protéger vos
+            données personnelles :
+          </p>
+          <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4">
+            <li>
+              Chiffrement HTTPS (TLS) pour toutes les communications
+            </li>
+            <li>
+              Authentification par cookies httpOnly sécurisés
+            </li>
+            <li>
+              Hachage bcrypt des mots de passe
+            </li>
+            <li>
+              Protection CSRF et rate limiting sur les endpoints sensibles
+            </li>
+            <li>
+              Authentification à deux facteurs (2FA) disponible
+            </li>
+            <li>
+              Accès restreint aux données via rôles (utilisateur, partenaire, admin)
+            </li>
+            <li>
+              Pas de stockage de données bancaires
+            </li>
+          </ul>
+        </section>
+
+        {/* Contact données personnelles */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-serif text-amber-500 mb-4">
+            13. Contact
+          </h2>
+          <p className="text-gray-300 leading-relaxed">
+            Pour toute question relative à vos données personnelles,
+            contactez-nous à :{' '}
+            <a
+              href="mailto:contact@mouvementecho.com"
+              className="text-amber-500 hover:text-amber-400 underline"
+            >
+              contact@mouvementecho.com
+            </a>
+          </p>
+        </section>
+
         {/* DPO */}
         <section className="mb-12">
           <h2 className="text-2xl font-serif text-amber-500 mb-4">
-            11. Délégué à la protection des données
+            14. Délégué à la protection des données
           </h2>
           <p className="text-gray-300 leading-relaxed">
             L'Association Mouvement ECHO, comptant moins de 250 membres et ne traitant pas de données sensibles à grande échelle, n'a pas désigné de délégué à la protection des données (DPO) au sens de l'article 37 du RGPD. Pour toute question relative à la protection de vos données, contactez-nous à{' '}
             <a
-              href="mailto:mouvement.echo.france@gmail.com"
+              href="mailto:contact@mouvementecho.com"
               className="text-amber-500 hover:text-amber-400 underline"
             >
-              mouvement.echo.france@gmail.com
+              contact@mouvementecho.com
             </a>.
           </p>
         </section>
@@ -303,7 +417,7 @@ export function PrivacyPolicy() {
         {/* Modification */}
         <section className="mb-12">
           <h2 className="text-2xl font-serif text-amber-500 mb-4">
-            12. Modification de la politique
+            15. Modification de la politique
           </h2>
           <p className="text-gray-300 leading-relaxed">
             Nous nous réservons le droit de modifier cette politique de
