@@ -306,6 +306,8 @@ class VolunteerApplication(BaseModel):
     email: EmailStr
     phone: Optional[str] = None
     city: str
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
     motivation: list[str] = Field(default_factory=list)
     skills: list[str] = Field(default_factory=list)
     experience_level: Literal["professional", "student", "self_taught", "motivated"]

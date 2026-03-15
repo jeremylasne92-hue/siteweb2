@@ -66,6 +66,8 @@ class MemberProfileCreate(BaseModel):
     city: Optional[str] = None
     region: Optional[FrenchRegion] = None
     department: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
     project: ProjectType
     role_title: Optional[str] = None
@@ -102,6 +104,8 @@ class MemberProfileUpdate(BaseModel):
     city: Optional[str] = None
     region: Optional[FrenchRegion] = None
     department: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
     project: Optional[ProjectType] = None
     role_title: Optional[str] = None
@@ -142,6 +146,8 @@ class MemberProfile(BaseModel):
     city: Optional[str] = None
     region: Optional[FrenchRegion] = None
     department: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
     project: ProjectType
     role_title: Optional[str] = None
