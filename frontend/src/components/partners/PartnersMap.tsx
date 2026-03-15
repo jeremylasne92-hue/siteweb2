@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -8,6 +8,7 @@ import { ExternalLink, MapPin, User } from 'lucide-react';
 import type { MapMember } from '../../types/member';
 import { PROJECT_LABELS } from '../../config/candidatures';
 import { useAnalytics } from '../../hooks/useAnalytics';
+import { computeMarkerOffsets } from './markerOffsets';
 
 interface PartnersMapProps {
     partners: Partner[];
@@ -61,6 +62,33 @@ export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerCli
     const defaultCenter: [number, number] = [46.603354, 1.888334];
     const defaultZoom = 6;
 
+    // Compute offsets for ALL markers (partners + members) together
+    // so that a partner and a member in the same city also get offset
+    const allMarkerPositions = useMemo(() => {
+        const validPartners = partners.filter(p => p.latitude && p.longitude);
+        const allItems = [
+            ...validPartners.map(p => ({ latitude: p.latitude!, longitude: p.longitude! })),
+            ...members.map(m => ({ latitude: m.latitude, longitude: m.longitude })),
+        ];
+        const offsets = computeMarkerOffsets(allItems);
+
+        // Split offsets back into partner offsets and member offsets
+        const partnerOffsets = new Map<number, [number, number]>();
+        const memberOffsets = new Map<number, [number, number]>();
+
+        offsets.forEach((offset, idx) => {
+            if (idx < validPartners.length) {
+                partnerOffsets.set(idx, offset);
+            } else {
+                memberOffsets.set(idx - validPartners.length, offset);
+            }
+        });
+
+        return { validPartners, partnerOffsets, memberOffsets };
+    }, [partners, members]);
+
+    const { validPartners, partnerOffsets, memberOffsets } = allMarkerPositions;
+
     return (
         <div className="w-full h-[600px] rounded-2xl overflow-hidden border border-white/10 shadow-lg relative z-0">
             <MapContainer
@@ -74,10 +102,14 @@ export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerCli
                     url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?language=fr"
                 />
 
-                {partners.filter(p => p.latitude && p.longitude).map((partner) => (
+                {validPartners.map((partner, idx) => {
+                    const offset = partnerOffsets.get(idx);
+                    const lat = partner.latitude! + (offset ? offset[0] : 0);
+                    const lng = partner.longitude! + (offset ? offset[1] : 0);
+                    return (
                     <Marker
                         key={partner.id}
-                        position={[partner.latitude!, partner.longitude!]}
+                        position={[lat, lng]}
                         icon={iconMap[partner.category]}
                     >
                         <Popup className="dark-popup">
@@ -119,14 +151,18 @@ export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerCli
                             </div>
                         </Popup>
                     </Marker>
-                ))}
+                    );
+                })}
 
                 {members.map((member, i) => {
                     const project = PROJECT_LABELS[member.project];
+                    const offset = memberOffsets.get(i);
+                    const lat = member.latitude + (offset ? offset[0] : 0);
+                    const lng = member.longitude + (offset ? offset[1] : 0);
                     return (
                         <Marker
                             key={`member-${i}`}
-                            position={[member.latitude, member.longitude]}
+                            position={[lat, lng]}
                             icon={iconMap.membre}
                         >
                             <Popup className="dark-popup">
