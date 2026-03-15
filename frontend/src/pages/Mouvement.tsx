@@ -189,7 +189,7 @@ export function Mouvement() {
 
 
             {/* --- Les 7 Étapes du Mouvement (Timeline) --- */}
-            <section className="relative py-20 sm:py-28 overflow-hidden">
+            <section id="etapes" className="relative py-20 sm:py-28 overflow-hidden">
                 {/* Vertical Connecting Line (The Trunk) */}
                 <div className="absolute left-[20px] md:left-1/2 top-0 bottom-0 w-px md:-translate-x-1/2">
                     <div className="w-full h-full bg-gradient-to-b from-amber-900/40 via-amber-500/30 to-emerald-600/20" />
@@ -265,7 +265,7 @@ export function Mouvement() {
 
 
             {/* --- Équipe --- */}
-            <section className="py-24 relative overflow-hidden">
+            <section id="equipe" className="py-24 relative overflow-hidden">
                 <div className="container mx-auto px-4 text-center">
                     <h2 className="text-4xl font-bold text-white mb-4">Équipe ECHO</h2>
                     <p className="text-amber-500 text-lg mb-16">Une dizaine de membres actifs portés par la même sève.</p>
@@ -303,7 +303,7 @@ export function Mouvement() {
 
 
             {/* --- CTA --- */}
-            <section className="py-24 px-4 container mx-auto">
+            <section id="rejoindre" className="py-24 px-4 container mx-auto">
                 <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-stone-900 border border-amber-500/20 p-6 sm:p-8 md:p-12 lg:p-20 text-center">
                     {/* Background Texture */}
                     <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-repeat" />
