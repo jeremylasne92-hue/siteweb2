@@ -5,11 +5,13 @@ import L from 'leaflet';
 import type { Partner, PartnerCategory } from './PartnerCard';
 import { ExternalLink, MapPin } from 'lucide-react';
 
+import type { MapMember } from '../../types/member';
 import { useAnalytics } from '../../hooks/useAnalytics';
 
 interface PartnersMapProps {
     partners: Partner[];
     onPartnerClick: (partner: Partner) => void;
+    members?: MapMember[];
 }
 
 // Marker colors
@@ -41,7 +43,21 @@ const createCustomIcon = (category: PartnerCategory) => {
     });
 };
 
-export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerClick }) => {
+const memberIcon = L.divIcon({
+    className: 'member-map-marker',
+    html: `<div style="
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #3B82F6;
+        box-shadow: 0 0 8px 4px rgba(59,130,246,0.5);
+    "></div>`,
+    iconSize: [10, 10],
+    iconAnchor: [5, 5],
+    popupAnchor: [0, -8],
+});
+
+export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerClick, members = [] }) => {
     const { trackEvent } = useAnalytics();
     
     // Center map on France roughly
@@ -116,7 +132,36 @@ export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerCli
                         </Popup>
                     </Marker>
                 ))}
+
+                {members.map((member, i) => (
+                    <Marker
+                        key={`member-${i}`}
+                        position={[member.latitude, member.longitude]}
+                        icon={memberIcon}
+                    >
+                        <Popup className="dark-popup">
+                            <div className="min-w-[140px] p-2 bg-echo-darker text-white">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.6)]" />
+                                    <span className="text-sm text-neutral-300">Membre à {member.city}</span>
+                                </div>
+                            </div>
+                        </Popup>
+                    </Marker>
+                ))}
             </MapContainer>
+
+            {/* Map Legend */}
+            <div className="absolute bottom-4 right-4 z-[1000] bg-[#121212]/90 border border-white/10 rounded-lg px-3 py-2 text-xs">
+                <div className="flex items-center gap-2 mb-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_4px_rgba(59,130,246,0.5)]" />
+                    <span className="text-neutral-400">Membres</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#D4AF37]" />
+                    <span className="text-neutral-400">Partenaires</span>
+                </div>
+            </div>
 
             {/* Add custom styles for the Leaflet dark popup */}
             <style>{`
