@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, User, Shield, LogOut } from 'lucide-react';
+import { Menu, X, User, Shield, LogOut, Database } from 'lucide-react';
 import { cn, Button } from '../ui/Button';
 import { useAuthStore } from '../../features/auth/store';
 
@@ -115,6 +115,14 @@ export function Header() {
                                         <Shield size={14} className="text-echo-gold" />
                                         Espace Partenaire
                                     </Link>
+                                    <Link
+                                        to="/mes-donnees"
+                                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-echo-textMuted hover:bg-white/5 hover:text-white transition-colors border-t border-white/5"
+                                        onClick={() => setIsUserMenuOpen(false)}
+                                    >
+                                        <Database size={14} />
+                                        Mes données
+                                    </Link>
                                     <button
                                         onClick={handleLogout}
                                         className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors border-t border-white/10"
@@ -183,6 +191,11 @@ export function Header() {
                                 <Link to="/mon-compte/partenaire" onClick={() => setIsMobileMenuOpen(false)}>
                                     <Button variant="secondary" className="w-full gap-2">
                                         <Shield size={16} className="text-echo-gold" /> Espace Partenaire
+                                    </Button>
+                                </Link>
+                                <Link to="/mes-donnees" onClick={() => setIsMobileMenuOpen(false)}>
+                                    <Button variant="secondary" className="w-full gap-2">
+                                        <Database size={16} /> Mes données
                                     </Button>
                                 </Link>
                                 <button
