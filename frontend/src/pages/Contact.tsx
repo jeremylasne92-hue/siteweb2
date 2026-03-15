@@ -207,10 +207,10 @@ export function Contact() {
                                         required
                                     />
                                     <span>
-                                        J'accepte que mes donnees soient traitees conformement a la{' '}
+                                        J'accepte que mes données soient traitées conformément à la{' '}
                                         <a href="/politique-de-confidentialite" target="_blank" rel="noopener noreferrer"
                                            className="text-echo-gold hover:underline">
-                                            politique de confidentialite
+                                            politique de confidentialité
                                         </a>.
                                     </span>
                                 </label>

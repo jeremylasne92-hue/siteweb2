@@ -194,7 +194,7 @@ export function PrivacyPolicy() {
               contact@mouvementecho.com
             </a>
             . Nous nous engageons à répondre à toute demande d'exercice de vos
-            droits dans un délai maximum de 3 mois.
+            droits dans un délai de 1 mois (prorogeable de 2 mois en cas de complexité, avec information préalable).
           </p>
           <p className="text-gray-300 leading-relaxed mt-2">
             Vous avez le droit d'introduire une réclamation auprès de la CNIL
