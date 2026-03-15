@@ -154,6 +154,7 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-14 | Refonte section L'Émergence (Mouvement) : layout vertical custom EmergenceSection (pousse + encadré ambition + tronc). Image Tronc.png ajoutée. Texte ambition restructuré en accroche serif + développement avec mots-clés colorés (coopération, respect du vivant, absolument nécessaire, croissance pérenne, alliance robuste, nouveau récit sociétal, nouveau contrat social). Bordure ambre gauche + fond glassmorphism. Suppression OrganicArrow SVG + keyframes CSS inutilisés (grow-vine, draw-line). Composants réordonnés avant export pour compatibilité Vite HMR. Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-14 | Profils membres : collection member_profiles (MongoDB, 4 index), modèles Pydantic (models_member.py : ProjectType, ExperienceLevel, Availability, SocialLink, VisibilityOverrides, MemberProfile), routes publiques (GET / avec re.escape search, GET /{slug}), auth (GET/PATCH /me, PATCH /me/visibility), admin (GET /, GET /analytics avec asyncio.gather, PATCH /{id}/status, POST /seed/{candidature_id} avec vérif statut accepted + slug collision). Frontend : MemberModal.tsx (avatar, bio, skills, social links 11 plateformes), MembersSection.tsx (fetch MEMBERS_API, keyboard a11y), PartnersPage.tsx (membre clickable + compteur). Types TypeScript (member.ts). Config partagée candidatures.ts. 8 tests modèles + 13 tests routes. Subagent-Driven Development (9 tasks, 2-stage review). Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-14 | Notifications candidatures : 4 emails transactionnels (confirmation soumission, convocation entretien avec lien booking Google Calendar, acceptation, rejet avec motif optionnel) via BackgroundTasks dans routes candidatures. BOOKING_URL centralisé dans config. Profile.tsx étendu : support projet Scénariste (badge amber), bouton "Réserver un créneau" si statut entretien, section candidatures toujours visible avec état vide. 6 tests email + 81 tests backend total. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-14 | Refonte système événements : modèle Event étendu (images[] jusqu'à 10, date_end, booking_enabled, booking_url, organizer), endpoint upload-image (MIME+5Mo), drag & drop images admin, toggle réservation, séparation past/upcoming sur page publique Agenda, compteur "X à venir · Y passés", organizer personnalisable, error feedback admin. Fix select dropdown global (CSS). Fix bouton masquer partenaires (stopPropagation). Niveau STANDARD. | Claude Code (Opus 4.6) |
@@ -209,6 +210,7 @@ frontend/src/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-14 | 🟢 HOTFIX | Refonte L'Émergence Mouvement (layout vertical, encadré ambition, Tronc.png, suppression SVG arrows) | ~20min | Claude Code (Opus 4.6) |
 | 2026-03-14 | 🟡 STANDARD | Profils membres (models, 10 endpoints, MemberModal, MembersSection, seed, 21 tests) | ~1h30 | Claude Code (Opus 4.6) |
 | 2026-03-14 | 🟡 STANDARD | Notifications candidatures (4 emails, config booking, Profile.tsx Scénariste + bouton entretien) | ~30min | Claude Code (Opus 4.6) |
 | 2026-03-14 | 🟡 STANDARD | Refonte événements (modèle, upload, drag&drop, réservation, past/upcoming, organizer, error feedback, select fix, suspend fix) | ~1h30 | Claude Code (Opus 4.6) |
@@ -344,5 +346,23 @@ _Aucune spec en cours._
 | 19 | ~~Rédiger les emails définitifs pour les 4 notifications candidature~~ | Moyenne | ✅ Done |
 | 20 | Audit backend MongoDB + brainstorming améliorations (inclut review routes/members.py, optimisation requêtes, indexes) | Moyenne | À faire — utiliser skill `superpowers:brainstorming` puis `superpowers:systematic-debugging` |
 | 21 | Modifier crédits série + vidéo prologue → bande-annonce (prévue terminée le 18 mars 2026) | Haute | À faire |
-| 22 | Refonte section "L'Émergence" page Mouvement : ajouter un tronc (image droite, texte milieu), déplacer texte jeune pousse en dessous, flèche vers "Ce tronc inébranlable, c'est l'association Mouvement ECHO" | Moyenne | À faire |
+| 22 | ~~Refonte section "L'Émergence" page Mouvement~~ | Moyenne | ✅ Done (layout vertical : pousse + encadré ambition bordure ambre avec accroche serif + tronc, mots-clés colorés, OrganicArrow supprimé) |
 | 23 | Nettoyer les données de test avant publication (événements, comptes partenaires, bénévoles, candidatures, profils membres de test) | Haute | À faire avant le 20 mars 2026 |
+| 24 | ~~Système KPIs BI : UTM tracking, session ID (sessionStorage), page_view interne, events CTA, index MongoDB, endpoint admin dashboard, page AdminAnalytics.tsx~~ | Haute | ✅ Done (7 commits, 15 fichiers, 128 tests backend + 17 frontend, branche feat/kpi-bi-analytics mergée) |
+| 25 | 🔴 RGPD Audit — Écart 1 : Vérifier/implémenter blocage iframe YouTube avant consentement CMP (façade vidéo) | Critique | À faire — Art. 82 Loi I&L |
+| 26 | 🔴 RGPD Audit — Écart 2 : Vérifier que "Gérer mes cookies" dans le footer rouvre le panneau CMP | Critique | À faire — Art. 7(3) RGPD |
+| 27 | 🔴 RGPD Audit — Écart 3 : Ajouter mention reCAPTCHA v3 visible sous bouton connexion (ou remplacer par Cloudflare Turnstile) | Critique | À faire — Art. 13 RGPD |
+| 28 | 🟠 RGPD Audit — Écart 4 : Ajouter case CGU/PC obligatoire non pré-cochée + liens cliquables dans login/inscription | Important | À faire — Art. 7 RGPD |
+| 29 | 🟠 RGPD Audit — Écart 5 : Supprimer fiches test partenaires + masquer emails directs (bouton "Contacter") | Important | À faire — Art. 5 RGPD |
+| 30 | 🟠 RGPD Audit — Écart 6 : Compléter Politique de confidentialité (contact, reCAPTCHA, HelloAsso, APD belge, sécurité, délai 3 mois) | Important | À faire — Art. 13 RGPD |
+| 31 | 🟠 RGPD Audit — Écart 7 : Créer le registre des traitements RoPA (document interne, tableur) | Important | À faire — Art. 30 RGPD |
+| 32 | 🟠 RGPD Audit — Écart 8 : Ajouter durée conservation données contact (3 ans) dans la PC | Important | À faire — Art. 5(1)(e) RGPD |
+| 33 | 🟡 RGPD Audit — Écart 9 : Corriger mentions légales (directeur publication unique + téléphone) | Recommandé | À faire — Art. 6 LCEN |
+| 34 | 🟡 RGPD Audit — Écart 10 : Ajouter section Sécurité des données dans la PC | Recommandé | À faire — Art. 32 RGPD |
+| 35 | 🟡 RGPD Audit — Écart 11 : Créer page "Mes données" espace membre (export JSON, suppression, préférences) | Recommandé | À faire — Art. 12-22 RGPD |
+| 36 | 🟡 RGPD Audit — Écart 12 : Rédiger procédure interne violation de données (72h CNIL) | Recommandé | À faire — Art. 33-34 RGPD |
+| 37 | 🟡 RGPD Audit — Écart 13 : Ajouter clause mineurs dans CGU + procédure suppression -15 ans | Recommandé | À faire — Art. 8 RGPD |
+| 38 | 🟡 RGPD Audit — Écart 14 : Ajouter mention HelloAsso dans PC + info avant redirection sur /soutenir | Recommandé | À faire — Art. 28 RGPD |
+| 39 | Ajouter le plan en trois phases du Mouvement ECHO sur la page Mouvement | Moyenne | À faire |
+| 40 | Ajouter des sous-menus au menu principal pointant directement vers les sections de chaque page | Moyenne | À faire |
+| 41 | Ajouter une vue d'ensemble des différentes sections/parties de chaque page sur la page d'accueil | Moyenne | À faire |
