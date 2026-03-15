@@ -34,8 +34,9 @@ class Settings:
 
     # Email (SendGrid)
     SENDGRID_API_KEY: str = os.environ.get("SENDGRID_API_KEY", "")
-    EMAIL_FROM: str = os.environ.get("EMAIL_FROM", "noreply@mouvement-echo.fr")
+    EMAIL_FROM: str = os.environ.get("EMAIL_FROM", "noreply@mouvementecho.fr")
     EMAIL_FROM_NAME: str = os.environ.get("EMAIL_FROM_NAME", "Mouvement ECHO")
+    EMAIL_REPLY_TO: str = os.environ.get("EMAIL_REPLY_TO", "contact@mouvementecho.fr")
 
     # Booking (Google Calendar appointment link)
     BOOKING_URL: str = os.environ.get("BOOKING_URL", "https://calendar.app.google/GSpXrQq72uqWhhSx9")

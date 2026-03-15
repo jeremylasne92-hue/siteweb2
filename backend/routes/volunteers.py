@@ -78,7 +78,7 @@ async def submit_volunteer_application(
         email_body += f"\n\nMessage:\n{data.message}"
     background_tasks.add_task(
         send_email,
-        "mouvement.echo.france@gmail.com",
+        "benevoles@mouvementecho.fr",
         "Nouvelle candidature bénévole — Mouvement ECHO",
         email_body,
     )

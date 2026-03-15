@@ -151,7 +151,7 @@ export function Mouvement() {
             <SEO
                 title="Le Mouvement"
                 description="Nous ne cherchons pas à réparer le vieux monde, mais à en faire pousser un nouveau. Rejoignez notre action citoyenne."
-                url="https://mouvement-echo.fr/mouvement"
+                url="https://mouvementecho.fr/mouvement"
             />
             {/* --- Hero Section --- */}
             <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">

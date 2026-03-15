@@ -110,7 +110,7 @@ export default function PartnersPage() {
             <SEO
                 title="L'Écosystème"
                 description="Découvrez l'ECHOSystem : un réseau de partenaires engagés qui tentent de changer positivement ce monde."
-                url="https://mouvement-echo.fr/partenaires"
+                url="https://mouvementecho.fr/partenaires"
             />
             <PartnersHero onApplyClick={() => setIsFormOpen(true)} />
 

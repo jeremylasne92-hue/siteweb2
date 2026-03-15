@@ -336,7 +336,7 @@ async def apply_partnership(
     # Send alert email to internal team (FR13)
     background_tasks.add_task(
         send_email,
-        "mouvement.echo.france@gmail.com",
+        "partenaires@mouvementecho.fr",
         f"Nouvelle candidature partenaire — {name}",
         f"Nom: {name}\nCatégorie: {category}\nVille: {city}\nContact: {contact_name} ({contact_email})\nDescription: {description}"
     )

@@ -26,7 +26,7 @@ const faqData: FAQCategory[] = [
             },
             {
                 q: "Comment contacter l'équipe ECHO ?",
-                a: "Vous pouvez nous écrire via le formulaire de contact sur la page dédiée, ou directement par email à mouvement.echo.france@gmail.com. Nous répondons généralement sous 48h."
+                a: "Vous pouvez nous écrire via le formulaire de contact sur la page dédiée, ou directement par email à contact@mouvementecho.fr. Nous répondons généralement sous 48h."
             }
         ]
     },
@@ -43,7 +43,7 @@ const faqData: FAQCategory[] = [
             },
             {
                 q: "Où pourrai-je regarder la série ?",
-                a: "Les épisodes seront disponibles gratuitement sur notre plateforme mouvement-echo.fr ainsi que sur notre chaîne YouTube. Aucun abonnement payant n'est requis."
+                a: "Les épisodes seront disponibles gratuitement sur notre plateforme mouvementecho.fr ainsi que sur notre chaîne YouTube. Aucun abonnement payant n'est requis."
             },
             {
                 q: "Quand sort la première saison ?",
@@ -160,7 +160,7 @@ export function FAQ() {
             <SEO
                 title="FAQ — Questions Fréquentes"
                 description="Trouvez les réponses à vos questions sur le Mouvement ECHO, la série documentaire, CogniSphère, ECHOLink et nos partenaires."
-                url="https://mouvement-echo.fr/faq"
+                url="https://mouvementecho.fr/faq"
             />
 
             {/* Hero */}

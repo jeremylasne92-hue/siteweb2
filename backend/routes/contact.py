@@ -67,7 +67,7 @@ async def submit_contact(
     # Email 2: alert to team
     background_tasks.add_task(
         send_email,
-        "mouvement.echo.france@gmail.com",
+        "contact@mouvementecho.fr",
         f"Nouveau message contact — {subject_label}",
         f"Nom : {data.name}\n"
         f"Email : {data.email}\n"

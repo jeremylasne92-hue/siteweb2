@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://mouvement-echo.fr/</loc>
+    <loc>https://mouvementecho.fr/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://mouvement-echo.fr/serie</loc>
+    <loc>https://mouvementecho.fr/serie</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://mouvement-echo.fr/mouvement</loc>
+    <loc>https://mouvementecho.fr/mouvement</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mouvement-echo.fr/partners</loc>
+    <loc>https://mouvementecho.fr/partenaires</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mouvement-echo.fr/events</loc>
+    <loc>https://mouvementecho.fr/agenda</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://mouvement-echo.fr/contact</loc>
+    <loc>https://mouvementecho.fr/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://mouvement-echo.fr/privacy</loc>
+    <loc>https://mouvementecho.fr/politique-de-confidentialite</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

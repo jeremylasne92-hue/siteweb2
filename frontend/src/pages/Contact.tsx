@@ -75,7 +75,7 @@ export function Contact() {
             <SEO
                 title="Contact"
                 description="Une question ? Une proposition de partenariat ? Contactez l'équipe du mouvement ECHO."
-                url="https://mouvement-echo.fr/contact"
+                url="https://mouvementecho.fr/contact"
             />
             <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1516387938699-a93567ec168e?q=80&w=2671&auto=format&fit=crop')] bg-cover bg-center opacity-10" />
 
@@ -95,7 +95,7 @@ export function Contact() {
                                     <Mail className="w-5 h-5 text-echo-gold mt-1" />
                                     <div>
                                         <span className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-1">Email</span>
-                                        mouvement.echo.france@gmail.com
+                                        contact@mouvementecho.fr
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-4 text-neutral-300">

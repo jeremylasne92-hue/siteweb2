@@ -6,7 +6,7 @@ export function PrivacyPolicy() {
       <SEO
         title="Politique de Confidentialité"
         description="Politique de confidentialité de la plateforme Mouvement ECHO — protection de vos données personnelles conformément au RGPD."
-        url="https://mouvement-echo.fr/politique-de-confidentialite"
+        url="https://mouvementecho.fr/politique-de-confidentialite"
       />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">

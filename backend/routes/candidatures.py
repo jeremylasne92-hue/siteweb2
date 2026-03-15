@@ -21,6 +21,13 @@ router = APIRouter(prefix="/candidatures", tags=["Candidatures"])
 PROJECT_LABELS = {"cognisphere": "CogniSphère", "echolink": "ECHOLink", "scenariste": "Scénariste"}
 EXPERIENCE_LABELS = {"professional": "Professionnel", "student": "Étudiant", "self_taught": "Autodidacte", "motivated": "Motivé"}
 
+# Route alert emails to the correct team alias per project
+PROJECT_ALERT_EMAILS = {
+    "cognisphere": "cognisphere@mouvementecho.fr",
+    "echolink": "echolink@mouvementecho.fr",
+    "scenariste": "scenaristes@mouvementecho.fr",
+}
+
 
 async def _process_candidature(
     data: TechCandidatureRequest,
@@ -70,9 +77,10 @@ async def _process_candidature(
     if data.experience_level:
         email_body += f"\nNiveau d'expérience: {EXPERIENCE_LABELS.get(data.experience_level, data.experience_level)}"
     email_body += f"\n\nMessage:\n{data.message}"
+    alert_email = PROJECT_ALERT_EMAILS.get(project, "echolink@mouvementecho.fr")
     background_tasks.add_task(
         send_email,
-        "mouvement.echo.france@gmail.com",
+        alert_email,
         f"Nouvelle candidature — {project_label}",
         email_body,
     )

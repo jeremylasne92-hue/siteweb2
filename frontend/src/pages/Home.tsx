@@ -7,24 +7,6 @@ import { useAnalytics } from '../hooks/useAnalytics';
 export function Home() {
     const { trackEvent } = useAnalytics();
 
-    const pilierLinks = {
-        serie: [
-            { name: 'Épisodes', to: '/serie#saisons' },
-            { name: 'Personnages', to: '/serie#personnages' },
-            { name: 'Prologue', to: '/serie#prologue' },
-        ],
-        ecosysteme: [
-            { name: 'Partenaires', to: '/partenaires' },
-            { name: 'Événements', to: '/agenda' },
-            { name: 'Rejoindre le mouvement', to: '/mouvement#rejoindre' },
-        ],
-        plateformes: [
-            { name: 'Cognisphère', to: '/cognisphere' },
-            { name: 'ECHOLink', to: '/echolink' },
-            { name: 'Fonctionnalités', to: '/echolink#fonctionnalites' },
-        ],
-    };
-
     return (
         <div className="flex flex-col">
             <SEO
@@ -91,17 +73,6 @@ export function Home() {
                                 <p className="text-[#D1D5DB] text-[16px] font-normal leading-[1.6] mb-6 font-sans">
                                     Une websérie unique pour décrypter les défis sociaux, sociétaux, et existentiels de notre époque.
                                 </p>
-                                <div className="flex flex-col gap-1.5 mt-2 mb-4">
-                                    {pilierLinks.serie.map((link) => (
-                                        <Link
-                                            key={link.to}
-                                            to={link.to}
-                                            className="text-sm text-[#D1D5DB]/70 hover:text-[#D4AF37] transition-colors flex items-center gap-1.5"
-                                        >
-                                            <span className="text-[#D4AF37]/50">→</span> {link.name}
-                                        </Link>
-                                    ))}
-                                </div>
                             </div>
                             <Link to="/serie" className="mx-auto block">
                                 <button
@@ -124,17 +95,6 @@ export function Home() {
                                 <p className="text-[#D1D5DB] text-[16px] font-normal leading-[1.6] mb-6 font-sans">
                                     Un écosystème de partenaires engagés qui tentent de changer positivement ce monde. Rejoignez-les selon votre élan pour construire ensemble une société plus juste et durable.
                                 </p>
-                                <div className="flex flex-col gap-1.5 mt-2 mb-4">
-                                    {pilierLinks.ecosysteme.map((link) => (
-                                        <Link
-                                            key={link.to}
-                                            to={link.to}
-                                            className="text-sm text-[#D1D5DB]/70 hover:text-[#D4AF37] transition-colors flex items-center gap-1.5"
-                                        >
-                                            <span className="text-[#D4AF37]/50">→</span> {link.name}
-                                        </Link>
-                                    ))}
-                                </div>
                             </div>
                             <Link to="/partenaires" className="mx-auto block">
                                 <button
@@ -157,17 +117,6 @@ export function Home() {
                                 <p className="text-[#D1D5DB] text-[16px] font-normal leading-[1.6] mb-6 font-sans">
                                     <strong>Cognisphère</strong> pour maîtriser vos connaissances, <strong>ECHOLink</strong> pour agir concrètement. Deux outils numériques au service de votre transformation et du bien commun.
                                 </p>
-                                <div className="flex flex-col gap-1.5 mt-2 mb-4">
-                                    {pilierLinks.plateformes.map((link) => (
-                                        <Link
-                                            key={link.to}
-                                            to={link.to}
-                                            className="text-sm text-[#D1D5DB]/70 hover:text-[#D4AF37] transition-colors flex items-center gap-1.5"
-                                        >
-                                            <span className="text-[#D4AF37]/50">→</span> {link.name}
-                                        </Link>
-                                    ))}
-                                </div>
                             </div>
                             <Link to="/echolink" className="mx-auto block">
                                 <button

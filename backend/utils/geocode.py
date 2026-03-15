@@ -5,7 +5,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
-USER_AGENT = "MouvementECHO/1.0 (mouvement.echo.france@gmail.com)"
+USER_AGENT = "MouvementECHO/1.0 (contact@mouvementecho.fr)"
 
 
 async def geocode_city(city: str) -> tuple[float, float] | None:

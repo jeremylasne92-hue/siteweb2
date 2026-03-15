@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /api/
 
-Sitemap: https://mouvement-echo.fr/sitemap.xml
+Sitemap: https://mouvementecho.fr/sitemap.xml

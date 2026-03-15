@@ -51,7 +51,7 @@ export function Support() {
             <SEO
                 title="Soutenir ECHO"
                 description="ECHO est un projet indépendant, libre et sans publicité. Votre soutien financier est notre seule énergie pour produire la série documentaire."
-                url="https://mouvement-echo.fr/soutenir"
+                url="https://mouvementecho.fr/soutenir"
             />
             {/* Hero Section */}
             <section className="relative py-20 bg-echo-darker">

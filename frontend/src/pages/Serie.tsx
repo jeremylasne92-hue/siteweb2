@@ -219,7 +219,7 @@ export function Serie() {
             <SEO
                 title="La Série"
                 description="33 épisodes inspirés de la Divine Comédie de Dante pour comprendre le monde, décrypter ses vices et identifier des solutions réelles."
-                url="https://mouvement-echo.fr/serie"
+                url="https://mouvementecho.fr/serie"
             />
             {/* HERO SECTION */}
             <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">

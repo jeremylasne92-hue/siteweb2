@@ -6,7 +6,7 @@ export function LegalNotice() {
       <SEO
         title="Mentions Légales"
         description="Mentions légales de la plateforme Mouvement ECHO — informations sur l'éditeur, l'hébergeur et la propriété intellectuelle."
-        url="https://mouvement-echo.fr/mentions-legales"
+        url="https://mouvementecho.fr/mentions-legales"
       />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
@@ -23,7 +23,7 @@ export function LegalNotice() {
             1. Éditeur du site
           </h2>
           <p className="text-gray-300 leading-relaxed">
-            Le site <strong className="text-white">mouvement-echo.fr</strong>{' '}
+            Le site <strong className="text-white">mouvementecho.fr</strong>{' '}
             est édité par l'<strong className="text-white">Association
             Mouvement ECHO</strong>, association à but non lucratif régie par la
             loi du 1er juillet 1901 et le décret du 16 août 1901.
@@ -41,10 +41,10 @@ export function LegalNotice() {
             <li>
               <strong className="text-white">E-mail :</strong>{' '}
               <a
-                href="mailto:mouvement.echo.france@gmail.com"
+                href="mailto:contact@mouvementecho.fr"
                 className="text-amber-500 hover:text-amber-400 underline"
               >
-                mouvement.echo.france@gmail.com
+                contact@mouvementecho.fr
               </a>
             </li>
             <li>
@@ -98,7 +98,7 @@ export function LegalNotice() {
             4. Propriété intellectuelle
           </h2>
           <p className="text-gray-300 leading-relaxed mb-4">
-            L'ensemble des contenus présents sur le site mouvement-echo.fr
+            L'ensemble des contenus présents sur le site mouvementecho.fr
             (textes, images, graphismes, logo, icônes, vidéos, sons, logiciels,
             etc.) est protégé par les dispositions du Code de la propriété
             intellectuelle et par les conventions internationales relatives à la
@@ -118,7 +118,7 @@ export function LegalNotice() {
             5. Liens hypertextes
           </h2>
           <p className="text-gray-300 leading-relaxed">
-            Le site mouvement-echo.fr peut contenir des liens hypertextes vers
+            Le site mouvementecho.fr peut contenir des liens hypertextes vers
             d'autres sites internet. L'Association Mouvement ECHO ne dispose
             d'aucun contrôle sur le contenu de ces sites tiers et décline toute
             responsabilité quant à leur contenu.
@@ -163,10 +163,10 @@ export function LegalNotice() {
             Pour toute question concernant les présentes mentions légales, vous
             pouvez nous contacter à l'adresse :{' '}
             <a
-              href="mailto:mouvement.echo.france@gmail.com"
+              href="mailto:contact@mouvementecho.fr"
               className="text-amber-500 hover:text-amber-400 underline"
             >
-              mouvement.echo.france@gmail.com
+              contact@mouvementecho.fr
             </a>
           </p>
         </section>

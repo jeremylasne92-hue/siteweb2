@@ -6,7 +6,7 @@ export function TermsOfService() {
       <SEO
         title="Conditions Générales d'Utilisation"
         description="Conditions générales d'utilisation de la plateforme Mouvement ECHO — règles d'utilisation du service."
-        url="https://mouvement-echo.fr/cgu"
+        url="https://mouvementecho.fr/cgu"
       />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
@@ -186,10 +186,10 @@ export function TermsOfService() {
             L'utilisateur peut à tout moment demander la suppression de son
             compte en contactant{' '}
             <a
-              href="mailto:mouvement.echo.france@gmail.com"
+              href="mailto:contact@mouvementecho.fr"
               className="text-amber-500 hover:text-amber-400 underline"
             >
-              mouvement.echo.france@gmail.com
+              contact@mouvementecho.fr
             </a>
             .
           </p>
@@ -233,10 +233,10 @@ export function TermsOfService() {
             Pour toute question relative aux présentes CGU, vous pouvez nous
             contacter à l'adresse :{' '}
             <a
-              href="mailto:mouvement.echo.france@gmail.com"
+              href="mailto:contact@mouvementecho.fr"
               className="text-amber-500 hover:text-amber-400 underline"
             >
-              mouvement.echo.france@gmail.com
+              contact@mouvementecho.fr
             </a>
           </p>
         </section>

@@ -21,6 +21,7 @@ async def _send_via_sendgrid(to_email: str, subject: str, html_content: str) -> 
     payload = {
         "personalizations": [{"to": [{"email": to_email}]}],
         "from": {"email": settings.EMAIL_FROM, "name": settings.EMAIL_FROM_NAME},
+        "reply_to": {"email": settings.EMAIL_REPLY_TO, "name": settings.EMAIL_FROM_NAME},
         "subject": subject,
         "content": [{"type": "text/html", "value": html_content}],
     }
@@ -109,7 +110,7 @@ async def send_email(email: str, subject: str, message: str, user_id: str = None
             user_id.encode(),
             hashlib.sha256
         ).hexdigest()
-        base = settings.FRONTEND_URL if hasattr(settings, 'FRONTEND_URL') and settings.FRONTEND_URL else "https://mouvement-echo.fr"
+        base = settings.FRONTEND_URL if hasattr(settings, 'FRONTEND_URL') and settings.FRONTEND_URL else "https://mouvementecho.fr"
         unsubscribe = (
             f'<p style="margin-top:20px;font-size:11px;color:#888;text-align:center;">'
             f'Pour vous desinscrire des emails : '
