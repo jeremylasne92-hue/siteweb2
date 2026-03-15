@@ -34,7 +34,12 @@ export interface MemberProfile {
 }
 
 export interface MapMember {
+    display_name: string;
+    slug: string;
     city: string;
+    project: string;
+    role_title?: string;
+    skills: string[];
     latitude: number;
     longitude: number;
 }

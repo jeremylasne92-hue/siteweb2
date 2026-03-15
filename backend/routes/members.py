@@ -149,7 +149,7 @@ async def list_members_for_map(
             "latitude": {"$ne": None},
             "longitude": {"$ne": None},
         },
-        {"_id": 0, "city": 1, "latitude": 1, "longitude": 1},
+        {"_id": 0, "display_name": 1, "slug": 1, "city": 1, "project": 1, "role_title": 1, "skills": 1, "latitude": 1, "longitude": 1},
     )
     members = await cursor.to_list(length=500)
     return members
@@ -290,6 +290,20 @@ async def admin_update_member(
     if not update_data:
         raise HTTPException(status_code=400, detail="Aucun champ à mettre à jour")
     update_data["updated_at"] = datetime.utcnow()
+
+    # Auto-geocode if city changed
+    if "city" in update_data:
+        try:
+            from utils.geocode import geocode_city
+            coords = await geocode_city(update_data["city"])
+            if coords:
+                update_data["latitude"] = coords[0]
+                update_data["longitude"] = coords[1]
+                logger.info(f"Geocoded city '{update_data['city']}' → {coords}")
+            else:
+                logger.warning(f"Geocoding failed for city '{update_data['city']}'")
+        except Exception as e:
+            logger.warning(f"Geocoding error for city '{update_data['city']}': {e}")
 
     result = await db.member_profiles.update_one(
         {"id": profile_id},

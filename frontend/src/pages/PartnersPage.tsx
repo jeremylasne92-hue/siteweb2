@@ -147,6 +147,7 @@ export default function PartnersPage() {
                                 partners={partners}
                                 onPartnerClick={setSelectedPartner}
                                 members={mapMembers}
+                                onMemberClick={handleMemberClick}
                             />
                         </Suspense>
                     )}

@@ -3,15 +3,17 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import type { Partner, PartnerCategory } from './PartnerCard';
-import { ExternalLink, MapPin } from 'lucide-react';
+import { ExternalLink, MapPin, User } from 'lucide-react';
 
 import type { MapMember } from '../../types/member';
+import { PROJECT_LABELS } from '../../config/candidatures';
 import { useAnalytics } from '../../hooks/useAnalytics';
 
 interface PartnersMapProps {
     partners: Partner[];
     onPartnerClick: (partner: Partner) => void;
     members?: MapMember[];
+    onMemberClick?: (slug: string) => void;
 }
 
 // Marker colors
@@ -52,7 +54,7 @@ const iconMap: Record<string, L.DivIcon> = {
     membre: createCustomIcon('membre'),
 };
 
-export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerClick, members = [] }) => {
+export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerClick, members = [], onMemberClick }) => {
     const { trackEvent } = useAnalytics();
 
     // Center map on France roughly
@@ -119,25 +121,75 @@ export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerCli
                     </Marker>
                 ))}
 
-                {members.map((member, i) => (
-                    <Marker
-                        key={`member-${i}`}
-                        position={[member.latitude, member.longitude]}
-                        icon={iconMap.membre}
-                    >
-                        <Popup className="dark-popup">
-                            <div className="min-w-[200px] p-2 bg-echo-darker text-white">
-                                <h3 className="font-serif font-bold text-base leading-tight mb-2">
-                                    Membre ECHO
-                                </h3>
-                                <div className="flex items-center gap-1 text-xs text-gray-400">
-                                    <MapPin className="w-3 h-3" />
-                                    <span>{member.city}</span>
+                {members.map((member, i) => {
+                    const project = PROJECT_LABELS[member.project];
+                    return (
+                        <Marker
+                            key={`member-${i}`}
+                            position={[member.latitude, member.longitude]}
+                            icon={iconMap.membre}
+                        >
+                            <Popup className="dark-popup">
+                                <div className="min-w-[200px] p-2 bg-echo-darker text-white">
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <div
+                                            className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-sm font-bold"
+                                            style={{ backgroundColor: project ? `${project.color}20` : '#002FA720', color: project?.color || '#002FA7' }}
+                                        >
+                                            {member.display_name ? member.display_name.charAt(0).toUpperCase() : <User className="w-4 h-4" />}
+                                        </div>
+                                        <div>
+                                            <h3 className="font-serif font-bold text-sm leading-tight">
+                                                {member.display_name}
+                                            </h3>
+                                            {member.role_title && (
+                                                <p className="text-[11px] text-gray-400">{member.role_title}</p>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {project && (
+                                        <div
+                                            className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold mb-2"
+                                            style={{ backgroundColor: `${project.color}20`, color: project.color }}
+                                        >
+                                            {project.label}
+                                        </div>
+                                    )}
+
+                                    {member.skills && member.skills.length > 0 && (
+                                        <div className="flex flex-wrap gap-1 mb-2">
+                                            {member.skills.slice(0, 3).map(skill => (
+                                                <span key={skill} className="px-1.5 py-0.5 rounded text-[10px] bg-white/10 text-gray-300">
+                                                    {skill}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    <div className="flex items-center gap-1 text-xs text-gray-400 mb-3">
+                                        <MapPin className="w-3 h-3" />
+                                        <span>{member.city}</span>
+                                    </div>
+
+                                    {onMemberClick && member.slug && (
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                onMemberClick(member.slug);
+                                            }}
+                                            className="w-full flex items-center justify-center gap-2 py-2 bg-white/5 hover:bg-[#002FA7]/20 text-[#4D7CFE] border border-[#002FA7]/30 rounded-lg text-sm transition-colors"
+                                        >
+                                            <span>Voir le profil</span>
+                                            <ExternalLink className="w-3 h-3" />
+                                        </button>
+                                    )}
                                 </div>
-                            </div>
-                        </Popup>
-                    </Marker>
-                ))}
+                            </Popup>
+                        </Marker>
+                    );
+                })}
             </MapContainer>
 
             {/* Map Legend */}
