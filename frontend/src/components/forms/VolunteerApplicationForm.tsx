@@ -3,6 +3,7 @@ import { Send, CheckCircle, ChevronRight, ChevronLeft, ChevronDown } from 'lucid
 import { ApplicationSuccessCTA } from './ApplicationSuccessCTA';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
+import { CityAutocomplete } from '../ui/CityAutocomplete';
 import { StepProgress } from '../ui/StepProgress';
 import { API_URL } from '../../config/api';
 
@@ -185,7 +186,7 @@ export function VolunteerApplicationForm() {
                     <Input label="Nom complet" name="name" placeholder="Votre prénom et nom" required minLength={2} maxLength={100} />
                     <Input label="Email de contact" name="email" type="email" placeholder="votre@email.com" required />
                     <Input label="Téléphone (optionnel)" name="phone" type="tel" placeholder="06 12 34 56 78" />
-                    <Input label="Ville" name="city" placeholder="Votre ville" required minLength={2} maxLength={100} />
+                    <CityAutocomplete label="Ville" name="city" placeholder="Commencez à taper votre ville..." required />
                 </div>
                 <div className="text-sm text-neutral-400 p-4 border border-white/5 rounded-md bg-white/5 mt-2">
                     Vos informations seront utilisées uniquement pour traiter votre candidature de <strong>bénévole</strong> au Mouvement ECHO.
