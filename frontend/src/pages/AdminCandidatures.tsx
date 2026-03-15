@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import {
     FileText, RefreshCw, ArrowLeft, Trash2, X,
     Brain, Share2, Clock, AlertTriangle, CheckCircle2,
-    XCircle, Users, MessageSquare, PenTool, ExternalLink, Search
+    XCircle, Users, MessageSquare, PenTool, ExternalLink, Search,
+    ArrowUpDown, ChevronUp, ChevronDown, Pencil, Save
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { CANDIDATURES_API } from '../config/api';
@@ -98,6 +99,19 @@ export default function AdminCandidatures() {
     const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
     const [statusNote, setStatusNote] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
+    const [editMode, setEditMode] = useState(false);
+    const [editForm, setEditForm] = useState<Partial<TechCandidature>>({});
+    const [sortField, setSortField] = useState<string>('created_at');
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+
+    const handleSort = (field: string) => {
+        if (sortField === field) {
+            setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortField(field);
+            setSortDirection('asc');
+        }
+    };
 
     const fetchCandidatures = async () => {
         setLoading(true);
@@ -199,6 +213,43 @@ export default function AdminCandidatures() {
         }
     };
 
+    const handleEditSave = async () => {
+        if (!selected) return;
+        setActionLoading(true);
+        try {
+            const body: Record<string, unknown> = {};
+            if (editForm.name !== undefined && editForm.name !== selected.name) body.name = editForm.name;
+            if (editForm.email !== undefined && editForm.email !== selected.email) body.email = editForm.email;
+            if (editForm.project !== undefined && editForm.project !== selected.project) body.project = editForm.project;
+            if (editForm.skills !== undefined && editForm.skills !== selected.skills) body.skills = editForm.skills;
+            if (editForm.message !== undefined && editForm.message !== selected.message) body.message = editForm.message;
+            if (editForm.portfolio_url !== undefined && editForm.portfolio_url !== (selected.portfolio_url || '')) body.portfolio_url = editForm.portfolio_url || null;
+            if (editForm.creative_interests !== undefined && editForm.creative_interests !== (selected.creative_interests || '')) body.creative_interests = editForm.creative_interests || null;
+            if (editForm.experience_level !== undefined && editForm.experience_level !== (selected.experience_level || '')) body.experience_level = editForm.experience_level || null;
+
+            if (Object.keys(body).length === 0) {
+                setEditMode(false);
+                return;
+            }
+            const res = await fetch(`${CANDIDATURES_API}/admin/${selected.id}/edit`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(body),
+            });
+            if (res.ok) {
+                const updated = { ...selected, ...body } as TechCandidature;
+                setSelected(updated);
+                setCandidatures(prev => prev.map(c => c.id === selected.id ? updated : c));
+                setEditMode(false);
+            }
+        } catch {
+            // silent
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
     const toggleCheck = (id: string) => {
         setCheckedIds(prev => {
             const next = new Set(prev);
@@ -246,6 +297,13 @@ export default function AdminCandidatures() {
             return (c.name?.toLowerCase().includes(q) || c.email?.toLowerCase().includes(q));
         }
         return true;
+    });
+
+    const sortedCandidatures = [...filteredCandidatures].sort((a, b) => {
+        const aVal = (a as unknown as Record<string, unknown>)[sortField] ?? '';
+        const bVal = (b as unknown as Record<string, unknown>)[sortField] ?? '';
+        const cmp = typeof aVal === 'string' ? aVal.localeCompare(bVal as string) : ((aVal as number) > (bVal as number) ? 1 : -1);
+        return sortDirection === 'asc' ? cmp : -cmp;
     });
 
     return (
@@ -397,11 +455,47 @@ export default function AdminCandidatures() {
                                             className="accent-echo-gold"
                                         />
                                     </th>
-                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3">Nom</th>
-                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3">Projet</th>
-                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3">Statut</th>
+                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3 cursor-pointer select-none hover:text-echo-gold transition-colors" onClick={() => handleSort('name')}>
+                                        <span className="inline-flex items-center gap-1">
+                                            Nom
+                                            {sortField === 'name' ? (
+                                                sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                                            ) : (
+                                                <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                            )}
+                                        </span>
+                                    </th>
+                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3 cursor-pointer select-none hover:text-echo-gold transition-colors" onClick={() => handleSort('project')}>
+                                        <span className="inline-flex items-center gap-1">
+                                            Projet
+                                            {sortField === 'project' ? (
+                                                sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                                            ) : (
+                                                <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                            )}
+                                        </span>
+                                    </th>
+                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3 cursor-pointer select-none hover:text-echo-gold transition-colors" onClick={() => handleSort('status')}>
+                                        <span className="inline-flex items-center gap-1">
+                                            Statut
+                                            {sortField === 'status' ? (
+                                                sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                                            ) : (
+                                                <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                            )}
+                                        </span>
+                                    </th>
                                     <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3 hidden md:table-cell">Compétences</th>
-                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3">Date</th>
+                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3 cursor-pointer select-none hover:text-echo-gold transition-colors" onClick={() => handleSort('created_at')}>
+                                        <span className="inline-flex items-center gap-1">
+                                            Date
+                                            {sortField === 'created_at' ? (
+                                                sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                                            ) : (
+                                                <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                            )}
+                                        </span>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -412,14 +506,14 @@ export default function AdminCandidatures() {
                                             Chargement...
                                         </td>
                                     </tr>
-                                ) : filteredCandidatures.length === 0 ? (
+                                ) : sortedCandidatures.length === 0 ? (
                                     <tr>
                                         <td colSpan={6} className="text-center text-echo-textMuted py-12">
                                             Aucune candidature pour le moment.
                                         </td>
                                     </tr>
                                 ) : (
-                                    filteredCandidatures.map(c => {
+                                    sortedCandidatures.map(c => {
                                         const pConfig = projectConfig[c.project];
                                         return (
                                             <tr
@@ -483,11 +577,92 @@ export default function AdminCandidatures() {
                                     <h2 className="text-xl font-serif text-white">{selected.name}</h2>
                                     <p className="text-sm text-echo-textMuted mt-1">{selected.email}</p>
                                 </div>
-                                <button onClick={() => { setSelected(null); setDeleteConfirm(null); setStatusNote(''); }} className="p-1 text-echo-textMuted hover:text-white transition-colors">
-                                    <X size={20} />
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    {!editMode && (
+                                        <button
+                                            onClick={() => {
+                                                setEditMode(true);
+                                                setEditForm({
+                                                    name: selected.name,
+                                                    email: selected.email,
+                                                    project: selected.project,
+                                                    skills: selected.skills,
+                                                    message: selected.message,
+                                                    portfolio_url: selected.portfolio_url || '',
+                                                    creative_interests: selected.creative_interests || '',
+                                                    experience_level: selected.experience_level || '',
+                                                });
+                                            }}
+                                            className="p-1.5 text-echo-textMuted hover:text-echo-gold transition-colors"
+                                            title="Modifier"
+                                        >
+                                            <Pencil size={16} />
+                                        </button>
+                                    )}
+                                    <button onClick={() => { setSelected(null); setDeleteConfirm(null); setStatusNote(''); setEditMode(false); }} className="p-1 text-echo-textMuted hover:text-white transition-colors">
+                                        <X size={20} />
+                                    </button>
+                                </div>
                             </div>
 
+                            {editMode ? (
+                                <>
+                                    <div className="space-y-4 mb-6">
+                                        <div>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Nom</label>
+                                            <input type="text" value={(editForm.name as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40" />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Email</label>
+                                            <input type="email" value={(editForm.email as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40" />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Projet</label>
+                                            <select value={(editForm.project as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, project: e.target.value as TechCandidature['project'] }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40">
+                                                <option value="cognisphere">CogniSphère</option>
+                                                <option value="echolink">ECHOLink</option>
+                                                <option value="scenariste">Scénariste</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Compétences</label>
+                                            <input type="text" value={(editForm.skills as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, skills: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40" />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Niveau d&apos;expérience</label>
+                                            <select value={(editForm.experience_level as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, experience_level: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40">
+                                                <option value="">-- Aucun --</option>
+                                                <option value="professional">Professionnel</option>
+                                                <option value="student">Étudiant</option>
+                                                <option value="self_taught">Autodidacte</option>
+                                                <option value="motivated">Motivé</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Portfolio URL</label>
+                                            <input type="text" value={(editForm.portfolio_url as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, portfolio_url: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40" />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Intérêts créatifs</label>
+                                            <input type="text" value={(editForm.creative_interests as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, creative_interests: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40" />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Message</label>
+                                            <textarea value={(editForm.message as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, message: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white resize-none focus:outline-none focus:border-echo-gold/40" rows={4} />
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 pt-4 border-t border-white/10">
+                                        <Button variant="outline" onClick={handleEditSave} disabled={actionLoading} className="!text-echo-gold !border-echo-gold/30 text-sm">
+                                            <Save size={14} className="mr-1.5" />
+                                            {actionLoading ? 'Sauvegarde...' : 'Sauvegarder'}
+                                        </Button>
+                                        <button onClick={() => setEditMode(false)} className="px-3 py-1.5 text-sm text-echo-textMuted hover:text-white transition-colors">
+                                            Annuler
+                                        </button>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
                             {/* Badges */}
                             <div className="flex items-center gap-2 mb-4">
                                 {(() => {
@@ -570,7 +745,7 @@ export default function AdminCandidatures() {
                             {/* Experience Level */}
                             {selected.experience_level && (
                                 <div className="mb-6">
-                                    <h3 className="text-sm font-medium text-white mb-2">Niveau d'expérience</h3>
+                                    <h3 className="text-sm font-medium text-white mb-2">Niveau d&apos;expérience</h3>
                                     <span className="inline-flex px-3 py-1.5 rounded-full text-sm font-medium bg-white/10 text-white border border-white/20">
                                         {experienceLabelMap[selected.experience_level] || selected.experience_level}
                                     </span>
@@ -679,6 +854,8 @@ export default function AdminCandidatures() {
                                     </button>
                                 )}
                             </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 )}

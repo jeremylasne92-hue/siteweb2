@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import {
     Heart, RefreshCw, ArrowLeft, Trash2, X,
     Clock, AlertTriangle, CheckCircle2,
-    XCircle, Users, MessageSquare, Download, Search
+    XCircle, Users, MessageSquare, Download, Search,
+    ArrowUpDown, ChevronUp, ChevronDown, Pencil, Save
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { API_URL } from '../config/api';
@@ -115,6 +116,19 @@ export default function AdminVolunteers() {
     const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
     const [statusNote, setStatusNote] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
+    const [editMode, setEditMode] = useState(false);
+    const [editForm, setEditForm] = useState<Partial<Volunteer>>({});
+    const [sortField, setSortField] = useState<string>('created_at');
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+
+    const handleSort = (field: string) => {
+        if (sortField === field) {
+            setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortField(field);
+            setSortDirection('asc');
+        }
+    };
 
     const fetchVolunteers = async () => {
         setLoading(true);
@@ -237,6 +251,46 @@ export default function AdminVolunteers() {
         }
     };
 
+    const handleEditSave = async () => {
+        if (!selected) return;
+        setActionLoading(true);
+        try {
+            const body: Record<string, unknown> = {};
+            if (editForm.name !== undefined && editForm.name !== selected.name) body.name = editForm.name;
+            if (editForm.email !== undefined && editForm.email !== selected.email) body.email = editForm.email;
+            if (editForm.phone !== undefined && editForm.phone !== (selected.phone || '')) body.phone = editForm.phone || null;
+            if (editForm.city !== undefined && editForm.city !== (selected.city || '')) body.city = editForm.city;
+            if (editForm.skills !== undefined) {
+                const newSkills = editForm.skills as unknown as string[];
+                if (JSON.stringify(newSkills) !== JSON.stringify(selected.skills)) body.skills = newSkills;
+            }
+            if (editForm.experience_level !== undefined && editForm.experience_level !== selected.experience_level) body.experience_level = editForm.experience_level;
+            if (editForm.availability !== undefined && editForm.availability !== selected.availability) body.availability = editForm.availability;
+            if (editForm.message !== undefined && editForm.message !== (selected.message || '')) body.message = editForm.message || null;
+
+            if (Object.keys(body).length === 0) {
+                setEditMode(false);
+                return;
+            }
+            const res = await fetch(`${API_URL}/volunteers/admin/${selected.id}/edit`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(body),
+            });
+            if (res.ok) {
+                const updated = { ...selected, ...body } as Volunteer;
+                setSelected(updated);
+                setVolunteers(prev => prev.map(v => v.id === selected.id ? updated : v));
+                setEditMode(false);
+            }
+        } catch {
+            // silent
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
     const toggleCheck = (id: string) => {
         setCheckedIds(prev => {
             const next = new Set(prev);
@@ -273,6 +327,13 @@ export default function AdminVolunteers() {
         if (!searchQuery) return true;
         const q = searchQuery.toLowerCase();
         return (v.name?.toLowerCase().includes(q) || v.email?.toLowerCase().includes(q));
+    });
+
+    const sortedVolunteers = [...filteredVolunteers].sort((a, b) => {
+        const aVal = (a as unknown as Record<string, unknown>)[sortField] ?? '';
+        const bVal = (b as unknown as Record<string, unknown>)[sortField] ?? '';
+        const cmp = typeof aVal === 'string' ? aVal.localeCompare(bVal as string) : ((aVal as number) > (bVal as number) ? 1 : -1);
+        return sortDirection === 'asc' ? cmp : -cmp;
     });
 
     const renderSkills = (skills: string[]) => {
@@ -431,13 +492,67 @@ export default function AdminVolunteers() {
                                             className="accent-echo-gold"
                                         />
                                     </th>
-                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3">Nom</th>
-                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3 hidden md:table-cell">Email</th>
-                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3 hidden lg:table-cell">Ville</th>
+                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3 cursor-pointer select-none hover:text-echo-gold transition-colors" onClick={() => handleSort('name')}>
+                                        <span className="inline-flex items-center gap-1">
+                                            Nom
+                                            {sortField === 'name' ? (
+                                                sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                                            ) : (
+                                                <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                            )}
+                                        </span>
+                                    </th>
+                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3 hidden md:table-cell cursor-pointer select-none hover:text-echo-gold transition-colors" onClick={() => handleSort('email')}>
+                                        <span className="inline-flex items-center gap-1">
+                                            Email
+                                            {sortField === 'email' ? (
+                                                sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                                            ) : (
+                                                <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                            )}
+                                        </span>
+                                    </th>
+                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3 hidden lg:table-cell cursor-pointer select-none hover:text-echo-gold transition-colors" onClick={() => handleSort('city')}>
+                                        <span className="inline-flex items-center gap-1">
+                                            Ville
+                                            {sortField === 'city' ? (
+                                                sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                                            ) : (
+                                                <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                            )}
+                                        </span>
+                                    </th>
                                     <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3 hidden md:table-cell">Compétences</th>
-                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3">Disponibilité</th>
-                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3">Statut</th>
-                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3">Date</th>
+                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3 cursor-pointer select-none hover:text-echo-gold transition-colors" onClick={() => handleSort('availability')}>
+                                        <span className="inline-flex items-center gap-1">
+                                            Disponibilité
+                                            {sortField === 'availability' ? (
+                                                sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                                            ) : (
+                                                <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                            )}
+                                        </span>
+                                    </th>
+                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3 cursor-pointer select-none hover:text-echo-gold transition-colors" onClick={() => handleSort('status')}>
+                                        <span className="inline-flex items-center gap-1">
+                                            Statut
+                                            {sortField === 'status' ? (
+                                                sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                                            ) : (
+                                                <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                            )}
+                                        </span>
+                                    </th>
+                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3 cursor-pointer select-none hover:text-echo-gold transition-colors" onClick={() => handleSort('created_at')}>
+                                        <span className="inline-flex items-center gap-1">
+                                            Date
+                                            {sortField === 'created_at' ? (
+                                                sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
+                                            ) : (
+                                                <ArrowUpDown className="w-3 h-3 opacity-30" />
+                                            )}
+                                        </span>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -448,14 +563,14 @@ export default function AdminVolunteers() {
                                             Chargement...
                                         </td>
                                     </tr>
-                                ) : filteredVolunteers.length === 0 ? (
+                                ) : sortedVolunteers.length === 0 ? (
                                     <tr>
                                         <td colSpan={8} className="text-center text-echo-textMuted py-12">
                                             Aucune candidature bénévole pour le moment.
                                         </td>
                                     </tr>
                                 ) : (
-                                    filteredVolunteers.map(v => (
+                                    sortedVolunteers.map(v => (
                                         <tr
                                             key={v.id}
                                             className="border-b border-white/5 hover:bg-white/5 cursor-pointer transition-colors"
@@ -514,11 +629,91 @@ export default function AdminVolunteers() {
                                         <p className="text-sm text-echo-textMuted">{selected.phone}</p>
                                     )}
                                 </div>
-                                <button onClick={() => { setSelected(null); setDeleteConfirm(null); setStatusNote(''); }} className="p-1 text-echo-textMuted hover:text-white transition-colors">
-                                    <X size={20} />
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    {!editMode && (
+                                        <button
+                                            onClick={() => {
+                                                setEditMode(true);
+                                                setEditForm({
+                                                    name: selected.name,
+                                                    email: selected.email,
+                                                    phone: selected.phone || '',
+                                                    city: selected.city || '',
+                                                    skills: [...selected.skills],
+                                                    experience_level: selected.experience_level,
+                                                    availability: selected.availability,
+                                                    message: selected.message || '',
+                                                });
+                                            }}
+                                            className="p-1.5 text-echo-textMuted hover:text-echo-gold transition-colors"
+                                            title="Modifier"
+                                        >
+                                            <Pencil size={16} />
+                                        </button>
+                                    )}
+                                    <button onClick={() => { setSelected(null); setDeleteConfirm(null); setStatusNote(''); setEditMode(false); }} className="p-1 text-echo-textMuted hover:text-white transition-colors">
+                                        <X size={20} />
+                                    </button>
+                                </div>
                             </div>
 
+                            {editMode ? (
+                                <>
+                                    <div className="space-y-4 mb-6">
+                                        <div>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Nom</label>
+                                            <input type="text" value={(editForm.name as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40" />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Email</label>
+                                            <input type="email" value={(editForm.email as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40" />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Téléphone</label>
+                                            <input type="text" value={(editForm.phone as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, phone: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40" />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Ville</label>
+                                            <input type="text" value={(editForm.city as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, city: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40" />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Compétences (séparées par des virgules)</label>
+                                            <input type="text" value={(editForm.skills as string[])?.join(', ') ?? ''} onChange={e => setEditForm(f => ({ ...f, skills: e.target.value.split(',').map(s => s.trim()).filter(Boolean) }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40" />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Niveau d&apos;expérience</label>
+                                            <select value={(editForm.experience_level as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, experience_level: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40">
+                                                <option value="professional">Professionnel</option>
+                                                <option value="student">Étudiant</option>
+                                                <option value="self_taught">Autodidacte</option>
+                                                <option value="motivated">Motivé</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Disponibilité</label>
+                                            <select value={(editForm.availability as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, availability: e.target.value as AvailabilityType }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40">
+                                                <option value="punctual">Ponctuel</option>
+                                                <option value="regular">Régulier</option>
+                                                <option value="active">Moteur</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Message</label>
+                                            <textarea value={(editForm.message as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, message: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white resize-none focus:outline-none focus:border-echo-gold/40" rows={4} />
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 pt-4 border-t border-white/10">
+                                        <Button variant="outline" onClick={handleEditSave} disabled={actionLoading} className="!text-echo-gold !border-echo-gold/30 text-sm">
+                                            <Save size={14} className="mr-1.5" />
+                                            {actionLoading ? 'Sauvegarde...' : 'Sauvegarder'}
+                                        </Button>
+                                        <button onClick={() => setEditMode(false)} className="px-3 py-1.5 text-sm text-echo-textMuted hover:text-white transition-colors">
+                                            Annuler
+                                        </button>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
                             {/* Badges */}
                             <div className="flex items-center gap-2 mb-4 flex-wrap">
                                 <AvailBadge availability={selected.availability} />
@@ -690,6 +885,8 @@ export default function AdminVolunteers() {
                                     </button>
                                 )}
                             </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 )}

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, Depends, HTTPException, BackgroundTasks
 from fastapi.responses import StreamingResponse
 from pymongo.errors import PyMongoError
-from models import VolunteerApplication, VolunteerApplicationRequest, VolunteerStatusUpdate, VolunteerBatchStatusUpdate, User
+from models import VolunteerApplication, VolunteerApplicationRequest, VolunteerStatusUpdate, VolunteerBatchStatusUpdate, VolunteerEditUpdate, User
 from routes.auth import get_db, require_admin, get_current_user
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from datetime import datetime
@@ -171,6 +171,36 @@ async def export_volunteer_applications(
         media_type="text/csv; charset=utf-8",
         headers={"Content-Disposition": "attachment; filename=volunteers-export.csv"},
     )
+
+
+@router.put("/admin/{application_id}/edit")
+async def edit_volunteer_application(
+    application_id: str,
+    data: VolunteerEditUpdate,
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    """Edit volunteer application fields (admin only)."""
+    update_fields = data.model_dump(exclude_none=True)
+    if not update_fields:
+        raise HTTPException(status_code=400, detail="Aucun champ à mettre à jour")
+    update_fields["updated_at"] = datetime.utcnow()
+
+    # Re-geocode if city changed
+    if "city" in update_fields:
+        coords = await geocode_city(update_fields["city"])
+        if coords:
+            update_fields["latitude"] = coords[0]
+            update_fields["longitude"] = coords[1]
+
+    result = await db.volunteer_applications.update_one(
+        {"id": application_id},
+        {"$set": update_fields},
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Candidature non trouvée")
+    logger.info(f"Admin {admin.id} edited volunteer application {application_id}")
+    return {"message": "Candidature mise à jour"}
 
 
 @router.put("/admin/{application_id}/status")

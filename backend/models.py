@@ -191,6 +191,17 @@ class TechCandidatureRequest(BaseModel):
         return v
 
 
+class TechCandidatureEditUpdate(BaseModel):
+    name: Optional[str] = Field(None, min_length=2, max_length=100)
+    email: Optional[EmailStr] = None
+    project: Optional[Literal["cognisphere", "echolink", "scenariste"]] = None
+    skills: Optional[str] = Field(None, min_length=2, max_length=500)
+    message: Optional[str] = Field(None, min_length=10, max_length=2000)
+    portfolio_url: Optional[str] = Field(None, max_length=500)
+    creative_interests: Optional[str] = Field(None, max_length=500)
+    experience_level: Optional[Literal["professional", "student", "self_taught", "motivated"]] = None
+
+
 class TechCandidatureStatusUpdate(BaseModel):
     status: Literal["pending", "entretien", "accepted", "rejected"]
     status_note: Optional[str] = None
@@ -338,6 +349,17 @@ class VolunteerApplicationRequest(BaseModel):
         if not v:
             raise ValueError("L'adhésion aux valeurs est obligatoire")
         return v
+
+
+class VolunteerEditUpdate(BaseModel):
+    name: Optional[str] = Field(None, min_length=2, max_length=100)
+    email: Optional[EmailStr] = None
+    phone: Optional[str] = Field(None, max_length=20)
+    city: Optional[str] = Field(None, min_length=2, max_length=100)
+    skills: Optional[list[str]] = None
+    experience_level: Optional[Literal["professional", "student", "self_taught", "motivated"]] = None
+    availability: Optional[Literal["punctual", "regular", "active"]] = None
+    message: Optional[str] = Field(None, max_length=2000)
 
 
 class VolunteerStatusUpdate(BaseModel):

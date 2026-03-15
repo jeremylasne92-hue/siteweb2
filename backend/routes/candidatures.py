@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, Depends, HTTPException, BackgroundTasks
 from fastapi.responses import StreamingResponse
 from pymongo.errors import PyMongoError
-from models import TechCandidature, TechCandidatureRequest, TechCandidatureStatusUpdate, TechCandidatureBatchStatusUpdate, User
+from models import TechCandidature, TechCandidatureRequest, TechCandidatureStatusUpdate, TechCandidatureBatchStatusUpdate, TechCandidatureEditUpdate, User
 from routes.auth import get_db, require_admin, get_current_user
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from datetime import datetime
@@ -188,6 +188,28 @@ async def export_tech_candidatures(
         media_type="text/csv; charset=utf-8",
         headers={"Content-Disposition": "attachment; filename=candidatures-tech-export.csv"},
     )
+
+
+@router.put("/admin/{candidature_id}/edit")
+async def edit_tech_candidature(
+    candidature_id: str,
+    data: TechCandidatureEditUpdate,
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    """Edit tech candidature fields (admin only)."""
+    update_fields = data.model_dump(exclude_none=True)
+    if not update_fields:
+        raise HTTPException(status_code=400, detail="Aucun champ à mettre à jour")
+    update_fields["updated_at"] = datetime.utcnow()
+    result = await db.tech_candidatures.update_one(
+        {"id": candidature_id},
+        {"$set": update_fields},
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Candidature non trouvée")
+    logger.info(f"Admin {admin.id} edited tech candidature {candidature_id}")
+    return {"message": "Candidature mise à jour"}
 
 
 @router.put("/admin/{candidature_id}/status")
