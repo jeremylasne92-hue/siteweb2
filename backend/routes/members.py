@@ -449,3 +449,52 @@ async def admin_seed_profile(
         raise HTTPException(status_code=409, detail="Profil deja existant")
 
     return {"profile_id": result["id"], "slug": result["slug"]}
+
+
+@admin_router.post("/backfill-geocoding")
+async def admin_backfill_geocoding(
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    """Geocode all members and volunteer applications that have a city but no coordinates. Admin only."""
+    from utils.geocode import geocode_city
+
+    updated_members = 0
+    updated_volunteers = 0
+
+    # Backfill member profiles
+    cursor = db.member_profiles.find({
+        "city": {"$ne": None, "$ne": ""},
+        "$or": [{"latitude": None}, {"latitude": {"$exists": False}}],
+    })
+    async for doc in cursor:
+        coords = await geocode_city(doc["city"])
+        if coords:
+            await db.member_profiles.update_one(
+                {"id": doc["id"]},
+                {"$set": {"latitude": coords[0], "longitude": coords[1]}},
+            )
+            updated_members += 1
+        await asyncio.sleep(1.1)  # Nominatim rate limit: 1 req/sec
+
+    # Backfill volunteer applications
+    cursor = db.volunteer_applications.find({
+        "city": {"$ne": None, "$ne": ""},
+        "$or": [{"latitude": None}, {"latitude": {"$exists": False}}],
+    })
+    async for doc in cursor:
+        coords = await geocode_city(doc["city"])
+        if coords:
+            await db.volunteer_applications.update_one(
+                {"id": doc["id"]},
+                {"$set": {"latitude": coords[0], "longitude": coords[1]}},
+            )
+            updated_volunteers += 1
+        await asyncio.sleep(1.1)  # Nominatim rate limit: 1 req/sec
+
+    logger.info(f"Admin {admin.id} backfilled geocoding: {updated_members} members, {updated_volunteers} volunteers")
+    return {
+        "message": f"Géocodage terminé : {updated_members} membres, {updated_volunteers} bénévoles mis à jour",
+        "updated_members": updated_members,
+        "updated_volunteers": updated_volunteers,
+    }
