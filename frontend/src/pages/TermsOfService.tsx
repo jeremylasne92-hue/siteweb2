@@ -80,10 +80,10 @@ export function TermsOfService() {
             et souhaitez exercer ses droits (accès, rectification, suppression
             des données), veuillez nous contacter à{' '}
             <a
-              href="mailto:contact@mouvementecho.com"
+              href="mailto:contact@mouvementecho.fr"
               className="text-amber-500 hover:text-amber-400 underline"
             >
-              contact@mouvementecho.com
+              contact@mouvementecho.fr
             </a>
             .
           </p>

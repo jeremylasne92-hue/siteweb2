@@ -32,10 +32,10 @@ export function PrivacyPolicy() {
           <p className="text-gray-300 leading-relaxed mt-2">
             Contact :{' '}
             <a
-              href="mailto:contact@mouvementecho.com"
+              href="mailto:contact@mouvementecho.fr"
               className="text-amber-500 hover:text-amber-400 underline"
             >
-              contact@mouvementecho.com
+              contact@mouvementecho.fr
             </a>
           </p>
         </section>
@@ -192,10 +192,10 @@ export function PrivacyPolicy() {
           <p className="text-gray-300 leading-relaxed mt-4">
             Pour exercer vos droits, contactez-nous à{' '}
             <a
-              href="mailto:contact@mouvementecho.com"
+              href="mailto:contact@mouvementecho.fr"
               className="text-amber-500 hover:text-amber-400 underline"
             >
-              contact@mouvementecho.com
+              contact@mouvementecho.fr
             </a>
             . Nous nous engageons à répondre à toute demande d'exercice de vos
             droits dans un délai de 1 mois (prorogeable de 2 mois en cas de complexité, avec information préalable).
@@ -394,10 +394,10 @@ export function PrivacyPolicy() {
             Pour toute question relative à vos données personnelles,
             contactez-nous à :{' '}
             <a
-              href="mailto:contact@mouvementecho.com"
+              href="mailto:contact@mouvementecho.fr"
               className="text-amber-500 hover:text-amber-400 underline"
             >
-              contact@mouvementecho.com
+              contact@mouvementecho.fr
             </a>
           </p>
         </section>
@@ -410,10 +410,10 @@ export function PrivacyPolicy() {
           <p className="text-gray-300 leading-relaxed">
             L'Association Mouvement ECHO, comptant moins de 250 membres et ne traitant pas de données sensibles à grande échelle, n'a pas désigné de délégué à la protection des données (DPO) au sens de l'article 37 du RGPD. Pour toute question relative à la protection de vos données, contactez-nous à{' '}
             <a
-              href="mailto:contact@mouvementecho.com"
+              href="mailto:contact@mouvementecho.fr"
               className="text-amber-500 hover:text-amber-400 underline"
             >
-              contact@mouvementecho.com
+              contact@mouvementecho.fr
             </a>.
           </p>
         </section>
