@@ -158,7 +158,8 @@ export default function AdminMembers() {
                 openEdit(updated);
                 setSaveMsg('Profil mis à jour avec succès.');
             } else {
-                setSaveMsg('Erreur lors de la sauvegarde.');
+                const errData = await res.json().catch(() => null);
+                setSaveMsg(`Erreur ${res.status}: ${errData?.detail || 'Impossible de sauvegarder.'}`);
             }
         } catch {
             setSaveMsg('Erreur réseau.');
@@ -182,8 +183,14 @@ export default function AdminMembers() {
                 if (selected?.id === profileId) {
                     setSelected(prev => prev ? { ...prev, membership_status: status } : null);
                 }
+                setSaveMsg(`Statut changé en "${STATUS_CONFIG[status].label}".`);
+            } else {
+                const errData = await res.json().catch(() => null);
+                setSaveMsg(`Erreur ${res.status}: ${errData?.detail || 'Impossible de changer le statut.'}`);
             }
-        } catch { /* silent */ }
+        } catch {
+            setSaveMsg('Erreur réseau lors du changement de statut.');
+        }
     };
 
     const handleBackfillGeocoding = async () => {
@@ -217,6 +224,8 @@ export default function AdminMembers() {
         { key: 'cognisphere', label: 'CogniSphère' },
         { key: 'echolink', label: 'ECHOLink' },
         { key: 'scenariste', label: 'Scénaristes' },
+        { key: 'serie_echo', label: 'Série ECHO' },
+        { key: 'projet_echo', label: 'Projet ECHO' },
     ];
 
     const statusFilters = [
@@ -497,6 +506,8 @@ export default function AdminMembers() {
                                             <option value="cognisphere">CogniSphère</option>
                                             <option value="echolink">ECHOLink</option>
                                             <option value="scenariste">Scénariste</option>
+                                            <option value="serie_echo">Série ECHO</option>
+                                            <option value="projet_echo">Projet ECHO</option>
                                         </select>
                                     </div>
                                     <div>
@@ -596,11 +607,12 @@ export default function AdminMembers() {
                                 {/* Save button */}
                                 <div className="flex items-center justify-between pt-4">
                                     {saveMsg && (
-                                        <span className={`text-sm ${saveMsg.includes('succès') ? 'text-green-400' : 'text-echo-textMuted'}`}>
+                                        <span className={`text-sm ${saveMsg.includes('succès') || saveMsg.includes('changé') ? 'text-green-400' : saveMsg.includes('Erreur') ? 'text-red-400' : 'text-echo-textMuted'}`}>
                                             {saveMsg}
                                         </span>
                                     )}
                                     <Button
+                                        type="button"
                                         variant="primary"
                                         onClick={handleSave}
                                         disabled={saving}

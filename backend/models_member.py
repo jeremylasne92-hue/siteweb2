@@ -9,7 +9,7 @@ import uuid
 
 # --- Enums as Literal types ---
 
-ProjectType = Literal["cognisphere", "echolink", "scenariste", "benevole"]
+ProjectType = Literal["cognisphere", "echolink", "scenariste", "benevole", "serie_echo", "projet_echo"]
 ExperienceLevel = Literal["professional", "student", "self_taught", "motivated"]
 Availability = Literal["punctual", "regular", "active"]
 MembershipStatus = Literal["active", "inactive", "suspended", "alumni"]

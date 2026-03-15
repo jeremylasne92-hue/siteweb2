@@ -5,6 +5,8 @@ export const PROJECT_LABELS: Record<string, { label: string; color: string }> = 
     echolink: { label: 'ECHOLink', color: '#3B82F6' },
     scenariste: { label: 'Scénariste', color: '#D4AF37' },
     benevole: { label: 'Bénévole', color: '#10B981' },
+    serie_echo: { label: 'Série ECHO', color: '#F59E0B' },
+    projet_echo: { label: 'Projet ECHO', color: '#EC4899' },
 };
 
 export const EXPERIENCE_LABELS: Record<string, string> = {
