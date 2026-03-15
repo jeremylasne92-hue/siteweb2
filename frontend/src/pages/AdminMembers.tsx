@@ -5,6 +5,7 @@ import {
     CheckCircle2, XCircle, MapPin, Save, Globe, Search
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
+import { CityAutocomplete } from '../components/ui/CityAutocomplete';
 import { API_URL } from '../config/api';
 import { PROJECT_LABELS, EXPERIENCE_LABELS } from '../config/candidatures';
 
@@ -458,15 +459,13 @@ export default function AdminMembers() {
 
                                 {/* city + region */}
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs text-echo-textMuted mb-1">Ville</label>
-                                        <input
-                                            type="text"
-                                            value={editForm.city as string || ''}
-                                            onChange={e => setEditForm(prev => ({ ...prev, city: e.target.value }))}
-                                            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40"
-                                        />
-                                    </div>
+                                    <CityAutocomplete
+                                        label="Ville"
+                                        name="city"
+                                        placeholder="Rechercher une ville..."
+                                        value={editForm.city as string || ''}
+                                        onChange={(city) => setEditForm(prev => ({ ...prev, city }))}
+                                    />
                                     <div>
                                         <label className="block text-xs text-echo-textMuted mb-1">Région</label>
                                         <select
