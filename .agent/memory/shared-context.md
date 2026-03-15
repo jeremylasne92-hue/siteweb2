@@ -6,10 +6,10 @@
 
 ## 📋 État du Projet
 
-**Dernière mise à jour** : 2026-03-14
+**Dernière mise à jour** : 2026-03-15
 **Phase actuelle** : Post-Epics — Pré-lancement (lancement 20 mars 2026)
-**Statut** : ✅ Opérationnel — Profils membres + Notifications candidatures + page Mon Compte
-**Dernier milestone** : Profils membres (collection member_profiles, endpoints publics/auth/admin, MemberModal, seeds depuis candidatures acceptées)
+**Statut** : ✅ Opérationnel — KPI BI Analytics + Audit RGPD 14/14 corrigé
+**Dernier milestone** : KPI BI Analytics (14 KPIs, UTM/session tracking, admin dashboard) + Audit RGPD complet (14 écarts corrigés)
 
 ### ⚠️ Rappels Pré-Lancement (20 mars 2026)
 - [ ] **Revoir le Dashboard Partenaire** avant la sortie officielle (UX, données, design)
@@ -154,6 +154,8 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-15 | Audit RGPD complet : 14 écarts corrigés en 7 groupes parallèles. #25 YouTubeEmbed façade + useCookieConsent hook. #26 openCookiePanel via custom event (sans reload). #27 Notice reCAPTCHA v3 login+register. #28 Checkbox CGU/PC obligatoire register avec liens. #29 Emails/phones partenaires supprimés des vues publiques + API sanitized. #30+32+34+38 PC complétée (15 sections : reCAPTCHA, HelloAsso, APD, durées conservation, sécurité). #33 Mentions légales corrigées (directeur unique + téléphone). #37 Clause mineurs CGU (15 ans+). #35 Page MyData.tsx (export JSON + suppression compte). #31 RoPA (10 traitements). #36 Procédure violation données. #38 Notice HelloAsso /soutenir. Niveau MAJEUR. | Claude Code (Opus 4.6) |
+| 2026-03-15 | Système KPIs BI Analytics : 14 KPIs en 4 catégories (Acquisition, Engagement, Conversion, Partenaires). Extension AnalyticsEventCreate (+6 champs optionnels). 3 index MongoDB. Endpoint admin dashboard GET /api/analytics/admin/dashboard (15 requêtes parallèles asyncio.gather). useAnalytics enrichi (session_id UUID sessionStorage, UTM capture, referrer, trackPageView). usePageTracking → page_view interne. 8 CTAs instrumentés sur 5 pages. AdminAnalytics.tsx (StatCards, sélecteur période 7/14/30j). 5 tests dashboard + 128 backend total. Subagent-Driven Development (7 tasks). Niveau MAJEUR. | Claude Code (Opus 4.6) |
 | 2026-03-14 | Refonte section L'Émergence (Mouvement) : layout vertical custom EmergenceSection (pousse + encadré ambition + tronc). Image Tronc.png ajoutée. Texte ambition restructuré en accroche serif + développement avec mots-clés colorés (coopération, respect du vivant, absolument nécessaire, croissance pérenne, alliance robuste, nouveau récit sociétal, nouveau contrat social). Bordure ambre gauche + fond glassmorphism. Suppression OrganicArrow SVG + keyframes CSS inutilisés (grow-vine, draw-line). Composants réordonnés avant export pour compatibilité Vite HMR. Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-14 | Profils membres : collection member_profiles (MongoDB, 4 index), modèles Pydantic (models_member.py : ProjectType, ExperienceLevel, Availability, SocialLink, VisibilityOverrides, MemberProfile), routes publiques (GET / avec re.escape search, GET /{slug}), auth (GET/PATCH /me, PATCH /me/visibility), admin (GET /, GET /analytics avec asyncio.gather, PATCH /{id}/status, POST /seed/{candidature_id} avec vérif statut accepted + slug collision). Frontend : MemberModal.tsx (avatar, bio, skills, social links 11 plateformes), MembersSection.tsx (fetch MEMBERS_API, keyboard a11y), PartnersPage.tsx (membre clickable + compteur). Types TypeScript (member.ts). Config partagée candidatures.ts. 8 tests modèles + 13 tests routes. Subagent-Driven Development (9 tasks, 2-stage review). Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-14 | Notifications candidatures : 4 emails transactionnels (confirmation soumission, convocation entretien avec lien booking Google Calendar, acceptation, rejet avec motif optionnel) via BackgroundTasks dans routes candidatures. BOOKING_URL centralisé dans config. Profile.tsx étendu : support projet Scénariste (badge amber), bouton "Réserver un créneau" si statut entretien, section candidatures toujours visible avec état vide. 6 tests email + 81 tests backend total. Niveau STANDARD. | Claude Code (Opus 4.6) |
@@ -210,6 +212,8 @@ frontend/src/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-15 | 🔴 MAJEUR | Audit RGPD complet (14 écarts, 25 fichiers, 7 groupes agents parallèles) | ~30min | Claude Code (Opus 4.6) |
+| 2026-03-15 | 🔴 MAJEUR | KPI BI Analytics (14 KPIs, 15 fichiers, 7 tasks subagent-driven) | ~25min | Claude Code (Opus 4.6) |
 | 2026-03-14 | 🟢 HOTFIX | Refonte L'Émergence Mouvement (layout vertical, encadré ambition, Tronc.png, suppression SVG arrows) | ~20min | Claude Code (Opus 4.6) |
 | 2026-03-14 | 🟡 STANDARD | Profils membres (models, 10 endpoints, MemberModal, MembersSection, seed, 21 tests) | ~1h30 | Claude Code (Opus 4.6) |
 | 2026-03-14 | 🟡 STANDARD | Notifications candidatures (4 emails, config booking, Profile.tsx Scénariste + bouton entretien) | ~30min | Claude Code (Opus 4.6) |
@@ -312,11 +316,12 @@ _Aucune spec en cours._
 ### Notes techniques
 
 - Frontend bundle : Code Splitting (React.lazy) en place pour différer le chargement des routes. L'index est à ~230kB `(gzip ~72kB)`.
-- Routes protégées : `/admin` (admin), `/admin/partenaires` (admin), `/admin/events` (admin), `/admin/exports` (admin), `/admin/members` (admin), `/mon-compte/partenaire`
+- Routes protégées : `/admin` (admin), `/admin/partenaires` (admin), `/admin/events` (admin), `/admin/exports` (admin), `/admin/members` (admin), `/admin/analytics` (admin), `/mon-compte/partenaire`, `/mes-donnees`
 - API membres : GET /api/members (public), GET /api/members/{slug} (public), GET/PATCH /api/members/me (auth), PATCH /api/members/me/visibility (auth), GET/PATCH /api/admin/members (admin), POST /api/admin/members/seed/{id} (admin)
 - Routes publiques (anciennement protégées) : `/cognisphere`, `/echolink`
 - Auth : cookie-only (httpOnly), pas de localStorage — `credentials: 'include'` sur tous les fetch
-- RGPD : bannière cookies (localStorage `echo-cookie-consent` + gtag consent API), consentement formulaires, export/suppression données, désinscription emails
+- RGPD : bannière cookies (localStorage `echo-cookie-consent` + gtag consent API + openCookiePanel custom event), consentement formulaires (checkbox CGU/PC register), export/suppression données (MyData.tsx + GET /auth/my-data/export + DELETE /auth/my-data), désinscription emails, YouTubeEmbed façade, notice reCAPTCHA, notice HelloAsso, clause mineurs CGU, RoPA + procédure violation (docs/rgpd/)
+- Analytics KPI : session_id (sessionStorage UUID), UTM capture (utm_source/medium/campaign), referrer, trackPageView interne, 8 CTAs instrumentés, admin dashboard GET /api/analytics/admin/dashboard
 - Vite proxy : `/api` → `localhost:8000` en dev (vite.config.ts)
 
 ---
