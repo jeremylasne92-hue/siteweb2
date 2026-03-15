@@ -15,7 +15,7 @@ import { PartnerFormModal } from '../components/partners/PartnerFormModal';
 import { MembersSection } from '../components/partners/MembersSection';
 import type { Partner, PartnerCategory } from '../components/partners/PartnerCard';
 import type { Thematic } from '../components/partners/ThematicTag';
-import type { MemberProfile } from '../types/member';
+import type { MemberProfile, MapMember } from '../types/member';
 import { PARTNERS_API, MEMBERS_API } from '../config/api';
 
 export default function PartnersPage() {
@@ -24,6 +24,7 @@ export default function PartnersPage() {
     const [thematicsList, setThematicsList] = useState<Thematic[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [membersCount, setMembersCount] = useState(0);
+    const [mapMembers, setMapMembers] = useState<MapMember[]>([]);
 
     // Filters State
     const [searchQuery, setSearchQuery] = useState('');
@@ -52,10 +53,11 @@ export default function PartnersPage() {
     useEffect(() => {
         const fetchInitData = async () => {
             try {
-                const [statsRes, thematicsRes, membersRes] = await Promise.all([
+                const [statsRes, thematicsRes, membersRes, mapMembersRes] = await Promise.all([
                     fetch(`${PARTNERS_API}/stats`),
                     fetch(`${PARTNERS_API}/thematics`),
                     fetch(`${MEMBERS_API}?limit=1`),
+                    fetch(`${MEMBERS_API}/map`),
                 ]);
 
                 if (statsRes.ok) setStats(await statsRes.json());
@@ -64,6 +66,7 @@ export default function PartnersPage() {
                     const data = await membersRes.json();
                     setMembersCount(data.total || 0);
                 }
+                if (mapMembersRes.ok) setMapMembers(await mapMembersRes.json());
             } catch (err) {
                 console.error("Failed to fetch initial partner data", err);
             }
@@ -143,6 +146,7 @@ export default function PartnersPage() {
                             <PartnersMap
                                 partners={partners}
                                 onPartnerClick={setSelectedPartner}
+                                members={mapMembers}
                             />
                         </Suspense>
                     )}
