@@ -104,3 +104,4 @@ Les règles Antigravity sont dans `.gemini/GEMINI.md`.
 - Inventaire composants: `docs/component-inventory.md`
 - PRD Phase 2: `_bmad-output/planning-artifacts/prd.md`
 - Mémoire partagée BMAD: `.agent/memory/shared-context.md`
+- Stratégie SEO/GEO: `docs/echo-strategy-seo-geo.md`

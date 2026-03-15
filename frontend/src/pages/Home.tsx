@@ -12,6 +12,7 @@ export function Home() {
             <SEO
                 title="Accueil"
                 description="Découvrez ECHO, un mouvement citoyen né d'une websérie documentaire événement. Rejoignez-nous pour comprendre, fédérer et agir."
+                url="https://mouvementecho.fr/"
             />
             {/* Hero Section */}
             <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">

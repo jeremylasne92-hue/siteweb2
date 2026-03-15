@@ -3,6 +3,7 @@ import { Brain, BookOpen, Users, Repeat, CalendarClock, Sparkles, FileText, Yout
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { TechApplicationForm } from '../components/forms/TechApplicationForm';
+import { SEO } from '../components/seo/SEO';
 
 const SCREENS = [
     { id: 'dashboard', label: 'Tableau de bord', src: '/images/cognisphere/dashboard.jpg' },
@@ -17,6 +18,11 @@ export function Cognisphere() {
 
     return (
         <div className="flex flex-col min-h-screen bg-echo-darker text-white">
+            <SEO
+                title="CogniSphère"
+                description="CogniSphère : plateforme d'apprentissage par répétition espacée (FSRS-5) liée à la série ECHO. Transformez le visionnage en connaissances."
+                url="https://mouvementecho.fr/cognisphere"
+            />
             {/* Hero */}
             <section className="relative h-[60vh] sm:h-[70vh] md:h-[80vh] flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-echo-darker">

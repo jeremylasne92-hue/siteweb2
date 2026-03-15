@@ -32,6 +32,7 @@ export function Footer() {
                             <FooterLink to="/cognisphere">CogniSphère</FooterLink>
                             <FooterLink to="/echolink">ECHOLink</FooterLink>
                             <FooterLink to="/partenaires">ECHOSystem</FooterLink>
+                            <FooterLink to="/a-propos">À propos</FooterLink>
                         </ul>
                     </div>
 

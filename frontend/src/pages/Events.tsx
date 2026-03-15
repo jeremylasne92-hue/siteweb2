@@ -3,6 +3,7 @@ import { Calendar, MapPin, ArrowRight, Clock, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { EVENTS_API } from '../config/api';
+import { SEO } from '../components/seo/SEO';
 
 interface EventItem {
     id: string;
@@ -165,6 +166,11 @@ export function Events() {
 
     return (
         <>
+            <SEO
+                title="Événements"
+                description="Événements et projections du Mouvement ECHO. Rencontres, ateliers et conférences autour de la transition écologique."
+                url="https://mouvementecho.fr/agenda"
+            />
             {/* Hero Section */}
             <section className="relative py-20 md:py-32 flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-echo-darker">

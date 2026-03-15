@@ -22,6 +22,63 @@
     <link rel="icon" type="image/jpeg" href="/logo-echo.jpg" />
     <link rel="manifest" href="/manifest.json" />
 
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": ["Organization", "NGO"],
+          "@id": "https://mouvementecho.fr/#organization",
+          "name": "Mouvement ECHO",
+          "alternateName": "ECHO",
+          "url": "https://mouvementecho.fr",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://mouvementecho.fr/logo-echo-transparent.png"
+          },
+          "description": "Association citoyenne française (loi 1901) qui produit une série documentaire de 33 épisodes sur la transition écologique et sociale, et développe des plateformes numériques d'apprentissage et de mise en réseau des acteurs du changement.",
+          "foundingDate": "2024",
+          "founder": {
+            "@type": "Person",
+            "@id": "https://mouvementecho.fr/#jeremy-lasne",
+            "name": "Jérémy Lasne",
+            "jobTitle": "Président-fondateur"
+          },
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "59 quai Boissy d'Anglas",
+            "addressLocality": "Bougival",
+            "postalCode": "78380",
+            "addressCountry": "FR"
+          },
+          "areaServed": {
+            "@type": "Country",
+            "name": "France"
+          },
+          "knowsAbout": [
+            "Transition écologique",
+            "Innovation sociale",
+            "Série documentaire",
+            "Engagement citoyen"
+          ],
+          "sameAs": []
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://mouvementecho.fr/#website",
+          "name": "Mouvement ECHO",
+          "url": "https://mouvementecho.fr",
+          "publisher": {
+            "@id": "https://mouvementecho.fr/#organization"
+          },
+          "inLanguage": "fr-FR",
+          "description": "Site officiel du Mouvement ECHO — série documentaire citoyenne sur la transition écologique et sociale."
+        }
+      ]
+    }
+    </script>
+
     <!-- Google Analytics (GA4) — cookieless mode for GDPR/CNIL compliance -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KHBWHQQF6W"></script>
     <script>

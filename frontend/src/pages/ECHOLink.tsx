@@ -4,12 +4,18 @@ import { Button } from '../components/ui/Button';
 
 import { TechApplicationForm } from '../components/forms/TechApplicationForm';
 import { useAnalytics } from '../hooks/useAnalytics';
+import { SEO } from '../components/seo/SEO';
 
 export function ECHOLink() {
     const { trackEvent } = useAnalytics();
 
     return (
         <div className="flex flex-col min-h-screen bg-echo-darker text-white">
+            <SEO
+                title="ECHOLink"
+                description="ECHOLink : réseau de mise en relation des acteurs du changement. Passez de spectateur à acteur de la transition écologique."
+                url="https://mouvementecho.fr/echolink"
+            />
             {/* Hero */}
             <section className="relative h-[60vh] sm:h-[70vh] md:h-[80vh] flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-echo-darker">
