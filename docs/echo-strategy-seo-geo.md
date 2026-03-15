@@ -1,22 +1,68 @@
 # ECHO — Strategie SEO, GEO et Architecture Semantique
 
-**Document de reference** — Version 1.0
+**Document de reference** — Version 2.0
 **Date** : 15 mars 2026
-**Statut** : Valide apres 10 rounds de co-construction strategique
+**Statut** : Valide apres 13 rounds de co-construction strategique
 **Auteurs** : Jeremy Lasne (fondateur) + Claude (strategie IA)
+
+---
+
+> **AVERTISSEMENT CRITIQUE — LIRE AVANT TOUT LE RESTE**
+>
+> Ce document est une **boite a outils**, pas un plan de bataille.
+>
+> La strategie SEO/GEO documentee ici est une **fondation passive necessaire
+> mais ne sera pas le levier de croissance principal** d'ECHO. Le reseau humain
+> direct (evenements, rencontres, projections) et la production de contenu video
+> sont les leviers prioritaires. Le SEO/GEO ne generera quasiment rien en trafic
+> dans les 12 premiers mois.
+>
+> **Ce qu'il faut faire avant le lancement : les 7 actions de fondation minimale
+> (Bloc 0, ~8 heures de travail).** Puis fermer ce document et aller produire
+> le premier episode.
+>
+> Le reste de cette boite a outils s'ouvrira au bon moment — quand le contenu
+> existera pour alimenter la machine. Un episode pilote qui circule fait plus
+> pour le SEO/GEO que tout le JSON-LD du monde.
+>
+> **Le risque principal n'est pas technique. Il est humain et editorial.**
+> Voir le Bloc 9 pour le diagnostic complet.
 
 ---
 
 ## Table des matieres
 
+0. [Fondation minimale — les 7 seules actions avant lancement](#0-fondation-minimale--les-7-seules-actions-avant-lancement)
 1. [Diagnostic strategique](#1-diagnostic-strategique)
 2. [Positionnement recommande](#2-positionnement-recommande)
 3. [Architecture de site recommandee](#3-architecture-de-site-recommandee)
 4. [Modele semantique et entites](#4-modele-semantique-et-entites)
 5. [Plan de balisage JSON-LD par type de page](#5-plan-de-balisage-json-ld-par-type-de-page)
 6. [Strategie AI-readable / citation-ready](#6-strategie-ai-readable--citation-ready)
-7. [Roadmap priorisee](#7-roadmap-priorisee)
+7. [Roadmap priorisee et hierarchisee](#7-roadmap-priorisee-et-hierarchisee)
 8. [Recommandation argumentee finale avec arbitrages](#8-recommandation-argumentee-finale-avec-arbitrages)
+9. [Verdicts et verites inconfortables (rounds 11-13)](#9-verdicts-et-verites-inconfortables-rounds-11-13)
+
+---
+
+## 0. Fondation minimale — les 7 seules actions avant lancement
+
+**Ce bloc est le seul qui doit etre execute avant le 20 mars 2026.**
+Tout le reste du document est de la reference pour plus tard.
+
+| # | Action | Temps | Impact | Qui |
+|---|--------|-------|--------|-----|
+| 1 | Injecter JSON-LD Organization + WebSite en dur dans `index.html` | 1h | Google et Bing savent qu'ECHO est une association loi 1901 qui produit une serie documentaire. Carte d'identite machine. | Dev |
+| 2 | Creer la page `/a-propos` avec contenu factuel structure (definition-first, fiche entite visible, 6 sections auto-suffisantes) | 3h | Page pivot citable par les humains, les journalistes et les LLM. Sans elle, personne ne peut decrire ECHO correctement. | Fondateur + Dev |
+| 3 | Corriger `sitemap.xml` (14 URLs publiques au lieu de 7) | 30min | Les crawlers decouvrent toutes les pages, pas la moitie. | Dev |
+| 4 | Corriger `robots.txt` (autoriser GPTBot, ClaudeBot, PerplexityBot explicitement) | 15min | Ne pas bloquer activement les crawlers IA. | Dev |
+| 5 | Ajouter `<link rel="canonical">` sur toutes les pages publiques | 1h | Evite toute confusion de contenu duplique, surtout si un pre-rendu est ajoute plus tard. | Dev |
+| 6 | Ajouter le composant SEO sur les 4 pages manquantes (CogniSphere, ECHOLink, Events, Resources) | 1h | Meta title + description correctes partout. Ces 4 pages ont aujourd'hui les meta par defaut. | Dev |
+| 7 | Configurer Google Search Console + Bing Webmaster Tools, soumettre le sitemap | 1h | Monitoring d'indexation. Savoir si les pages sont vues. Alertes en cas de probleme. | Fondateur |
+
+**Total : 7h45. Une journee de travail.**
+
+**Apres ces 7 actions : fermer ce document et aller produire le premier episode.**
 
 ---
 
@@ -44,18 +90,18 @@
 | Pas de page /a-propos factuelle | Aucune page citable par un LLM pour decrire ECHO | BLOQUANT |
 | Google Search Console non configure | Pas de monitoring d'indexation, pas de soumission de sitemap | CRITIQUE |
 | Bing Webmaster Tools non configure | Invisible pour ChatGPT Browse et Copilot (index Bing) | CRITIQUE |
+| Zero backlink externe connu | Domain Authority ~0 | CRITIQUE (long terme) |
+| Zero mention presse | Aucune source tierce citable | CRITIQUE (long terme) |
+| Zero episode produit | Contenu central inexistant | **EXISTENTIEL** |
 | Pas de profil LinkedIn organisation | Pas de signal social d'existence | IMPORTANT |
 | Pas de fiche Google Business Profile | Pas de Knowledge Panel potentiel | IMPORTANT |
 | Pas de Wikidata Q-item | Absent des graphes de connaissances mondiaux | IMPORTANT |
 | Pas de fiche IMDb | Absent de la reference audiovisuelle mondiale | IMPORTANT |
 | Sitemap incomplet (7 URLs sur 14+ pages publiques) | Pages non decouvertes par les crawlers | IMPORTANT |
 | 4 pages sans composant SEO (Cognisphere, ECHOLink, Events, Resources) | Meta tags par defaut, pas de description specifique | MODERE |
-| Pas de llms.txt | Pas de surface dediee aux agents IA | NICE-TO-HAVE |
 | Pas de balises canonical | Risque de contenu duplique | MODERE |
 | Pas de breadcrumbs | Pas de rich snippet navigation, hierarchie floue | MODERE |
-| Zero backlink externe connu | Domain Authority ~0 | CRITIQUE (long terme) |
-| Zero mention presse | Aucune source tierce citable | CRITIQUE (long terme) |
-| Zero episode produit | Contenu central inexistant | EXISTENTIEL |
+| Pas de llms.txt | Pas de surface dediee aux agents IA | NICE-TO-HAVE |
 
 ### 1.2 Analyse concurrentielle
 
@@ -71,13 +117,25 @@ ECHO n'a **aucun concurrent direct** sur sa niche exacte. Le croisement "serie d
 | Blast / Reporterre | Journalisme ecologique | Pas de format serie narrative |
 | Nota Bene | Documentaire educatif | Pas de transition ecologique |
 
-**Consequence strategique :** ECHO ne doit pas lutter sur des requetes generiques ("transition ecologique", "documentaire ecologique") ou les acteurs etablis dominent. ECHO doit posseder les requetes d'intersection ou il est le seul acteur.
+**Lecons des projets similaires (Round 11) :** Aucun de ces projets n'a emerge par le SEO. Ils ont emerge par : (1) un contenu fort qui cree une emotion, (2) un reseau humain qui le propage, (3) un evenement declencheur qui cree le momentum. Demain = crowdfunding + Cannes. Blast = notoriete de Denis Robert + YouTube. On Est Pret = campagne virale + influenceurs.
+
+**Consequence strategique :** le SEO/GEO est la fondation passive. Le levier de croissance reel est le reseau humain + le contenu video.
 
 ### 1.3 Le probleme fondamental
 
-Le site ECHO est **techniquement invisible** pour les agents IA et **semantiquement non structure** pour les moteurs de recherche. Le contenu existe mais il est enferme dans un SPA React que seul un navigateur avec execution JavaScript peut lire. Ni GPTBot, ni ClaudeBot, ni PerplexityBot n'executent le JavaScript. Google le fait avec retard (jours/semaines) et de maniere incomplete.
+Le site ECHO est **techniquement invisible** pour les agents IA et **semantiquement non structure** pour les moteurs de recherche. Le contenu existe mais il est enferme dans un SPA React que seul un navigateur avec execution JavaScript peut lire.
 
-Le levier le plus puissant n'est pas la creation de contenu (il existe deja) mais son **accessibilite technique** (pre-rendu HTML) et sa **structuration semantique** (JSON-LD).
+Le levier le plus puissant n'est pas la creation de contenu (il existe deja) mais son **accessibilite technique** (pre-rendu HTML) et sa **structuration semantique** (JSON-LD). Mais ces leviers ne produiront des resultats qu'a partir du moment ou des sources tierces mentionneront ECHO.
+
+### 1.4 Hierarchie des canaux de croissance (0-12 mois)
+
+| Canal | Priorite reelle | Effort a investir |
+|-------|----------------|-------------------|
+| Reseau humain direct (evenements, rencontres, projections) | **#1** | 60% du temps |
+| YouTube (episodes + contenus courts) | **#2** | 20% du temps |
+| LinkedIn / reseaux sociaux (thought leadership) | **#3** | 10% du temps |
+| SEO/GEO (fondation technique) | **#4** | 5% du temps (fait une fois, puis maintenance) |
+| Presse / podcasts | **#5** | 5% du temps (opportuniste) |
 
 ---
 
@@ -103,30 +161,37 @@ Le levier le plus puissant n'est pas la creation de contenu (il existe deja) mai
 **Requetes de niche (priorite haute — faible concurrence) :**
 - "serie documentaire transition ecologique France"
 - "documentaire citoyen changement social"
-- "serie inspiree Divine Comedie Dante ecologie"
 - "projet alliant documentaire et engagement citoyen"
 - "plateforme apprentissage transition ecologique"
-
-**Requetes thematiques (priorite moyenne — post-lancement) :**
-- "documentaire [thematique] transition" (par thematique)
-- "apprentissage citoyen ecologie"
-- "reseau acteurs changement France"
 
 **Requetes generiques (NE PAS cibler a court terme) :**
 - "transition ecologique"
 - "serie documentaire"
 - "engagement citoyen"
-- "changer le monde"
 
-### 2.3 Mots et expressions a eviter
+### 2.3 Posture editoriale recommandee
 
-| A eviter | Pourquoi | Alternative |
-|----------|----------|-------------|
-| "Transformer le monde" | Non verifiable, non citable | "Documenter les crises et amplifier les solutions" |
-| "Revolutionnaire" | Hyperbole non prouvable | "Premiere initiative combinant..." |
-| "Unique en son genre" | Affirmation marketing | Decrire factuellement ce qui est combine |
-| "Impact majeur" | Non mesure | "33 episodes, 10 thematiques, [N] partenaires" |
-| "Nous" en premiere phrase | Pronom orphelin non citable | "Mouvement ECHO est..." |
+Le positionnement ne doit etre ni neutre (impossible quand on parle de crises ecologiques) ni militant (reducteur et excluant). Il doit etre **documentaire** au sens fort : on montre, on ecoute, on structure, on laisse le spectateur se faire son opinion. Posture Depardon, pas Greenpeace.
+
+| A faire | A eviter |
+|---------|----------|
+| "Cet episode documente comment [acteur] a transforme [lieu]" | "Cet episode denonce l'inaction de [institution]" |
+| "Les intervenants presentent 3 approches contradictoires" | "La seule solution est [X]" |
+| "Donnees : [source verifiable]" | "Tout le monde sait que..." |
+| Montrer les tensions et les echecs | Storytelling uniquement positif |
+| "Mouvement ECHO est une association..." | "Nous transformons le monde" |
+| "33 episodes, 3 saisons, fondee en 2024" | "Revolutionnaire", "unique en son genre" |
+
+### 2.4 Regle de communication a deux niveaux pour la structure Dante
+
+La reference a Dante est un atout narratif puissant pour le storytelling humain et un facteur neutre pour les machines si on l'accompagne de sa traduction fonctionnelle.
+
+| Contexte | Formulation |
+|----------|-------------|
+| **Pitch rapide** (meta description, JSON-LD, premiere phrase) | Fonctionnel d'abord : "3 saisons : diagnostic des crises, solutions du terrain, futurs souhaitables" |
+| **Recit approfondi** (page /a-propos, interviews, dossier presse) | Dante comme cle narrative : "Structure comme un voyage initiatique inspire de la Divine Comedie..." |
+
+**Regle stricte :** ne jamais ecrire "Saison 1 Enfer" sans ajouter "(diagnostic des crises)".
 
 ---
 
@@ -153,38 +218,10 @@ Le levier le plus puissant n'est pas la creation de contenu (il existe deja) mai
 
 ### 3.2 Architecture recommandee — Phase 1 (lancement J-0)
 
-**Pages a ajouter :**
+**Page a ajouter :**
 
 ```
 /a-propos                         (NOUVELLE — page pivot "About" + manifeste)
-```
-
-**Pages a restructurer :**
-
-```
-/partenaires    → contenu editorial statique ("Nos partenaires se revelent
-                  a partir de mars 2026" + CTA inscription)
-/agenda         → contenu editorial statique ("Evenements a venir" + CTA)
-/ressources     → contenu editorial statique si vide en base
-```
-
-**Sitemap mis a jour (14 URLs) :**
-
-```xml
-mouvement-echo.fr/                   priority=1.0  changefreq=weekly
-mouvement-echo.fr/serie              priority=0.9  changefreq=monthly
-mouvement-echo.fr/a-propos           priority=0.9  changefreq=monthly
-mouvement-echo.fr/mouvement          priority=0.8  changefreq=monthly
-mouvement-echo.fr/cognisphere        priority=0.7  changefreq=monthly
-mouvement-echo.fr/echolink           priority=0.7  changefreq=monthly
-mouvement-echo.fr/faq                priority=0.8  changefreq=monthly
-mouvement-echo.fr/soutenir           priority=0.7  changefreq=monthly
-mouvement-echo.fr/partenaires        priority=0.6  changefreq=weekly
-mouvement-echo.fr/agenda             priority=0.6  changefreq=weekly
-mouvement-echo.fr/ressources         priority=0.5  changefreq=weekly
-mouvement-echo.fr/contact            priority=0.5  changefreq=yearly
-mouvement-echo.fr/mentions-legales   priority=0.3  changefreq=yearly
-mouvement-echo.fr/faq                priority=0.8  changefreq=monthly
 ```
 
 ### 3.3 Architecture recommandee — Phase 2 (J+30 a J+90)
@@ -198,7 +235,9 @@ mouvement-echo.fr/faq                priority=0.8  changefreq=monthly
 ...
 ```
 
-**Pages piliers thematiques (10 pages, par ordre de priorite) :**
+### 3.4 Architecture recommandee — Phase 3 (J+90 a J+18m)
+
+**Pages piliers thematiques — uniquement quand le contenu existe :**
 
 ```
 /thematiques/ecologie-climat
@@ -215,22 +254,6 @@ mouvement-echo.fr/faq                priority=0.8  changefreq=monthly
 
 **Regle stricte :** ne publier une page thematique que si elle a au minimum 2 episodes lies OU 1 partenaire actif OU 1 evenement passe sur le sujet. Pas de coquilles vides.
 
-**Pages CogniSphere publiques (J+60) :**
-
-```
-/cognisphere/parcours/[thematique]    (Parcours decouverte gratuit)
-```
-
-### 3.4 Architecture recommandee — Phase 3 (J+90 a J+18m)
-
-```
-/serie/saison-2                       (Quand S2 demarre)
-/serie/saison-2/episode-12
-...
-/presse                               (Revue de presse quand articles existent)
-/impact                               (Page de mesure d'impact quand donnees existent)
-```
-
 ### 3.5 Hierarchie de maillage interne
 
 ```
@@ -245,9 +268,6 @@ mouvement-echo.fr/faq                priority=0.8  changefreq=monthly
          └────┼────┘
               |
         THEMATIQUES  ←→  PARTENAIRES  ←→  EVENEMENTS
-        (10 pages piliers)
-              |
-        COGNISPHERE/PARCOURS
 ```
 
 **Regles de maillage :**
@@ -255,10 +275,8 @@ mouvement-echo.fr/faq                priority=0.8  changefreq=monthly
 | Regle | Implementation |
 |-------|---------------|
 | Chaque page a un lien vers sa page parente | Breadcrumb navigation |
-| Chaque page a 2-3 liens vers des pages soeurs | "Voir aussi" ou liens contextuels |
 | Chaque episode lie ses thematiques | Tags cliquables vers /thematiques/[slug] |
 | Chaque thematique liste ses episodes | Section "Episodes lies" |
-| Chaque partenaire lie ses thematiques | Tags thematiques |
 | La FAQ lie les pages de contenu | Liens dans les reponses |
 | Le footer contient les 6 pages principales | Maillage permanent |
 
@@ -276,82 +294,51 @@ Organization (NGO) : "Mouvement ECHO"
   │
   ├── hasPart ──────────→ CreativeWorkSeries : "Serie ECHO"
   │                         ├── hasPart → TVSeason : "S1 Enfer"
-  │                         │               └── hasPart → TVEpisode (×11, quand publies)
-  │                         │                               ├── about → DefinedTerm (thematiques)
-  │                         │                               ├── actor → Person (intervenants)
-  │                         │                               └── associatedMedia → VideoObject (YouTube)
+  │                         │               └── hasPart → TVEpisode (quand publies)
   │                         ├── hasPart → TVSeason : "S2 Purgatoire"
   │                         └── hasPart → TVSeason : "S3 Paradis"
   │
   ├── hasPart ──────────→ WebApplication : "CogniSphere"
-  │                         └── hasPart → LearningResource (parcours publics)
-  │
   ├── hasPart ──────────→ WebApplication : "ECHOLink"
   │
-  ├── partner ──────────→ Organization : "EICAR" (quand confirme)
-  │
   ├── mainEntityOfPage ─→ WebPage : mouvement-echo.fr
-  │
-  └── subjectOf ────────→ Article : page /a-propos
+  └── sameAs ───────────→ LinkedIn, Wikidata, IMDb (quand crees)
 ```
 
 ### 4.2 Entites par niveau de priorite
 
-**Niveau 1 — BLOQUANT (Jour 1-2, avant lancement) :**
+**Niveau 1 — FONDATION MINIMALE (Bloc 0, avant lancement) :**
 
-| Entite | Type schema.org | Page(s) | Statut |
-|--------|----------------|---------|--------|
-| Mouvement ECHO | Organization + NGO | Toutes (via index.html) | A creer |
-| Le site web | WebSite | index.html | A creer |
-| La FAQ | FAQPage + Question/Answer | /faq | A creer |
+| Entite | Type schema.org | Page(s) |
+|--------|----------------|---------|
+| Mouvement ECHO | Organization + NGO | index.html (en dur) |
+| Le site web | WebSite | index.html (en dur) |
 
-**Niveau 2 — IMPORTANT (Jour 2-4) :**
+**Niveau 2 — ENRICHISSEMENT (quand le pilote est en production) :**
 
-| Entite | Type schema.org | Page(s) | Statut |
-|--------|----------------|---------|--------|
-| Serie ECHO | CreativeWorkSeries | /serie | A creer |
-| Saison 1 Enfer | TVSeason | /serie | A creer |
-| Saison 2 Purgatoire | TVSeason | /serie | A creer |
-| Saison 3 Paradis | TVSeason | /serie | A creer |
-| Jeremy Lasne | Person | /a-propos | A creer |
-| Page a-propos | AboutPage | /a-propos | A creer |
-| Breadcrumbs | BreadcrumbList | Toutes les pages | A creer |
+| Entite | Type schema.org | Page(s) |
+|--------|----------------|---------|
+| La FAQ | FAQPage + Question/Answer | /faq |
+| Serie ECHO | CreativeWorkSeries | /serie |
+| 3 Saisons | TVSeason | /serie |
+| Jeremy Lasne | Person | /a-propos |
+| Breadcrumbs | BreadcrumbList | Toutes |
 
-**Niveau 3 — POST-LANCEMENT (J+30 a J+90) :**
+**Niveau 3 — AMPLIFICATION (quand le premier episode est publie) :**
 
-| Entite | Type schema.org | Page(s) | Declencheur |
-|--------|----------------|---------|-------------|
-| Episodes individuels | TVEpisode | /serie/saison-1/episode-N | Publication de l'episode |
-| Intervenants | Person | Pages episodes | Confirmation de l'intervenant |
-| Videos | VideoObject | Pages episodes | Publication YouTube |
-| Thematiques | DefinedTerm | /thematiques/[slug] | Contenu editorial pret |
-| CogniSphere | WebApplication + SoftwareApplication | /cognisphere | Fonctionnalite publique |
-| ECHOLink | WebApplication | /echolink | Fonctionnalite publique |
-| Partenaires | Organization + partner | /partenaires | Partenariat signe |
-| Evenements | Event | /agenda | Evenement confirme |
-| Parcours apprentissage | LearningResource | /cognisphere/parcours/[slug] | Contenu pret |
-
-### 4.3 Relations inter-entites cles
-
-| Propriete | De | Vers | Quand |
-|-----------|-----|------|-------|
-| founder | Organization | Person (Lasne) | J-0 |
-| hasPart | Organization | CreativeWorkSeries | J-0 |
-| hasPart | CreativeWorkSeries | TVSeason (×3) | J-0 |
-| hasPart | TVSeason | TVEpisode | A chaque publication |
-| about | TVEpisode | DefinedTerm (thematiques) | A chaque publication |
-| actor / contributor | TVEpisode | Person (intervenants) | A chaque publication |
-| associatedMedia | TVEpisode | VideoObject (YouTube) | A chaque publication |
-| publisher | WebSite | Organization | J-0 |
-| mainEntityOfPage | WebPage | Organization | J-0 |
-| sameAs | Organization | LinkedIn, Wikidata, IMDb, Google Business | Des creation des profils |
-| partner | Organization | Organization (partenaires) | Signature du partenariat |
+| Entite | Type schema.org | Declencheur |
+|--------|----------------|-------------|
+| Episodes | TVEpisode | Publication de l'episode |
+| Videos | VideoObject | Publication YouTube |
+| Intervenants | Person | Confirmation |
+| Partenaires | Organization + partner | Partenariat signe |
+| Evenements | Event | Evenement confirme |
 
 ---
 
 ## 5. Plan de balisage JSON-LD par type de page
 
-### 5.1 index.html — Organization + WebSite (global)
+### 5.1 index.html — Organization + WebSite (FONDATION MINIMALE)
 
 **A injecter dans `<head>` de index.html, en dur (pas via React) :**
 
@@ -392,10 +379,7 @@ Organization (NGO) : "Mouvement ECHO"
         "Transition ecologique",
         "Innovation sociale",
         "Serie documentaire",
-        "Engagement citoyen",
-        "Economie sociale et solidaire",
-        "Narration audiovisuelle",
-        "Apprentissage citoyen"
+        "Engagement citoyen"
       ],
       "sameAs": []
     },
@@ -414,9 +398,7 @@ Organization (NGO) : "Mouvement ECHO"
 }
 ```
 
-**Note :** le champ `sameAs` sera enrichi au fur et a mesure de la creation des profils externes (LinkedIn, Wikidata, IMDb, Google Business).
-
-### 5.2 /a-propos — AboutPage
+### 5.2 /a-propos — AboutPage (FONDATION MINIMALE)
 
 ```json
 {
@@ -435,7 +417,7 @@ Organization (NGO) : "Mouvement ECHO"
 }
 ```
 
-### 5.3 /serie — CreativeWorkSeries + TVSeason
+### 5.3 /serie — CreativeWorkSeries + TVSeason (ENRICHISSEMENT)
 
 ```json
 {
@@ -444,7 +426,7 @@ Organization (NGO) : "Mouvement ECHO"
   "@id": "https://mouvement-echo.fr/serie#series",
   "name": "ECHO",
   "alternateName": "ECHO — La Serie",
-  "description": "Serie documentaire-fiction de 33 episodes repartis en 3 saisons, melan documentaire et narration fictionnelle. Structure inspiree de la Divine Comedie de Dante : S1 Enfer (diagnostic), S2 Purgatoire (solutions), S3 Paradis (prospective).",
+  "description": "Serie documentaire de 33 episodes en 3 saisons : S1 Enfer (diagnostic des crises), S2 Purgatoire (solutions du terrain), S3 Paradis (futurs souhaitables). Structure inspiree de la Divine Comedie de Dante.",
   "numberOfSeasons": 3,
   "genre": ["Documentary", "Drama"],
   "inLanguage": "fr-FR",
@@ -458,41 +440,35 @@ Organization (NGO) : "Mouvement ECHO"
     {
       "@type": "TVSeason",
       "@id": "https://mouvement-echo.fr/serie#saison-1",
-      "name": "Saison 1 — Enfer",
+      "name": "Saison 1 — Enfer (diagnostic des crises)",
       "seasonNumber": 1,
       "numberOfEpisodes": 11,
       "description": "Diagnostic des dysfonctionnements systemiques. Decryptage des crises ecologiques, sociales et economiques.",
-      "partOfSeries": {
-        "@id": "https://mouvement-echo.fr/serie#series"
-      }
+      "partOfSeries": { "@id": "https://mouvement-echo.fr/serie#series" }
     },
     {
       "@type": "TVSeason",
       "@id": "https://mouvement-echo.fr/serie#saison-2",
-      "name": "Saison 2 — Purgatoire",
+      "name": "Saison 2 — Purgatoire (solutions du terrain)",
       "seasonNumber": 2,
       "numberOfEpisodes": 11,
       "description": "Solutions concretes du terrain. Documentation des acteurs innovants et des alternatives viables.",
-      "partOfSeries": {
-        "@id": "https://mouvement-echo.fr/serie#series"
-      }
+      "partOfSeries": { "@id": "https://mouvement-echo.fr/serie#series" }
     },
     {
       "@type": "TVSeason",
       "@id": "https://mouvement-echo.fr/serie#saison-3",
-      "name": "Saison 3 — Paradis",
+      "name": "Saison 3 — Paradis (futurs souhaitables)",
       "seasonNumber": 3,
       "numberOfEpisodes": 11,
       "description": "Prospective et imaginaires alternatifs. Projection vers les futurs souhaitables.",
-      "partOfSeries": {
-        "@id": "https://mouvement-echo.fr/serie#series"
-      }
+      "partOfSeries": { "@id": "https://mouvement-echo.fr/serie#series" }
     }
   ]
 }
 ```
 
-### 5.4 /faq — FAQPage
+### 5.4 /faq — FAQPage (ENRICHISSEMENT)
 
 ```json
 {
@@ -562,14 +538,16 @@ Organization (NGO) : "Mouvement ECHO"
       "name": "Qu'est-ce que ECHOLink ?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "ECHOLink est un reseau numerique de mise en relation des acteurs du changement developpe par Mouvement ECHO. Il permet aux spectateurs de la serie de devenir acteurs en se connectant avec des porteurs de projets, des associations et des entrepreneurs sociaux. Il est en cours de developpement."
+        "text": "ECHOLink est un reseau numerique de mise en relation des acteurs du changement developpe par Mouvement ECHO. Il permet aux spectateurs de la serie de se connecter avec des porteurs de projets, des associations et des entrepreneurs sociaux. Il est en cours de developpement."
       }
     }
   ]
 }
 ```
 
-### 5.5 Pages episodes (template — a utiliser quand un episode est publie)
+### 5.5 Pages episodes — template (AMPLIFICATION)
+
+**A utiliser uniquement quand un episode est publie ET a passe la porte de qualite (voir Bloc 9).**
 
 ```json
 {
@@ -578,39 +556,20 @@ Organization (NGO) : "Mouvement ECHO"
   "@id": "https://mouvement-echo.fr/serie/saison-1/episode-1",
   "name": "[Titre de l'episode]",
   "episodeNumber": 1,
-  "partOfSeason": {
-    "@id": "https://mouvement-echo.fr/serie#saison-1"
-  },
-  "partOfSeries": {
-    "@id": "https://mouvement-echo.fr/serie#series"
-  },
+  "partOfSeason": { "@id": "https://mouvement-echo.fr/serie#saison-1" },
+  "partOfSeries": { "@id": "https://mouvement-echo.fr/serie#series" },
   "description": "[Synopsis factuel en 2-3 phrases]",
   "datePublished": "[YYYY-MM-DD]",
   "duration": "[PTXXM]",
   "about": [
-    {
-      "@type": "DefinedTerm",
-      "name": "[Thematique 1]"
-    },
-    {
-      "@type": "DefinedTerm",
-      "name": "[Thematique 2]"
-    }
+    { "@type": "DefinedTerm", "name": "[Thematique 1]" },
+    { "@type": "DefinedTerm", "name": "[Thematique 2]" }
   ],
-  "director": {
-    "@type": "Person",
-    "name": "[Nom du realisateur]"
-  },
+  "director": { "@type": "Person", "name": "[Nom]" },
   "actor": [
-    {
-      "@type": "Person",
-      "name": "[Nom de l'intervenant]",
-      "jobTitle": "[Titre/Fonction]"
-    }
+    { "@type": "Person", "name": "[Nom]", "jobTitle": "[Fonction]" }
   ],
-  "productionCompany": {
-    "@id": "https://mouvement-echo.fr/#organization"
-  },
+  "productionCompany": { "@id": "https://mouvement-echo.fr/#organization" },
   "video": {
     "@type": "VideoObject",
     "name": "[Titre]",
@@ -623,31 +582,16 @@ Organization (NGO) : "Mouvement ECHO"
 }
 ```
 
-### 5.6 Breadcrumbs (sur chaque page)
+### 5.6 Breadcrumbs — template (ENRICHISSEMENT)
 
 ```json
 {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position": 1,
-      "name": "Accueil",
-      "item": "https://mouvement-echo.fr/"
-    },
-    {
-      "@type": "ListItem",
-      "position": 2,
-      "name": "[Nom de la section]",
-      "item": "https://mouvement-echo.fr/[section]"
-    },
-    {
-      "@type": "ListItem",
-      "position": 3,
-      "name": "[Nom de la page]",
-      "item": "https://mouvement-echo.fr/[section]/[page]"
-    }
+    { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://mouvement-echo.fr/" },
+    { "@type": "ListItem", "position": 2, "name": "[Section]", "item": "https://mouvement-echo.fr/[section]" },
+    { "@type": "ListItem", "position": 3, "name": "[Page]", "item": "https://mouvement-echo.fr/[section]/[page]" }
   ]
 }
 ```
@@ -658,10 +602,9 @@ Organization (NGO) : "Mouvement ECHO"
 |-------|--------|
 | **Ne jamais declarer ce qui n'existe pas** | Pas de TVEpisode sans episode publie, pas de Event sans evenement confirme |
 | **Coherence balisage/contenu visible** | Tout ce qui est dans le JSON-LD doit etre visible sur la page |
-| **Pas de numberOfEpisodes global** | Declarer numberOfEpisodes par saison (11) mais pas le total (33) tant que les episodes n'existent pas |
 | **Statut explicite** | Utiliser des descriptions qui incluent "en developpement" ou "en production" quand applicable |
-| **Validation systematique** | Tester chaque page avec Rich Results Test de Google et Schema Markup Validator avant deploiement |
-| **Enrichissement progressif** | Ajouter les entites au fur et a mesure de leur existence reelle |
+| **Validation systematique** | Tester chaque page avec Rich Results Test et Schema Markup Validator avant deploiement |
+| **Porte de qualite pour les episodes** | Ne jamais publier un TVEpisode + VideoObject avant validation qualitative (voir Bloc 9.4) |
 
 ---
 
@@ -669,20 +612,17 @@ Organization (NGO) : "Mouvement ECHO"
 
 ### 6.1 Principes de contenu citable
 
-| Principe | Explication | Exemple |
-|----------|-------------|---------|
-| **Definition-first** | Premiere phrase = definition complete de l'entite | "Mouvement ECHO est une association citoyenne francaise (loi 1901) fondee en 2024..." |
-| **Pas de pronoms orphelins** | Jamais "Nous sommes..." en premiere phrase | "Mouvement ECHO est..." (pas "Nous sommes un mouvement...") |
-| **Assertions auto-suffisantes** | Chaque paragraphe peut etre extrait seul | Pas de reference a "ci-dessus" ou "comme mentionne" |
-| **Faits > promesses** | Chiffres et dates plutot que superlatifs | "33 episodes sur 3 saisons" pas "une serie revolutionnaire" |
-| **Statuts explicites** | Transparence sur l'etat reel | "En developpement (lancement S1 prevu 2026)" |
-| **Densite factuelle** | Maximum de faits verifiables par phrase | Noms, dates, lieux, chiffres, statuts juridiques |
-| **Questions reelles en FAQ** | Formuler comme un humain le demanderait a un LLM | "Qu'est-ce que le Mouvement ECHO ?" pas "En savoir plus" |
-| **Snippets citation-ready** | Phrases pretes a etre citees par un LLM | "Selon Mouvement ECHO, la transition ecologique necessite trois leviers..." |
+| Principe | Explication |
+|----------|-------------|
+| **Definition-first** | Premiere phrase = definition complete de l'entite. "Mouvement ECHO est..." |
+| **Pas de pronoms orphelins** | Jamais "Nous sommes..." en premiere phrase |
+| **Assertions auto-suffisantes** | Chaque paragraphe peut etre extrait seul |
+| **Faits > promesses** | Chiffres et dates plutot que superlatifs |
+| **Statuts explicites** | Transparence sur l'etat reel ("en developpement") |
+| **Densite factuelle** | Maximum de faits verifiables par phrase |
+| **Questions reelles en FAQ** | Formuler comme un humain le demanderait a un LLM |
 
-### 6.2 Structure de contenu par type de page
-
-**Page /a-propos (page pivot) :**
+### 6.2 Structure de contenu — page /a-propos (page pivot)
 
 ```
 [Resume executif — 3 phrases max, en haut de page]
@@ -704,36 +644,10 @@ Organization (NGO) : "Mouvement ECHO"
   ## Contact
 ```
 
-**Page /serie :**
-
-```
-[Resume executif — fiche technique de la serie]
-[Fiche technique visible : format, episodes, saisons, statut]
-[Section par saison — 3 phrases factuelles chacune]
-[Les 10 thematiques transversales — liste avec 1 phrase par theme]
-```
-
-**Pages /cognisphere et /echolink :**
-
-```
-[Premiere phrase = definition complete "What is X"]
-[Comment ca marche — 3-5 phrases]
-[A qui c'est destine — 1-2 phrases]
-[Statut — en developpement / disponible]
-```
-
-**Page /faq :**
-
-```
-[Chaque reponse commence par une phrase complete autonome]
-[Questions formulees comme un utilisateur les poserait a un LLM]
-[Liens internes vers les pages concernees dans chaque reponse]
-```
-
 ### 6.3 Meta descriptions optimisees
 
-| Page | Meta description recommandee (max 155 car.) |
-|------|---------------------------------------------|
+| Page | Meta description (max 155 car.) |
+|------|-------------------------------|
 | Home | "Mouvement ECHO : association citoyenne produisant une serie documentaire de 33 episodes sur la transition ecologique. Serie, CogniSphere, ECHOLink." |
 | /a-propos | "Mouvement ECHO est une association loi 1901 fondee en 2024 par Jeremy Lasne. Mission, equipe, manifeste et vision du projet." |
 | /serie | "Serie documentaire ECHO : 33 episodes en 3 saisons inspirees de Dante (Enfer, Purgatoire, Paradis). Ecologie, justice sociale, prospective." |
@@ -744,9 +658,9 @@ Organization (NGO) : "Mouvement ECHO"
 | /mouvement | "Le Mouvement ECHO : 7 etapes pour passer de la conscience a l'action. Rejoignez une communaute citoyenne engagee." |
 | /contact | "Contactez Mouvement ECHO. Association loi 1901, Bougival (78). Formulaire de contact et informations." |
 
-### 6.4 Fichier llms.txt (bilingue)
+### 6.4 Fichier llms.txt (REPORTER A J+90)
 
-**Emplacement :** `frontend/public/llms.txt` (servi a la racine du domaine)
+**Emplacement futur :** `frontend/public/llms.txt`
 
 ```markdown
 # Mouvement ECHO
@@ -756,45 +670,25 @@ Organization (NGO) : "Mouvement ECHO"
 > ecologique et sociale, et developpe des plateformes numeriques
 > d'apprentissage et de mise en reseau.
 
-## Main links / Liens principaux
+## Liens principaux / Main links
 
-- [A propos / About](https://mouvement-echo.fr/a-propos): Presentation,
-  mission, equipe, manifeste
-- [La Serie / The Series](https://mouvement-echo.fr/serie): 33 episodes,
-  3 saisons (Enfer/Purgatoire/Paradis), structure inspiree de Dante
-- [CogniSphere](https://mouvement-echo.fr/cognisphere): Plateforme
-  d'apprentissage par repetition espacee / Spaced repetition learning
-  platform
-- [ECHOLink](https://mouvement-echo.fr/echolink): Reseau de mise en
-  relation des acteurs du changement / Changemaker networking platform
-- [FAQ](https://mouvement-echo.fr/faq): Questions frequentes /
-  Frequently asked questions
+- [A propos](https://mouvement-echo.fr/a-propos): Mission, equipe, manifeste
+- [La Serie](https://mouvement-echo.fr/serie): 33 episodes, 3 saisons
+- [CogniSphere](https://mouvement-echo.fr/cognisphere): Apprentissage par repetition espacee
+- [ECHOLink](https://mouvement-echo.fr/echolink): Reseau d'acteurs du changement
+- [FAQ](https://mouvement-echo.fr/faq): Questions frequentes
 - [Contact](https://mouvement-echo.fr/contact): Formulaire de contact
 
-## Key facts / Faits cles
+## Key facts
 
-- Legal status: French non-profit association (loi 1901)
+- Legal status: French non-profit (loi 1901)
 - Headquarters: Bougival, France (78380)
 - Founder: Jeremy Lasne
 - Series: 33 episodes, 3 seasons, in development
-- Themes: ecology, social justice, alternative economy, democracy,
-  education, health, culture, technology, international, spirituality
-- Platforms: CogniSphere (learning), ECHOLink (networking)
 - Launch date: March 2026
-
-## In English
-
-Mouvement ECHO is a French citizen-led non-profit association (loi 1901)
-founded in 2024 by Jeremy Lasne. It produces a 33-episode documentary
-series on ecological and social transition, structured in 3 seasons
-inspired by Dante's Divine Comedy: Season 1 (Inferno) diagnoses systemic
-dysfunctions, Season 2 (Purgatorio) documents real-world solutions,
-Season 3 (Paradiso) projects alternative futures. ECHO also develops
-CogniSphere, a spaced-repetition learning platform linked to the series
-content, and ECHOLink, a networking platform connecting changemakers.
 ```
 
-### 6.5 Fichier robots.txt mis a jour
+### 6.5 Fichier robots.txt mis a jour (FONDATION MINIMALE)
 
 ```
 User-agent: *
@@ -826,251 +720,238 @@ Allow: /
 Sitemap: https://mouvement-echo.fr/sitemap.xml
 ```
 
-### 6.6 Strategie de pre-rendu
-
-**Objectif :** servir du HTML statique avec contenu pour chaque page publique.
+### 6.6 Strategie de pre-rendu (ENRICHISSEMENT — quand le pilote est en production)
 
 **Solution recommandee :** pre-rendu statique au build (vite-plugin-prerender ou script Puppeteer post-build).
 
-**Pages a pre-rendre (12 pages) :**
-
-```
-/
-/a-propos
-/serie
-/mouvement
-/cognisphere
-/echolink
-/faq
-/soutenir
-/contact
-/partenaires
-/agenda
-/ressources
-```
-
-**Pages a NE PAS pre-rendre :**
-
-```
-/login, /register, /forgot-password, /reset-password/*
-/profil, /mes-donnees, /mon-compte/*
-/admin, /admin/*
-```
+**Pages a pre-rendre :** les 12 pages publiques (pas les pages auth/admin).
 
 **Verification post-deploiement :**
-
-Pour chaque URL pre-rendue, executer :
 ```bash
 curl -s https://mouvement-echo.fr/[path] | grep "Mouvement ECHO"
 ```
-Si la commande ne retourne rien, le pre-rendu ne fonctionne pas pour cette page.
+
+**Note :** le pre-rendu est important mais pas bloquant au lancement. Google finit par crawler les SPA. Les crawlers IA n'ont rien a chercher sur ECHO tant qu'il n'y a pas de source tierce. Reporter a la phase ENRICHISSEMENT.
 
 ### 6.7 Strategie video (YouTube + site)
 
-**Modele hybride valide :**
-
 | Element | Plateforme | Justification |
 |---------|-----------|---------------|
-| Episode complet | YouTube (upload natif) | Indexation YouTube, sous-titres auto, algorithme de decouverte |
-| Page episode sur le site | mouvement-echo.fr/serie/saison-1/episode-N | Hub semantique, JSON-LD TVEpisode, contenu textuel enrichi (synopsis, intervenants, ressources) |
-| Embed YouTube sur la page | Composant YouTubeEmbed existant | Le visiteur regarde sur le site, le SEO beneficie des deux |
+| Episode complet | YouTube (upload natif) | Indexation YouTube, sous-titres auto, algorithme |
+| Page episode sur le site | mouvement-echo.fr/serie/saison-1/episode-N | Hub semantique, JSON-LD, contenu textuel enrichi |
+| Embed YouTube sur la page | Composant YouTubeEmbed existant | Le visiteur regarde sur le site |
 
-**Regle :** chaque episode existe a la fois comme video YouTube ET comme page enrichie sur le site. Le site est le hub semantique, YouTube est le canal de distribution. Jamais YouTube seul sans page site.
+**Regle :** chaque episode existe a la fois comme video YouTube ET comme page enrichie sur le site. Jamais YouTube seul sans page site.
 
 ---
 
-## 7. Roadmap priorisee
+## 7. Roadmap priorisee et hierarchisee
 
-### 7.1 Quick wins (J-5 a J+7) — Avant et juste apres le lancement
+### 7.1 FONDATION MINIMALE (J-5 a J-0 — avant lancement — 8h)
 
-| # | Action | Type | Effort | Impact | Responsable |
-|---|--------|------|--------|--------|-------------|
-| 1 | Injecter JSON-LD Organization + WebSite dans index.html | Technique | 1h | CRITIQUE | Dev |
-| 2 | Creer la page /a-propos avec contenu factuel structure | Editorial + Dev | 3h | CRITIQUE | Fondateur + Dev |
-| 3 | Configurer Google Search Console pour mouvement-echo.fr | Technique | 30min | CRITIQUE | Fondateur |
-| 4 | Configurer Bing Webmaster Tools | Technique | 30min | CRITIQUE | Fondateur |
-| 5 | Mettre en place le pre-rendu statique des 12 pages publiques | Technique | 4h | BLOQUANT | Dev |
-| 6 | Ajouter le composant SEO sur Cognisphere, ECHOLink, Events, Resources | Technique | 1h | IMPORTANT | Dev |
-| 7 | Mettre a jour sitemap.xml avec toutes les pages publiques | Technique | 30min | IMPORTANT | Dev |
-| 8 | Mettre a jour robots.txt avec directives crawlers IA | Technique | 15min | IMPORTANT | Dev |
-| 9 | Ajouter JSON-LD FAQPage sur /faq | Technique | 1h | IMPORTANT | Dev |
-| 10 | Creer le profil LinkedIn Organisation "Mouvement ECHO" | Autorite | 30min | IMPORTANT | Fondateur |
-| 11 | Creer la fiche Google Business Profile | Autorite | 30min | IMPORTANT | Fondateur |
-| 12 | Creer et deployer llms.txt bilingue | Technique | 30min | NICE-TO-HAVE | Dev |
-| 13 | Ajouter meta canonical sur toutes les pages publiques | Technique | 1h | MODERE | Dev |
-| 14 | Ajouter JSON-LD CreativeWorkSeries + TVSeason sur /serie | Technique | 1h | IMPORTANT | Dev |
-| 15 | Ajouter des badges "en developpement" sur les sections non livrees | Editorial | 1h | IMPORTANT | Fondateur |
-| 16 | Publier le premier post LinkedIn depuis le compte orga | Autorite | 1h | IMPORTANT | Fondateur |
+**Voir Bloc 0 pour le detail des 7 actions.** C'est la seule phase obligatoire.
 
-### 7.2 Chantiers structurants (J+7 a J+90)
+### 7.2 ENRICHISSEMENT (quand le pilote est en production)
 
-| # | Action | Type | Effort | Impact | Declencheur |
-|---|--------|------|--------|--------|-------------|
-| 17 | Creer la fiche IMDb "in development" pour la serie ECHO | Autorite | 2h | FORT | Immediatement apres lancement |
-| 18 | Creer un stub Wikidata Q-item pour Mouvement ECHO | Autorite | 2h | FORT | Apres au moins 1 source tierce |
-| 19 | Obtenir 3-5 articles de presse en ligne | Autorite | 20h (5h/sem × 4 sem) | CRITIQUE | Communique de lancement |
-| 20 | Publier 1 article thought leadership LinkedIn/semaine | Autorite | 2h/sem | FORT | Immediat |
-| 21 | Publier 1 article Medium/Substack/mois | Autorite | 4h/mois | MODERE | Apres lancement |
-| 22 | Passer le repo GitHub en public (apres audit secrets) | Autorite | 2h (audit + README) | MODERE | J+2 |
-| 23 | Ajouter breadcrumbs (composant + JSON-LD BreadcrumbList) | Technique | 3h | MODERE | J+14 |
-| 24 | Mettre a jour les premieres phrases de chaque page (definition-first) | Editorial | 4h | FORT | J+7 |
-| 25 | Enrichir la FAQ avec 15-20 questions optimisees LLM | Editorial | 4h | FORT | J+14 |
-| 26 | Formaliser le partenariat EICAR (mention croisee site-a-site) | Autorite | Variable | FORT | Des que possible |
-| 27 | Se faire inviter sur 2-3 podcasts francophone | Autorite | 5h (pitch + enregistrement) | FORT | J+30 |
+| # | Action | Effort | Declencheur |
+|---|--------|--------|-------------|
+| 8 | JSON-LD FAQPage sur /faq | 1h | Apres fondation |
+| 9 | JSON-LD CreativeWorkSeries + TVSeason sur /serie | 1h | Apres fondation |
+| 10 | Pre-rendu statique des 12 pages publiques | 4h | Quand pilote en production |
+| 11 | Breadcrumbs (composant + JSON-LD BreadcrumbList) | 3h | J+14 |
+| 12 | Mettre a jour les premieres phrases de chaque page (definition-first) | 4h | J+7 |
+| 13 | Enrichir la FAQ avec 15-20 questions optimisees | 4h | J+14 |
+| 14 | Badges "en developpement" visibles partout | 1h | J-0 |
+| 15 | Profil LinkedIn Organisation | 30min | Quand il y a quelque chose a poster |
 
-### 7.3 Paris experimentaux (J+30 a J+18m)
+### 7.3 AMPLIFICATION (quand le premier episode est publie)
 
-| # | Action | Type | Effort | Impact potentiel | Risque |
-|---|--------|------|--------|-----------------|--------|
-| 28 | Creer les 10 pages piliers thematiques | Editorial + Dev | 30h total | TRES FORT a terme | Coquilles vides si pas assez de contenu |
-| 29 | Creer les pages episodes (au rythme bi-mensuel) | Editorial + Dev | 2h/episode | FORT cumulatif | Depend de la production |
-| 30 | Creer les parcours CogniSphere publics | Editorial + Dev | 20h+ | MODERE | Depend du dev de CogniSphere |
-| 31 | Proposer une conference TEDx ou ChangeNOW | Autorite | 10h (preparation) | TRES FORT si accepte | Incertain |
-| 32 | Soumettre a Wikipedia (article) | Autorite | 5h | TRES FORT | Risque de suppression si notoriete insuffisante |
-| 33 | Experimentier les formats "citation-ready snippets" par thematique | Editorial | 10h | INCONNU | Experimental, pas de donnees fiables |
-| 34 | Monitoring GEO systematique (protocole hebdomadaire) | Mesure | 1h/sem | INFORMATIF | Mesure artisanale, non fiable |
+| # | Action | Effort | Declencheur |
+|---|--------|--------|-------------|
+| 16 | Premiere page TVEpisode avec VideoObject | 2h | Publication episode 1 |
+| 17 | llms.txt bilingue deploye a la racine | 30min | J+90 minimum |
+| 18 | Creer la fiche IMDb "in development" | 2h | Apres lancement |
+| 19 | Google Business Profile | 30min | Apres lancement |
+| 20 | Pages piliers thematiques (les 3 premieres) | 10h | Apres 3e episode |
+| 21 | Parcours CogniSphere publics | 20h | Quand CogniSphere est pret |
 
-### 7.4 Calendrier synthetique
+### 7.4 AUTORITE (quand des sources tierces existent)
+
+| # | Action | Effort | Declencheur |
+|---|--------|--------|-------------|
+| 22 | Obtenir 3-5 articles de presse en ligne | 20h | Communique de lancement |
+| 23 | Thought leadership LinkedIn (1/semaine) | 2h/sem | Immediat |
+| 24 | Se faire inviter sur 2-3 podcasts | 5h | J+30 |
+| 25 | Fiche Wikidata Q-item | 2h | Quand au moins 1 source tierce |
+| 26 | Formaliser le partenariat EICAR (mention croisee) | Variable | Des que possible |
+| 27 | Passer le repo GitHub en public | 2h | Apres audit secrets |
+| 28 | Soumettre a Wikipedia | 5h | Quand notoriete suffisante |
+
+### 7.5 Calendrier synthetique
 
 ```
-J-5 → J-0  : Quick wins techniques (#1-9) + page /a-propos (#2)
+J-5 → J-0  : FONDATION MINIMALE (#1-7, 8h de travail)
 J-0        : LANCEMENT (20 mars 2026)
-J+1 → J+7  : Quick wins autorite (#10-11, 16) + llms.txt (#12)
-J+7 → J+14 : Breadcrumbs (#23) + FAQ enrichie (#25) + IMDb (#17)
-J+14 → J+30: Premieres phrases (#24) + presse (#19) + thought leadership (#20)
-J+30 → J+60: Pages thematiques (#28, les 3 premieres) + GitHub public (#22)
-J+60       : Premier episode S1 prevu → premiere page TVEpisode (#29)
-J+60 → J+90: Parcours CogniSphere (#30) + podcasts (#27) + Wikidata (#18)
-J+90+      : Enrichissement continu au rythme des episodes
+J+1 → J+60 : PRODUIRE LE PREMIER EPISODE (priorite absolue)
+J+7 → J+14 : ENRICHISSEMENT (si temps disponible, en parallele)
+J+60       : Premier episode publie → AMPLIFICATION
+J+60+      : Enrichissement continu au rythme des episodes
+J+90+      : AUTORITE (quand sources tierces existent)
 ```
 
 ---
 
 ## 8. Recommandation argumentee finale avec arbitrages
 
-### 8.1 L'arbitrage central : technique vs autorite vs contenu
-
-La strategie repose sur trois piliers interdependants. Voici l'arbitrage de priorite :
-
-```
-AUTORITE EXTERNE (preuves, backlinks, mentions)
-     ↑
-     | Alimente
-     |
-CONTENU REEL (episodes, intervenants, ressources)
-     ↑
-     | Necessite
-     |
-FONDATION TECHNIQUE (pre-rendu, JSON-LD, sitemap)
-```
-
-**L'ordre est imperatif :** sans la fondation technique, le contenu est invisible. Sans contenu reel, l'autorite est impossible a construire. Sans autorite, le contenu n'est pas cite.
-
-**Le facteur limitant actuel n'est ni la technique ni l'editorial — c'est la production des episodes.** Toute la strategie SEO/GEO a long terme repose sur l'hypothese que la Saison 1 sera effectivement produite et publiee au rythme bi-mensuel a partir de J+60.
-
-### 8.2 Les 5 decisions strategiques cles
+### 8.1 Les 5 decisions strategiques cles
 
 **Decision 1 : Pre-rendu statique, pas SSR**
 
-Arbitrage : le pre-rendu statique au build est la solution la plus simple, la plus rapide a implementer et la plus compatible avec Firebase Hosting. Le SSR dynamique (Remix, Next.js) necessiterait une refonte architecturale. On garde le SPA React + pre-rendu statique. Si les limites du pre-rendu deviennent bloquantes (contenu dynamique trop frequent), on migrera vers SSR — mais pas avant J+180.
+Le pre-rendu statique au build est la solution la plus simple et la plus compatible avec Firebase Hosting. Pas de refonte architecturale. Reporter a la phase ENRICHISSEMENT.
 
-**Decision 2 : JSON-LD en dur dans index.html pour Organization/WebSite, via composant React pour le reste**
+**Decision 2 : JSON-LD en dur pour Organization/WebSite, via React pour le reste**
 
-Arbitrage : le JSON-LD Organization et WebSite est global (meme sur toutes les pages) et doit etre present meme si React ne s'hydrate pas. Il va dans `<head>` de index.html en dur. Les JSON-LD specifiques par page (FAQPage, CreativeWorkSeries, TVEpisode, BreadcrumbList) sont generes par un composant React et seront captures par le pre-rendu statique. Cela centralise la logique dans le code React tout en garantissant que l'entite Organisation est toujours presente.
+Le JSON-LD Organization et WebSite va dans `<head>` de index.html en dur. Les JSON-LD specifiques par page sont generes par un composant React et seront captures par le pre-rendu statique.
 
 **Decision 3 : Niche semantique, pas requetes generiques**
 
-Arbitrage : ECHO ne peut pas rivaliser avec Wikipedia, ADEME, Reporterre sur "transition ecologique". Mais ECHO peut posseder l'intersection "serie documentaire + transition ecologique + engagement citoyen + apprentissage". Toute la strategie de contenu cible cette niche. Les requetes generiques viendront naturellement avec l'autorite — mais on ne les cible pas activement.
+ECHO ne peut pas rivaliser avec Wikipedia, ADEME, Reporterre sur "transition ecologique". ECHO possede l'intersection "serie documentaire + transition ecologique + engagement citoyen + apprentissage". Les requetes generiques viendront avec l'autorite.
 
 **Decision 4 : YouTube pour la distribution, site pour la semantique**
 
-Arbitrage : les episodes seront sur YouTube (visibilite, algorithme, sous-titres) ET auront une page dediee sur mouvement-echo.fr (JSON-LD, contenu textuel enrichi, maillage interne). Le site reste le hub semantique central. Cette strategie hybride maximise la visibilite (YouTube) et l'autorite semantique (site).
+Episodes sur YouTube (visibilite, algorithme, sous-titres) ET page dediee sur mouvement-echo.fr (JSON-LD, contenu textuel enrichi, maillage interne).
 
 **Decision 5 : Transparence radicale sur le statut du projet**
 
-Arbitrage : le site doit dire clairement "en developpement" la ou c'est le cas. Pas de balisage JSON-LD pour ce qui n'existe pas. Pas de page partenaire sans partenaire confirme. Pas d'episode sans episode produit. La transparence est un signal de credibilite plus fort que la promesse. Un projet qui dit "voila ce que nous construisons, voila ou nous en sommes" est plus citable qu'un projet qui pretend etre plus avance qu'il ne l'est.
+Le site dit clairement "en developpement" la ou c'est le cas. Pas de balisage JSON-LD pour ce qui n'existe pas. La transparence est un signal de credibilite plus fort que la promesse.
 
-### 8.3 Les 3 metriques de succes
+### 8.2 Le vrai indicateur de succes a 6 mois
 
-A 90 jours, ECHO aura reussi sa strategie SEO/GEO si :
+**"Combien de personnes ont regarde un episode ECHO ET fait une action ensuite (don, inscription, partage, contact partenaire) ?"**
 
-1. **Toutes les pages publiques sont indexees dans Google et Bing** (verifiable dans Search Console et Bing Webmaster Tools)
-2. **Au moins 3 domaines externes mentionnent "Mouvement ECHO" avec un lien** (articles presse, podcasts, partenaires)
-3. **La requete "Mouvement ECHO" dans Perplexity retourne une reponse factuellement correcte citant mouvement-echo.fr** (test manuel)
+C'est le seul indicateur qui prouve simultanement que le contenu existe, qu'il est bon, qu'il cree de l'engagement, et que la plateforme convertit.
 
-Si ces 3 conditions sont remplies, la fondation est posee. Le reste est une question de temps et de contenu.
+Un evaluateur ChangeNOW ne regardera pas le JSON-LD. Il regardera : combien d'episodes produits, combien de vues, combien d'actions post-visionnage.
 
-### 8.4 Le risque existentiel (rappel)
+Les 3 metriques SEO/GEO sont des **indicateurs de fondation** (pas de croissance) :
 
-Le risque principal n'est pas technique. Il est editorial. Si les episodes ne sont pas produits, le graphe semantique reste vide, l'autorite ne se construit pas, et le site reste un projet "en intention" — bien balise mais creux. La recommandation strategique la plus importante de ce document est : **produire le premier episode est plus important que toute optimisation technique.**
+1. Toutes les pages publiques indexees dans Google et Bing
+2. Au moins 3 domaines externes mentionnent "Mouvement ECHO" avec un lien
+3. La requete "Mouvement ECHO" dans Perplexity retourne une reponse factuelle citant mouvement-echo.fr
 
-### 8.5 Ce que ce document ne couvre pas
+### 8.3 L'arbitrage central
 
-- **Strategie de contenu detaillee** (redaction complete des pages) — a faire en phase d'implementation
-- **Configuration technique detaillee** (code exact du pre-rendu, composants React) — a faire en phase de developpement
-- **Strategie reseaux sociaux** (calendrier editorial, formats, frequence) — hors scope SEO/GEO
-- **Strategie de financement** (modele economique, partenariats commerciaux) — hors scope
-- **Mesure d'impact social** (indicateurs de transformation sociale) — hors scope
+```
+AUTORITE EXTERNE (preuves, backlinks, mentions)
+     ↑ Alimente
+CONTENU REEL (episodes, intervenants, ressources)
+     ↑ Necessite
+FONDATION TECHNIQUE (JSON-LD, sitemap, robots.txt)
+```
+
+Sans la fondation technique, le contenu est invisible.
+Sans contenu reel, l'autorite est impossible.
+Sans autorite, le contenu n'est pas cite.
+
+**Le facteur limitant actuel n'est ni la technique ni l'editorial — c'est la production des episodes.**
+
+---
+
+## 9. Verdicts et verites inconfortables (rounds 11-13)
+
+### 9.1 Le SEO/GEO est-il le bon cadre pour ECHO ?
+
+**C'est la bonne strategie, mais a la mauvaise dose.** Ce document est une encyclopedie de reference pour 18 mois, alors qu'ECHO a besoin d'une ordonnance de 7 actions pour les 5 prochains jours — et le reste de son energie doit aller a produire un episode pilote.
+
+Le SEO/GEO ne generera quasiment rien en trafic dans les 12 premiers mois. Le cout de la fondation technique est tres faible (~8h). Le vrai risque n'est pas de faire le SEO/GEO — c'est de croire que c'est suffisant.
+
+### 9.2 Le cadre GEO est-il premature ?
+
+**Oui pour la decouverte (personne ne cherche ECHO dans un LLM). Non pour la description (quand un LLM parlera d'ECHO, la qualite du contenu source determinera la qualite de la reponse).**
+
+Le llms.txt et le protocole de test GEO hebdomadaire sont reportes a J+90. Le contenu definition-first et la FAQ factuelle restent en phase FONDATION car ils servent aussi les visiteurs humains.
+
+### 9.3 La structure Dante est-elle un atout ou un handicap ?
+
+**Atout narratif puissant, facteur neutre pour les machines si on l'accompagne de sa traduction fonctionnelle.** Ne jamais ecrire "Saison 1 Enfer" sans ajouter "(diagnostic des crises)". Le pitch rapide est fonctionnel, le recit approfondi utilise Dante.
+
+### 9.4 Porte de qualite pour les episodes
+
+**Regle critique :** ne jamais publier une page TVEpisode avec VideoObject tant que l'episode n'a pas passe un seuil de validation qualitative.
+
+**Protocole :**
+1. L'episode sort sur YouTube en "non repertorie"
+2. Montre a 10-20 personnes de confiance
+3. Retours collectes
+4. Si consensus positif → page balisee publiee
+5. Si "pas pret" → retravail avant de brancher la machine SEO
+
+Le JSON-LD est un amplificateur. On ne branche l'amplificateur que quand on est sur de ce qu'on amplifie. Un episode mediocre bien balise est pire que pas d'episode.
+
+### 9.5 Le risque de "SEO theater"
+
+Le risque existe : perfectionner l'emballage pendant que le produit n'existe pas. Les 34 actions de la roadmap complete representent ~80-100 heures. C'est pourquoi le document est restructure en 4 phases avec seulement 7 actions obligatoires avant le lancement.
+
+**Test de realite :** un episode pilote qui circule dans les reseaux militants fait plus pour le SEO/GEO que toute l'infrastructure semantique de ce document.
+
+### 9.6 La verite inconfortable : le probleme du fondateur solo
+
+Tout repose sur une seule personne. La vision, la production, le developpement, les partenariats, le contenu, la strategie. La question qu'on n'a jamais posee dans 13 rounds de strategie SEO/GEO : **qui va faire tout ca ?**
+
+Les 7 actions de fondation minimale sont faisables (8h). Mais produire un episode pilote de qualite professionnelle, c'est des semaines de travail : recherche, reperage, contacts intervenants, tournage, montage, sound design, etalonnage, sous-titrage.
+
+Le risque reel est que la strategie SEO/GEO devienne un refuge confortable — parce que c'est plus rassurant de peaufiner un sitemap que de se confronter a la difficulte de produire un documentaire.
+
+**Recommandation la plus importante de tout ce document :** trouver 1-2 co-equipiers qui prennent en charge des pans entiers du projet (realisateur/monteur, community manager) pour que le fondateur se concentre sur ce que lui seul peut faire — la vision, les contacts, le recit.
+
+Si ECHO est encore un projet solo en septembre 2026, toute la strategie SEO/GEO du monde n'y changera rien.
+
+### 9.7 Ce que ce document ne couvre pas
+
+- Strategie de contenu detaillee (redaction des pages) — a faire en phase d'implementation
+- Configuration technique detaillee (code exact) — a faire en phase de developpement
+- Strategie reseaux sociaux (calendrier editorial) — hors scope
+- Strategie de financement — hors scope
+- Mesure d'impact social — hors scope
+- Recrutement de l'equipe — hors scope mais critique
 
 ---
 
 ## Annexes
 
-### A. Niveaux de certitude utilises dans ce document
-
-| Niveau | Signification |
-|--------|---------------|
-| **CERTAIN** | Documente par Google/Bing/schema.org, consensus de l'industrie SEO |
-| **PROBABLE** | Observe de maniere coherente, non documente officiellement |
-| **EXPERIMENTAL** | Emergent, peu de donnees, potentiellement impactant |
-| **SPECULATIF** | Hypothese non testee, risque de changement rapide |
-
-### B. Outils recommandes (budget minimal)
+### A. Outils recommandes (budget minimal)
 
 | Outil | Usage | Cout |
 |-------|-------|------|
 | Google Search Console | Indexation, erreurs, impressions | Gratuit |
-| Bing Webmaster Tools | Indexation Bing (alimente ChatGPT/Copilot) | Gratuit |
-| Google Alerts | Surveillance des mentions "Mouvement ECHO" | Gratuit |
+| Bing Webmaster Tools | Indexation Bing (ChatGPT/Copilot) | Gratuit |
+| Google Alerts | Surveillance des mentions | Gratuit |
 | Rich Results Test (Google) | Validation JSON-LD | Gratuit |
 | Schema Markup Validator | Validation schema.org | Gratuit |
-| Ubersuggest (version gratuite) | Suivi basique des positions | Gratuit |
 | PageSpeed Insights | Performance web | Gratuit |
 
-### C. Protocole de test GEO hebdomadaire
+### B. Protocole de test GEO (a demarrer a J+90)
 
-1. Ouvrir une session de navigation privee
-2. Poser ces 4 requetes sur ChatGPT, Perplexity, Google AI Overview et Claude :
+1. Navigation privee, 4 requetes sur ChatGPT, Perplexity, Google AI Overview, Claude :
    - "Qu'est-ce que le Mouvement ECHO ?"
    - "Serie documentaire transition ecologique France"
    - "Projets citoyens innovants transition ecologique 2026"
    - "Association documentaire ecologie engagement citoyen"
-3. Pour chaque reponse, documenter dans un tableur :
-   - Date, plateforme, requete exacte
-   - ECHO mentionne : oui/non
-   - Si oui : quelle information est citee, source indiquee
-   - Si non : quels projets sont cites a la place
-4. Comparer avec la semaine precedente
+2. Documenter : date, plateforme, ECHO mentionne oui/non, information citee, source
+3. Comparer avec la semaine precedente
 
-### D. Checklist de deploiement J-0
+### C. Checklist de deploiement J-0 (fondation minimale uniquement)
 
 - [ ] JSON-LD Organization + WebSite dans index.html
 - [ ] Page /a-propos creee avec contenu factuel
-- [ ] Pre-rendu statique des 12 pages publiques
-- [ ] Composant SEO ajoute sur Cognisphere, ECHOLink, Events, Resources
 - [ ] sitemap.xml mis a jour avec toutes les URLs publiques
 - [ ] robots.txt mis a jour avec directives crawlers IA
 - [ ] Meta canonical sur toutes les pages publiques
-- [ ] Badges "en developpement" visibles sur les sections non livrees
-- [ ] llms.txt deploye a la racine
+- [ ] Composant SEO ajoute sur CogniSphere, ECHOLink, Events, Resources
 - [ ] Google Search Console configure et sitemap soumis
 - [ ] Bing Webmaster Tools configure et sitemap soumis
-- [ ] Verification curl : chaque page pre-rendue retourne du HTML avec contenu
 - [ ] Validation JSON-LD via Rich Results Test
-- [ ] Test : curl -s mouvement-echo.fr/a-propos | grep "association"
-- [ ] Test : curl -s mouvement-echo.fr/serie | grep "33 episodes"
-- [ ] Test : curl -s mouvement-echo.fr/faq | grep "Mouvement ECHO"
 
 ---
 
-*Document genere le 15 mars 2026. A reviser tous les 30 jours en fonction de l'avancement du projet.*
+*Document genere le 15 mars 2026 (v1.0), mis a jour le 15 mars 2026 (v2.0 — integration des verdicts rounds 11-13). A reviser tous les 30 jours en fonction de l'avancement du projet.*
