@@ -1,14 +1,41 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
 declare function gtag(...args: unknown[]): void;
 
 const CONSENT_KEY = 'echo-cookie-consent';
 const CONSENT_DURATION = 13 * 30 * 24 * 60 * 60 * 1000; // ~13 months
+const REOPEN_EVENT = 'echo:reopen-cookie-panel';
+const CONSENT_CHANGE_EVENT = 'echo:cookie-consent-changed';
 
 interface ConsentData {
     choice: 'accepted' | 'refused' | 'essential-only';
     timestamp: number;
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function getConsentChoice(): ConsentData['choice'] | null {
+    try {
+        const raw = localStorage.getItem(CONSENT_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (parsed.timestamp && Date.now() - parsed.timestamp > CONSENT_DURATION) {
+            localStorage.removeItem(CONSENT_KEY);
+            return null;
+        }
+        return parsed.choice;
+    } catch {
+        localStorage.removeItem(CONSENT_KEY);
+        return null;
+    }
+}
+
+/**
+ * Returns true when the user has explicitly accepted analytics cookies.
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export function hasAnalyticsConsent(): boolean {
+    return getConsentChoice() === 'accepted';
 }
 
 function getConsent(): ConsentData | null {
@@ -29,18 +56,65 @@ function getConsent(): ConsentData | null {
 
 function saveConsent(choice: ConsentData['choice']) {
     localStorage.setItem(CONSENT_KEY, JSON.stringify({ choice, timestamp: Date.now() }));
+    window.dispatchEvent(new CustomEvent(CONSENT_CHANGE_EVENT, { detail: choice }));
 }
 
+/**
+ * @deprecated Use openCookiePanel() instead — it reopens the CMP without a full reload.
+ */
 // eslint-disable-next-line react-refresh/only-export-components
 export function resetCookieConsent() {
     localStorage.removeItem(CONSENT_KEY);
     window.location.reload();
 }
 
+/**
+ * Reopens the cookie consent panel so the user can change preferences (RGPD art. 7.3).
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export function openCookiePanel() {
+    window.dispatchEvent(new CustomEvent(REOPEN_EVENT));
+}
+
+/**
+ * Hook to subscribe to consent changes. Returns the current consent choice
+ * and re-renders whenever the user updates their preference.
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export function useCookieConsent(): ConsentData['choice'] | null {
+    const [choice, setChoice] = useState<ConsentData['choice'] | null>(() => getConsentChoice());
+
+    useEffect(() => {
+        const handler = (e: Event) => {
+            const detail = (e as CustomEvent).detail;
+            setChoice(detail);
+        };
+        window.addEventListener(CONSENT_CHANGE_EVENT, handler);
+        return () => window.removeEventListener(CONSENT_CHANGE_EVENT, handler);
+    }, []);
+
+    return choice;
+}
+
 export function CookieBanner() {
     const [visible, setVisible] = useState(() => !getConsent());
     const [showCustomize, setShowCustomize] = useState(false);
-    const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
+    const [analyticsEnabled, setAnalyticsEnabled] = useState(() => {
+        const consent = getConsent();
+        return consent?.choice === 'accepted';
+    });
+
+    // Listen for reopen requests (from footer "Gérer mes cookies" button)
+    useEffect(() => {
+        const handler = () => {
+            const consent = getConsent();
+            setAnalyticsEnabled(consent?.choice === 'accepted');
+            setShowCustomize(false);
+            setVisible(true);
+        };
+        window.addEventListener(REOPEN_EVENT, handler);
+        return () => window.removeEventListener(REOPEN_EVENT, handler);
+    }, []);
 
     useEffect(() => {
         const consent = getConsent();
@@ -49,18 +123,18 @@ export function CookieBanner() {
         }
     }, []);
 
-    const acceptAll = () => {
+    const acceptAll = useCallback(() => {
         saveConsent('accepted');
         try { gtag('consent', 'update', { analytics_storage: 'granted' }); } catch { /* gtag not loaded */ }
         setVisible(false);
-    };
+    }, []);
 
-    const refuseAll = () => {
+    const refuseAll = useCallback(() => {
         saveConsent('refused');
         setVisible(false);
-    };
+    }, []);
 
-    const saveCustom = () => {
+    const saveCustom = useCallback(() => {
         if (analyticsEnabled) {
             saveConsent('accepted');
             try { gtag('consent', 'update', { analytics_storage: 'granted' }); } catch { /* gtag not loaded */ }
@@ -68,7 +142,7 @@ export function CookieBanner() {
             saveConsent('essential-only');
         }
         setVisible(false);
-    };
+    }, [analyticsEnabled]);
 
     if (!visible) return null;
 
