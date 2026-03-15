@@ -14,7 +14,7 @@ export function LegalNotice() {
           Mentions Légales
         </h1>
         <p className="text-gray-400 mb-12">
-          Dernière mise à jour : 11 mars 2026
+          Dernière mise à jour : 15 mars 2026
         </p>
 
         {/* Éditeur */}
@@ -47,6 +47,10 @@ export function LegalNotice() {
                 mouvement.echo.france@gmail.com
               </a>
             </li>
+            <li>
+              <strong className="text-white">Téléphone :</strong>{' '}
+              +33 6 00 00 00 00 [À COMPLÉTER]
+            </li>
           </ul>
         </section>
 
@@ -56,8 +60,8 @@ export function LegalNotice() {
             2. Directeur de la publication
           </h2>
           <p className="text-gray-300 leading-relaxed">
-            Les co-fondateurs et représentants de l'Association
-            Mouvement ECHO sont M. Jeremy Lasne et M. Eddyason Koffi.
+            <strong className="text-white">Directeur de la publication :</strong>{' '}
+            Jérémy Music
           </p>
         </section>
 
