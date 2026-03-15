@@ -369,5 +369,11 @@ _Aucune spec en cours._
 | 37 | ~~🟡 RGPD Audit — Écart 13 : Clause mineurs dans CGU~~ | Recommandé | ✅ Done (section Protection des mineurs, 15 ans+) |
 | 38 | ~~🟡 RGPD Audit — Écart 14 : Mention HelloAsso dans PC + notice sur /soutenir~~ | Recommandé | ✅ Done (PC + notice redirect Support.tsx) |
 | 39 | Ajouter le plan en trois phases du Mouvement ECHO sur la page Mouvement | Moyenne | À faire |
-| 40 | Ajouter des sous-menus au menu principal pointant directement vers les sections de chaque page | Moyenne | À faire |
-| 41 | Ajouter une vue d'ensemble des différentes sections/parties de chaque page sur la page d'accueil | Moyenne | À faire |
+| 40 | ~~Ajouter des sous-menus au menu principal pointant directement vers les sections de chaque page~~ | Moyenne | ✅ Done (dropdown hover desktop + accordion mobile, 4 liens avec children: Série/Mouvement/Cognisphère/ECHOLink) |
+| 41 | ~~Ajouter une vue d'ensemble des différentes sections/parties de chaque page sur la page d'accueil~~ | Moyenne | ✅ Done (sous-liens → dans les 3 piliers Home: Série, ECHOSystem, Plateformes) |
+| 42 | Arbre vivant interactif : arbre qui grandit avec des feuilles (membres) et branches (partenaires) qui rejoignent ECHO | Basse | À faire — idée créative, lien avec métaphore pommier Mouvement |
+| 43 | Page de références culturelles (style Popcorn Garage) : films, livres, œuvres en lien avec ECHO, Dante, transition écologique | Basse | À faire — contenu éditorial riche, nécessite curation |
+| 44 | ~~RGPD Audit v2 — Accents contact form~~ | Important | ✅ Done (données, traitées, conformément, confidentialité) |
+| 45 | ~~RGPD Audit v2 — Accents page 404~~ | Mineur | ✅ Done (été, déplacée, à) |
+| 46 | ~~RGPD Audit v2 — Délai droits 3 mois → 1 mois dans PC~~ | Mineur | ✅ Done (Art. 12 RGPD, prorogeable 2 mois) |
+| 47 | ~~Scroll-to-hash : navigation anchor (#section) depuis sous-menus et liens piliers~~ | Moyenne | ✅ Done (ScrollToTop gère hash avec offset header 100px + délai lazy-load) |
