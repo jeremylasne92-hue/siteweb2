@@ -114,6 +114,7 @@ frontend/src/
 | Mentions Légales | `/mentions-legales` | ✅ Complète (RGPD) |
 | CGU | `/cgu` | ✅ Complète (RGPD) |
 | Admin Exports | `/admin/exports` | ✅ Complète |
+| Admin Membres | `/admin/members` | ✅ Complète (édition profils, geocoding backfill) |
 
 ---
 
@@ -154,6 +155,7 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-15 | Carte partenaires/membres : pins SVG bleu de Klein (#002FA7) pour membres (même style que partenaires), fond Dark Matter avec labels, légende 5 catégories (Membres/Experts/Financiers/Audiovisuel/Éducation). CityAutocomplete fix (addressdetails+countrycodes au lieu de featuretype). Photos équipe Mouvement objectPosition par membre. Admin members page + PATCH endpoint + backfill geocoding. Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-15 | Audit RGPD complet : 14 écarts corrigés en 7 groupes parallèles. #25 YouTubeEmbed façade + useCookieConsent hook. #26 openCookiePanel via custom event (sans reload). #27 Notice reCAPTCHA v3 login+register. #28 Checkbox CGU/PC obligatoire register avec liens. #29 Emails/phones partenaires supprimés des vues publiques + API sanitized. #30+32+34+38 PC complétée (15 sections : reCAPTCHA, HelloAsso, APD, durées conservation, sécurité). #33 Mentions légales corrigées (directeur unique + téléphone). #37 Clause mineurs CGU (15 ans+). #35 Page MyData.tsx (export JSON + suppression compte). #31 RoPA (10 traitements). #36 Procédure violation données. #38 Notice HelloAsso /soutenir. Niveau MAJEUR. | Claude Code (Opus 4.6) |
 | 2026-03-15 | Système KPIs BI Analytics : 14 KPIs en 4 catégories (Acquisition, Engagement, Conversion, Partenaires). Extension AnalyticsEventCreate (+6 champs optionnels). 3 index MongoDB. Endpoint admin dashboard GET /api/analytics/admin/dashboard (15 requêtes parallèles asyncio.gather). useAnalytics enrichi (session_id UUID sessionStorage, UTM capture, referrer, trackPageView). usePageTracking → page_view interne. 8 CTAs instrumentés sur 5 pages. AdminAnalytics.tsx (StatCards, sélecteur période 7/14/30j). 5 tests dashboard + 128 backend total. Subagent-Driven Development (7 tasks). Niveau MAJEUR. | Claude Code (Opus 4.6) |
 | 2026-03-14 | Refonte section L'Émergence (Mouvement) : layout vertical custom EmergenceSection (pousse + encadré ambition + tronc). Image Tronc.png ajoutée. Texte ambition restructuré en accroche serif + développement avec mots-clés colorés (coopération, respect du vivant, absolument nécessaire, croissance pérenne, alliance robuste, nouveau récit sociétal, nouveau contrat social). Bordure ambre gauche + fond glassmorphism. Suppression OrganicArrow SVG + keyframes CSS inutilisés (grow-vine, draw-line). Composants réordonnés avant export pour compatibilité Vite HMR. Niveau HOTFIX. | Claude Code (Opus 4.6) |
@@ -212,6 +214,7 @@ frontend/src/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-15 | 🟢 HOTFIX | Carte membres (pins Klein blue, légende 5 catégories, Dark Matter, CityAutocomplete fix, photos équipe) | ~30min | Claude Code (Opus 4.6) |
 | 2026-03-15 | 🔴 MAJEUR | Audit RGPD complet (14 écarts, 25 fichiers, 7 groupes agents parallèles) | ~30min | Claude Code (Opus 4.6) |
 | 2026-03-15 | 🔴 MAJEUR | KPI BI Analytics (14 KPIs, 15 fichiers, 7 tasks subagent-driven) | ~25min | Claude Code (Opus 4.6) |
 | 2026-03-14 | 🟢 HOTFIX | Refonte L'Émergence Mouvement (layout vertical, encadré ambition, Tronc.png, suppression SVG arrows) | ~20min | Claude Code (Opus 4.6) |
