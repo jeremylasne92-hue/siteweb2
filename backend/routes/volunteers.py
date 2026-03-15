@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from email_service import send_email, send_volunteer_confirmation, send_volunteer_interview, send_volunteer_accepted, send_volunteer_rejected
 from core.config import settings
 from utils.rate_limit import anonymize_ip
+from utils.geocode import geocode_city
 from routes.members import auto_seed_member_profile, deactivate_member_profile
 import csv
 import io
@@ -59,6 +60,13 @@ async def submit_volunteer_application(
         message=data.message,
         ip_address=anonymize_ip(client_ip),
     )
+
+    # Geocode city → GPS coordinates (non-blocking, failure is acceptable)
+    coords = await geocode_city(data.city)
+    if coords:
+        application.latitude = coords[0]
+        application.longitude = coords[1]
+
     await db.volunteer_applications.insert_one(application.model_dump())
     logger.info(f"New volunteer application from {data.name}")
 
