@@ -349,20 +349,20 @@ _Aucune spec en cours._
 | 22 | ~~Refonte section "L'Émergence" page Mouvement~~ | Moyenne | ✅ Done (layout vertical : pousse + encadré ambition bordure ambre avec accroche serif + tronc, mots-clés colorés, OrganicArrow supprimé) |
 | 23 | Nettoyer les données de test avant publication (événements, comptes partenaires, bénévoles, candidatures, profils membres de test) | Haute | À faire avant le 20 mars 2026 |
 | 24 | ~~Système KPIs BI : UTM tracking, session ID (sessionStorage), page_view interne, events CTA, index MongoDB, endpoint admin dashboard, page AdminAnalytics.tsx~~ | Haute | ✅ Done (7 commits, 15 fichiers, 128 tests backend + 17 frontend, branche feat/kpi-bi-analytics mergée) |
-| 25 | 🔴 RGPD Audit — Écart 1 : Vérifier/implémenter blocage iframe YouTube avant consentement CMP (façade vidéo) | Critique | À faire — Art. 82 Loi I&L |
-| 26 | 🔴 RGPD Audit — Écart 2 : Vérifier que "Gérer mes cookies" dans le footer rouvre le panneau CMP | Critique | À faire — Art. 7(3) RGPD |
-| 27 | 🔴 RGPD Audit — Écart 3 : Ajouter mention reCAPTCHA v3 visible sous bouton connexion (ou remplacer par Cloudflare Turnstile) | Critique | À faire — Art. 13 RGPD |
-| 28 | 🟠 RGPD Audit — Écart 4 : Ajouter case CGU/PC obligatoire non pré-cochée + liens cliquables dans login/inscription | Important | À faire — Art. 7 RGPD |
-| 29 | 🟠 RGPD Audit — Écart 5 : Supprimer fiches test partenaires + masquer emails directs (bouton "Contacter") | Important | À faire — Art. 5 RGPD |
-| 30 | 🟠 RGPD Audit — Écart 6 : Compléter Politique de confidentialité (contact, reCAPTCHA, HelloAsso, APD belge, sécurité, délai 3 mois) | Important | À faire — Art. 13 RGPD |
-| 31 | 🟠 RGPD Audit — Écart 7 : Créer le registre des traitements RoPA (document interne, tableur) | Important | À faire — Art. 30 RGPD |
-| 32 | 🟠 RGPD Audit — Écart 8 : Ajouter durée conservation données contact (3 ans) dans la PC | Important | À faire — Art. 5(1)(e) RGPD |
-| 33 | 🟡 RGPD Audit — Écart 9 : Corriger mentions légales (directeur publication unique + téléphone) | Recommandé | À faire — Art. 6 LCEN |
-| 34 | 🟡 RGPD Audit — Écart 10 : Ajouter section Sécurité des données dans la PC | Recommandé | À faire — Art. 32 RGPD |
-| 35 | 🟡 RGPD Audit — Écart 11 : Créer page "Mes données" espace membre (export JSON, suppression, préférences) | Recommandé | À faire — Art. 12-22 RGPD |
-| 36 | 🟡 RGPD Audit — Écart 12 : Rédiger procédure interne violation de données (72h CNIL) | Recommandé | À faire — Art. 33-34 RGPD |
-| 37 | 🟡 RGPD Audit — Écart 13 : Ajouter clause mineurs dans CGU + procédure suppression -15 ans | Recommandé | À faire — Art. 8 RGPD |
-| 38 | 🟡 RGPD Audit — Écart 14 : Ajouter mention HelloAsso dans PC + info avant redirection sur /soutenir | Recommandé | À faire — Art. 28 RGPD |
+| 25 | ~~🔴 RGPD Audit — Écart 1 : Blocage iframe YouTube avant consentement CMP (façade vidéo)~~ | Critique | ✅ Done (YouTubeEmbed + façade, useCookieConsent hook) |
+| 26 | ~~🔴 RGPD Audit — Écart 2 : "Gérer mes cookies" dans le footer rouvre le panneau CMP~~ | Critique | ✅ Done (openCookiePanel via custom event) |
+| 27 | ~~🔴 RGPD Audit — Écart 3 : Mention reCAPTCHA v3 visible sous bouton connexion~~ | Critique | ✅ Done (notice login + register forms) |
+| 28 | ~~🟠 RGPD Audit — Écart 4 : Case CGU/PC obligatoire non pré-cochée + liens cliquables~~ | Important | ✅ Done (checkbox register avec liens /cgu et /politique-de-confidentialite) |
+| 29 | ~~🟠 RGPD Audit — Écart 5 : Masquer emails directs partenaires~~ | Important | ✅ Done (emails/phones supprimés des vues publiques, API sanitized) |
+| 30 | ~~🟠 RGPD Audit — Écart 6 : Compléter Politique de confidentialité~~ | Important | ✅ Done (reCAPTCHA, HelloAsso, APD belge, délai 3 mois, 15 sections) |
+| 31 | ~~🟠 RGPD Audit — Écart 7 : Registre des traitements RoPA~~ | Important | ✅ Done (docs/rgpd/registre-traitements-ropa.md, 10 traitements) |
+| 32 | ~~🟠 RGPD Audit — Écart 8 : Durée conservation données contact dans la PC~~ | Important | ✅ Done (5 durées dans section PC) |
+| 33 | ~~🟡 RGPD Audit — Écart 9 : Corriger mentions légales~~ | Recommandé | ✅ Done (directeur publication unique + téléphone placeholder) |
+| 34 | ~~🟡 RGPD Audit — Écart 10 : Section Sécurité des données dans la PC~~ | Recommandé | ✅ Done (7 mesures techniques) |
+| 35 | ~~🟡 RGPD Audit — Écart 11 : Page "Mes données" espace membre~~ | Recommandé | ✅ Done (MyData.tsx + export JSON + suppression compte) |
+| 36 | ~~🟡 RGPD Audit — Écart 12 : Procédure violation de données~~ | Recommandé | ✅ Done (docs/rgpd/procedure-violation-donnees.md) |
+| 37 | ~~🟡 RGPD Audit — Écart 13 : Clause mineurs dans CGU~~ | Recommandé | ✅ Done (section Protection des mineurs, 15 ans+) |
+| 38 | ~~🟡 RGPD Audit — Écart 14 : Mention HelloAsso dans PC + notice sur /soutenir~~ | Recommandé | ✅ Done (PC + notice redirect Support.tsx) |
 | 39 | Ajouter le plan en trois phases du Mouvement ECHO sur la page Mouvement | Moyenne | À faire |
 | 40 | Ajouter des sous-menus au menu principal pointant directement vers les sections de chaque page | Moyenne | À faire |
 | 41 | Ajouter une vue d'ensemble des différentes sections/parties de chaque page sur la page d'accueil | Moyenne | À faire |
