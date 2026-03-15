@@ -6,6 +6,7 @@ import { Input } from '../ui/Input';
 import { CityAutocomplete } from '../ui/CityAutocomplete';
 import { StepProgress } from '../ui/StepProgress';
 import { API_URL } from '../../config/api';
+import { sanitizePhone } from '../../utils/validation';
 
 const SKILL_CATEGORIES: Record<string, string[]> = {
     'Création audiovisuelle': ['Vidéo', 'Montage', 'Réalisation', 'Production', "Jeu d'acteur", 'Voix off', 'Mise en scène', 'Sound design'],
@@ -127,8 +128,10 @@ export function VolunteerApplicationForm() {
             const nameInput = form.querySelector('input[name="name"]') as HTMLInputElement;
             const emailInput = form.querySelector('input[name="email"]') as HTMLInputElement;
             const cityInput = form.querySelector('input[name="city"]') as HTMLInputElement;
+            const phoneInput = form.querySelector('input[name="phone"]') as HTMLInputElement;
             if (!nameInput?.checkValidity()) { nameInput?.reportValidity(); return; }
             if (!emailInput?.checkValidity()) { emailInput?.reportValidity(); return; }
+            if (phoneInput?.value && !phoneInput.checkValidity()) { phoneInput.reportValidity(); return; }
             if (!cityInput?.checkValidity()) { cityInput?.reportValidity(); return; }
         }
         if (step === 2) {
@@ -185,7 +188,19 @@ export function VolunteerApplicationForm() {
                 <div className="grid grid-cols-1 gap-5">
                     <Input label="Nom complet" name="name" placeholder="Votre prénom et nom" required minLength={2} maxLength={100} />
                     <Input label="Email de contact" name="email" type="email" placeholder="votre@email.com" required />
-                    <Input label="Téléphone (optionnel)" name="phone" type="tel" placeholder="06 12 34 56 78" />
+                    <Input
+                        label="Téléphone (optionnel)"
+                        name="phone"
+                        type="tel"
+                        placeholder="06 12 34 56 78"
+                        maxLength={20}
+                        pattern="[+]?[\d\s.\-()]{6,20}"
+                        title="Numéro de téléphone valide (chiffres, espaces, tirets)"
+                        onInput={(e) => {
+                            const input = e.currentTarget;
+                            input.value = sanitizePhone(input.value);
+                        }}
+                    />
                     <CityAutocomplete label="Ville" name="city" placeholder="Commencez à taper votre ville..." required />
                 </div>
                 <div className="text-sm text-neutral-400 p-4 border border-white/5 rounded-md bg-white/5 mt-2">

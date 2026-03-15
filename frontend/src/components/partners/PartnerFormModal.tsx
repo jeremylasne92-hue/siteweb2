@@ -8,6 +8,7 @@ import { MapPin, Upload, ChevronRight, ChevronLeft, CheckCircle2, CalendarDays, 
 import { ApplicationSuccessCTA } from '../forms/ApplicationSuccessCTA';
 import { PARTNERS_API } from '../../config/api';
 import { BOOKING_URL } from '../../config/booking';
+import { sanitizePhone } from '../../utils/validation';
 
 interface PartnerFormModalProps {
     isOpen: boolean;
@@ -259,7 +260,22 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
 
             <div className="grid grid-cols-2 gap-4">
                 <Input label="Ville" name="city" required value={formData.city} onChange={handleInputChange} />
-                <Input label="Code postal" name="postal_code" required value={formData.postal_code} onChange={handleInputChange} />
+                <Input
+                    label="Code postal"
+                    name="postal_code"
+                    required
+                    value={formData.postal_code}
+                    onChange={handleInputChange}
+                    maxLength={5}
+                    pattern="\d{5}"
+                    title="Code postal à 5 chiffres"
+                    inputMode="numeric"
+                    onInput={(e) => {
+                        const input = e.currentTarget;
+                        input.value = input.value.replace(/\D/g, '').slice(0, 5);
+                        handleInputChange({ target: { name: 'postal_code', value: input.value } } as React.ChangeEvent<HTMLInputElement>);
+                    }}
+                />
             </div>
 
             {(formData.latitude !== 0) && (
@@ -280,7 +296,21 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
 
             <div className="grid grid-cols-2 gap-4">
                 <Input label="Email de contact *" type="email" name="contact_email" required value={formData.contact_email} onChange={handleInputChange} />
-                <Input label="Téléphone" type="tel" name="contact_phone" value={formData.contact_phone} onChange={handleInputChange} />
+                <Input
+                    label="Téléphone"
+                    type="tel"
+                    name="contact_phone"
+                    value={formData.contact_phone}
+                    onChange={handleInputChange}
+                    maxLength={20}
+                    pattern="[+]?[\d\s.\-()]{6,20}"
+                    title="Numéro de téléphone valide (chiffres, espaces, tirets)"
+                    onInput={(e) => {
+                        const input = e.currentTarget;
+                        input.value = sanitizePhone(input.value);
+                        handleInputChange({ target: { name: 'contact_phone', value: input.value } } as React.ChangeEvent<HTMLInputElement>);
+                    }}
+                />
             </div>
 
             <Input label="Site Web" type="url" name="website_url" value={formData.website_url} onChange={handleInputChange} />
