@@ -7,3 +7,4 @@ export const EVENTS_API = `${API_URL}/events`;
 export const EPISODES_API = `${API_URL}/episodes`;
 export const CANDIDATURES_API = `${API_URL}/candidatures`;
 export const MEMBERS_API = `${API_URL}/members`;
+export const ANALYTICS_API = `${API_URL}/analytics`;

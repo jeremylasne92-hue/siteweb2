@@ -32,7 +32,7 @@ export class ErrorBoundary extends Component<Props, State> {
                         Une erreur est survenue
                     </h1>
                     <p className="text-echo-textMuted mb-8 max-w-md">
-                        Nous sommes desoles, quelque chose s'est mal passe.
+                        Nous sommes désolés, quelque chose s'est mal passé.
                         Veuillez recharger la page.
                     </p>
                     <button

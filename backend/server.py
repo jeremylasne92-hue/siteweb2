@@ -118,6 +118,14 @@ async def startup_indexes():
     except Exception as e:
         logger.warning(f"Member profiles index creation: {e}")
 
+    # Analytics query indexes
+    try:
+        await db.analytics_events.create_index([("category", 1), ("action", 1)])
+        await db.analytics_events.create_index("path")
+        await db.analytics_events.create_index("session_id")
+    except Exception as e:
+        logger.warning(f"Analytics index creation: {e}")
+
     logger.info("Rate limit and retention indexes ensured")
 
 

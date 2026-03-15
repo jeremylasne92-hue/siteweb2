@@ -3,8 +3,11 @@ import { Network, Brain, Share2, Coins, Lock, Puzzle, Users, Handshake, QrCode, 
 import { Button } from '../components/ui/Button';
 
 import { TechApplicationForm } from '../components/forms/TechApplicationForm';
+import { useAnalytics } from '../hooks/useAnalytics';
 
 export function ECHOLink() {
+    const { trackEvent } = useAnalytics();
+
     return (
         <div className="flex flex-col min-h-screen bg-echo-darker text-white">
             {/* Hero */}
@@ -34,7 +37,7 @@ export function ECHOLink() {
                                 <Share2 className="mr-2" size={20} /> Découvrir la plateforme
                             </Button>
                         </a>
-                        <a href="#candidature">
+                        <a href="#candidature" onClick={() => trackEvent('cta_click', 'echosystem_candidature')}>
                             <Button variant="secondary" size="lg">
                                 <Lock className="mr-2" size={18} /> Rejoindre l'équipe
                             </Button>

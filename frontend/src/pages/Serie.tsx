@@ -6,6 +6,7 @@ import { SEO } from '../components/seo/SEO';
 import { ScenaristApplicationForm } from '../components/forms/ScenaristApplicationForm';
 import { useAuthStore } from '../features/auth/store';
 import { API_URL } from '../config/api';
+import { useAnalytics } from '../hooks/useAnalytics';
 
 type Episode = {
     title: string;
@@ -136,6 +137,7 @@ export function Serie() {
     const [activeSeason, setActiveSeason] = useState(1);
     const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null);
     const [showScenaristForm, setShowScenaristForm] = useState(false);
+    const { trackEvent } = useAnalytics();
     const [myOptins, setMyOptins] = useState<{ season: number; episode: number }[]>([]);
     const [optinLoading, setOptinLoading] = useState(false);
     const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -342,7 +344,7 @@ export function Serie() {
                         </p>
                         <Button
                             className="bg-[#D4AF37] text-[#0A0A0A] hover:bg-[#FFD700] hover:shadow-[0_0_24px_rgba(212,175,55,0.6)] px-8 py-4 text-sm font-bold tracking-widest uppercase rounded-lg transition-all transform hover:scale-105"
-                            onClick={() => setShowScenaristForm(true)}
+                            onClick={() => { trackEvent('cta_click', 'serie_candidature_scenariste'); setShowScenaristForm(true); }}
                         >
                             Rejoindre l'aventure
                         </Button>

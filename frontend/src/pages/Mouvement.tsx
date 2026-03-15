@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { SEO } from '../components/seo/SEO';
 import { VolunteerApplicationForm } from '../components/forms/VolunteerApplicationForm';
+import { useAnalytics } from '../hooks/useAnalytics';
 
 // Images locales — croissance de l'arbre (7 étapes)
 const TREE_STAGES = {
@@ -143,6 +144,7 @@ function EmergenceSection() {
 
 export function Mouvement() {
     const [showVolunteerForm, setShowVolunteerForm] = useState(false);
+    const { trackEvent } = useAnalytics();
 
     return (
         <div className="bg-stone-950 text-stone-200 font-sans selection:bg-amber-500/30">
@@ -316,7 +318,7 @@ export function Mouvement() {
                                 variant="primary"
                                 size="lg"
                                 className="rounded-full px-8 bg-amber-600 hover:bg-amber-700 text-white border-none shadow-lg shadow-amber-900/20"
-                                onClick={() => setShowVolunteerForm(true)}
+                                onClick={() => { trackEvent('cta_click', 'mouvement_rejoindre'); setShowVolunteerForm(true); }}
                             >
                                 Rejoindre le Mouvement
                             </Button>
