@@ -273,18 +273,18 @@ export function Mouvement() {
                     {/* Main Team */}
                     <div className="flex flex-wrap justify-center gap-6 sm:gap-8 md:gap-12 mb-12 sm:mb-16">
                         {[
-                            { name: "Jérémy Lasne", role: "Cofondateur", photo: "/images/Photo équipe/jeremy-lasne.jpg" },
+                            { name: "Jérémy Lasne", role: "Cofondateur", photo: "/images/Photo équipe/jeremy-lasne 2.png" },
                             { name: "Eddyason Koffi", role: "Cofondateur", photo: "/images/Photo équipe/eddyason-koffi.jpg" },
                             { name: "Déborah Prévaud", role: "Responsable des partenariats", photo: "/images/Photo équipe/deborah-prevaud.jpg" },
                             { name: "Clément Grandmontagne", role: "Réalisateur", photo: "/images/Photo équipe/clement-grandmontagne.jpg" },
-                            { name: "Thierry Korutos-Chatam", role: "Responsable des partenariats", photo: "/images/Photo équipe/thierry-korutos-chatam.jpg" },
+                            { name: "Thierry Korutos-Chatam", role: "Responsable des partenariats", photo: "/images/Photo équipe/thierry-korutos-chatam 2.png" },
                         ].map((member, i) => (
                             <div key={i} className="flex flex-col items-center group w-28 sm:w-32 md:w-36">
                                 <div className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-stone-800 group-hover:border-amber-500 transition-colors mb-3 sm:mb-4">
                                     <img
                                         src={member.photo}
                                         alt={member.name}
-                                        className="w-full h-full object-cover object-top"
+                                        className="w-full h-full object-cover object-[50%_20%]"
                                         onError={(e) => {
                                             const target = e.currentTarget;
                                             target.style.display = 'none';
