@@ -30,6 +30,7 @@ const AdminEvents = lazy(() => import('./pages/AdminEvents'));
 const AdminExports = lazy(() => import('./pages/AdminExports'));
 const AdminCandidatures = lazy(() => import('./pages/AdminCandidatures'));
 const AdminVolunteers = lazy(() => import('./pages/AdminVolunteers'));
+const AdminMembers = lazy(() => import('./pages/AdminMembers'));
 const AdminAnalytics = lazy(() => import('./pages/AdminAnalytics'));
 const MyPartnerAccount = lazy(() => import('./pages/MyPartnerAccount'));
 const MyData = lazy(() => import('./pages/MyData'));
@@ -95,6 +96,7 @@ function AppRoutes() {
       <Route path="/admin/candidatures" element={<ProtectedRoute requiredRole="admin"><AdminCandidatures /></ProtectedRoute>} />
       <Route path="/admin/benevoles" element={<ProtectedRoute requiredRole="admin"><AdminVolunteers /></ProtectedRoute>} />
       <Route path="/admin/analytics" element={<ProtectedRoute requiredRole="admin"><AdminAnalytics /></ProtectedRoute>} />
+      <Route path="/admin/membres" element={<ProtectedRoute requiredRole="admin"><AdminMembers /></ProtectedRoute>} />
       <Route path="/profil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route path="/mes-donnees" element={<ProtectedRoute><MyData /></ProtectedRoute>} />
       <Route path="/mon-compte/partenaire" element={<ProtectedRoute><MyPartnerAccount /></ProtectedRoute>} />

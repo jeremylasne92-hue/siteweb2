@@ -82,6 +82,13 @@ export default function AdminDashboard() {
             badgeColor: '#10B981',
         },
         {
+            title: 'Membres',
+            description: 'Gérer les profils et statuts des membres',
+            icon: <Users size={24} />,
+            href: '/admin/membres',
+            active: true,
+        },
+        {
             title: 'Événements',
             description: 'Créer et gérer les événements publics',
             icon: <Calendar size={24} />,
