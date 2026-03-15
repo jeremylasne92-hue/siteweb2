@@ -1,11 +1,17 @@
 import { useState, useRef, useEffect } from 'react';
 import { MapPin } from 'lucide-react';
 
-interface CitySuggestion {
+interface NominatimResult {
     display_name: string;
-    name: string;
     lat: string;
     lon: string;
+    address?: Record<string, string>;
+}
+
+interface CityDisplay {
+    city: string;
+    detail: string;
+    raw: NominatimResult;
 }
 
 interface CityAutocompleteProps {
@@ -17,11 +23,13 @@ interface CityAutocompleteProps {
     onChange?: (city: string) => void;
 }
 
-const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
+function extractCity(addr: Record<string, string>): string {
+    return addr.city || addr.town || addr.village || addr.municipality || '';
+}
 
 export function CityAutocomplete({ label, name, placeholder, required, value: controlledValue, onChange }: CityAutocompleteProps) {
     const [query, setQuery] = useState(controlledValue || '');
-    const [suggestions, setSuggestions] = useState<CitySuggestion[]>([]);
+    const [suggestions, setSuggestions] = useState<CityDisplay[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -45,29 +53,31 @@ export function CityAutocomplete({ label, name, placeholder, required, value: co
         }
         setIsLoading(true);
         try {
-            const params = new URLSearchParams({
-                q,
-                country: 'France',
-                format: 'json',
-                limit: '5',
-                addressdetails: '1',
-                featuretype: 'city',
-            });
-            const res = await fetch(`${NOMINATIM_URL}?${params}`, {
-                headers: { 'User-Agent': 'MouvementECHO/1.0' },
-            });
+            const res = await fetch(
+                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&addressdetails=1&countrycodes=fr`,
+                { headers: { 'User-Agent': 'MouvementECHO/1.0' } },
+            );
             if (res.ok) {
-                const data: CitySuggestion[] = await res.json();
-                // Filter to only show relevant results and deduplicate by name
+                const data: NominatimResult[] = await res.json();
+                // Extract city from each result, deduplicate
                 const seen = new Set<string>();
-                const filtered = data.filter(item => {
-                    const cityName = item.name || item.display_name.split(',')[0].trim();
-                    if (seen.has(cityName.toLowerCase())) return false;
-                    seen.add(cityName.toLowerCase());
-                    return true;
-                });
-                setSuggestions(filtered);
-                setIsOpen(filtered.length > 0);
+                const results: CityDisplay[] = [];
+                for (const item of data.slice(0, 8)) {
+                    const addr = item.address || {};
+                    const city = extractCity(addr);
+                    if (!city) continue;
+                    const key = city.toLowerCase();
+                    if (seen.has(key)) continue;
+                    seen.add(key);
+                    const dept = addr.county || addr.state || '';
+                    results.push({
+                        city,
+                        detail: dept ? `${city}, ${dept}` : city,
+                        raw: item,
+                    });
+                }
+                setSuggestions(results.slice(0, 5));
+                setIsOpen(results.length > 0);
             }
         } catch {
             // Silently fail — user can still type manually
@@ -85,10 +95,9 @@ export function CityAutocomplete({ label, name, placeholder, required, value: co
         debounceRef.current = setTimeout(() => searchCities(val), 300);
     };
 
-    const handleSelect = (suggestion: CitySuggestion) => {
-        const cityName = suggestion.name || suggestion.display_name.split(',')[0].trim();
-        setQuery(cityName);
-        onChange?.(cityName);
+    const handleSelect = (item: CityDisplay) => {
+        setQuery(item.city);
+        onChange?.(item.city);
         setIsOpen(false);
         setSuggestions([]);
     };
@@ -126,7 +135,7 @@ export function CityAutocomplete({ label, name, placeholder, required, value: co
                                 className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-neutral-300 hover:bg-white/5 hover:text-white transition-colors text-left"
                             >
                                 <MapPin className="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
-                                <span className="truncate">{s.display_name}</span>
+                                <span className="truncate">{s.detail}</span>
                             </button>
                         </li>
                     ))}

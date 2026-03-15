@@ -20,7 +20,7 @@ const categoryColors: Record<PartnerCategory, string> = {
     financier: '#10B981',    // Green
     audiovisuel: '#3B82F6',  // Blue
     education: '#8B5CF6',    // Purple
-    membre: '#DC143C',       // Red
+    membre: '#002FA7',       // Klein Blue
 };
 
 // Create custom SVG markers
@@ -42,20 +42,6 @@ const createCustomIcon = (category: PartnerCategory) => {
         popupAnchor: [0, -40],
     });
 };
-
-const memberIcon = L.divIcon({
-    className: 'member-map-marker',
-    html: `<div style="
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: #3B82F6;
-        box-shadow: 0 0 8px 4px rgba(59,130,246,0.5);
-    "></div>`,
-    iconSize: [10, 10],
-    iconAnchor: [5, 5],
-    popupAnchor: [0, -8],
-});
 
 export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerClick, members = [] }) => {
     const { trackEvent } = useAnalytics();
@@ -83,7 +69,7 @@ export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerCli
             >
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                    url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" // Dark theme tile layer
+                    url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?language=fr"
                 />
 
                 {partners.filter(p => p.latitude && p.longitude).map((partner) => (
@@ -137,13 +123,16 @@ export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerCli
                     <Marker
                         key={`member-${i}`}
                         position={[member.latitude, member.longitude]}
-                        icon={memberIcon}
+                        icon={iconMap.membre}
                     >
                         <Popup className="dark-popup">
-                            <div className="min-w-[140px] p-2 bg-echo-darker text-white">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.6)]" />
-                                    <span className="text-sm text-neutral-300">Membre à {member.city}</span>
+                            <div className="min-w-[200px] p-2 bg-echo-darker text-white">
+                                <h3 className="font-serif font-bold text-base leading-tight mb-2">
+                                    Membre ECHO
+                                </h3>
+                                <div className="flex items-center gap-1 text-xs text-gray-400">
+                                    <MapPin className="w-3 h-3" />
+                                    <span>{member.city}</span>
                                 </div>
                             </div>
                         </Popup>
@@ -154,12 +143,24 @@ export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerCli
             {/* Map Legend */}
             <div className="absolute bottom-4 right-4 z-[1000] bg-[#121212]/90 border border-white/10 rounded-lg px-3 py-2 text-xs">
                 <div className="flex items-center gap-2 mb-1.5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_4px_rgba(59,130,246,0.5)]" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#002FA7]" />
                     <span className="text-neutral-400">Membres</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 mb-1.5">
                     <div className="w-2.5 h-2.5 rounded-full bg-[#D4AF37]" />
-                    <span className="text-neutral-400">Partenaires</span>
+                    <span className="text-neutral-400">Experts</span>
+                </div>
+                <div className="flex items-center gap-2 mb-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#10B981]" />
+                    <span className="text-neutral-400">Financiers</span>
+                </div>
+                <div className="flex items-center gap-2 mb-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#3B82F6]" />
+                    <span className="text-neutral-400">Audiovisuel</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#8B5CF6]" />
+                    <span className="text-neutral-400">Éducation</span>
                 </div>
             </div>
 
