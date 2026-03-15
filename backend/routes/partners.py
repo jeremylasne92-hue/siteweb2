@@ -230,7 +230,31 @@ async def apply_partnership(
     existing_user = await db.users.find_one({"email": contact_email})
     if existing_user:
         raise HTTPException(status_code=400, detail="Un compte existe déjà avec cet email")
-        
+
+    # Validate logo and parse thematics BEFORE creating user (prevent orphan accounts)
+    logo_url = None
+    logo_contents = None
+    if logo:
+        # Validate content type
+        if logo.content_type not in LOGO_ALLOWED_TYPES:
+            raise HTTPException(status_code=400, detail="Type de fichier non autorisé. Formats acceptés: JPEG, PNG, WebP")
+        # Validate file size (max 2 Mo)
+        logo_contents = await logo.read()
+        if len(logo_contents) > LOGO_MAX_SIZE:
+            raise HTTPException(status_code=400, detail="Le fichier ne doit pas dépasser 2 Mo")
+        # Validate real image content via Pillow (prevents malicious files)
+        try:
+            img = Image.open(io.BytesIO(logo_contents))
+            img.verify()
+        except Exception:
+            raise HTTPException(status_code=400, detail="Le fichier n'est pas une image valide")
+
+    # Parse thematics
+    try:
+        thematics_list = json.loads(thematics)
+    except Exception:
+        thematics_list = []
+
     # Create the user account with PARTNER role
     user_doc = User(
         username=name,
@@ -239,45 +263,29 @@ async def apply_partnership(
         role=UserRole.PARTNER
     )
     await db.users.insert_one(user_doc.model_dump())
-    
-    # Handle logo upload with validation
-    logo_url = None
-    if logo:
-        # Validate content type
-        if logo.content_type not in LOGO_ALLOWED_TYPES:
-            raise HTTPException(status_code=400, detail="Type de fichier non autorisé. Formats acceptés: JPEG, PNG, WebP")
-        # Validate file size (max 2 Mo)
-        contents = await logo.read()
-        if len(contents) > LOGO_MAX_SIZE:
-            raise HTTPException(status_code=400, detail="Le fichier ne doit pas dépasser 2 Mo")
-        # Validate real image content via Pillow (prevents malicious files)
-        try:
-            img = Image.open(io.BytesIO(contents))
-            img.verify()
-        except Exception:
-            raise HTTPException(status_code=400, detail="Le fichier n'est pas une image valide")
-        await logo.seek(0)
-        
-        upload_dir = "uploads/partners/logos"
-        os.makedirs(upload_dir, exist_ok=True)
-        # Sanitize filename: use UUID to prevent path traversal
-        ext = os.path.splitext(logo.filename or "logo.png")[1].lower()
-        if ext not in [".jpg", ".jpeg", ".png", ".webp"]:
-            ext = ".png"
-        safe_filename = f"{user_doc.id}_{uuid_mod.uuid4().hex[:8]}{ext}"
-        file_path = os.path.join(upload_dir, safe_filename)
-        
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(logo.file, buffer)
-            
-        logo_url = f"/api/uploads/partners/logos/{safe_filename}"
-        
-    # Parse thematics
+
+    # Save logo file (after user creation, since we need user_doc.id)
     try:
-        thematics_list = json.loads(thematics)
-    except Exception:
-        thematics_list = []
-        
+        if logo and logo_contents:
+            from pathlib import Path as FilePath
+            upload_dir = FilePath(__file__).parent.parent / "uploads" / "partners" / "logos"
+            upload_dir.mkdir(parents=True, exist_ok=True)
+            ext = os.path.splitext(logo.filename or "logo.png")[1].lower()
+            if ext not in [".jpg", ".jpeg", ".png", ".webp"]:
+                ext = ".png"
+            safe_filename = f"{user_doc.id}_{uuid_mod.uuid4().hex[:8]}{ext}"
+            file_path = upload_dir / safe_filename
+
+            with open(file_path, "wb") as buffer:
+                buffer.write(logo_contents)
+
+            logo_url = f"/api/uploads/partners/logos/{safe_filename}"
+    except Exception as e:
+        # Rollback user creation if logo save fails
+        await db.users.delete_one({"id": user_doc.id})
+        logger.error(f"Logo save failed, rolled back user creation: {e}")
+        raise HTTPException(status_code=500, detail="Erreur lors de l'enregistrement du logo")
+
     # Create the Partner record
     slug = slugify.slugify(name)
     # Check slug uniqueness
@@ -465,22 +473,28 @@ async def update_my_partner_account(
     
     # Handle logo upload with validation
     if logo:
-        allowed_types = ["image/jpeg", "image/png", "image/webp", "image/svg+xml", "image/gif"]
-        if logo.content_type not in allowed_types:
-            raise HTTPException(status_code=400, detail=f"Type de fichier non autorisé. Formats acceptés: JPEG, PNG, WebP, SVG, GIF")
+        if logo.content_type not in LOGO_ALLOWED_TYPES:
+            raise HTTPException(status_code=400, detail="Type de fichier non autorisé. Formats acceptés: JPEG, PNG, WebP")
         contents = await logo.read()
-        if len(contents) > 5 * 1024 * 1024:
-            raise HTTPException(status_code=400, detail="Le fichier ne doit pas dépasser 5 Mo")
+        if len(contents) > LOGO_MAX_SIZE:
+            raise HTTPException(status_code=400, detail="Le fichier ne doit pas dépasser 2 Mo")
+        # Validate real image content via Pillow (prevents malicious files)
+        try:
+            img = Image.open(io.BytesIO(contents))
+            img.verify()
+        except Exception:
+            raise HTTPException(status_code=400, detail="Le fichier n'est pas une image valide")
         await logo.seek(0)
-        
-        upload_dir = "uploads/partners/logos"
-        os.makedirs(upload_dir, exist_ok=True)
+
+        from pathlib import Path as FilePath
+        upload_dir = FilePath(__file__).parent.parent / "uploads" / "partners" / "logos"
+        upload_dir.mkdir(parents=True, exist_ok=True)
         ext = os.path.splitext(logo.filename or "logo.png")[1].lower()
         if ext not in [".jpg", ".jpeg", ".png", ".webp"]:
             ext = ".png"
         safe_filename = f"{partner['id']}_{uuid_mod.uuid4().hex[:8]}{ext}"
-        file_path = os.path.join(upload_dir, safe_filename)
-        
+        file_path = upload_dir / safe_filename
+
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(logo.file, buffer)
             

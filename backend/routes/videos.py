@@ -6,6 +6,7 @@ import aiofiles
 import os
 import uuid
 import logging
+import re
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -24,7 +25,7 @@ async def upload_video(
     """Upload video file (admin only) - Local storage for demo"""
     try:
         # Generate unique filename
-        file_ext = os.path.splitext(file.filename)[1]
+        file_ext = os.path.splitext(file.filename or "")[1] or ".mp4"
         video_id = str(uuid.uuid4())
         filename = f"{video_id}{file_ext}"
         file_path = UPLOAD_DIR / filename
@@ -56,8 +57,12 @@ async def upload_video(
 
 
 @router.get("/{video_id}/stream")
-async def stream_video(video_id: str):
+async def stream_video(video_id: str, current_user: User = Depends(get_current_user)):
     """Stream video file with range support"""
+    # Validate video_id is a UUID to prevent path traversal
+    if not re.match(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$', video_id):
+        raise HTTPException(status_code=400, detail="Invalid video ID format")
+
     # Find video file
     video_files = list(UPLOAD_DIR.glob(f"{video_id}.*"))
     

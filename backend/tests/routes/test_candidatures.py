@@ -75,7 +75,7 @@ def test_candidature_honeypot_rejected():
 
 
 def test_candidature_rate_limited():
-    """POST /candidatures/tech when rate limit exceeded returns rate_limited."""
+    """POST /candidatures/tech when rate limit exceeded returns 429."""
     db = make_mock_db(recent_count=3)
     app.dependency_overrides[get_db] = lambda: db
 
@@ -84,8 +84,7 @@ def test_candidature_rate_limited():
 
     app.dependency_overrides.clear()
 
-    assert response.status_code == 200
-    assert response.json()["rate_limited"] is True
+    assert response.status_code == 429
     db.tech_candidatures.insert_one.assert_not_called()
 
 
@@ -330,7 +329,7 @@ def test_scenariste_honeypot_rejected():
 
 
 def test_scenariste_rate_limited():
-    """POST /candidatures/scenariste when rate limit exceeded returns rate_limited."""
+    """POST /candidatures/scenariste when rate limit exceeded returns 429."""
     db = make_mock_db(recent_count=3)
     app.dependency_overrides[get_db] = lambda: db
 
@@ -339,8 +338,7 @@ def test_scenariste_rate_limited():
 
     app.dependency_overrides.clear()
 
-    assert response.status_code == 200
-    assert response.json()["rate_limited"] is True
+    assert response.status_code == 429
     db.tech_candidatures.insert_one.assert_not_called()
 
 

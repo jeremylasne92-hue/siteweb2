@@ -43,21 +43,21 @@ const createCustomIcon = (category: PartnerCategory) => {
     });
 };
 
+// Pre-compute all category icons at module level (stable, no props/state dependency)
+const iconMap: Record<string, L.DivIcon> = {
+    expert: createCustomIcon('expert'),
+    financier: createCustomIcon('financier'),
+    audiovisuel: createCustomIcon('audiovisuel'),
+    education: createCustomIcon('education'),
+    membre: createCustomIcon('membre'),
+};
+
 export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerClick, members = [] }) => {
     const { trackEvent } = useAnalytics();
-    
+
     // Center map on France roughly
     const defaultCenter: [number, number] = [46.603354, 1.888334];
     const defaultZoom = 6;
-
-    // Pre-compute all category icons (stable across renders since categories don't change)
-    const iconMap: Record<string, L.DivIcon> = {
-        expert: createCustomIcon('expert'),
-        financier: createCustomIcon('financier'),
-        audiovisuel: createCustomIcon('audiovisuel'),
-        education: createCustomIcon('education'),
-        membre: createCustomIcon('membre'),
-    };
 
     return (
         <div className="w-full h-[600px] rounded-2xl overflow-hidden border border-white/10 shadow-lg relative z-0">

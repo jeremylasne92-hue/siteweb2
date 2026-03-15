@@ -7,11 +7,13 @@ from typing import List
 import logging
 import os
 import uuid as uuid_mod
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/events", tags=["Events"])
 
+UPLOAD_DIR = Path(__file__).parent.parent / "uploads" / "events"
 ALLOWED_MIME_TYPES = {"image/jpeg", "image/png", "image/webp"}
 MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5 MB
 
@@ -45,12 +47,11 @@ async def upload_event_image(
     if len(contents) > MAX_IMAGE_SIZE:
         raise HTTPException(status_code=400, detail="Image trop lourde (max 5 Mo).")
 
-    upload_dir = "uploads/events"
-    os.makedirs(upload_dir, exist_ok=True)
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
     ext = image.filename.rsplit(".", 1)[-1].lower() if image.filename and "." in image.filename else "jpg"
     safe_filename = f"{uuid_mod.uuid4().hex}.{ext}"
-    file_path = os.path.join(upload_dir, safe_filename)
+    file_path = UPLOAD_DIR / safe_filename
 
     with open(file_path, "wb") as f:
         f.write(contents)

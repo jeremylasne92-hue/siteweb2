@@ -131,15 +131,19 @@ export function PrivacyPolicy() {
             </li>
             <li>
               <strong className="text-white">Messages de contact :</strong>{' '}
-              conservés 3 ans puis supprimés
+              conservés 6 mois puis automatiquement supprimés
             </li>
             <li>
               <strong className="text-white">Données d'analytics :</strong>{' '}
-              conservées 1 an (TTL automatique)
+              conservées 1 an (suppression automatique)
             </li>
             <li>
-              <strong className="text-white">Candidatures (bénévoles, scénaristes, partenaires) :</strong>{' '}
-              conservées 3 ans après la décision
+              <strong className="text-white">Candidatures techniques :</strong>{' '}
+              conservées 6 mois après soumission (suppression automatique)
+            </li>
+            <li>
+              <strong className="text-white">Candidatures bénévoles :</strong>{' '}
+              conservées 3 ans après soumission (suppression automatique)
             </li>
             <li>
               <strong className="text-white">Cookies de session :</strong>{' '}

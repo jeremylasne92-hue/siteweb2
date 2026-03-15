@@ -22,6 +22,11 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
+class Verify2FARequest(PydanticBaseModel):
+    user_id: str
+    code: str
+
+
 async def get_db() -> AsyncIOMotorDatabase:
     """Dependency to get database instance"""
     from server import db
@@ -92,6 +97,7 @@ async def login_local(request: Request, credentials: UserLoginLocal, response: R
     response.set_cookie(
         key="session_token",
         value=result["session_token"],
+        path="/",
         httponly=True,
         secure=settings.is_production,
         max_age=7 * 24 * 60 * 60,
@@ -129,7 +135,11 @@ async def login(request: Request, credentials: UserLogin, response: Response, db
         except HTTPException:
             raise
         except Exception:
-            logger.error("reCAPTCHA API unreachable — allowing login")
+            logger.error("reCAPTCHA API unreachable — blocking login for security")
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Security verification service temporarily unavailable. Please retry."
+            )
     else:
         logger.warning("RECAPTCHA_SECRET_KEY not set — skipping server-side verification in dev")
     
@@ -189,6 +199,7 @@ async def login(request: Request, credentials: UserLogin, response: Response, db
     response.set_cookie(
         key="session_token",
         value=session.session_token,
+        path="/",
         httponly=True,
         secure=settings.is_production,
         max_age=7 * 24 * 60 * 60,
@@ -208,53 +219,53 @@ async def login(request: Request, credentials: UserLogin, response: Response, db
 
 
 @router.post("/verify-2fa")
-async def verify_2fa(user_id: str, code: str, response: Response, request: Request, db: AsyncIOMotorDatabase = Depends(get_db)):
+async def verify_2fa(data: Verify2FARequest, response: Response, request: Request, db: AsyncIOMotorDatabase = Depends(get_db)):
     """Verify 2FA code and create session"""
     # Rate limit: max 5 attempts per 15 min per IP
     await check_rate_limit(db, request, "verify-2fa", max_requests=5, window_minutes=15)
 
     # Find pending 2FA
-    pending = await db.pending_2fa.find_one({"user_id": user_id})
-    
+    pending = await db.pending_2fa.find_one({"user_id": data.user_id})
+
     if not pending:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="No pending 2FA verification"
         )
-    
+
     # Check expiration
     if pending["expires_at"] < datetime.utcnow():
-        await db.pending_2fa.delete_one({"user_id": user_id})
+        await db.pending_2fa.delete_one({"user_id": data.user_id})
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Code expired"
         )
-    
+
     # Check attempts
     if pending["attempts"] >= 5:
-        await db.pending_2fa.delete_one({"user_id": user_id})
+        await db.pending_2fa.delete_one({"user_id": data.user_id})
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Too many failed attempts"
         )
-    
+
     # Verify code
-    if pending["code"] != code:
+    if pending["code"] != data.code:
         await db.pending_2fa.update_one(
-            {"user_id": user_id},
+            {"user_id": data.user_id},
             {"$inc": {"attempts": 1}}
         )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid code"
         )
-    
+
     # Delete pending 2FA
-    await db.pending_2fa.delete_one({"user_id": user_id})
-    
+    await db.pending_2fa.delete_one({"user_id": data.user_id})
+
     # Create session
     session = UserSession(
-        user_id=user_id,
+        user_id=data.user_id,
         expires_at=datetime.utcnow() + timedelta(days=7)
     )
     await db.user_sessions.insert_one(session.dict())
@@ -263,6 +274,7 @@ async def verify_2fa(user_id: str, code: str, response: Response, request: Reque
     response.set_cookie(
         key="session_token",
         value=session.session_token,
+        path="/",
         httponly=True,
         secure=settings.is_production,
         max_age=7 * 24 * 60 * 60,
@@ -306,6 +318,7 @@ async def google_callback(
         redirect_resp.set_cookie(
             key="session_token",
             value=result["session_token"],
+            path="/",
             httponly=True,
             secure=settings.is_production,
             max_age=7 * 24 * 60 * 60,
@@ -378,8 +391,13 @@ async def update_profile(
         update_data["interests"] = cleaned
 
     if updates.avatar_url is not None:
-        if updates.avatar_url and len(updates.avatar_url) > 500:
-            raise HTTPException(status_code=400, detail="Avatar URL too long")
+        if updates.avatar_url:
+            if len(updates.avatar_url) > 500:
+                raise HTTPException(status_code=400, detail="Avatar URL too long")
+            from urllib.parse import urlparse
+            parsed = urlparse(updates.avatar_url)
+            if parsed.scheme not in ("http", "https", ""):
+                raise HTTPException(status_code=400, detail="Avatar URL must use http or https")
         update_data["avatar_url"] = updates.avatar_url
 
     if updates.notification_prefs is not None:
@@ -399,6 +417,7 @@ async def update_profile(
 @router.delete("/user/{user_id}")
 async def delete_user(
     user_id: str,
+    response: Response,
     current_user: User = Depends(get_current_user),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
@@ -425,6 +444,15 @@ async def delete_user(
 
     logger.info(f"Deleted user account: {user_id}")
 
+    # Clear session cookie
+    response.delete_cookie(
+        "session_token",
+        path="/",
+        httponly=True,
+        secure=settings.is_production,
+        samesite="lax"
+    )
+
     return {"message": "Account deleted successfully"}
 
 
@@ -439,7 +467,7 @@ async def export_my_data(
         {"_id": 0, "password_hash": 0, "totp_secret": 0}
     )
     sessions = await db.user_sessions.find(
-        {"user_id": current_user.id}, {"_id": 0}
+        {"user_id": current_user.id}, {"_id": 0, "session_token": 0}
     ).to_list(None)
     optins = await db.episode_optins.find(
         {"user_id": current_user.id}, {"_id": 0}
@@ -481,7 +509,7 @@ async def export_my_data_download(
         {"_id": 0, "password_hash": 0, "totp_secret": 0}
     )
     sessions = await db.user_sessions.find(
-        {"user_id": current_user.id}, {"_id": 0}
+        {"user_id": current_user.id}, {"_id": 0, "session_token": 0}
     ).to_list(None)
     optins = await db.episode_optins.find(
         {"user_id": current_user.id}, {"_id": 0}
@@ -570,19 +598,22 @@ async def unsubscribe_emails(
 
 
 @router.post("/logout")
-async def logout(response: Response, current_user: User = Depends(get_current_user), db: AsyncIOMotorDatabase = Depends(get_db)):
-    """Logout and invalidate session"""
-    # Delete session from database
-    await db.user_sessions.delete_many({"user_id": current_user.id})
-    
+async def logout(request: Request, response: Response, current_user: User = Depends(get_current_user), db: AsyncIOMotorDatabase = Depends(get_db)):
+    """Logout and invalidate current session only"""
+    # Delete only the current session, not all sessions
+    session_token = request.cookies.get("session_token")
+    if session_token:
+        await db.user_sessions.delete_one({"session_token": session_token})
+
     # Clear cookie
     response.delete_cookie(
         "session_token",
+        path="/",
         httponly=True,
         secure=settings.is_production,
         samesite="lax"
     )
-    
+
     return {"message": "Logged out successfully"}
 
 
@@ -590,13 +621,16 @@ async def logout(response: Response, current_user: User = Depends(get_current_us
 # ==================== PASSWORD RESET (Story 1.3) ====================
 
 
+from pydantic import Field
+
+
 class ForgotPasswordRequest(PydanticBaseModel):
-    email: str
+    email: str = Field(..., min_length=5, max_length=254, pattern=r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
 
 
 class ResetPasswordRequest(PydanticBaseModel):
-    password: str
-    password_confirm: str
+    password: str = Field(..., min_length=8, max_length=256)
+    password_confirm: str = Field(..., min_length=8, max_length=256)
 
 
 @router.post("/forgot-password")

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Layout } from '../components/layout/Layout';
 import { PartnersHero } from '../components/partners/PartnersHero';
 import { PartnersStats } from '../components/partners/PartnersStats';
 import { PartnersFilters, PartnersViewSwitch } from '../components/partners/PartnersFilters';
@@ -74,7 +73,7 @@ export default function Partners() {
     }, [selectedCategory, selectedThematics, searchQuery]);
 
     return (
-        <Layout>
+        <>
             <PartnersHero onApplyClick={() => alert("Le formulaire sera disponible prochainement ! (LOT 3)")} />
 
             <PartnersStats stats={stats} />
@@ -113,6 +112,6 @@ export default function Partners() {
                 isOpen={!!selectedPartner}
                 onClose={() => setSelectedPartner(null)}
             />
-        </Layout>
+        </>
     );
 }

@@ -23,6 +23,10 @@ export function getConsentChoice(): ConsentData['choice'] | null {
             localStorage.removeItem(CONSENT_KEY);
             return null;
         }
+        const validChoices: ConsentData['choice'][] = ['accepted', 'refused', 'essential-only'];
+        if (!validChoices.includes(parsed.choice)) {
+            return null;
+        }
         return parsed.choice;
     } catch {
         localStorage.removeItem(CONSENT_KEY);

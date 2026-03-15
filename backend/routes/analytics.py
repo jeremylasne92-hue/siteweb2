@@ -162,7 +162,7 @@ async def get_admin_dashboard(
         # Conversion: registrations in period
         db.users.count_documents({"created_at": {"$gte": cutoff}, "role": {"$ne": "admin"}}),
         # Conversion: volunteers
-        db.volunteers.count_documents({"created_at": {"$gte": cutoff}}),
+        db.volunteer_applications.count_documents({"created_at": {"$gte": cutoff}}),
         # Conversion: partner applications
         db.partners.count_documents({"created_at": {"$gte": cutoff}}),
         # Conversion: scenariste candidatures

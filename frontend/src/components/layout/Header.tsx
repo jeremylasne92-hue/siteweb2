@@ -220,6 +220,9 @@ export function Header() {
                 <button
                     className="lg:hidden text-white"
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    aria-expanded={isMobileMenuOpen}
+                    aria-label="Menu de navigation"
+                    aria-controls="mobile-menu"
                 >
                     {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
@@ -227,7 +230,7 @@ export function Header() {
 
             {/* Mobile Menu Overlay */}
             {isMobileMenuOpen && (
-                <div className="lg:hidden absolute top-full left-0 right-0 bg-echo-dark border-b border-white/10 p-4 flex flex-col gap-4 animate-fade-in">
+                <div id="mobile-menu" className="lg:hidden absolute top-full left-0 right-0 bg-echo-dark border-b border-white/10 p-4 flex flex-col gap-4 animate-fade-in">
                     {navLinks.map((link) => (
                         <div key={link.path}>
                             <div className="flex items-center justify-between border-b border-white/5">

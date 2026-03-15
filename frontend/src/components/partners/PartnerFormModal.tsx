@@ -141,6 +141,7 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
 
             const res = await fetch(`${PARTNERS_API}/apply`, {
                 method: 'POST',
+                credentials: 'include',
                 body: form
             });
 

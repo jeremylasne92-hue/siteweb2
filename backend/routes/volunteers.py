@@ -37,14 +37,15 @@ async def submit_volunteer_application(
         return {"message": "Candidature bénévole envoyée avec succès"}
 
     # Anti-spam: rate limiting (max 3 per hour per IP)
+    anon_ip = anonymize_ip(client_ip)
     window_start = datetime.utcnow() - timedelta(hours=RATE_LIMIT_WINDOW_HOURS)
     recent_count = await db.volunteer_applications.count_documents({
-        "ip_address": client_ip,
+        "ip_address": anon_ip,
         "created_at": {"$gte": window_start}
     })
     if recent_count >= RATE_LIMIT_MAX:
-        logger.warning(f"Rate limit exceeded for {client_ip}")
-        return {"message": "Trop de soumissions récentes. Réessayez plus tard.", "rate_limited": True}
+        logger.warning(f"Rate limit exceeded for {anon_ip}")
+        raise HTTPException(status_code=429, detail="Trop de soumissions récentes. Réessayez plus tard.")
 
     # Store application
     application = VolunteerApplication(

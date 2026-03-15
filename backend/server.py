@@ -15,11 +15,11 @@ from routes import auth, episodes, progress, videos, users, thematics, resources
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
+from core.config import settings
 
 # MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+client = AsyncIOMotorClient(settings.MONGO_URL)
+db = client[settings.DB_NAME]
 
 # Create the main app without a prefix
 app = FastAPI(
@@ -65,7 +65,7 @@ app.mount("/api/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', 'http://localhost:5173').split(','),
+    allow_origins=settings.CORS_ORIGINS.split(','),
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization"],
 )
@@ -77,7 +77,16 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
-        if os.environ.get('ENVIRONMENT') == 'production':
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; "
+            "script-src 'self' https://www.google.com https://www.gstatic.com; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+            "font-src 'self' https://fonts.gstatic.com; "
+            "img-src 'self' data: https:; "
+            "connect-src 'self'; "
+            "frame-src https://www.google.com;"
+        )
+        if settings.is_production:
             response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         return response
 
@@ -95,6 +104,7 @@ async def startup_indexes():
     """Create TTL and compound indexes for rate limiting and data retention."""
     from utils.rate_limit import ensure_rate_limit_indexes
     app.db = db
+    settings.validate()
     await ensure_rate_limit_indexes(db)
 
     # Data retention TTL indexes (RGPD)
@@ -103,6 +113,7 @@ async def startup_indexes():
         await db.contact_messages.create_index("created_at", expireAfterSeconds=15552000)  # 6 months
         await db.analytics_events.create_index("created_at", expireAfterSeconds=31536000)  # 1 year
         await db.password_reset_tokens.create_index("created_at", expireAfterSeconds=86400)  # 24h
+        await db.volunteer_applications.create_index("created_at", expireAfterSeconds=94608000)  # 3 years
     except Exception as e:
         logger.warning(f"TTL index creation: {e}")
 
@@ -125,6 +136,18 @@ async def startup_indexes():
         await db.analytics_events.create_index("session_id")
     except Exception as e:
         logger.warning(f"Analytics index creation: {e}")
+
+    # Performance indexes for hot queries
+    try:
+        await db.user_sessions.create_index("session_token")
+        await db.user_sessions.create_index("user_id")
+        await db.users.create_index("email")
+        await db.users.create_index("username")
+        await db.users.create_index("id", unique=True)
+        await db.partners.create_index("slug", unique=True)
+        await db.pending_2fa.create_index("user_id")
+    except Exception as e:
+        logger.warning(f"Performance index creation: {e}")
 
     logger.info("Rate limit and retention indexes ensured")
 

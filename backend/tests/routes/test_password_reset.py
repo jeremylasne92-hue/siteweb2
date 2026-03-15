@@ -136,7 +136,7 @@ def test_reset_password_success():
 
 
 def test_reset_password_weak():
-    """Reset with weak password returns 400."""
+    """Reset with weak password returns 422 (rejected by Field min_length=8)."""
     db = make_mock_db()
     db.password_reset_tokens.find_one = AsyncMock(return_value={
         "token": "valid-token-123",
@@ -152,5 +152,4 @@ def test_reset_password_weak():
     })
 
     app.dependency_overrides.clear()
-    assert response.status_code == 400
-    assert "mot de passe" in response.json()["detail"].lower()
+    assert response.status_code == 422

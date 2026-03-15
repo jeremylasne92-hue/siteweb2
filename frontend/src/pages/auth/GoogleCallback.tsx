@@ -14,7 +14,7 @@ export const GoogleCallback = () => {
             // L'erreur est catchée asynchronement via Timeout pour satisfaire ESLint
             setTimeout(() => {
                 setError("L'authentification a échoué. Veuillez réessayer.");
-                navigate('/login?error=' + errorParam, { replace: true });
+                navigate('/login?error=' + encodeURIComponent(errorParam), { replace: true });
             }, 0);
             return;
         }

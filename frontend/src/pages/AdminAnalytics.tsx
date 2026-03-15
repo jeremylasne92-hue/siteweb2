@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ANALYTICS_API } from '../config/api';
 
 interface DashboardData {
@@ -40,27 +40,28 @@ function StatCard({ label, value, sub }: { label: string; value: string | number
   );
 }
 
-export function AdminAnalytics() {
+export default function AdminAnalytics() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [period, setPeriod] = useState(7);
   const [loading, setLoading] = useState(true);
 
+  const changePeriod = useCallback((p: number) => {
+    setLoading(true);
+    setPeriod(p);
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     fetch(`${ANALYTICS_API}/admin/dashboard?period=${period}`, { credentials: 'include' })
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error(r.statusText);
+        return r.json();
+      })
       .then(d => { if (!cancelled) setData(d); })
       .catch(console.error)
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [period]);
-
-  // Reset loading when period changes
-  const [prevPeriod, setPrevPeriod] = useState(period);
-  if (prevPeriod !== period) {
-    setPrevPeriod(period);
-    setLoading(true);
-  }
 
   if (loading) return <div className="p-8 text-stone-400">Chargement...</div>;
   if (!data) return <div className="p-8 text-red-400">Erreur de chargement</div>;
@@ -73,7 +74,7 @@ export function AdminAnalytics() {
           {[7, 14, 30].map(p => (
             <button
               key={p}
-              onClick={() => setPeriod(p)}
+              onClick={() => changePeriod(p)}
               className={`px-3 py-1 rounded-lg text-sm ${
                 period === p
                   ? 'bg-amber-500 text-black font-bold'
@@ -160,5 +161,3 @@ export function AdminAnalytics() {
     </div>
   );
 }
-
-export default AdminAnalytics;

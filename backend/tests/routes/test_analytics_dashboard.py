@@ -34,7 +34,7 @@ def make_mock_db():
     # count_documents returns 0 for all collections
     db.analytics_events.count_documents = AsyncMock(return_value=0)
     db.users.count_documents = AsyncMock(return_value=0)
-    db.volunteers.count_documents = AsyncMock(return_value=0)
+    db.volunteer_applications.count_documents = AsyncMock(return_value=0)
     db.partners.count_documents = AsyncMock(return_value=0)
     db.tech_candidatures.count_documents = AsyncMock(return_value=0)
     db.contact_messages.count_documents = AsyncMock(return_value=0)

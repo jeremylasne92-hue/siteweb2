@@ -35,6 +35,7 @@ export function Contact() {
             const res = await fetch(`${API_URL}/contact`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({
                     name,
                     email,

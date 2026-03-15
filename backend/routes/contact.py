@@ -34,7 +34,7 @@ async def submit_contact(
         return {"message": "Message envoyé avec succès"}
 
     # Rate limiting
-    client_ip = request.client.host
+    client_ip = request.client.host if request.client else "unknown"
     anon_ip = anonymize_ip(client_ip)
     window_start = datetime.utcnow() - timedelta(hours=RATE_LIMIT_WINDOW_HOURS)
     recent_count = await db.contact_messages.count_documents({

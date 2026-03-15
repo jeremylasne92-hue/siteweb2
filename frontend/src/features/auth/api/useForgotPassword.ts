@@ -13,6 +13,7 @@ async function forgotPassword(data: ForgotPasswordPayload): Promise<ForgotPasswo
     const res = await fetch(`${API_URL}/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(data),
     });
     if (!res.ok) {

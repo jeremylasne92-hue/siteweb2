@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Layout } from '../components/layout/Layout';
 import {
     CheckCircle2, XCircle, Star, StarOff, Clock,
     Shield, Users, RefreshCw, AlertTriangle,
@@ -939,26 +938,23 @@ export default function AdminPartners() {
 
     if (authError) {
         return (
-            <Layout>
-                <div className="min-h-screen flex items-center justify-center">
-                    <div className="text-center max-w-md p-8 bg-white/5 border border-white/10 rounded-xl">
-                        <Shield className="mx-auto mb-4 text-red-400" size={48} />
-                        <h2 className="text-xl font-serif text-white mb-2">Accès refusé</h2>
-                        <p className="text-echo-textMuted mb-4">
-                            Cette page est réservée aux administrateurs. Veuillez vous connecter avec un compte administrateur.
-                        </p>
-                        <Button onClick={() => window.location.href = '/'}>
-                            Retour à l'accueil
-                        </Button>
-                    </div>
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center max-w-md p-8 bg-white/5 border border-white/10 rounded-xl">
+                    <Shield className="mx-auto mb-4 text-red-400" size={48} />
+                    <h2 className="text-xl font-serif text-white mb-2">Accès refusé</h2>
+                    <p className="text-echo-textMuted mb-4">
+                        Cette page est réservée aux administrateurs. Veuillez vous connecter avec un compte administrateur.
+                    </p>
+                    <Button onClick={() => window.location.href = '/'}>
+                        Retour à l'accueil
+                    </Button>
                 </div>
-            </Layout>
+            </div>
         );
     }
 
     return (
-        <Layout>
-            <div className="min-h-screen bg-echo-dark pt-24 pb-16">
+        <div className="min-h-screen bg-echo-dark pt-24 pb-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Header */}
                     <div className="flex items-center justify-between mb-8">
@@ -1187,7 +1183,6 @@ export default function AdminPartners() {
                         </div>
                     </div>
                 </div>
-            </div>
 
             {/* Partner Detail Modal */}
             {selectedPartner && (
@@ -1264,6 +1259,6 @@ export default function AdminPartners() {
                     </div>
                 </div>
             )}
-        </Layout>
+        </div>
     );
 }

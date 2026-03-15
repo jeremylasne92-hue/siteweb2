@@ -9,6 +9,7 @@ build/
 .env
 .env.local
 .env.*.local
+frontend_backup/.env
 
 # IDE
 .vscode/

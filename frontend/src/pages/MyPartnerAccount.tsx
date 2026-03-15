@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Layout } from '../components/layout/Layout';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { cn } from '../components/ui/Button';
@@ -268,28 +267,24 @@ export default function MyPartnerAccount() {
 
     if (isLoading) {
         return (
-            <Layout>
-                <div className="min-h-screen flex items-center justify-center">
-                    <div className="animate-spin w-8 h-8 border-2 border-echo-gold border-t-transparent rounded-full" />
-                </div>
-            </Layout>
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin w-8 h-8 border-2 border-echo-gold border-t-transparent rounded-full" />
+            </div>
         );
     }
 
     if (error) {
         return (
-            <Layout>
-                <div className="min-h-screen flex items-center justify-center">
-                    <div className="text-center max-w-md p-8 bg-white/5 border border-white/10 rounded-xl">
-                        <AlertTriangle className="mx-auto mb-4 text-yellow-500" size={48} />
-                        <h2 className="text-xl font-serif text-white mb-2">Accès restreint</h2>
-                        <p className="text-echo-textMuted mb-4">{error}</p>
-                        <Button onClick={() => window.location.href = '/partenaires'}>
-                            Retour aux partenaires
-                        </Button>
-                    </div>
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center max-w-md p-8 bg-white/5 border border-white/10 rounded-xl">
+                    <AlertTriangle className="mx-auto mb-4 text-yellow-500" size={48} />
+                    <h2 className="text-xl font-serif text-white mb-2">Accès restreint</h2>
+                    <p className="text-echo-textMuted mb-4">{error}</p>
+                    <Button onClick={() => window.location.href = '/partenaires'}>
+                        Retour aux partenaires
+                    </Button>
                 </div>
-            </Layout>
+            </div>
         );
     }
 
@@ -298,8 +293,7 @@ export default function MyPartnerAccount() {
     const statusInfo = statusConfig[partner.status];
 
     return (
-        <Layout>
-            <div className="min-h-screen bg-echo-dark pt-24 pb-16">
+        <div className="min-h-screen bg-echo-dark pt-24 pb-16">
                 <div className="max-w-4xl mx-auto px-6 lg:px-8">
 
                     {/* Header */}
@@ -557,7 +551,6 @@ export default function MyPartnerAccount() {
                         </div>
                     </div>
                 </div>
-            </div>
 
             {/* Delete confirmation modal */}
             {showDeleteConfirm && (
@@ -580,6 +573,6 @@ export default function MyPartnerAccount() {
                     </div>
                 </div>
             )}
-        </Layout>
+        </div>
     );
 }

@@ -21,6 +21,7 @@ async function registerUser(data: RegisterPayload): Promise<RegisterResponse> {
     const res = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(data),
     });
     if (!res.ok) {

@@ -16,7 +16,7 @@ class Settings:
     DB_NAME: str = os.environ.get("DB_NAME", "test_database")
 
     # CORS
-    CORS_ORIGINS: str = os.environ.get("CORS_ORIGINS", "*")
+    CORS_ORIGINS: str = os.environ.get("CORS_ORIGINS", "http://localhost:5173")
 
     # Google OAuth
     GOOGLE_CLIENT_ID: str = os.environ.get("GOOGLE_CLIENT_ID", "")
@@ -52,17 +52,26 @@ class Settings:
 
     def validate(self) -> None:
         """Validate that critical settings are present."""
+        import logging
+        logger = logging.getLogger(__name__)
+
         missing = []
         if not self.GOOGLE_CLIENT_ID or self.GOOGLE_CLIENT_ID == "your_google_client_id_here":
             missing.append("GOOGLE_CLIENT_ID")
         if not self.GOOGLE_CLIENT_SECRET or self.GOOGLE_CLIENT_SECRET == "your_google_client_secret_here":
             missing.append("GOOGLE_CLIENT_SECRET")
         if missing:
-            import logging
-            logging.getLogger(__name__).warning(
+            logger.warning(
                 f"Missing or placeholder OAuth config: {', '.join(missing)}. "
                 "Google OAuth will not work until these are set in .env"
             )
+
+        # Enforce strong secrets in production
+        if self.is_production:
+            if self.OAUTH_STATE_SECRET == "change-me-in-production":
+                raise ValueError("OAUTH_STATE_SECRET must be changed from default in production")
+            if self.UNSUBSCRIBE_SECRET == "echo-unsubscribe-secret-change-me":
+                raise ValueError("UNSUBSCRIBE_SECRET must be changed from default in production")
 
 
 settings = Settings()
