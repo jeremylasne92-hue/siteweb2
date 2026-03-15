@@ -2,6 +2,8 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { Serie } from './Serie';
 
+const CONSENT_KEY = 'echo-cookie-consent';
+
 const renderSerie = () =>
     render(
         <MemoryRouter>
@@ -17,9 +19,21 @@ describe('Serie - Story 2.1 QA Express', () => {
         expect(badges.length).toBe(11);
     });
 
-    it('le lecteur vidéo YouTube est intégré (FR6)', () => {
+    it('affiche la façade YouTube quand le consentement n\'est pas donné (FR6 + RGPD)', () => {
+        localStorage.removeItem(CONSENT_KEY);
         renderSerie();
-        const iframe = document.querySelector('iframe[src*="youtube.com/embed"]');
+        // No iframe should load before consent
+        const iframe = document.querySelector('iframe[src*="youtube"]');
+        expect(iframe).toBeNull();
+        // Facade placeholder should be shown
+        expect(screen.getByText('Contenu vidéo YouTube')).toBeInTheDocument();
+        expect(screen.getByText('Accepter et afficher la vidéo')).toBeInTheDocument();
+    });
+
+    it('affiche le lecteur vidéo YouTube après consentement (FR6)', () => {
+        localStorage.setItem(CONSENT_KEY, JSON.stringify({ choice: 'accepted', timestamp: Date.now() }));
+        renderSerie();
+        const iframe = document.querySelector('iframe[src*="youtube-nocookie.com/embed"]');
         expect(iframe).toBeTruthy();
     });
 

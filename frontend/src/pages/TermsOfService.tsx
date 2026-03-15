@@ -14,7 +14,7 @@ export function TermsOfService() {
           Conditions Générales d'Utilisation
         </h1>
         <p className="text-gray-400 mb-12">
-          Dernière mise à jour : 11 mars 2026
+          Dernière mise à jour : 15 mars 2026
         </p>
 
         {/* Objet et acceptation */}
@@ -63,10 +63,41 @@ export function TermsOfService() {
           </ul>
         </section>
 
+        {/* Protection des mineurs */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-serif text-amber-500 mb-4">
+            3. Protection des mineurs
+          </h2>
+          <p className="text-gray-300 leading-relaxed mb-4">
+            L'utilisation de la plateforme Mouvement ECHO est destinée aux
+            personnes âgées de <strong className="text-white">15 ans et plus</strong>.
+            Les mineurs de moins de 15 ans ne peuvent s'inscrire qu'avec le
+            consentement vérifiable de leur représentant légal, conformément à
+            l'article 8 du RGPD.
+          </p>
+          <p className="text-gray-300 leading-relaxed mb-4">
+            Si vous êtes le représentant légal d'un mineur de moins de 15 ans
+            et souhaitez exercer ses droits (accès, rectification, suppression
+            des données), veuillez nous contacter à{' '}
+            <a
+              href="mailto:contact@mouvementecho.com"
+              className="text-amber-500 hover:text-amber-400 underline"
+            >
+              contact@mouvementecho.com
+            </a>
+            .
+          </p>
+          <p className="text-gray-300 leading-relaxed">
+            En cas de découverte qu'un mineur de moins de 15 ans s'est inscrit
+            sans consentement parental, nous procéderons à la suppression de
+            son compte et de ses données dans les meilleurs délais.
+          </p>
+        </section>
+
         {/* Règles d'utilisation */}
         <section className="mb-12">
           <h2 className="text-2xl font-serif text-amber-500 mb-4">
-            3. Règles d'utilisation
+            4. Règles d'utilisation
           </h2>
           <p className="text-gray-300 leading-relaxed mb-4">
             L'utilisateur s'engage à utiliser la Plateforme de manière conforme
@@ -99,10 +130,10 @@ export function TermsOfService() {
         {/* Responsabilités */}
         <section className="mb-12">
           <h2 className="text-2xl font-serif text-amber-500 mb-4">
-            4. Responsabilités
+            5. Responsabilités
           </h2>
           <h3 className="text-xl text-white mb-3">
-            4.1 Responsabilité de l'éditeur
+            5.1 Responsabilité de l'éditeur
           </h3>
           <p className="text-gray-300 leading-relaxed mb-4">
             L'Association Mouvement ECHO s'efforce d'assurer la disponibilité et
@@ -112,7 +143,7 @@ export function TermsOfService() {
             indépendantes de sa volonté.
           </p>
           <h3 className="text-xl text-white mb-3">
-            4.2 Responsabilité de l'utilisateur
+            5.2 Responsabilité de l'utilisateur
           </h3>
           <p className="text-gray-300 leading-relaxed">
             L'utilisateur est seul responsable de l'utilisation qu'il fait de la
@@ -125,7 +156,7 @@ export function TermsOfService() {
         {/* Propriété intellectuelle */}
         <section className="mb-12">
           <h2 className="text-2xl font-serif text-amber-500 mb-4">
-            5. Propriété intellectuelle
+            6. Propriété intellectuelle
           </h2>
           <p className="text-gray-300 leading-relaxed mb-4">
             L'ensemble des éléments constituant la Plateforme (textes, images,
@@ -144,7 +175,7 @@ export function TermsOfService() {
         {/* Suspension et résiliation */}
         <section className="mb-12">
           <h2 className="text-2xl font-serif text-amber-500 mb-4">
-            6. Suspension et résiliation
+            7. Suspension et résiliation
           </h2>
           <p className="text-gray-300 leading-relaxed mb-4">
             L'Association Mouvement ECHO se réserve le droit de suspendre ou de
@@ -167,7 +198,7 @@ export function TermsOfService() {
         {/* Modification des CGU */}
         <section className="mb-12">
           <h2 className="text-2xl font-serif text-amber-500 mb-4">
-            7. Modification des CGU
+            8. Modification des CGU
           </h2>
           <p className="text-gray-300 leading-relaxed">
             L'Association Mouvement ECHO se réserve le droit de modifier les
@@ -181,7 +212,7 @@ export function TermsOfService() {
         {/* Droit applicable */}
         <section className="mb-12">
           <h2 className="text-2xl font-serif text-amber-500 mb-4">
-            8. Droit applicable et juridiction compétente
+            9. Droit applicable et juridiction compétente
           </h2>
           <p className="text-gray-300 leading-relaxed mb-4">
             Les présentes CGU sont régies par le droit français.
@@ -196,7 +227,7 @@ export function TermsOfService() {
         {/* Contact */}
         <section className="mb-12">
           <h2 className="text-2xl font-serif text-amber-500 mb-4">
-            9. Contact
+            10. Contact
           </h2>
           <p className="text-gray-300 leading-relaxed">
             Pour toute question relative aux présentes CGU, vous pouvez nous

@@ -247,13 +247,17 @@ export const RegisterForm = () => {
                     </div>
                     <div className="text-sm">
                         <label htmlFor="rgpd_consent" className="font-medium text-white cursor-pointer select-none">
-                            J'accepte la politique de confidentialité
+                            J'accepte les{' '}
+                            <a href="/cgu" target="_blank" rel="noopener noreferrer" className="text-amber-500 hover:underline" onClick={(e) => e.stopPropagation()}>
+                                Conditions Générales d'Utilisation
+                            </a>{' '}
+                            et la{' '}
+                            <a href="/politique-de-confidentialite" target="_blank" rel="noopener noreferrer" className="text-amber-500 hover:underline" onClick={(e) => e.stopPropagation()}>
+                                Politique de confidentialité
+                            </a>
                         </label>
                         <p className="text-echo-textMuted mt-1 text-xs">
-                            Vos données sont traitées conformément à notre{' '}
-                            <a href="/politique-de-confidentialite" target="_blank" className="text-amber-500 hover:underline">
-                                politique de confidentialité
-                            </a>.
+                            Vos données sont traitées conformément à notre politique de confidentialité.
                         </p>
                     </div>
                 </div>
@@ -277,6 +281,18 @@ export const RegisterForm = () => {
                     </p>
                 )}
             </div>
+
+            <p className="text-xs text-stone-500 text-center leading-relaxed">
+                Ce site est protégé par reCAPTCHA. La{' '}
+                <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-stone-400">
+                    Politique de confidentialité
+                </a>{' '}
+                et les{' '}
+                <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-stone-400">
+                    Conditions d'utilisation
+                </a>{' '}
+                de Google s'appliquent.
+            </p>
 
             <div className="flex justify-between pt-4 border-t border-white/10 mt-6 md:flex-row flex-col-reverse gap-3">
                 {step > 1 ? (

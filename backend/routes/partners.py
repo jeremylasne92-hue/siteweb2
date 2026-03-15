@@ -112,7 +112,17 @@ async def get_partner_stats(db: AsyncIOMotorDatabase = Depends(get_db)):
         "by_thematic": {item["_id"]: item["count"] for item in data["by_thematic"]}
     }
 
-@router.get("", response_model=PaginatedPartners)
+# Fields to strip from public partner responses (RGPD art. 5)
+PUBLIC_EXCLUDED_FIELDS = {"contact_email", "contact_phone", "ip_address"}
+
+def sanitize_partner_for_public(partner: Partner) -> dict:
+    """Remove personal contact data from partner for public display."""
+    data = partner.model_dump()
+    for field in PUBLIC_EXCLUDED_FIELDS:
+        data.pop(field, None)
+    return data
+
+@router.get("")
 async def get_public_partners(
     category: Optional[PartnerCategory] = None,
     thematic: Optional[str] = None, # Comma separated list
@@ -157,7 +167,7 @@ async def get_public_partners(
     total = await db.partners.count_documents(query)
     
     return {
-        "partners": partners,
+        "partners": [sanitize_partner_for_public(p) for p in partners],
         "total": total,
         "has_more": has_more
     }
@@ -165,9 +175,15 @@ async def get_public_partners(
 @router.get("/{slug}")
 async def get_partner_by_slug(slug: str, db: AsyncIOMotorDatabase = Depends(get_db)):
     """Get single approved partner by slug"""
-    partner = await db.partners.find_one({"slug": slug, "status": PartnerStatus.APPROVED}, {"_id": 0})
+    partner = await db.partners.find_one(
+        {"slug": slug, "status": PartnerStatus.APPROVED},
+        {"_id": 0}
+    )
     if not partner:
         raise HTTPException(status_code=404, detail="Partner not found")
+    # Strip personal contact data from public response (RGPD art. 5)
+    for field in PUBLIC_EXCLUDED_FIELDS:
+        partner.pop(field, None)
     return partner
 
 @router.post("/apply")

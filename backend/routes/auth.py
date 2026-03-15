@@ -1,6 +1,6 @@
 from pydantic import BaseModel as PydanticBaseModel
 from fastapi import APIRouter, HTTPException, Depends, status, Response, Request
-from fastapi.responses import RedirectResponse, StreamingResponse
+from fastapi.responses import RedirectResponse, StreamingResponse, JSONResponse
 from models import User, UserCreate, UserLogin, UserRegister, UserLoginLocal, UserSession, Pending2FA
 from auth_utils import hash_password, verify_password, generate_session_token, generate_2fa_code
 from services.auth_local_service import register_user, login_user
@@ -13,6 +13,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 import httpx
 import csv
 import io
+import json
 import logging
 import os
 
@@ -456,6 +457,92 @@ async def export_my_data(
     }
 
     return export
+
+
+def _serialize_for_json(obj):
+    """Recursively convert datetime objects to ISO strings for JSON export."""
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    if isinstance(obj, dict):
+        return {k: _serialize_for_json(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_serialize_for_json(item) for item in obj]
+    return obj
+
+
+@router.get("/my-data/export")
+async def export_my_data_download(
+    current_user: User = Depends(get_current_user),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Export all user data as downloadable JSON (RGPD art. 15/20 — right of access & portability)"""
+    user_data = await db.users.find_one(
+        {"id": current_user.id},
+        {"_id": 0, "password_hash": 0, "totp_secret": 0}
+    )
+    sessions = await db.user_sessions.find(
+        {"user_id": current_user.id}, {"_id": 0}
+    ).to_list(None)
+    optins = await db.episode_optins.find(
+        {"user_id": current_user.id}, {"_id": 0}
+    ).to_list(None)
+    partner = await db.partners.find_one(
+        {"user_id": current_user.id}, {"_id": 0, "ip_address": 0}
+    )
+    contact_messages = await db.contact_messages.find(
+        {"email": current_user.email}, {"_id": 0, "ip_address": 0}
+    ).to_list(None)
+    volunteer_apps = await db.volunteer_applications.find(
+        {"email": current_user.email}, {"_id": 0, "ip_address": 0}
+    ).to_list(None)
+    tech_candidatures = await db.tech_candidatures.find(
+        {"email": current_user.email}, {"_id": 0, "ip_address": 0}
+    ).to_list(None)
+    analytics = await db.analytics_events.find(
+        {"session_id": current_user.id}, {"_id": 0}
+    ).to_list(None)
+    video_progress = await db.video_progress.find(
+        {"user_id": current_user.id}, {"_id": 0}
+    ).to_list(None)
+
+    export = _serialize_for_json({
+        "user": user_data,
+        "sessions": sessions,
+        "episode_optins": optins,
+        "partner": partner,
+        "contact_messages": contact_messages,
+        "volunteer_applications": volunteer_apps,
+        "tech_candidatures": tech_candidatures,
+        "analytics_events": analytics,
+        "video_progress": video_progress,
+        "exported_at": datetime.utcnow().isoformat(),
+    })
+
+    content = json.dumps(export, ensure_ascii=False, indent=2)
+    logger.info(f"User {current_user.id} exported their personal data (RGPD)")
+
+    return Response(
+        content=content,
+        media_type="application/json",
+        headers={"Content-Disposition": "attachment; filename=mes-donnees-echo.json"},
+    )
+
+
+@router.delete("/my-data")
+async def request_account_deletion(
+    current_user: User = Depends(get_current_user),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    """Request account deletion (RGPD art. 17 — right to erasure).
+    Marks the account for deletion rather than deleting immediately."""
+    await db.users.update_one(
+        {"id": current_user.id},
+        {"$set": {"deletion_requested_at": datetime.utcnow()}}
+    )
+
+    logger.info(f"User {current_user.id} requested account deletion (RGPD art. 17)")
+
+    return {"message": "Votre demande de suppression a bien été enregistrée. Votre compte sera supprimé sous 30 jours."}
 
 
 @router.get("/unsubscribe/{user_id}")

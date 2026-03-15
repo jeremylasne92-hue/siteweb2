@@ -119,7 +119,11 @@ export function Support() {
                         ))}
                     </div>
                     <p className="mt-8 text-neutral-500 text-sm">
-                        Paiement sécurisé via <a href={DONATION_URL} target="_blank" rel="noopener noreferrer" className="text-echo-gold hover:underline" onClick={() => trackEvent('cta_click', 'soutenir_helloasso_footer')}>HelloAsso</a> — plateforme certifiée.
+                        En cliquant sur ces liens, vous serez redirigé vers{' '}
+                        <a href={DONATION_URL} target="_blank" rel="noopener noreferrer" className="text-echo-gold hover:underline" onClick={() => trackEvent('cta_click', 'soutenir_helloasso_footer')}>HelloAsso</a>,
+                        un service tiers. Consultez leur{' '}
+                        <a href="https://www.helloasso.com/confidentialite" target="_blank" rel="noopener noreferrer" className="text-echo-gold hover:underline">politique de confidentialité</a>.
+                        Paiement sécurisé — plateforme certifiée.
                     </p>
                 </div>
             </section>

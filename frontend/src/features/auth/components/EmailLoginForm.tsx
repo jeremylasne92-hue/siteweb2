@@ -93,6 +93,18 @@ export const EmailLoginForm = () => {
                     "Se connecter"
                 )}
             </Button>
+
+            <p className="text-xs text-stone-500 text-center leading-relaxed">
+                Ce site est protégé par reCAPTCHA. La{' '}
+                <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-stone-400">
+                    Politique de confidentialité
+                </a>{' '}
+                et les{' '}
+                <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-stone-400">
+                    Conditions d'utilisation
+                </a>{' '}
+                de Google s'appliquent.
+            </p>
         </form>
     );
 };

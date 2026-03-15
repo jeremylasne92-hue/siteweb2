@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Play, BookOpen, Facebook, Linkedin, Twitter, Flame, Mountain, Star, Instagram, Palette, Gamepad2, Bell, BellRing, X } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
+import { YouTubeEmbed } from '../components/ui/YouTubeEmbed';
 import { SEO } from '../components/seo/SEO';
 import { ScenaristApplicationForm } from '../components/forms/ScenaristApplicationForm';
 import { useAuthStore } from '../features/auth/store';
@@ -361,15 +362,11 @@ export function Serie() {
                         {/* COLONNE GAUCHE : VIDÉO (60%) */}
                         <div className="w-full lg:w-[60%]">
                             <div className="relative aspect-video rounded-xl overflow-hidden border border-[#D4AF37]/30 shadow-[0_0_30px_rgba(212,175,55,0.15)] group">
-                                <iframe
-                                    width="100%"
-                                    height="100%"
-                                    src="https://www.youtube.com/embed/5NvxbMIbjAo"
+                                <YouTubeEmbed
+                                    videoId="5NvxbMIbjAo"
                                     title="PROLOGUE - Teaser"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen
                                     className="absolute inset-0 w-full h-full"
-                                ></iframe>
+                                />
                             </div>
                             <p className="mt-4 text-[#D4AF37] font-serif tracking-widest uppercase text-sm font-bold">PROLOGUE - TEASER</p>
                         </div>
