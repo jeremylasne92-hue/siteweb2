@@ -18,10 +18,9 @@ VALID_DATA = {
 }
 
 
-def make_mock_db(recent_count=0):
+def make_mock_db():
     db = MagicMock()
     db.contact_messages.insert_one = AsyncMock()
-    db.contact_messages.count_documents = AsyncMock(return_value=recent_count)
     return db
 
 
@@ -30,7 +29,8 @@ def test_contact_success():
     db = make_mock_db()
     app.dependency_overrides[get_db] = lambda: db
 
-    with patch("routes.contact.send_email", new_callable=AsyncMock):
+    with patch("routes.contact.send_email", new_callable=AsyncMock), \
+         patch("routes.contact.check_rate_limit", new_callable=AsyncMock):
         response = client.post("/api/contact", json=VALID_DATA)
 
     app.dependency_overrides.clear()
@@ -65,10 +65,15 @@ def test_contact_honeypot_rejected():
 
 def test_contact_rate_limited():
     """POST /api/contact when rate limit exceeded returns 429."""
-    db = make_mock_db(recent_count=3)
+    from fastapi import HTTPException as _HTTPException
+    db = make_mock_db()
     app.dependency_overrides[get_db] = lambda: db
 
-    with patch("routes.contact.send_email", new_callable=AsyncMock):
+    async def _raise_rate_limit(*a, **kw):
+        raise _HTTPException(status_code=429, detail="Trop de tentatives. Veuillez réessayer plus tard.")
+
+    with patch("routes.contact.send_email", new_callable=AsyncMock), \
+         patch("routes.contact.check_rate_limit", side_effect=_raise_rate_limit):
         response = client.post("/api/contact", json=VALID_DATA)
 
     app.dependency_overrides.clear()

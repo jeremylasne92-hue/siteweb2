@@ -19,15 +19,12 @@ from models import User, UserRole, UserCreate
 from models_partner import Partner, PartnerCategory, PartnerStatus, ThematicRef
 from routes.auth import get_current_user, require_admin, get_db, hash_password
 from email_service import send_email
-from utils.rate_limit import anonymize_ip
+from utils.rate_limit import anonymize_ip, check_rate_limit
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/partners", tags=["Partners"])
-
-APPLY_RATE_LIMIT_MAX = 3
-APPLY_RATE_LIMIT_WINDOW_HOURS = 1
 LOGO_MAX_SIZE = 2 * 1024 * 1024  # 2 Mo
 LOGO_ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"]
 
@@ -218,14 +215,7 @@ async def apply_partnership(
     client_ip = request.client.host if request.client else "unknown"
 
     # Anti-spam: rate limiting (max 3 per hour per IP)
-    window_start = datetime.utcnow() - timedelta(hours=APPLY_RATE_LIMIT_WINDOW_HOURS)
-    recent_count = await db.partners.count_documents({
-        "ip_address": client_ip,
-        "created_at": {"$gte": window_start}
-    })
-    if recent_count >= APPLY_RATE_LIMIT_MAX:
-        logger.warning(f"Partner apply rate limit exceeded for {client_ip}")
-        raise HTTPException(status_code=429, detail="Trop de soumissions récentes. Réessayez plus tard.")
+    await check_rate_limit(db, request, "partner_register", max_requests=3, window_minutes=60)
 
     # Check if email is already used for contact or user account
     existing_user = await db.users.find_one({"email": contact_email})

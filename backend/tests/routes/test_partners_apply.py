@@ -35,14 +35,13 @@ def make_valid_logo(size_bytes=1024):
     return buf
 
 
-def make_mock_db(existing_user=None, recent_partner_count=0):
+def make_mock_db(existing_user=None):
     """Create a mock database for partner apply tests."""
     db = MagicMock()
     db.users.find_one = AsyncMock(return_value=existing_user)
     db.users.insert_one = AsyncMock()
     db.partners.find_one = AsyncMock(return_value=None)
     db.partners.insert_one = AsyncMock()
-    db.partners.count_documents = AsyncMock(return_value=recent_partner_count)
     return db
 
 
@@ -53,7 +52,8 @@ def test_apply_success():
 
     logo = make_valid_logo()
 
-    with patch("routes.partners.send_email", new_callable=AsyncMock) as mock_email:
+    with patch("routes.partners.send_email", new_callable=AsyncMock) as mock_email, \
+         patch("routes.partners.check_rate_limit", new_callable=AsyncMock):
         response = client.post(
             "/api/partners/apply",
             data=VALID_FORM,
@@ -75,7 +75,8 @@ def test_apply_duplicate_email():
     db = make_mock_db(existing_user={"email": "jean@asso-test.fr"})
     app.dependency_overrides[get_db] = lambda: db
 
-    response = client.post("/api/partners/apply", data=VALID_FORM)
+    with patch("routes.partners.check_rate_limit", new_callable=AsyncMock):
+        response = client.post("/api/partners/apply", data=VALID_FORM)
 
     app.dependency_overrides.clear()
 
@@ -90,7 +91,8 @@ def test_apply_invalid_logo_content():
 
     fake_file = io.BytesIO(b"not an image content at all")
 
-    with patch("routes.partners.send_email", new_callable=AsyncMock):
+    with patch("routes.partners.send_email", new_callable=AsyncMock), \
+         patch("routes.partners.check_rate_limit", new_callable=AsyncMock):
         response = client.post(
             "/api/partners/apply",
             data=VALID_FORM,
@@ -116,7 +118,8 @@ def test_apply_logo_too_large():
     buf.write(b"\x00" * (2 * 1024 * 1024 + 1))
     buf.seek(0)
 
-    with patch("routes.partners.send_email", new_callable=AsyncMock):
+    with patch("routes.partners.send_email", new_callable=AsyncMock), \
+         patch("routes.partners.check_rate_limit", new_callable=AsyncMock):
         response = client.post(
             "/api/partners/apply",
             data=VALID_FORM,
@@ -131,13 +134,17 @@ def test_apply_logo_too_large():
 
 def test_apply_rate_limited():
     """POST /partners/apply when rate limit exceeded returns 429."""
-    db = make_mock_db(recent_partner_count=3)
+    from fastapi import HTTPException as _HTTPException
+    db = make_mock_db()
     app.dependency_overrides[get_db] = lambda: db
 
-    response = client.post("/api/partners/apply", data=VALID_FORM)
+    async def _raise_rate_limit(*a, **kw):
+        raise _HTTPException(status_code=429, detail="Trop de tentatives. Veuillez réessayer plus tard.")
+
+    with patch("routes.partners.check_rate_limit", side_effect=_raise_rate_limit):
+        response = client.post("/api/partners/apply", data=VALID_FORM)
 
     app.dependency_overrides.clear()
 
     assert response.status_code == 429
-    assert "Trop de soumissions" in response.json()["detail"]
     db.partners.insert_one.assert_not_called()

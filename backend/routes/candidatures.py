@@ -4,11 +4,11 @@ from pymongo.errors import PyMongoError
 from models import TechCandidature, TechCandidatureRequest, TechCandidatureStatusUpdate, TechCandidatureBatchStatusUpdate, User
 from routes.auth import get_db, require_admin, get_current_user
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from datetime import datetime, timedelta
+from datetime import datetime
 from email_service import send_email, send_candidature_confirmation, send_candidature_interview, send_candidature_accepted, send_candidature_rejected
 from routes.members import auto_seed_member_profile, deactivate_member_profile
 from core.config import settings
-from utils.rate_limit import anonymize_ip
+from utils.rate_limit import anonymize_ip, check_rate_limit
 import asyncio
 import csv
 import io
@@ -18,9 +18,6 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/candidatures", tags=["Candidatures"])
 
-RATE_LIMIT_MAX = 3
-RATE_LIMIT_WINDOW_HOURS = 1
-
 PROJECT_LABELS = {"cognisphere": "CogniSphère", "echolink": "ECHOLink", "scenariste": "Scénariste"}
 EXPERIENCE_LABELS = {"professional": "Professionnel", "student": "Étudiant", "self_taught": "Autodidacte", "motivated": "Motivé"}
 
@@ -28,26 +25,20 @@ EXPERIENCE_LABELS = {"professional": "Professionnel", "student": "Étudiant", "s
 async def _process_candidature(
     data: TechCandidatureRequest,
     project_override: str | None,
-    client_ip: str,
+    request: Request,
     background_tasks: BackgroundTasks,
     db: AsyncIOMotorDatabase,
 ) -> dict:
     """Shared logic for submitting a candidature (anti-spam, storage, notification)."""
+    client_ip = request.client.host if request.client else "unknown"
+
     # Anti-spam: honeypot check (silent reject)
     if data.website:
         logger.info(f"Honeypot triggered from {client_ip}")
         return {"message": "Candidature envoyée avec succès"}
 
     # Anti-spam: rate limiting (max 3 per hour per IP)
-    anon_ip = anonymize_ip(client_ip)
-    window_start = datetime.utcnow() - timedelta(hours=RATE_LIMIT_WINDOW_HOURS)
-    recent_count = await db.tech_candidatures.count_documents({
-        "ip_address": anon_ip,
-        "created_at": {"$gte": window_start}
-    })
-    if recent_count >= RATE_LIMIT_MAX:
-        logger.warning(f"Rate limit exceeded for {anon_ip}")
-        raise HTTPException(status_code=429, detail="Trop de soumissions récentes. Réessayez plus tard.")
+    await check_rate_limit(db, request, "candidature", max_requests=3, window_minutes=60)
 
     # Store candidature
     project = project_override or data.project
@@ -98,8 +89,7 @@ async def submit_tech_candidature(
     db: AsyncIOMotorDatabase = Depends(get_db),
 ):
     """Submit a tech candidature for CogniSphère or ECHOLink (public, anti-spam protected)"""
-    client_ip = request.client.host if request.client else "unknown"
-    return await _process_candidature(data, None, client_ip, background_tasks, db)
+    return await _process_candidature(data, None, request, background_tasks, db)
 
 
 @router.post("/scenariste")
@@ -110,8 +100,7 @@ async def submit_scenariste_candidature(
     db: AsyncIOMotorDatabase = Depends(get_db),
 ):
     """Submit a scenarist candidature (public, anti-spam protected)"""
-    client_ip = request.client.host if request.client else "unknown"
-    return await _process_candidature(data, "scenariste", client_ip, background_tasks, db)
+    return await _process_candidature(data, "scenariste", request, background_tasks, db)
 
 
 @router.get("/admin/all")

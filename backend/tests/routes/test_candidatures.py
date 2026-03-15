@@ -31,11 +31,10 @@ VALID_SCENARISTE_DATA = {
 }
 
 
-def make_mock_db(recent_count=0):
+def make_mock_db():
     """Create a mock database for candidatures."""
     db = MagicMock()
     db.tech_candidatures.insert_one = AsyncMock()
-    db.tech_candidatures.count_documents = AsyncMock(return_value=recent_count)
     return db
 
 
@@ -44,7 +43,8 @@ def test_candidature_success():
     db = make_mock_db()
     app.dependency_overrides[get_db] = lambda: db
 
-    with patch("routes.candidatures.send_email", new_callable=AsyncMock) as mock_email:
+    with patch("routes.candidatures.send_email", new_callable=AsyncMock) as mock_email, \
+         patch("routes.candidatures.check_rate_limit", new_callable=AsyncMock):
         response = client.post("/api/candidatures/tech", json=VALID_DATA)
 
     app.dependency_overrides.clear()
@@ -76,10 +76,15 @@ def test_candidature_honeypot_rejected():
 
 def test_candidature_rate_limited():
     """POST /candidatures/tech when rate limit exceeded returns 429."""
-    db = make_mock_db(recent_count=3)
+    from fastapi import HTTPException as _HTTPException
+    db = make_mock_db()
     app.dependency_overrides[get_db] = lambda: db
 
-    with patch("routes.candidatures.send_email", new_callable=AsyncMock):
+    async def _raise_rate_limit(*a, **kw):
+        raise _HTTPException(status_code=429, detail="Trop de tentatives. Veuillez réessayer plus tard.")
+
+    with patch("routes.candidatures.send_email", new_callable=AsyncMock), \
+         patch("routes.candidatures.check_rate_limit", side_effect=_raise_rate_limit):
         response = client.post("/api/candidatures/tech", json=VALID_DATA)
 
     app.dependency_overrides.clear()
@@ -219,7 +224,8 @@ def test_scenariste_candidature_success():
     db = make_mock_db()
     app.dependency_overrides[get_db] = lambda: db
 
-    with patch("routes.candidatures.send_email", new_callable=AsyncMock):
+    with patch("routes.candidatures.send_email", new_callable=AsyncMock), \
+         patch("routes.candidatures.check_rate_limit", new_callable=AsyncMock):
         response = client.post("/api/candidatures/tech", json=VALID_SCENARISTE_DATA)
 
     app.dependency_overrides.clear()
@@ -253,7 +259,8 @@ def test_scenariste_without_portfolio():
 
     data = {**VALID_SCENARISTE_DATA, "portfolio_url": None, "creative_interests": None}
 
-    with patch("routes.candidatures.send_email", new_callable=AsyncMock):
+    with patch("routes.candidatures.send_email", new_callable=AsyncMock), \
+         patch("routes.candidatures.check_rate_limit", new_callable=AsyncMock):
         response = client.post("/api/candidatures/tech", json=data)
 
     app.dependency_overrides.clear()
@@ -279,7 +286,8 @@ def test_scenariste_dedicated_endpoint():
         "experience_level": "professional",
     }
 
-    with patch("routes.candidatures.send_email", new_callable=AsyncMock):
+    with patch("routes.candidatures.send_email", new_callable=AsyncMock), \
+         patch("routes.candidatures.check_rate_limit", new_callable=AsyncMock):
         response = client.post("/api/candidatures/scenariste", json=data)
 
     app.dependency_overrides.clear()
@@ -330,10 +338,15 @@ def test_scenariste_honeypot_rejected():
 
 def test_scenariste_rate_limited():
     """POST /candidatures/scenariste when rate limit exceeded returns 429."""
-    db = make_mock_db(recent_count=3)
+    from fastapi import HTTPException as _HTTPException
+    db = make_mock_db()
     app.dependency_overrides[get_db] = lambda: db
 
-    with patch("routes.candidatures.send_email", new_callable=AsyncMock):
+    async def _raise_rate_limit(*a, **kw):
+        raise _HTTPException(status_code=429, detail="Trop de tentatives. Veuillez réessayer plus tard.")
+
+    with patch("routes.candidatures.send_email", new_callable=AsyncMock), \
+         patch("routes.candidatures.check_rate_limit", side_effect=_raise_rate_limit):
         response = client.post("/api/candidatures/scenariste", json=VALID_SCENARISTE_DATA)
 
     app.dependency_overrides.clear()

@@ -23,11 +23,10 @@ VALID_DATA = {
 }
 
 
-def make_mock_db(recent_count=0):
+def make_mock_db():
     """Create a mock database for volunteer applications."""
     db = MagicMock()
     db.volunteer_applications.insert_one = AsyncMock()
-    db.volunteer_applications.count_documents = AsyncMock(return_value=recent_count)
     return db
 
 
@@ -36,7 +35,8 @@ def test_submit_volunteer_application():
     db = make_mock_db()
     app.dependency_overrides[get_db] = lambda: db
 
-    with patch("routes.volunteers.send_email", new_callable=AsyncMock):
+    with patch("routes.volunteers.send_email", new_callable=AsyncMock), \
+         patch("routes.volunteers.check_rate_limit", new_callable=AsyncMock):
         response = client.post("/api/volunteers/apply", json=VALID_DATA)
 
     app.dependency_overrides.clear()

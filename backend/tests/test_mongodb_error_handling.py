@@ -14,7 +14,6 @@ def make_failing_db():
     """Create a mock DB where insert_one raises a PyMongoError."""
     db = MagicMock()
     error = ServerSelectionTimeoutError("MongoDB unreachable")
-    db.contact_messages.count_documents = AsyncMock(return_value=0)
     db.contact_messages.insert_one = AsyncMock(side_effect=error)
     return db
 
@@ -24,7 +23,8 @@ def test_contact_mongodb_error_returns_503():
     db = make_failing_db()
     app.dependency_overrides[get_db] = lambda: db
 
-    with patch("routes.contact.send_email", new_callable=AsyncMock):
+    with patch("routes.contact.send_email", new_callable=AsyncMock), \
+         patch("routes.contact.check_rate_limit", new_callable=AsyncMock):
         response = client.post("/api/contact", json={
             "name": "Test User",
             "email": "test@example.com",
@@ -48,12 +48,12 @@ def test_candidature_mongodb_error_returns_503():
     """POST /api/candidatures/tech when MongoDB fails returns 503."""
     db = MagicMock()
     error = ServerSelectionTimeoutError("MongoDB unreachable")
-    db.tech_candidatures.count_documents = AsyncMock(return_value=0)
     db.tech_candidatures.insert_one = AsyncMock(side_effect=error)
     app.dependency_overrides[get_db] = lambda: db
 
     with patch("routes.candidatures.send_email", new_callable=AsyncMock), \
-         patch("routes.candidatures.send_candidature_confirmation", new_callable=AsyncMock):
+         patch("routes.candidatures.send_candidature_confirmation", new_callable=AsyncMock), \
+         patch("routes.candidatures.check_rate_limit", new_callable=AsyncMock):
         response = client.post("/api/candidatures/tech", json={
             "name": "Dev Test",
             "email": "dev@example.com",
@@ -73,13 +73,13 @@ def test_volunteer_mongodb_error_returns_503():
     """POST /api/volunteers/apply when MongoDB fails returns 503."""
     db = MagicMock()
     error = ServerSelectionTimeoutError("MongoDB unreachable")
-    db.volunteer_applications.count_documents = AsyncMock(return_value=0)
     db.volunteer_applications.insert_one = AsyncMock(side_effect=error)
     app.dependency_overrides[get_db] = lambda: db
 
     with patch("routes.volunteers.send_email", new_callable=AsyncMock), \
          patch("routes.volunteers.send_volunteer_confirmation", new_callable=AsyncMock), \
-         patch("routes.volunteers.geocode_city", new_callable=AsyncMock, return_value=None):
+         patch("routes.volunteers.geocode_city", new_callable=AsyncMock, return_value=None), \
+         patch("routes.volunteers.check_rate_limit", new_callable=AsyncMock):
         response = client.post("/api/volunteers/apply", json={
             "name": "Volunteer Test",
             "email": "vol@example.com",

@@ -4,10 +4,10 @@ from pymongo.errors import PyMongoError
 from models import VolunteerApplication, VolunteerApplicationRequest, VolunteerStatusUpdate, VolunteerBatchStatusUpdate, User
 from routes.auth import get_db, require_admin, get_current_user
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from datetime import datetime, timedelta
+from datetime import datetime
 from email_service import send_email, send_volunteer_confirmation, send_volunteer_interview, send_volunteer_accepted, send_volunteer_rejected
 from core.config import settings
-from utils.rate_limit import anonymize_ip
+from utils.rate_limit import anonymize_ip, check_rate_limit
 from utils.geocode import geocode_city
 from routes.members import auto_seed_member_profile, deactivate_member_profile
 import csv
@@ -17,9 +17,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/volunteers", tags=["Volunteers"])
-
-RATE_LIMIT_MAX = 3
-RATE_LIMIT_WINDOW_HOURS = 1
 
 
 @router.post("/apply")
@@ -38,15 +35,7 @@ async def submit_volunteer_application(
         return {"message": "Candidature bénévole envoyée avec succès"}
 
     # Anti-spam: rate limiting (max 3 per hour per IP)
-    anon_ip = anonymize_ip(client_ip)
-    window_start = datetime.utcnow() - timedelta(hours=RATE_LIMIT_WINDOW_HOURS)
-    recent_count = await db.volunteer_applications.count_documents({
-        "ip_address": anon_ip,
-        "created_at": {"$gte": window_start}
-    })
-    if recent_count >= RATE_LIMIT_MAX:
-        logger.warning(f"Rate limit exceeded for {anon_ip}")
-        raise HTTPException(status_code=429, detail="Trop de soumissions récentes. Réessayez plus tard.")
+    await check_rate_limit(db, request, "volunteer", max_requests=3, window_minutes=60)
 
     # Store application
     application = VolunteerApplication(

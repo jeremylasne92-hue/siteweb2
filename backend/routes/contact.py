@@ -1,19 +1,16 @@
 from fastapi import APIRouter, Request, HTTPException, BackgroundTasks, Depends
-from datetime import datetime, timedelta
+from datetime import datetime
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import logging
 
 from pymongo.errors import PyMongoError
 from models import ContactMessageRequest
 from email_service import send_email
-from utils.rate_limit import anonymize_ip
+from utils.rate_limit import anonymize_ip, check_rate_limit
 from routes.auth import get_db
 
 router = APIRouter(tags=["contact"])
 logger = logging.getLogger(__name__)
-
-RATE_LIMIT_MAX = 3
-RATE_LIMIT_WINDOW_HOURS = 1
 
 SUBJECT_LABELS = {
     "question_generale": "Question générale",
@@ -35,16 +32,7 @@ async def submit_contact(
         return {"message": "Message envoyé avec succès"}
 
     # Rate limiting
-    client_ip = request.client.host if request.client else "unknown"
-    anon_ip = anonymize_ip(client_ip)
-    window_start = datetime.utcnow() - timedelta(hours=RATE_LIMIT_WINDOW_HOURS)
-    recent_count = await db.contact_messages.count_documents({
-        "ip_address": anon_ip,
-        "created_at": {"$gte": window_start},
-    })
-    if recent_count >= RATE_LIMIT_MAX:
-        logger.warning(f"Contact rate limit exceeded for {anon_ip}")
-        raise HTTPException(status_code=429, detail="Trop de messages récents. Réessayez plus tard.")
+    await check_rate_limit(db, request, "contact", max_requests=3, window_minutes=60)
 
     # Store in MongoDB
     doc = {
@@ -52,7 +40,7 @@ async def submit_contact(
         "email": data.email,
         "subject": data.subject,
         "message": data.message,
-        "ip_address": anon_ip,
+        "ip_address": anonymize_ip(request.client.host if request.client else "unknown"),
         "created_at": datetime.utcnow(),
         "read": False,
     }

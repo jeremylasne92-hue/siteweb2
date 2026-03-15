@@ -9,6 +9,8 @@ from starlette.staticfiles import StaticFiles
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
+import time
+import uuid
 from pymongo.errors import PyMongoError
 from pathlib import Path
 
@@ -18,12 +20,10 @@ from routes import auth, episodes, progress, videos, users, thematics, resources
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 from core.config import settings
+from utils.logging_config import setup_logging
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+setup_logging(settings.ENVIRONMENT)
 logger = logging.getLogger(__name__)
 
 # MongoDB connection
@@ -210,3 +210,42 @@ class MongoDBErrorMiddleware(BaseHTTPMiddleware):
             )
 
 app.add_middleware(MongoDBErrorMiddleware)
+
+
+class RequestLoggingMiddleware(BaseHTTPMiddleware):
+    """Log every HTTP request with method, path, status, and duration."""
+
+    async def dispatch(self, request: StarletteRequest, call_next):
+        # Skip health check to avoid noise
+        if request.url.path == "/api/health":
+            return await call_next(request)
+
+        request_id = uuid.uuid4().hex[:8]
+        request.state.request_id = request_id
+
+        start = time.perf_counter()
+        response: StarletteResponse = await call_next(request)
+        duration_ms = round((time.perf_counter() - start) * 1000, 1)
+
+        status_code = response.status_code
+        if status_code >= 500:
+            level = logging.ERROR
+        elif status_code >= 400:
+            level = logging.WARNING
+        else:
+            level = logging.INFO
+
+        logger.log(
+            level,
+            "%s %s %s %.1fms",
+            request.method,
+            request.url.path,
+            status_code,
+            duration_ms,
+            extra={"request_id": request_id},
+        )
+
+        return response
+
+
+app.add_middleware(RequestLoggingMiddleware)
