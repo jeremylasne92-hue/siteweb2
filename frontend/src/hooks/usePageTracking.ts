@@ -1,22 +1,25 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useAnalytics } from './useAnalytics';
 
 /**
- * Track page views in Google Analytics (GA4) on every route change.
- * Must be used inside a <Router> context.
- *
- * The gtag script is loaded in index.html with `send_page_view: false`
- * so that this hook controls all page_view events for the SPA.
+ * Track page views on every route change.
+ * Sends to both GA4 and internal analytics DB.
  */
 export function usePageTracking() {
   const location = useLocation();
+  const { trackPageView } = useAnalytics();
 
   useEffect(() => {
+    // GA4
     if (typeof window.gtag === 'function') {
       window.gtag('event', 'page_view', {
         page_path: location.pathname + location.search,
         page_title: document.title,
       });
     }
-  }, [location]);
+
+    // Internal DB
+    trackPageView();
+  }, [location, trackPageView]);
 }
