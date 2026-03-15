@@ -85,7 +85,13 @@ export function Header() {
                 { name: 'Candidature', anchor: '#candidature' },
             ]
         },
-        { name: 'Partenaires', path: '/partenaires' },
+        {
+            name: 'Partenaires', path: '/partenaires',
+            children: [
+                { name: 'Cartographie', anchor: '#cartographie' },
+                { name: 'Membres', anchor: '#membres' },
+            ]
+        },
         { name: 'Événements', path: '/agenda' },
         { name: 'Ressources', path: '/ressources' },
         { name: 'Contact', path: '/contact' },

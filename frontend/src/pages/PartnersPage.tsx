@@ -113,7 +113,8 @@ export default function PartnersPage() {
 
             <PartnersStats stats={stats} membersCount={membersCount} />
 
-            <div className="max-w-7xl mx-auto px-6 lg:px-8 pb-32 z-10 relative">
+            <div id="cartographie" className="max-w-7xl mx-auto px-6 lg:px-8 pb-32 z-10 relative">
+                <h2 className="text-2xl sm:text-3xl font-serif text-white mb-8 text-center">Cartographie des Partenaires</h2>
                 <PartnersFilters
                     searchQuery={searchQuery}
                     setSearchQuery={setSearchQuery}

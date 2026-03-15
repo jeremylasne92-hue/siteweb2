@@ -56,7 +56,7 @@ export function MembersSection({ onMemberClick }: MembersSectionProps) {
     if (isLoading || members.length === 0) return null;
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <div id="membres" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
             <div className="border-t border-white/10 pt-16">
                 <div className="text-center mb-10">
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-sm text-neutral-400 mb-4">
