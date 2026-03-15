@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useUrlFilters } from '../hooks/useUrlFilters';
 import {
     CheckCircle2, XCircle, Star, StarOff, Clock,
     Shield, Users, RefreshCw, AlertTriangle,
@@ -11,6 +12,7 @@ import { AddressAutocomplete } from '../components/ui/AddressAutocomplete';
 import type { AddressData } from '../components/ui/AddressAutocomplete';
 import type { PartnerCategory } from '../components/partners/PartnerCard';
 import { PARTNERS_API } from '../config/api';
+import { isValidEmail } from '../utils/validation';
 
 const API_BASE = PARTNERS_API;
 
@@ -52,6 +54,7 @@ interface AdminPartner {
     created_at: string;
     validated_at?: string;
     rejection_reason?: string;
+    admin_notes?: string;
 }
 
 const statusConfig: Record<PartnerStatus, { label: string; color: string; icon: React.ReactNode }> = {
@@ -133,11 +136,23 @@ function AdminPartnerDetail({
             linkedin_url: partner.linkedin_url || '',
             instagram_url: partner.instagram_url || '',
             twitter_url: partner.twitter_url || '',
+            admin_notes: partner.admin_notes || '',
         });
         setIsEditing(true);
     };
 
+    const [editError, setEditError] = useState('');
+
     const handleSave = () => {
+        setEditError('');
+
+        // Validate email before sending
+        const emailValue = editData.contact_email as string | null;
+        if (emailValue && !isValidEmail(emailValue)) {
+            setEditError('Adresse email invalide.');
+            return;
+        }
+
         const changes: Record<string, unknown> = {};
         for (const [key, value] of Object.entries(editData)) {
             const original = (partner as AdminPartner & Record<string, unknown>)[key];
@@ -298,11 +313,14 @@ function AdminPartnerDetail({
                                     Sauvegarder
                                 </button>
                                 <button
-                                    onClick={() => setIsEditing(false)}
+                                    onClick={() => { setIsEditing(false); setEditError(''); }}
                                     className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-white/5 text-echo-textMuted hover:bg-white/10 text-xs transition-colors"
                                 >
                                     Annuler
                                 </button>
+                                {editError && (
+                                    <span className="text-xs text-red-400 ml-2">{editError}</span>
+                                )}
                             </>
                         )}
                         {(partner.status === 'approved' || partner.status === 'suspended') && !isEditing && (
@@ -696,6 +714,28 @@ function AdminPartnerDetail({
                             )}
                         </div>
 
+                        {/* Admin Notes */}
+                        <div>
+                            <h4 className="text-xs uppercase tracking-wider text-echo-textMuted mb-2">Notes admin (internes)</h4>
+                            {isEditing ? (
+                                <textarea
+                                    value={(editData.admin_notes as string) || ''}
+                                    onChange={(e) => updateField('admin_notes', e.target.value)}
+                                    rows={3}
+                                    placeholder="Notes visibles uniquement par les admins..."
+                                    className="w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-echo-gold/50"
+                                />
+                            ) : (
+                                partner.admin_notes ? (
+                                    <p className="text-sm text-echo-textMuted leading-relaxed whitespace-pre-line bg-amber-400/5 border border-amber-400/10 rounded-lg p-3">
+                                        {partner.admin_notes}
+                                    </p>
+                                ) : (
+                                    <p className="text-sm text-echo-textMuted/50 italic">Aucune note</p>
+                                )
+                            )}
+                        </div>
+
                         {/* Featured toggle */}
                         <div className="flex items-center gap-3">
                             <button
@@ -750,8 +790,10 @@ export default function AdminPartners() {
     const [partners, setPartners] = useState<AdminPartner[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [authError, setAuthError] = useState(false);
-    const [statusFilter, setStatusFilter] = useState<PartnerStatus | 'all'>('all');
-    const [contractFilter, setContractFilter] = useState<ContractStatus | 'all'>('all');
+    const PARTNER_FILTER_DEFAULTS = useMemo(() => ({ status: 'all' as string, contract: 'all' as string }), []);
+    const [urlFilters, setUrlFilter] = useUrlFilters(PARTNER_FILTER_DEFAULTS);
+    const statusFilter = urlFilters.status as PartnerStatus | 'all';
+    const contractFilter = urlFilters.contract as ContractStatus | 'all';
     const [rejectModalId, setRejectModalId] = useState<string | null>(null);
     const [rejectReason, setRejectReason] = useState('');
     const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -998,7 +1040,7 @@ export default function AdminPartners() {
                         {(['all', 'pending', 'approved', 'rejected'] as const).map(status => (
                             <button
                                 key={status}
-                                onClick={() => setStatusFilter(status)}
+                                onClick={() => setUrlFilter('status',status)}
                                 className={cn(
                                     "p-4 rounded-xl border transition-all text-left",
                                     statusFilter === status
@@ -1023,7 +1065,7 @@ export default function AdminPartners() {
                         {(['all', 'accord_principe', 'en_attente_contrat', 'contractualise'] as const).map(cs => (
                             <button
                                 key={cs}
-                                onClick={() => setContractFilter(cs)}
+                                onClick={() => setUrlFilter('contract',cs)}
                                 className={cn(
                                     "px-3 py-1 rounded-full text-xs border transition-colors",
                                     contractFilter === cs

@@ -160,6 +160,7 @@ class TechCandidature(BaseModel):
     message: str
     status: Literal["pending", "entretien", "accepted", "rejected"] = "pending"
     status_note: Optional[str] = None
+    admin_notes: Optional[str] = None  # Notes internes admin (non visibles par le candidat)
     portfolio_url: Optional[str] = None
     creative_interests: Optional[str] = None
     experience_level: Optional[Literal["professional", "student", "self_taught", "motivated"]] = None
@@ -200,6 +201,7 @@ class TechCandidatureEditUpdate(BaseModel):
     portfolio_url: Optional[str] = Field(None, max_length=500)
     creative_interests: Optional[str] = Field(None, max_length=500)
     experience_level: Optional[Literal["professional", "student", "self_taught", "motivated"]] = None
+    admin_notes: Optional[str] = None
 
 
 class TechCandidatureStatusUpdate(BaseModel):
@@ -287,6 +289,8 @@ class ContactMessage(BaseModel):
     ip_address: str  # anonymisé
     created_at: datetime = Field(default_factory=datetime.utcnow)
     read: bool = False
+    status: Literal["unread", "read", "treated"] = "unread"
+    admin_note: Optional[str] = None
 
 
 class AnalyticsEventCreate(BaseModel):
@@ -325,6 +329,7 @@ class VolunteerApplication(BaseModel):
     message: Optional[str] = None
     status: Literal["pending", "entretien", "accepted", "rejected"] = "pending"
     status_note: Optional[str] = None
+    admin_notes: Optional[str] = None  # Notes internes admin (non visibles par le candidat)
     ip_address: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: Optional[datetime] = None
@@ -360,6 +365,7 @@ class VolunteerEditUpdate(BaseModel):
     experience_level: Optional[Literal["professional", "student", "self_taught", "motivated"]] = None
     availability: Optional[Literal["punctual", "regular", "active"]] = None
     message: Optional[str] = Field(None, max_length=2000)
+    admin_notes: Optional[str] = None
 
 
 class VolunteerStatusUpdate(BaseModel):

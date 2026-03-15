@@ -64,7 +64,8 @@ class Partner(BaseModel):
     contract_status: Optional[ContractStatus] = None  # Statut contractuel
     is_featured: bool = False                    # Mis en avant sur la page
     rejection_reason: Optional[str] = None       # Motif si refusé
-    
+    admin_notes: Optional[str] = None            # Notes internes admin
+
     # Anti-spam
     ip_address: Optional[str] = None             # IP de soumission (rate limiting)
 

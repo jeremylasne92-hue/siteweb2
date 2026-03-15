@@ -8,6 +8,7 @@ from datetime import datetime
 from email_service import send_email, send_volunteer_confirmation, send_volunteer_interview, send_volunteer_accepted, send_volunteer_rejected
 from core.config import settings
 from utils.rate_limit import anonymize_ip, check_rate_limit
+from utils.audit import log_admin_action
 from utils.geocode import geocode_city
 from routes.members import auto_seed_member_profile, deactivate_member_profile
 import csv
@@ -118,6 +119,7 @@ async def delete_volunteer_application(
     result = await db.volunteer_applications.delete_one({"id": application_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Candidature non trouvée")
+    await log_admin_action(db, admin.id, "delete", "volunteer", application_id)
     logger.info(f"Admin {admin.id} deleted volunteer application {application_id}")
     return {"message": "Candidature supprimée"}
 
@@ -221,6 +223,7 @@ async def update_volunteer_status(
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Candidature non trouvée")
+    await log_admin_action(db, admin.id, "status_change", "volunteer", application_id, {"new_status": data.status})
     logger.info(f"Admin {admin.id} updated volunteer application {application_id} to {data.status}")
 
     # Send status notification email
@@ -266,6 +269,7 @@ async def batch_update_volunteer_status(
         {"id": {"$in": data.ids}},
         {"$set": update_fields},
     )
+    await log_admin_action(db, admin.id, "batch_status", "volunteer", ",".join(data.ids), {"new_status": data.status})
     logger.info(f"Admin {admin.id} batch-updated {result.modified_count} volunteer applications to {data.status}")
     return {"message": f"{result.modified_count} candidature(s) mise(s) à jour", "count": result.modified_count}
 

@@ -20,6 +20,7 @@ from models_partner import Partner, PartnerCategory, PartnerStatus, ThematicRef
 from routes.auth import get_current_user, require_admin, get_db, hash_password
 from email_service import send_email
 from utils.rate_limit import anonymize_ip, check_rate_limit
+from utils.audit import log_admin_action
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 logger = logging.getLogger(__name__)
@@ -548,7 +549,9 @@ async def admin_approve_partner(
     
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="Partner not found or already approved")
-        
+
+    await log_admin_action(db, admin.id, "approve", "partner", partner_id)
+
     partner = await db.partners.find_one({"id": partner_id})
     if partner:
         background_tasks.add_task(
@@ -557,7 +560,7 @@ async def admin_approve_partner(
             "Bienvenue dans l'ÉCHOSystem !",
             "Votre demande de partenariat a été approuvée. Votre profil est désormais public."
         )
-        
+
     return {"success": True, "message": "Partenaire approuvé avec succès"}
 
 @router.put("/admin/{partner_id}/reject")
@@ -580,7 +583,9 @@ async def admin_reject_partner(
     
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="Partner not found")
-        
+
+    await log_admin_action(db, admin.id, "reject", "partner", partner_id, {"reason": body.reason})
+
     partner = await db.partners.find_one({"id": partner_id})
     if partner:
         background_tasks.add_task(
@@ -589,7 +594,7 @@ async def admin_reject_partner(
             "Suite à votre demande de partenariat ECHO",
             f"Malheureusement nous ne pouvons donner suite. Motif : {body.reason}"
         )
-        
+
     return {"success": True, "message": "Partenaire refusé"}
 
 @router.put("/admin/{partner_id}/feature")
@@ -610,7 +615,9 @@ async def admin_toggle_feature(
     
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="Partner not found")
-        
+
+    await log_admin_action(db, admin.id, "feature_toggle", "partner", partner_id)
+
     return {"success": True, "message": f"Mise en avant {'activée' if is_featured else 'désactivée'}"}
 
 @router.put("/admin/{partner_id}/suspend")
@@ -629,6 +636,8 @@ async def admin_suspend_partner(
         {"id": partner_id},
         {"$set": {"status": new_status, "updated_at": datetime.utcnow()}}
     )
+    await log_admin_action(db, admin.id, "suspend", "partner", partner_id)
+
     label = "réactivé" if new_status == PartnerStatus.APPROVED else "suspendu"
     return {"success": True, "message": f"Partenaire {label}"}
 
@@ -656,6 +665,7 @@ async def admin_delete_partner(
             os.remove(logo_path)
 
     await db.partners.delete_one({"id": partner_id})
+    await log_admin_action(db, admin.id, "delete", "partner", partner_id)
     logger.info(f"Admin {admin.id} deleted partner {partner_id} ({partner.get('name', 'unknown')})")
 
     return {"success": True, "message": "Partenaire supprimé définitivement"}
@@ -682,6 +692,7 @@ class AdminPartnerEdit(BaseModel):
     linkedin_url: Optional[str] = None
     instagram_url: Optional[str] = None
     twitter_url: Optional[str] = None
+    admin_notes: Optional[str] = None
 
 
 @router.put("/admin/{partner_id}/edit")
@@ -722,6 +733,8 @@ async def admin_edit_partner(
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Partner not found")
+
+    await log_admin_action(db, admin.id, "edit", "partner", partner_id, {"fields": list(updates.keys())})
 
     return {"success": True, "message": "Partenaire mis à jour"}
 

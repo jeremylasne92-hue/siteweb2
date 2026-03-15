@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
     Shield, Users, Calendar, Download, FileText, Heart,
-    Clock, ChevronRight, AlertTriangle
+    Clock, ChevronRight, AlertTriangle, MessageSquare
 } from 'lucide-react';
 import { API_URL, PARTNERS_API, CANDIDATURES_API } from '../config/api';
 
@@ -13,6 +13,11 @@ export default function AdminDashboard() {
     const [pendingCandidatureCount, setPendingCandidatureCount] = useState<number>(0);
     const [volunteerCount, setVolunteerCount] = useState<number | null>(null);
     const [pendingVolunteerCount, setPendingVolunteerCount] = useState<number>(0);
+    const [unreadMessageCount, setUnreadMessageCount] = useState<number>(0);
+    const [pending, setPending] = useState<{
+        partners: number; candidatures: number; volunteers: number;
+        members: number; messages: number; total: number;
+    } | null>(null);
     useEffect(() => {
         const fetchStats = async () => {
             try {
@@ -47,6 +52,26 @@ export default function AdminDashboard() {
                     const volunteers = await res.json();
                     setVolunteerCount(volunteers.length);
                     setPendingVolunteerCount(volunteers.filter((v: { status: string }) => v.status === 'pending').length);
+                }
+            } catch {
+                // silent
+            }
+            try {
+                const res = await fetch(`${API_URL}/contact/admin/all?status=unread`, {
+                    credentials: 'include',
+                });
+                if (res.ok) {
+                    const msgs = await res.json();
+                    setUnreadMessageCount(msgs.length);
+                }
+            } catch {
+                // silent
+            }
+            try {
+                const res = await fetch(`${API_URL}/admin/pending`, { credentials: 'include' });
+                if (res.ok) {
+                    const data = await res.json();
+                    setPending(data);
                 }
             } catch {
                 // silent
@@ -104,6 +129,15 @@ export default function AdminDashboard() {
             active: true,
         },
         {
+            title: 'Messages',
+            description: 'Consulter les messages du formulaire de contact',
+            icon: <MessageSquare size={24} />,
+            href: '/admin/messages',
+            active: true,
+            notificationCount: unreadMessageCount,
+            notificationColor: 'bg-blue-500',
+        },
+        {
             title: 'Exports',
             description: 'Exporter la base des emails opt-in',
             icon: <Download size={24} />,
@@ -125,6 +159,38 @@ export default function AdminDashboard() {
                         <p className="text-echo-textMuted">Tableau de bord ECHO</p>
                     </div>
                 </div>
+
+                {/* Pending items banner */}
+                {pending && pending.total > 0 && (
+                    <div className="mb-8 p-5 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+                        <div className="flex items-center gap-3 mb-3">
+                            <Clock size={20} className="text-amber-400" />
+                            <h2 className="text-lg font-serif text-white">{pending.total} élément{pending.total > 1 ? 's' : ''} à traiter</h2>
+                        </div>
+                        <div className="flex flex-wrap gap-3">
+                            {pending.partners > 0 && (
+                                <Link to="/admin/partenaires" className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm text-amber-300 hover:bg-white/10 transition-colors">
+                                    {pending.partners} partenaire{pending.partners > 1 ? 's' : ''} en attente
+                                </Link>
+                            )}
+                            {pending.candidatures > 0 && (
+                                <Link to="/admin/candidatures" className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm text-purple-300 hover:bg-white/10 transition-colors">
+                                    {pending.candidatures} candidature{pending.candidatures > 1 ? 's' : ''} en attente
+                                </Link>
+                            )}
+                            {pending.volunteers > 0 && (
+                                <Link to="/admin/benevoles" className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm text-green-300 hover:bg-white/10 transition-colors">
+                                    {pending.volunteers} bénévole{pending.volunteers > 1 ? 's' : ''} en attente
+                                </Link>
+                            )}
+                            {pending.messages > 0 && (
+                                <Link to="/admin/messages" className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm text-blue-300 hover:bg-white/10 transition-colors">
+                                    {pending.messages} message{pending.messages > 1 ? 's' : ''} non lu{pending.messages > 1 ? 's' : ''}
+                                </Link>
+                            )}
+                        </div>
+                    </div>
+                )}
 
                 {/* Section Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

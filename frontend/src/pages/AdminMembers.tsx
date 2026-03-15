@@ -8,6 +8,7 @@ import { Button } from '../components/ui/Button';
 import { CityAutocomplete } from '../components/ui/CityAutocomplete';
 import { API_URL } from '../config/api';
 import { PROJECT_LABELS, EXPERIENCE_LABELS } from '../config/candidatures';
+import { isValidEmail, parse422Detail } from '../utils/validation';
 
 type MembershipStatus = 'active' | 'inactive' | 'suspended' | 'alumni';
 
@@ -125,6 +126,14 @@ export default function AdminMembers() {
         setSaving(true);
         setSaveMsg('');
         try {
+            // Validate email before sending
+            const emailValue = (editForm.contact_email as string) || '';
+            if (emailValue && !isValidEmail(emailValue)) {
+                setSaveMsg('Adresse email invalide.');
+                setSaving(false);
+                return;
+            }
+
             const payload: Record<string, unknown> = {};
             if (editForm.display_name !== selected.display_name) payload.display_name = editForm.display_name;
             if (editForm.bio !== (selected.bio || '')) payload.bio = editForm.bio || null;
@@ -160,7 +169,8 @@ export default function AdminMembers() {
                 setSaveMsg('Profil mis à jour avec succès.');
             } else {
                 const errData = await res.json().catch(() => null);
-                setSaveMsg(`Erreur ${res.status}: ${errData?.detail || 'Impossible de sauvegarder.'}`);
+                const detail = errData?.detail ? parse422Detail(errData.detail) : 'Impossible de sauvegarder.';
+                setSaveMsg(`Erreur ${res.status}: ${detail}`);
             }
         } catch {
             setSaveMsg('Erreur réseau.');
@@ -187,7 +197,18 @@ export default function AdminMembers() {
                 setSaveMsg(`Statut changé en "${STATUS_CONFIG[status].label}".`);
             } else {
                 const errData = await res.json().catch(() => null);
-                setSaveMsg(`Erreur ${res.status}: ${errData?.detail || 'Impossible de changer le statut.'}`);
+                let detail = 'Impossible de changer le statut.';
+                if (errData?.detail) {
+                    if (typeof errData.detail === 'string') {
+                        detail = errData.detail;
+                    } else if (Array.isArray(errData.detail)) {
+                        detail = errData.detail.map((e: { loc?: string[]; msg?: string }) => {
+                            const field = e.loc?.slice(-1)[0] || '?';
+                            return `${field}: ${e.msg}`;
+                        }).join(', ');
+                    }
+                }
+                setSaveMsg(`Erreur ${res.status}: ${detail}`);
             }
         } catch {
             setSaveMsg('Erreur réseau lors du changement de statut.');

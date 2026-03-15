@@ -9,6 +9,7 @@ from email_service import send_email, send_candidature_confirmation, send_candid
 from routes.members import auto_seed_member_profile, deactivate_member_profile
 from core.config import settings
 from utils.rate_limit import anonymize_ip, check_rate_limit
+from utils.audit import log_admin_action
 import asyncio
 import csv
 import io
@@ -142,6 +143,7 @@ async def delete_tech_candidature(
     result = await db.tech_candidatures.delete_one({"id": candidature_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Candidature non trouvée")
+    await log_admin_action(db, admin.id, "delete", "candidature", candidature_id)
     logger.info(f"Admin {admin.id} deleted tech candidature {candidature_id}")
     return {"message": "Candidature supprimée"}
 
@@ -230,6 +232,7 @@ async def update_candidature_status(
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Candidature non trouvée")
+    await log_admin_action(db, admin.id, "status_change", "candidature", candidature_id, {"new_status": data.status})
     logger.info(f"Admin {admin.id} updated candidature {candidature_id} to {data.status}")
 
     # Send status notification email
@@ -277,6 +280,7 @@ async def batch_update_candidature_status(
         {"id": {"$in": data.ids}},
         {"$set": update_fields},
     )
+    await log_admin_action(db, admin.id, "batch_status", "candidature", ",".join(data.ids), {"new_status": data.status})
     logger.info(f"Admin {admin.id} batch-updated {result.modified_count} candidatures to {data.status}")
     return {"message": f"{result.modified_count} candidature(s) mise(s) à jour", "count": result.modified_count}
 

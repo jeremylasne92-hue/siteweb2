@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { useUrlFilters } from '../hooks/useUrlFilters';
 import {
     Heart, RefreshCw, ArrowLeft, Trash2, X,
     Clock, AlertTriangle, CheckCircle2,
@@ -8,6 +9,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { API_URL } from '../config/api';
+import { isValidEmail, parse422Detail } from '../utils/validation';
 
 type VolunteerStatus = 'pending' | 'entretien' | 'accepted' | 'rejected';
 type AvailabilityType = 'punctual' | 'regular' | 'active';
@@ -25,6 +27,7 @@ interface Volunteer {
     message?: string;
     status: VolunteerStatus;
     status_note?: string;
+    admin_notes?: string;
     created_at: string;
     updated_at?: string;
 }
@@ -106,8 +109,10 @@ function AvailBadge({ availability }: { availability: AvailabilityType }) {
 
 export default function AdminVolunteers() {
     const [volunteers, setVolunteers] = useState<Volunteer[]>([]);
-    const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
-    const [availabilityFilter, setAvailabilityFilter] = useState<AvailabilityFilter>('all');
+    const VOL_FILTER_DEFAULTS = useMemo(() => ({ status: 'all' as string, availability: 'all' as string }), []);
+    const [urlFilters, setUrlFilter] = useUrlFilters(VOL_FILTER_DEFAULTS);
+    const statusFilter = urlFilters.status as StatusFilter;
+    const availabilityFilter = urlFilters.availability as AvailabilityFilter;
     const [selected, setSelected] = useState<Volunteer | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -251,8 +256,19 @@ export default function AdminVolunteers() {
         }
     };
 
+    const [editError, setEditError] = useState('');
+
     const handleEditSave = async () => {
         if (!selected) return;
+        setEditError('');
+
+        // Validate email before sending
+        const emailValue = editForm.email as string | undefined;
+        if (emailValue && !isValidEmail(emailValue)) {
+            setEditError('Adresse email invalide.');
+            return;
+        }
+
         setActionLoading(true);
         try {
             const body: Record<string, unknown> = {};
@@ -283,9 +299,13 @@ export default function AdminVolunteers() {
                 setSelected(updated);
                 setVolunteers(prev => prev.map(v => v.id === selected.id ? updated : v));
                 setEditMode(false);
+            } else {
+                const errData = await res.json().catch(() => null);
+                const detail = errData?.detail ? parse422Detail(errData.detail) : 'Impossible de sauvegarder.';
+                setEditError(`Erreur ${res.status}: ${detail}`);
             }
         } catch {
-            // silent
+            setEditError('Erreur réseau.');
         } finally {
             setActionLoading(false);
         }
@@ -393,7 +413,7 @@ export default function AdminVolunteers() {
                     {statusFilters.map(f => (
                         <button
                             key={f.key}
-                            onClick={() => setStatusFilter(f.key)}
+                            onClick={() => setUrlFilter('status',f.key)}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                                 statusFilter === f.key
                                     ? 'bg-echo-gold/20 text-echo-gold border border-echo-gold/30'
@@ -408,7 +428,7 @@ export default function AdminVolunteers() {
                     {availabilityFilters.map(f => (
                         <button
                             key={f.key}
-                            onClick={() => setAvailabilityFilter(f.key)}
+                            onClick={() => setUrlFilter('availability',f.key)}
                             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                                 availabilityFilter === f.key
                                     ? 'bg-white/15 text-white border border-white/20'
@@ -643,6 +663,7 @@ export default function AdminVolunteers() {
                                                     experience_level: selected.experience_level,
                                                     availability: selected.availability,
                                                     message: selected.message || '',
+                                                    admin_notes: selected.admin_notes || '',
                                                 });
                                             }}
                                             className="p-1.5 text-echo-textMuted hover:text-echo-gold transition-colors"
@@ -701,13 +722,20 @@ export default function AdminVolunteers() {
                                             <label className="text-xs text-echo-textMuted block mb-1">Message</label>
                                             <textarea value={(editForm.message as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, message: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white resize-none focus:outline-none focus:border-echo-gold/40" rows={4} />
                                         </div>
+                                        <div>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Notes admin (internes)</label>
+                                            <textarea value={(editForm.admin_notes as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, admin_notes: e.target.value }))} placeholder="Notes visibles uniquement par les admins..." className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white resize-none focus:outline-none focus:border-echo-gold/40 placeholder-neutral-500" rows={3} />
+                                        </div>
                                     </div>
+                                    {editError && (
+                                        <p className="text-sm text-red-400 mt-2">{editError}</p>
+                                    )}
                                     <div className="flex items-center gap-2 pt-4 border-t border-white/10">
                                         <Button variant="outline" onClick={handleEditSave} disabled={actionLoading} className="!text-echo-gold !border-echo-gold/30 text-sm">
                                             <Save size={14} className="mr-1.5" />
                                             {actionLoading ? 'Sauvegarde...' : 'Sauvegarder'}
                                         </Button>
-                                        <button onClick={() => setEditMode(false)} className="px-3 py-1.5 text-sm text-echo-textMuted hover:text-white transition-colors">
+                                        <button onClick={() => { setEditMode(false); setEditError(''); }} className="px-3 py-1.5 text-sm text-echo-textMuted hover:text-white transition-colors">
                                             Annuler
                                         </button>
                                     </div>
@@ -737,6 +765,17 @@ export default function AdminVolunteers() {
                                         Note admin
                                     </div>
                                     <p className="text-sm text-echo-textMuted">{selected.status_note}</p>
+                                </div>
+                            )}
+
+                            {/* Admin Notes (if exists) */}
+                            {selected.admin_notes && (
+                                <div className="mb-6 p-3 bg-amber-400/10 border border-amber-400/20 rounded-lg">
+                                    <div className="flex items-center gap-1.5 text-xs text-amber-400 font-medium mb-1">
+                                        <MessageSquare size={12} />
+                                        Notes internes
+                                    </div>
+                                    <p className="text-sm text-echo-textMuted whitespace-pre-wrap">{selected.admin_notes}</p>
                                 </div>
                             )}
 

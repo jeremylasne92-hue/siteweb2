@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from routes.auth import get_db, get_current_user, require_admin
 from models import User
+from utils.audit import log_admin_action
 from models_member import MemberProfileUpdate, VisibilityUpdate, MembershipStatus, _slugify
 from datetime import datetime
 from typing import Literal
@@ -275,6 +276,7 @@ async def admin_update_status(
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Profil non trouve")
+    await log_admin_action(db, admin.id, "status_change", "member", profile_id, {"new_status": body.membership_status})
     return {"status": "updated", "membership_status": body.membership_status}
 
 
@@ -311,6 +313,8 @@ async def admin_update_member(
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Profil non trouvé")
+
+    await log_admin_action(db, admin.id, "edit", "member", profile_id, {"fields": list(update_data.keys())})
 
     updated = await db.member_profiles.find_one({"id": profile_id})
     updated.pop("_id", None)

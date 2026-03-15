@@ -4,10 +4,10 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 import logging
 
 from pymongo.errors import PyMongoError
-from models import ContactMessageRequest
+from models import ContactMessageRequest, User
 from email_service import send_email
 from utils.rate_limit import anonymize_ip, check_rate_limit
-from routes.auth import get_db
+from routes.auth import get_db, require_admin
 
 router = APIRouter(tags=["contact"])
 logger = logging.getLogger(__name__)
@@ -43,6 +43,7 @@ async def submit_contact(
         "ip_address": anonymize_ip(request.client.host if request.client else "unknown"),
         "created_at": datetime.utcnow(),
         "read": False,
+        "status": "unread",
     }
     try:
         await db.contact_messages.insert_one(doc)
@@ -76,3 +77,49 @@ async def submit_contact(
     )
 
     return {"message": "Message envoyé avec succès"}
+
+
+# ==============================================================================
+# ADMIN ENDPOINTS
+# ==============================================================================
+
+@router.get("/contact/admin/all")
+async def get_all_messages(
+    status: str | None = None,
+    db: AsyncIOMotorDatabase = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    """List all contact messages for admin."""
+    query: dict = {}
+    if status:
+        query["status"] = status
+    cursor = db.contact_messages.find(query, {"_id": 0}).sort("created_at", -1)
+    messages = await cursor.to_list(length=200)
+    return messages
+
+
+@router.put("/contact/admin/{message_id}/status")
+async def update_message_status(
+    message_id: str,
+    data: dict,
+    db: AsyncIOMotorDatabase = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    """Update message status (read/treated) and optional admin note."""
+    allowed_statuses = {"unread", "read", "treated"}
+    new_status = data.get("status", "read")
+    if new_status not in allowed_statuses:
+        raise HTTPException(status_code=400, detail="Invalid status")
+
+    update_fields: dict = {"status": new_status}
+    if "admin_note" in data:
+        update_fields["admin_note"] = data["admin_note"]
+
+    result = await db.contact_messages.update_one(
+        {"id": message_id},
+        {"$set": update_fields},
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Message not found")
+
+    return {"success": True}
