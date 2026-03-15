@@ -38,17 +38,17 @@ class Partner(BaseModel):
     thematics: List[str] = []                    # Codes thématiques (ENV, SOC, ECO...) *
     
     # Localisation
-    address: str                                 # Adresse complète *
-    city: str                                    # Ville *
-    postal_code: str                             # Code postal *
+    address: Optional[str] = None                # Adresse complète
+    city: Optional[str] = None                   # Ville
+    postal_code: Optional[str] = None            # Code postal
     country: str = "France"                      # Pays
-    latitude: float                              # Coordonnées GPS *
-    longitude: float                             # Coordonnées GPS *
-    
+    latitude: Optional[float] = None             # Coordonnées GPS
+    longitude: Optional[float] = None            # Coordonnées GPS
+
     # Contact référent
-    contact_name: str                            # Nom du référent *
+    contact_name: Optional[str] = None           # Nom du référent
     contact_role: Optional[str] = None           # Fonction du référent
-    contact_email: EmailStr                      # Email de contact *
+    contact_email: Optional[EmailStr] = None     # Email de contact
     contact_phone: Optional[str] = None          # Téléphone
     
     # Réseaux sociaux
