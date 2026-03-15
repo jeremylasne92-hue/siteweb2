@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, User, Shield, LogOut, Database } from 'lucide-react';
+import { Menu, X, User, Shield, LogOut, Database, ChevronDown } from 'lucide-react';
 import { cn, Button } from '../ui/Button';
 import { useAuthStore } from '../../features/auth/store';
 
@@ -36,11 +36,55 @@ export function Header() {
         }
     }, [isUserMenuOpen]);
 
-    const navLinks = [
-        { name: 'La Série', path: '/serie' },
-        { name: 'Le Mouvement', path: '/mouvement' },
-        { name: 'Cognisphère', path: '/cognisphere' },
-        { name: 'ECHOLink', path: '/echolink' },
+    const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+    const dropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [openMobileAccordion, setOpenMobileAccordion] = useState<string | null>(null);
+
+    const handleDropdownEnter = (path: string) => {
+        if (dropdownTimeout.current) clearTimeout(dropdownTimeout.current);
+        setOpenDropdown(path);
+    };
+
+    const handleDropdownLeave = () => {
+        dropdownTimeout.current = setTimeout(() => setOpenDropdown(null), 150);
+    };
+
+    type NavChild = { name: string; anchor: string };
+    type NavLink = { name: string; path: string; children?: NavChild[] };
+
+    const navLinks: NavLink[] = [
+        {
+            name: 'La Série', path: '/serie',
+            children: [
+                { name: 'Aperçu', anchor: '#apercu' },
+                { name: 'Prologue', anchor: '#prologue' },
+                { name: 'Saisons', anchor: '#saisons' },
+                { name: 'Personnages', anchor: '#personnages' },
+            ]
+        },
+        {
+            name: 'Le Mouvement', path: '/mouvement',
+            children: [
+                { name: 'Les 7 Étapes', anchor: '#etapes' },
+                { name: "L'Équipe", anchor: '#equipe' },
+                { name: 'Rejoindre', anchor: '#rejoindre' },
+            ]
+        },
+        {
+            name: 'Cognisphère', path: '/cognisphere',
+            children: [
+                { name: 'Le Constat', anchor: '#le-constat' },
+                { name: 'Aperçu', anchor: '#apercu' },
+                { name: 'Candidature', anchor: '#candidature' },
+            ]
+        },
+        {
+            name: 'ECHOLink', path: '/echolink',
+            children: [
+                { name: 'Fonctionnalités', anchor: '#fonctionnalites' },
+                { name: 'Candidature', anchor: '#candidature' },
+            ]
+        },
         { name: 'Partenaires', path: '/partenaires' },
         { name: 'Événements', path: '/agenda' },
         { name: 'Ressources', path: '/ressources' },
@@ -61,18 +105,38 @@ export function Header() {
                 </Link>
 
                 {/* Desktop Nav */}
-                <nav className="hidden lg:flex items-center gap-8">
+                <nav className="hidden lg:flex items-center gap-6">
                     {navLinks.map((link) => (
-                        <Link
+                        <div
                             key={link.path}
-                            to={link.path}
-                            className={cn(
-                                'text-sm uppercase tracking-wider transition-colors hover:text-echo-gold',
-                                location.pathname === link.path ? 'text-echo-gold' : 'text-echo-textMuted'
-                            )}
+                            className="relative"
+                            onMouseEnter={() => link.children && handleDropdownEnter(link.path)}
+                            onMouseLeave={() => link.children && handleDropdownLeave()}
                         >
-                            {link.name}
-                        </Link>
+                            <Link
+                                to={link.path}
+                                className={cn(
+                                    'text-sm uppercase tracking-wider transition-colors hover:text-echo-gold py-2 block',
+                                    location.pathname === link.path ? 'text-echo-gold' : 'text-echo-textMuted'
+                                )}
+                            >
+                                {link.name}
+                            </Link>
+                            {link.children && openDropdown === link.path && (
+                                <div className="absolute top-full left-0 mt-1 w-48 bg-echo-darker border border-white/10 rounded-lg shadow-xl overflow-hidden animate-fade-in z-50">
+                                    {link.children.map((child) => (
+                                        <Link
+                                            key={child.anchor}
+                                            to={`${link.path}${child.anchor}`}
+                                            className="block px-4 py-2.5 text-sm text-echo-textMuted hover:bg-white/5 hover:text-white transition-colors"
+                                            onClick={() => setOpenDropdown(null)}
+                                        >
+                                            {child.name}
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     ))}
                 </nav>
 
@@ -159,14 +223,48 @@ export function Header() {
             {isMobileMenuOpen && (
                 <div className="lg:hidden absolute top-full left-0 right-0 bg-echo-dark border-b border-white/10 p-4 flex flex-col gap-4 animate-fade-in">
                     {navLinks.map((link) => (
-                        <Link
-                            key={link.path}
-                            to={link.path}
-                            className="text-white hover:text-echo-gold py-2 border-b border-white/5"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            {link.name}
-                        </Link>
+                        <div key={link.path}>
+                            <div className="flex items-center justify-between border-b border-white/5">
+                                <Link
+                                    to={link.path}
+                                    className="text-white hover:text-echo-gold py-2 flex-1"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    {link.name}
+                                </Link>
+                                {link.children && (
+                                    <button
+                                        onClick={() => setOpenMobileAccordion(
+                                            openMobileAccordion === link.path ? null : link.path
+                                        )}
+                                        className="p-2 text-echo-textMuted hover:text-white transition-colors"
+                                        aria-label={`Voir les sous-sections de ${link.name}`}
+                                    >
+                                        <ChevronDown
+                                            size={16}
+                                            className={cn(
+                                                'transition-transform duration-200',
+                                                openMobileAccordion === link.path && 'rotate-180'
+                                            )}
+                                        />
+                                    </button>
+                                )}
+                            </div>
+                            {link.children && openMobileAccordion === link.path && (
+                                <div className="pl-4 pb-2 animate-fade-in">
+                                    {link.children.map((child) => (
+                                        <Link
+                                            key={child.anchor}
+                                            to={`${link.path}${child.anchor}`}
+                                            className="block py-1.5 text-sm text-echo-textMuted hover:text-echo-gold transition-colors"
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                        >
+                                            {child.name}
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     ))}
                     <Link
                         to="/faq"
