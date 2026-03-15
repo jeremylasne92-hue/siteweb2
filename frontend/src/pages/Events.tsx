@@ -50,7 +50,7 @@ function EventCard({ event, formatDateRange, getMainImage, isPast }: {
                     <div className="absolute bottom-2 left-2 right-2 flex gap-1 z-20">
                         {event.images.slice(0, 5).map((img, i) => (
                             <div key={i} className={`h-8 flex-1 rounded overflow-hidden border ${i === 0 ? 'border-echo-gold' : 'border-white/20'}`}>
-                                <img src={img} alt="" className="w-full h-full object-cover" />
+                                <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
                             </div>
                         ))}
                         {event.images.length > 5 && (

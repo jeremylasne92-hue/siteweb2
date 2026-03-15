@@ -300,7 +300,7 @@ export default function MyPartnerAccount() {
                     <div className="flex items-start gap-6 mb-8">
                         <div className="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shrink-0">
                             {partner.logo_url
-                                ? <img src={partner.logo_url} alt="" className="w-full h-full object-cover" />
+                                ? <img src={partner.logo_url} alt="" className="w-full h-full object-cover" loading="lazy" />
                                 : <span className="text-3xl font-serif text-echo-gold">{partner.name.charAt(0)}</span>
                             }
                         </div>

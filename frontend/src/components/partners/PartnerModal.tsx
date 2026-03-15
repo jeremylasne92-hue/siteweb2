@@ -68,7 +68,7 @@ export const PartnerModal: React.FC<PartnerModalProps> = ({ partner, isOpen, onC
                     <div className="flex items-center gap-4 mb-6">
                         <div className="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shrink-0">
                             {partner.logo_url ? (
-                                <img src={partner.logo_url} alt={partner.name} className="w-full h-full object-cover" />
+                                <img src={partner.logo_url} alt={partner.name} className="w-full h-full object-cover" loading="lazy" />
                             ) : (
                                 <span className="text-3xl font-serif text-white">
                                     {partner.name.charAt(0)}

@@ -83,7 +83,7 @@ export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerCli
                                 <div className="flex items-center gap-3 mb-3">
                                     {partner.logo_url && (
                                         <div className="w-10 h-10 rounded bg-white/5 flex items-center justify-center overflow-hidden shrink-0">
-                                            <img src={partner.logo_url} alt={partner.name} className="w-full h-full object-cover" />
+                                            <img src={partner.logo_url} alt={partner.name} className="w-full h-full object-cover" loading="lazy" />
                                         </div>
                                     )}
                                     <h3 className="font-serif font-bold text-base leading-tight">

@@ -194,11 +194,11 @@ export default function AdminMembers() {
             });
             if (res.ok) {
                 const data = await res.json();
-                alert(data.message);
+                console.warn(data.message);
                 fetchMembers();
             }
         } catch {
-            alert('Erreur lors du géocodage.');
+            console.warn('Erreur lors du géocodage.');
         } finally {
             setGeocoding(false);
         }

@@ -418,7 +418,7 @@ export default function AdminEvents() {
                                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 mt-3">
                                     {form.images.map((url, i) => (
                                         <div key={i} className="relative group aspect-video rounded-lg overflow-hidden border border-white/10">
-                                            <img src={url} alt={`Image ${i + 1}`} className="w-full h-full object-cover" />
+                                            <img src={url} alt={`Image ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
                                             <button
                                                 onClick={() => removeImage(i)}
                                                 className="absolute top-1 right-1 p-1 bg-red-500/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"

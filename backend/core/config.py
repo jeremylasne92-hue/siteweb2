@@ -72,6 +72,10 @@ class Settings:
                 raise ValueError("OAUTH_STATE_SECRET must be changed from default in production")
             if self.UNSUBSCRIBE_SECRET == "echo-unsubscribe-secret-change-me":
                 raise ValueError("UNSUBSCRIBE_SECRET must be changed from default in production")
+            if not self.SENDGRID_API_KEY:
+                raise ValueError("SENDGRID_API_KEY is required in production for email delivery")
+            if not self.RECAPTCHA_SECRET_KEY:
+                raise ValueError("RECAPTCHA_SECRET_KEY is required in production for spam protection")
 
 
 settings = Settings()

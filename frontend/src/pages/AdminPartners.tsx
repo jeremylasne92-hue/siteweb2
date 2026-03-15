@@ -171,11 +171,11 @@ function AdminPartnerDetail({
 
     const handleLogoUpload = async (file: File) => {
         if (!file.type.match(/^image\/(jpeg|png|webp)$/)) {
-            alert('Format non supporté. Utilisez JPEG, PNG ou WebP.');
+            console.warn('Format non supporté. Utilisez JPEG, PNG ou WebP.');
             return;
         }
         if (file.size > 2 * 1024 * 1024) {
-            alert('Le fichier ne doit pas dépasser 2 Mo.');
+            console.warn('Le fichier ne doit pas dépasser 2 Mo.');
             return;
         }
         setLogoFile(file);
@@ -332,9 +332,9 @@ function AdminPartnerDetail({
                             <div className="relative group/logo mx-auto mb-3 w-20 h-20">
                                 <div className="w-20 h-20 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl font-serif text-echo-gold overflow-hidden">
                                     {logoPreview
-                                        ? <img src={logoPreview} alt="Preview" className="w-full h-full object-cover" />
+                                        ? <img src={logoPreview} alt="Preview" className="w-full h-full object-cover" loading="lazy" />
                                         : partner.logo_url
-                                            ? <img src={partner.logo_url} alt={partner.name} className="w-full h-full object-cover" />
+                                            ? <img src={partner.logo_url} alt={partner.name} className="w-full h-full object-cover" loading="lazy" />
                                             : partner.name.charAt(0)
                                     }
                                 </div>
@@ -1059,7 +1059,7 @@ export default function AdminPartners() {
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-sm font-serif text-echo-gold shrink-0">
                                                         {partner.logo_url
-                                                            ? <img src={partner.logo_url} alt="" className="w-full h-full object-cover rounded-lg" />
+                                                            ? <img src={partner.logo_url} alt="" className="w-full h-full object-cover rounded-lg" loading="lazy" />
                                                             : partner.name.charAt(0)
                                                         }
                                                     </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { PARTNERS_API } from '../config/api';
 import { PartnersHero } from '../components/partners/PartnersHero';
 import { PartnersStats } from '../components/partners/PartnersStats';
 import { PartnersFilters, PartnersViewSwitch } from '../components/partners/PartnersFilters';
@@ -28,8 +29,8 @@ export default function Partners() {
         const fetchInitData = async () => {
             try {
                 const [statsRes, thematicsRes] = await Promise.all([
-                    fetch('http://127.0.0.1:8000/api/partners/stats'),
-                    fetch('http://127.0.0.1:8000/api/partners/thematics')
+                    fetch(PARTNERS_API + '/stats', { credentials: 'include' }),
+                    fetch(PARTNERS_API + '/thematics', { credentials: 'include' })
                 ]);
 
                 if (statsRes.ok) setStats(await statsRes.json());
@@ -52,7 +53,7 @@ export default function Partners() {
                 if (selectedThematics.length > 0) queryParams.append('thematic', selectedThematics.join(','));
                 if (searchQuery) queryParams.append('search', searchQuery);
 
-                const res = await fetch(`http://127.0.0.1:8000/api/partners?${queryParams.toString()}`);
+                const res = await fetch(`${PARTNERS_API}?${queryParams.toString()}`, { credentials: 'include' });
                 if (res.ok) {
                     const data = await res.json();
                     setPartners(data.partners);
@@ -74,7 +75,7 @@ export default function Partners() {
 
     return (
         <>
-            <PartnersHero onApplyClick={() => alert("Le formulaire sera disponible prochainement ! (LOT 3)")} />
+            <PartnersHero onApplyClick={() => window.open('/contact', '_self')} />
 
             <PartnersStats stats={stats} />
 

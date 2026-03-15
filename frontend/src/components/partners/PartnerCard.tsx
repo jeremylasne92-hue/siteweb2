@@ -73,7 +73,7 @@ export const PartnerCard: React.FC<PartnerCardProps> = ({ partner, onClick }) =>
                 <div className="flex items-start gap-4 mb-4">
                     <div className="w-14 h-14 rounded-xl bg-white/5 border border-white/10 shrink-0 flex items-center justify-center overflow-hidden">
                         {partner.logo_url ? (
-                            <img src={partner.logo_url} alt={`Logo ${partner.name}`} className="w-full h-full object-cover" />
+                            <img src={partner.logo_url} alt={`Logo ${partner.name}`} className="w-full h-full object-cover" loading="lazy" />
                         ) : (
                             <span className="text-xl font-serif text-echo-gold">
                                 {partner.name.charAt(0).toUpperCase()}
