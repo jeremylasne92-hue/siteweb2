@@ -137,6 +137,24 @@ async def list_members(
     return {"members": members, "total": total, "page": page}
 
 
+@router.get("/map")
+async def list_members_for_map(
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    """Return geocoded members for map display (public, minimal data)."""
+    cursor = db.member_profiles.find(
+        {
+            "visible": True,
+            "membership_status": "active",
+            "latitude": {"$ne": None},
+            "longitude": {"$ne": None},
+        },
+        {"_id": 0, "city": 1, "latitude": 1, "longitude": 1},
+    )
+    members = await cursor.to_list(length=500)
+    return members
+
+
 @router.get("/{slug}")
 async def get_member_by_slug(
     slug: str,
