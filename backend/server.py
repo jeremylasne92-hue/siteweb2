@@ -190,7 +190,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "font-src 'self' https://fonts.gstatic.com; "
             "img-src 'self' data: https:; "
             "connect-src 'self'; "
-            "frame-src https://www.google.com;"
+            "frame-src https://www.google.com https://www.youtube-nocookie.com https://www.youtube.com;"
         )
         if settings.is_production:
             response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
