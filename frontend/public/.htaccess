@@ -1,0 +1,75 @@
+# ============================================
+# ECHO Frontend — OVH mutualisé SPA Configuration
+# ============================================
+
+# Enable mod_rewrite
+RewriteEngine On
+
+# Force HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# SPA Routing: redirect all requests to index.html
+# (except existing files and directories)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [QSA,L]
+
+# ============================================
+# Security Headers
+# ============================================
+<IfModule mod_headers.c>
+    # Prevent MIME-type sniffing
+    Header set X-Content-Type-Options "nosniff"
+
+    # Clickjacking protection
+    Header set X-Frame-Options "DENY"
+
+    # XSS protection (legacy browsers)
+    Header set X-XSS-Protection "1; mode=block"
+
+    # Referrer policy
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Permissions policy
+    Header set Permissions-Policy "camera=(), microphone=(), geolocation=(self)"
+
+    # HSTS — enforce HTTPS (1 year)
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
+</IfModule>
+
+# ============================================
+# Caching — Static Assets
+# ============================================
+<IfModule mod_expires.c>
+    ExpiresActive On
+
+    # Vite hashed assets (immutable, 1 year cache)
+    <FilesMatch "\.[0-9a-f]{8}\.(js|css)$">
+        ExpiresDefault "access plus 1 year"
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+
+    # Images and fonts
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType font/woff2 "access plus 1 year"
+
+    # HTML — no cache (SPA entry point must always be fresh)
+    ExpiresByType text/html "access plus 0 seconds"
+    Header set Cache-Control "no-cache, no-store, must-revalidate" "expr=%{CONTENT_TYPE} == 'text/html'"
+</IfModule>
+
+# ============================================
+# Compression
+# ============================================
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json image/svg+xml
+</IfModule>
+
+# ============================================
+# Error Documents
+# ============================================
+ErrorDocument 404 /index.html
