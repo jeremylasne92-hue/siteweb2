@@ -66,6 +66,7 @@ export function Header() {
             name: 'Le Mouvement', path: '/mouvement',
             children: [
                 { name: 'Les 7 Étapes', anchor: '#etapes' },
+                { name: 'Le Plan', anchor: '#plan' },
                 { name: "L'Équipe", anchor: '#equipe' },
                 { name: 'Rejoindre', anchor: '#rejoindre' },
             ]

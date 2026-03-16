@@ -156,6 +156,7 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-16 | Readiness report pré-lancement : score 78/100, GO CONDITIONNEL. 4 blocages critiques : (1) clé SendGrid exposée dans .env — révoquer immédiatement, (2) .env production non configuré (OAuth placeholders, CORS dev, ENVIRONMENT absent, secrets par défaut), (3) CSP bloque YouTube iframes (youtube-nocookie.com absent de frame-src), (4) données de test non nettoyées. Rapport complet : `_bmad-output/implementation-artifacts/readiness-report-20260316.md`. Niveau STANDARD. | Claude Code (Sonnet 4.6) |
 | 2026-03-16 | Code review 5 agents parallèles + scoring : 3 issues critiques corrigées. (1) Suppression TLD whitelist dans isValidEmail — rejetait .ai, .re, .bzh, .eco, etc., bloquait inscription/reset. (2) CityAutocomplete : setCustomValidity ne bloque plus si API Nominatim échoue (flag hasSuggestionsLoaded). (3) Contact.tsx honeypot : tabIndex dans style→JSX prop, structure alignée sur les autres formulaires. Messages d'erreur schemas.ts mis à jour. README.md + source-tree.md réécrits. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-16 | Audit complet validation formulaires : isValidEmail (TLD check), isValidPhone (regex + digit count), sanitizePhone, isValidPostalCode. Applied on PartnerFormModal, MyPartnerAccount, AdminVolunteers, Contact, auth schemas. Breadcrumbs supprimés (à restaurer — backlog). Accents français corrigés. 21 fichiers, 18 tests, build OK. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-15 | Fix partenaires invisibles : Partner model (models_partner.py) champs address/city/postal_code/latitude/longitude/contact_name/contact_email rendus Optional (étaient str/float requis, causaient Pydantic ValidationError 500 quand DB avait null). AddressAutocomplete (ui/AddressAutocomplete.tsx) intégré dans AdminPartners pour auto-remplir ville/CP/pays/GPS via Nominatim. Niveau HOTFIX. | Claude Code (Opus 4.6) |
@@ -381,7 +382,7 @@ _Aucune spec en cours._
 | 36 | ~~🟡 RGPD Audit — Écart 12 : Procédure violation de données~~ | Recommandé | ✅ Done (docs/rgpd/procedure-violation-donnees.md) |
 | 37 | ~~🟡 RGPD Audit — Écart 13 : Clause mineurs dans CGU~~ | Recommandé | ✅ Done (section Protection des mineurs, 15 ans+) |
 | 38 | ~~🟡 RGPD Audit — Écart 14 : Mention HelloAsso dans PC + notice sur /soutenir~~ | Recommandé | ✅ Done (PC + notice redirect Support.tsx) |
-| 39 | Ajouter le plan en trois phases du Mouvement ECHO sur la page Mouvement | Moyenne | À faire |
+| 39 | ~~Ajouter le plan en trois phases du Mouvement ECHO sur la page Mouvement~~ | Moyenne | ✅ Done (3 PhaseCards Enfer/Purgatoire/Paradis, `<details>` natif, palette terreuse rouge→ambre→vert, acronymes ECHO colorés, conclusion) |
 | 40 | ~~Ajouter des sous-menus au menu principal pointant directement vers les sections de chaque page~~ | Moyenne | ✅ Done (dropdown hover desktop + accordion mobile, 4 liens avec children: Série/Mouvement/Cognisphère/ECHOLink) |
 | 41 | ~~Ajouter une vue d'ensemble des différentes sections/parties de chaque page sur la page d'accueil~~ | Moyenne | ✅ Done (sous-liens → dans les 3 piliers Home: Série, ECHOSystem, Plateformes) |
 | 42 | Arbre vivant interactif : arbre qui grandit avec des feuilles (membres) et branches (partenaires) qui rejoignent ECHO | Basse | À faire — idée créative, lien avec métaphore pommier Mouvement |

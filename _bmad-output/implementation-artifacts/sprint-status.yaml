@@ -1,46 +1,19 @@
-# generated: 2026-03-14
-# project: sitewebecho by emergent
-# project_key: NOKEY
-# tracking_system: file-system
-# story_location: _bmad-output/implementation-artifacts
+# Sprint Final Pré-Lancement — ECHO
+# Généré le 2026-03-16 par BMAD Sprint Planning Workflow
+# Agent : Claude Code (Sonnet 4.6)
+# Remplace le fichier de suivi epics (tous les 4 epics sont DONE)
 
-# STATUS DEFINITIONS:
-# ==================
-# Epic Status:
-#   - backlog: Epic not yet started
-#   - in-progress: Epic actively being worked on
-#   - done: All stories in epic completed
-#
-# Epic Status Transitions:
-#   - backlog → in-progress: Automatically when first story is created (via create-story)
-#   - in-progress → done: Manually when all stories reach 'done' status
-#
-# Story Status:
-#   - backlog: Story only exists in epic file
-#   - ready-for-dev: Story file created in stories folder
-#   - in-progress: Developer actively working on implementation
-#   - review: Ready for code review (via Dev's code-review workflow)
-#   - done: Story completed
-#
-# Retrospective Status:
-#   - optional: Can be completed but not required
-#   - done: Retrospective has been completed
-#
-# WORKFLOW NOTES:
-# ===============
-# - Epic transitions to 'in-progress' automatically when first story is created
-# - Stories can be worked in parallel if team capacity allows
-# - SM typically creates next story after previous one is 'done' to incorporate learnings
-# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+# ─────────────────────────────────────────────
+# STATUT EPICS (conservation historique)
+# ─────────────────────────────────────────────
 
-generated: 2026-03-14
+generated: 2026-03-16
 project: sitewebecho by emergent
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
 
 development_status:
-  # Epic 1: Identité & Sécurité Utilisateur (Auth Core)
   epic-1: done
   1-1-inscription-via-google-oauth: done
   1-2-authentification-classique-securisee: done
@@ -48,7 +21,6 @@ development_status:
   1-4-isolation-des-vues-privees: done
   epic-1-retrospective: optional
 
-  # Epic 2: Découverte Publique & Acquisition (Media & Leads)
   epic-2: done
   2-1-vitrine-video-bande-annonce: done
   2-2-exploration-des-episodes-opt-in: done
@@ -56,7 +28,6 @@ development_status:
   2-4-passerelle-de-soutien-et-dons: done
   epic-2-retrospective: optional
 
-  # Epic 3: Espace Partenaires & ECHOSystem (Partner Onboarding)
   epic-3: done
   3-1-formulaire-de-candidature-partenaire: done
   3-2-notifications-transactionnelles: done
@@ -65,10 +36,495 @@ development_status:
   3-5-cartographie-et-listing-publique-echosystem: done
   epic-3-retrospective: optional
 
-  # Epic 4: Back-Office d'Administration (Control Tower)
   epic-4: done
   4-1-panel-administration-securise: done
   4-2-moderation-des-candidatures-partenaires: done
   4-3-gestion-de-lagenda-evenements: done
   4-4-export-de-la-base-email-opt-in: done
   epic-4-retrospective: optional
+
+# ─────────────────────────────────────────────
+# SPRINT FINAL PRÉ-LANCEMENT
+# ─────────────────────────────────────────────
+
+sprint:
+  name: "Sprint Final Pré-Lancement"
+  dates:
+    start: "2026-03-16"
+    end: "2026-03-20"
+  goal: "Lancer mouvementecho.fr le 20 mars 2026 avec toutes les fonctionnalités critiques"
+  statut: EN_COURS
+  jours_restants: 4
+  phase: "Post-Epics — Pré-lancement"
+
+# ─────────────────────────────────────────────
+# TÂCHES PAR JOUR
+# ─────────────────────────────────────────────
+
+days:
+
+  J-4:
+    date: "2026-03-16"
+    label: "Stabilisation & Contenu"
+    tasks:
+
+      - id: "#23-cleanup"
+        backlog_ref: "#23"
+        titre: "Nettoyer les données de test avant publication"
+        description: >
+          Supprimer tous les événements, comptes partenaires, bénévoles, candidatures
+          et profils membres créés pendant le développement. Vérifier la base MongoDB
+          collection par collection : events, partners, tech_candidatures, members,
+          users, contact_messages.
+        priorite: HAUTE
+        statut: A_FAIRE
+        effort_estime: "2h"
+        assignee: Backend
+        blockers: []
+        acceptance_criteria:
+          - "Aucune entrée de test en base de données"
+          - "Seuls les comptes admin de production existent"
+          - "La carte ECHOSystem ne montre que les vrais partenaires"
+
+      - id: "#14-sendgrid"
+        backlog_ref: "#14"
+        titre: "Configurer SendGrid en production"
+        description: >
+          Définir SENDGRID_API_KEY et ENVIRONMENT=production dans le .env de production
+          (Webstrator). Vérifier l'adresse from (emails@mouvementecho.fr ou équivalent).
+          Tester l'envoi d'un email de contact et d'une notification candidature.
+        priorite: HAUTE
+        statut: A_FAIRE
+        effort_estime: "1h"
+        assignee: DevOps
+        blockers:
+          - type: EXTERNE
+            description: "Clé API SendGrid à fournir par l'équipe (non présente dans .env actuel)"
+            action_requise: "L'équipe doit créer/fournir la clé SENDGRID_API_KEY"
+        acceptance_criteria:
+          - "SENDGRID_API_KEY configurée sur le serveur de production"
+          - "ENVIRONMENT=production dans le .env Webstrator"
+          - "Email de test reçu depuis le formulaire contact"
+          - "Notification candidature partenaire envoyée et reçue"
+
+      - id: "#9-ressources"
+        backlog_ref: "#9"
+        titre: "Mettre à jour la page Ressources avec le vrai contenu"
+        description: >
+          Remplacer le contenu placeholder de /ressources par les vraies ressources
+          éditoriales (films, livres, liens, etc.) cohérentes avec la transition
+          écologique et la série ECHO.
+        priorite: MOYENNE
+        statut: A_FAIRE
+        effort_estime: "1h30"
+        assignee: Frontend / Editorial
+        blockers:
+          - type: CONTENU
+            description: "Contenu éditorial à fournir par l'équipe"
+        acceptance_criteria:
+          - "Page /ressources ne contient plus de texte placeholder"
+          - "Ressources catégorisées et à jour"
+
+  J-3:
+    date: "2026-03-17"
+    label: "Contenu & Dashboard Partenaire"
+    tasks:
+
+      - id: "#dashboard-partner-review"
+        backlog_ref: "Rappel shared-context"
+        titre: "Revoir le Dashboard Partenaire (UX, données, design)"
+        description: >
+          Audit UX complet de /mon-compte/partenaire — onglet Dashboard Analytics,
+          affichage métriques (vues, clics 30j), layout responsive mobile,
+          lisibilité des graphiques Recharts. Corriger les points d'amélioration
+          identifiés avant la mise en production.
+        priorite: HAUTE
+        statut: A_FAIRE
+        effort_estime: "2h"
+        assignee: Frontend
+        blockers: []
+        acceptance_criteria:
+          - "Dashboard lisible sur mobile 375px+"
+          - "Graphiques Recharts s'affichent avec des données vides sans erreur"
+          - "Aucune erreur console dans l'onglet Analytics"
+          - "CTA Prendre RDV visible et fonctionnel"
+
+      - id: "#15-social-links"
+        backlog_ref: "#15"
+        titre: "Remplacer les 12 liens sociaux href='#' par les vraies URLs"
+        description: >
+          Identifier tous les href='#' dans Footer.tsx, Header.tsx et ailleurs
+          pour Instagram, YouTube, LinkedIn, Facebook, Twitter/X, etc.
+          Les remplacer par les vraies URLs des comptes officiels de Mouvement ECHO.
+        priorite: MOYENNE
+        statut: A_FAIRE
+        effort_estime: "30min"
+        assignee: Frontend
+        blockers:
+          - type: EXTERNE
+            description: "URLs des comptes réseaux sociaux à fournir par l'équipe"
+            action_requise: "L'équipe doit communiquer les URLs officielles des comptes sociaux"
+        notes: >
+          Selon MEMORY.md : réseaux sociaux des personnages retirés, à remettre en
+          mai 2026 — hors scope de ce sprint. Concerne uniquement les comptes
+          officiels de l'organisation.
+        acceptance_criteria:
+          - "Tous les liens sociaux de l'organisation pointent vers de vraies URLs"
+          - "Liens s'ouvrent dans un nouvel onglet (target=_blank, rel=noopener)"
+          - "Aucun href='#' restant dans Header/Footer pour les réseaux sociaux"
+
+      - id: "#39-mouvement-phases"
+        backlog_ref: "#39"
+        titre: "Ajouter le plan en 3 phases du Mouvement ECHO sur la page Mouvement"
+        description: >
+          Intégrer la feuille de route en 3 phases (court terme / moyen terme /
+          long terme) du Mouvement ECHO sur /mouvement. Section dédiée avec
+          timeline ou accordéon, cohérente avec le design Nature existant.
+        priorite: MOYENNE
+        statut: A_FAIRE
+        effort_estime: "1h30"
+        assignee: Frontend / Editorial
+        blockers:
+          - type: CONTENU
+            description: "Texte des 3 phases à valider par l'équipe"
+        acceptance_criteria:
+          - "Section '3 phases' visible sur /mouvement"
+          - "Design cohérent avec le thème Nature (Forest/Sand)"
+          - "Responsive mobile 375px+"
+
+  J-2:
+    date: "2026-03-18"
+    label: "Bande-annonce & QA Contenu"
+    tasks:
+
+      - id: "#21-bande-annonce"
+        backlog_ref: "#21"
+        titre: "Intégrer la bande-annonce et mettre à jour les crédits série"
+        description: >
+          Remplacer le contenu vidéo placeholder (prologue) par la bande-annonce
+          officielle sur /serie. Mettre à jour les crédits (noms, rôles, studio)
+          dans la section concernée. Utiliser le composant YouTubeEmbed (façade
+          RGPD) déjà implémenté.
+        priorite: HAUTE
+        statut: EN_ATTENTE
+        effort_estime: "1h"
+        assignee: Frontend
+        blockers:
+          - type: EXTERNE
+            description: "Bande-annonce prévue terminée le 18 mars 2026 — disponible en fin de journée"
+            action_requise: "Attendre la livraison de la bande-annonce par l'équipe production"
+            date_debut_possible: "2026-03-18"
+        acceptance_criteria:
+          - "Bande-annonce s'affiche sur /serie via YouTubeEmbed (façade RGPD conforme)"
+          - "Crédits de la série mis à jour avec les vrais noms"
+          - "Façade vidéo affiche la bonne miniature YouTube"
+          - "Lecture vidéo fonctionnelle sur mobile"
+
+      - id: "qa-parcours-utilisateurs"
+        backlog_ref: "QA pré-lancement"
+        titre: "QA complète des parcours utilisateurs critiques"
+        description: >
+          Tester manuellement les 5 parcours critiques sur desktop et mobile :
+          1. Inscription → connexion → profil
+          2. Candidature partenaire → email de confirmation reçu
+          3. Formulaire contact → email équipe reçu
+          4. Candidature tech (CogniSphère) → suivi dans profil utilisateur
+          5. Admin : approuver partenaire → visible sur ECHOSystem public
+        priorite: CRITIQUE
+        statut: A_FAIRE
+        effort_estime: "3h"
+        assignee: QA
+        blockers: []
+        acceptance_criteria:
+          - "5 parcours testés et documentés"
+          - "Aucun bug bloquant (500, formulaire non soumis, email non reçu)"
+          - "Tests effectués sur Chrome + Firefox + Safari mobile"
+
+      - id: "seo-og-verification"
+        backlog_ref: "Pré-lancement"
+        titre: "Vérifier les balises SEO/OpenGraph sur toutes les pages"
+        description: >
+          Inspecter <title>, <meta description>, og:image, og:title sur les pages
+          clés (Home, Serie, Mouvement, Contact, ECHOSystem). Corriger les valeurs
+          manquantes ou génériques. Tester l'aperçu OpenGraph (ex: opengraph.xyz).
+        priorite: HAUTE
+        statut: A_FAIRE
+        effort_estime: "1h"
+        assignee: Frontend
+        blockers: []
+        acceptance_criteria:
+          - "Title et meta description uniques sur chaque page clé"
+          - "og:image pointe vers un fichier existant (pas 404)"
+          - "Aperçu LinkedIn/Facebook/Twitter correct"
+
+  J-1:
+    date: "2026-03-19"
+    label: "Build Production & Déploiement Staging"
+    tasks:
+
+      - id: "build-production"
+        backlog_ref: "Rappel shared-context"
+        titre: "Build de production frontend validé (tous les checks)"
+        description: >
+          Exécuter la séquence complète de qualité et corriger toutes les erreurs.
+          Vérifier que le bundle initial est sous les 300 Ko gzip (NFR-Perf-3).
+        priorite: CRITIQUE
+        statut: A_FAIRE
+        effort_estime: "1h"
+        assignee: Frontend
+        blockers: []
+        commandes:
+          - "cd frontend && npx eslint ."
+          - "cd frontend && npx vitest run"
+          - "cd backend && python -m pytest -p no:recording -q"
+          - "cd frontend && npm run build"
+        acceptance_criteria:
+          - "Build sans erreur TypeScript ni Vite (exit code 0)"
+          - "Aucune erreur ESLint bloquante"
+          - "Tous les tests Vitest passent"
+          - "Tous les tests Pytest passent"
+          - "Bundle JS initial < 300 Ko gzip"
+
+      - id: "deploiement-staging"
+        backlog_ref: "Pré-lancement"
+        titre: "Déploiement sur environnement staging Webstrator"
+        description: >
+          Déployer le build frontend et le backend FastAPI sur Webstrator en mode
+          staging. Vérifier les variables d'environnement de production :
+          SENDGRID_API_KEY, MONGO_URI, RECAPTCHA_SECRET_KEY, SECRET_KEY,
+          GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET. Tester les endpoints critiques.
+        priorite: CRITIQUE
+        statut: A_FAIRE
+        effort_estime: "2h"
+        assignee: DevOps
+        blockers:
+          - type: INFRA
+            description: "Accès Webstrator et variables d'environnement production requis"
+        acceptance_criteria:
+          - "Site accessible sur URL staging"
+          - "API répond sur /api/health"
+          - "Connexion MongoDB production opérationnelle"
+          - "HTTPS actif avec certificat SSL valide"
+          - "Redirection HTTP vers HTTPS fonctionnelle"
+
+      - id: "recette-staging"
+        backlog_ref: "Pré-lancement"
+        titre: "Recette complète sur staging"
+        description: >
+          Valider le site sur staging : cookies httpOnly, reCAPTCHA v3, bannière
+          RGPD, formulaire contact (email réel reçu), candidature partenaire
+          (email réel reçu), analytics GA4 + interne. Vérifier les 404 et les
+          redirections. Initier le changement DNS si la propagation risque de
+          dépasser 24h.
+        priorite: CRITIQUE
+        statut: A_FAIRE
+        effort_estime: "2h"
+        assignee: QA
+        blockers:
+          - depends_on: "deploiement-staging"
+        acceptance_criteria:
+          - "Bannière cookies RGPD affichée au premier chargement"
+          - "Email de contact reçu en boîte de réception (pas en spam)"
+          - "Cookies httpOnly présents après login (vérifier DevTools — pas de token localStorage)"
+          - "reCAPTCHA ne bloque pas les formulaires légitimes"
+          - "Analytics GA4 envoie des events (debug mode)"
+          - "Aucune erreur 500 dans les logs serveur"
+
+  J-0:
+    date: "2026-03-20"
+    label: "LANCEMENT — Jour J"
+    tasks:
+
+      - id: "deploiement-final"
+        backlog_ref: "Rappel shared-context"
+        titre: "Déploiement final production mouvementecho.fr"
+        description: >
+          Basculer le déploiement staging vers la production. Pointer le DNS
+          mouvementecho.fr vers le nouveau serveur si pas encore fait. Activer
+          ENVIRONMENT=production sur le backend.
+        priorite: CRITIQUE
+        statut: A_FAIRE
+        effort_estime: "1h"
+        assignee: DevOps
+        blockers:
+          - depends_on: "recette-staging"
+          - type: INFRA
+            description: "Accès DNS mouvementecho.fr requis pour la bascule finale"
+        acceptance_criteria:
+          - "mouvementecho.fr accessible publiquement"
+          - "HTTPS et SSL valides sur le domaine de production"
+          - "Backend répond sur /api/health"
+          - "Bannière RGPD présente"
+          - "Analytics opérationnels"
+
+      - id: "smoke-test-production"
+        backlog_ref: "Pré-lancement"
+        titre: "Smoke test production post-lancement"
+        description: >
+          Tests rapides post-déploiement sur mouvementecho.fr :
+          1. Page d'accueil charge en < 3s (NFR-Perf-1)
+          2. Connexion Google OAuth fonctionne
+          3. Formulaire contact soumis avec succès
+          4. Page ECHOSystem affiche les partenaires réels
+          5. Agenda affiche les événements
+          6. Footer : aucun lien href='#' pour les réseaux sociaux officiels
+        priorite: CRITIQUE
+        statut: A_FAIRE
+        effort_estime: "30min"
+        assignee: QA
+        blockers:
+          - depends_on: "deploiement-final"
+        acceptance_criteria:
+          - "Tous les smoke tests passent sans erreur"
+          - "Aucune erreur 500 dans les logs"
+          - "Temps de chargement page d'accueil < 3s sur 4G simulé"
+
+# ─────────────────────────────────────────────
+# BACKLOG FUTUR — POST-LANCEMENT
+# ─────────────────────────────────────────────
+
+future_backlog:
+  label: "Post-Lancement (après 20 mars 2026)"
+  items:
+
+    - id: "#13"
+      titre: "Nouvelle charte graphique"
+      priorite: BASSE
+      raison_report: "Non bloquant pour le lancement, évolution visuelle à planifier"
+
+    - id: "#20"
+      titre: "Audit backend MongoDB + brainstorming améliorations"
+      priorite: MOYENNE
+      raison_report: "Amélioration performance, non bloquant pour le lancement"
+
+    - id: "#42"
+      titre: "Arbre vivant interactif (membres = feuilles, partenaires = branches)"
+      priorite: BASSE
+      raison_report: "Fonctionnalité créative nécessitant design + dev conséquents"
+
+    - id: "#43"
+      titre: "Page références culturelles (style Popcorn Garage)"
+      priorite: BASSE
+      raison_report: "Contenu éditorial à curé, non critique au lancement"
+
+    - id: "#48"
+      titre: "Internationalisation (i18n) FR/EN"
+      priorite: MOYENNE
+      raison_report: "Scope important (extraction chaînes + fichiers de traduction), à planifier en Phase 2"
+
+    - id: "social-media-characters"
+      titre: "Réseaux sociaux personnages série — remise en ligne"
+      priorite: MOYENNE
+      raison_report: "Reporté à mai 2026 selon MEMORY.md"
+      date_cible: "2026-05-01"
+
+    - id: "admin-console-24"
+      titre: "Audit log structuré MongoDB (admin_audit_log)"
+      priorite: HAUTE
+      raison_report: "Traçabilité admin RGPD — important mais non bloquant au J+0"
+
+    - id: "admin-console-25"
+      titre: "Soft-delete sur candidatures et partenaires (corbeille admin)"
+      priorite: HAUTE
+      raison_report: "Sécurité données — amélioration post-lancement"
+
+    - id: "admin-console-26"
+      titre: "Pagination serveur sur les tableaux admin"
+      priorite: MOYENNE
+      raison_report: "Performance à l'échelle — non urgent au lancement"
+
+    - id: "admin-console-27"
+      titre: "Persistance des filtres admin dans l'URL (query params)"
+      priorite: MOYENNE
+      raison_report: "UX admin améliorée — post-lancement"
+
+    - id: "admin-console-28"
+      titre: "Graphiques d'évolution sur AdminAnalytics (line charts Recharts)"
+      priorite: MOYENNE
+      raison_report: "Enrichissement dashboard analytique — post-lancement"
+
+    - id: "admin-console-29"
+      titre: "Gestion multi-admin avec verrouillage optimiste"
+      priorite: MOYENNE
+      raison_report: "Collaboration admin — post-lancement quand plusieurs admins actifs"
+
+    - id: "admin-console-30"
+      titre: "Scoring de candidature objectif (compétences, portfolio, expérience)"
+      priorite: BASSE
+      raison_report: "Aide à la décision admin — post-lancement"
+
+    - id: "admin-console-31"
+      titre: "Relances automatiques email (candidature pending >7j, entretien >14j)"
+      priorite: MOYENNE
+      raison_report: "Automation email — post-lancement"
+
+    - id: "admin-console-32"
+      titre: "Adhérents sur la carte ECHOSystem (opt-in visibilité GPS)"
+      priorite: MOYENNE
+      raison_report: "Enrichissement carte communautaire — post-lancement"
+
+    - id: "admin-console-33"
+      titre: "Refonte complète validation formulaires (centralisation, honeypot PartnerFormModal, force MDP)"
+      priorite: HAUTE
+      raison_report: "Amélioration sécurité et UX — non bloquant pour le lancement"
+
+# ─────────────────────────────────────────────
+# RÉSUMÉ & RISQUES
+# ─────────────────────────────────────────────
+
+summary:
+  total_tasks_sprint: 14
+  tasks_by_priority:
+    CRITIQUE: 5
+    HAUTE: 6
+    MOYENNE: 3
+  tasks_by_status:
+    A_FAIRE: 13
+    EN_ATTENTE: 1
+  total_future_backlog: 16
+
+critical_dependencies:
+  - id: DEP-1
+    description: >
+      Bande-annonce (#21) — disponible au plus tôt le 18 mars 2026 en fin de journée (J-2)
+    impact: "Intégration vidéo série bloquée jusqu'à livraison équipe production"
+    mitigation: "Préparer le composant YouTubeEmbed avec une vidéo placeholder ; remplacer seulement l'ID YouTube à la livraison"
+
+  - id: DEP-2
+    description: >
+      SendGrid API Key (#14) — à fournir par l'équipe avant déploiement staging (J-1)
+    impact: "Emails transactionnels silencieux en production sans cette clé (pas d'erreur visible côté utilisateur)"
+    mitigation: "Tester l'envoi d'email depuis staging AVANT le déploiement final"
+
+  - id: DEP-3
+    description: >
+      URLs réseaux sociaux (#15) — à fournir par l'équipe
+    impact: "12 liens href='#' visibles dans le footer au lancement si non fournis"
+    mitigation: "Déployer sans les liens plutôt qu'avec des href='#' ; les ajouter en hotfix post-lancement"
+
+  - id: DEP-4
+    description: >
+      Accès Webstrator — nécessaire pour déploiement staging (J-1) et production (J-0)
+    impact: "Bloque toutes les tâches J-1 et J-0 si non résolu avant le 19 mars"
+    mitigation: "Confirmer l'accès Webstrator le 16 mars (aujourd'hui)"
+
+risks:
+  - id: R1
+    description: "Bande-annonce livrée tard le 18/03 — peu de temps pour intégration et tests"
+    mitigation: "Préparer le composant en avance avec placeholder ; remplacement rapide de l'ID YouTube"
+    niveau: MOYEN
+
+  - id: R2
+    description: "SendGrid non configuré → emails silencieux en production sans erreur visible"
+    mitigation: "Tester l'envoi d'email depuis staging AVANT le déploiement final (J-0)"
+    niveau: ELEVE
+
+  - id: R3
+    description: "Données de test non nettoyées → partenaires/membres fictifs visibles publiquement au lancement"
+    mitigation: "Tâche #23 planifiée en J-4, à traiter en priorité absolue aujourd'hui"
+    niveau: ELEVE
+
+  - id: R4
+    description: "Propagation DNS mouvementecho.fr pouvant prendre jusqu'à 48h"
+    mitigation: "Initier le changement DNS le 19/03 (J-1) plutôt que le 20/03 (J-0)"
+    niveau: MOYEN

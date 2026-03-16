@@ -264,6 +264,149 @@ export function Mouvement() {
             </section>
 
 
+            {/* --- Le Plan en 3 Phases --- */}
+            <section id="plan" className="py-24 sm:py-32 relative overflow-hidden">
+                {/* Transition intro */}
+                <div className="container mx-auto px-4 text-center mb-16 sm:mb-20">
+                    <span className="text-sm font-mono text-amber-600/60 tracking-widest block mb-4">LE PLAN</span>
+                    <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-8">
+                        Trois Phases, <span className="text-amber-500">Une Vision</span>
+                    </h2>
+                    <p className="text-stone-400 max-w-3xl mx-auto leading-relaxed text-base sm:text-lg">
+                        Notre vision suit une progression en trois phases, chacune portée par une saison de la série ECHO.
+                    </p>
+                </div>
+
+                {/* 3 Phase Cards */}
+                <div className="container mx-auto px-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+
+                        {/* Phase 1 — L'Éveil */}
+                        <div className="group rounded-2xl border border-red-900/30 bg-gradient-to-b from-red-950/20 to-stone-950 p-6 sm:p-8 hover:border-red-800/50 transition-colors">
+                            <div className="flex items-center gap-3 mb-4">
+                                <span className="w-10 h-10 rounded-full bg-red-900/30 text-red-400 flex items-center justify-center font-bold text-sm">1</span>
+                                <div>
+                                    <span className="text-xs text-red-400/70 font-mono tracking-wider block">PHASE 1</span>
+                                    <h3 className="text-xl sm:text-2xl font-bold text-white">L'Éveil</h3>
+                                </div>
+                            </div>
+
+                            <p className="text-xs text-red-400/60 font-mono mb-4 leading-relaxed">
+                                <span className="text-red-400 font-bold">E</span>levating <span className="text-red-400 font-bold">C</span>onsciousness, <span className="text-red-400 font-bold">H</span>ope, and <span className="text-red-400 font-bold">O</span>neness
+                            </p>
+
+                            <p className="text-stone-400 text-sm leading-relaxed mb-4">
+                                <strong className="text-stone-300">Objectif :</strong> Redonner confiance aux individus en affirmant notre capacité collective à réfléchir au-delà des normes imposées par le système.
+                            </p>
+
+                            <details className="group/details">
+                                <summary className="cursor-pointer text-amber-500 text-sm font-medium hover:text-amber-400 transition-colors flex items-center gap-1.5 select-none">
+                                    <span className="group-open/details:rotate-90 transition-transform text-xs">▶</span>
+                                    Saison 1 — L'Enfer
+                                </summary>
+                                <div className="mt-4 pt-4 border-t border-red-900/20 space-y-4 text-sm text-stone-400 leading-relaxed">
+                                    <p>
+                                        Cette première saison décrypte les vices individuels et les vicissitudes institutionnelles qui minent notre société. Elle interroge la morale et l'éthique de nos institutions, notre rapport à la nature et à autrui, tout en abordant des questions existentielles sous différents prismes : philosophie, psychologie, cosmogonies…
+                                    </p>
+                                    <div>
+                                        <p className="text-stone-300 font-medium mb-2">Actions du Mouvement ECHO :</p>
+                                        <ul className="space-y-2">
+                                            <li className="flex gap-2"><span className="text-red-400/60 shrink-0">•</span> Constituer l'ECHOSystem, un réseau de partenaires éthiques et solidaires engagé dans cette transformation.</li>
+                                            <li className="flex gap-2"><span className="text-red-400/60 shrink-0">•</span> Sensibiliser et éduquer par des ateliers, des énigmes et les ressources référencées sur le site web.</li>
+                                            <li className="flex gap-2"><span className="text-red-400/60 shrink-0">•</span> Créer et proposer les plateformes numériques CogniSphère et ECHOLink pour mettre en lien les spectateurs et l'ECHOSystem.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+
+                        {/* Phase 2 — Le Changement */}
+                        <div className="group rounded-2xl border border-amber-900/30 bg-gradient-to-b from-amber-950/20 to-stone-950 p-6 sm:p-8 hover:border-amber-800/50 transition-colors">
+                            <div className="flex items-center gap-3 mb-4">
+                                <span className="w-10 h-10 rounded-full bg-amber-900/30 text-amber-400 flex items-center justify-center font-bold text-sm">2</span>
+                                <div>
+                                    <span className="text-xs text-amber-400/70 font-mono tracking-wider block">PHASE 2</span>
+                                    <h3 className="text-xl sm:text-2xl font-bold text-white">Le Changement</h3>
+                                </div>
+                            </div>
+
+                            <p className="text-xs text-amber-400/60 font-mono mb-4 leading-relaxed">
+                                <span className="text-amber-400 font-bold">E</span>mpowering <span className="text-amber-400 font-bold">C</span>hange and <span className="text-amber-400 font-bold">H</span>armony for <span className="text-amber-400 font-bold">O</span>ur Planet
+                            </p>
+
+                            <p className="text-stone-400 text-sm leading-relaxed mb-4">
+                                <strong className="text-stone-300">Objectifs :</strong> Proposer des pistes d'action aux individus. Réconcilier, mobiliser et unir les communautés afin d'agir concrètement pour un changement positif.
+                            </p>
+
+                            <details className="group/details">
+                                <summary className="cursor-pointer text-amber-500 text-sm font-medium hover:text-amber-400 transition-colors flex items-center gap-1.5 select-none">
+                                    <span className="group-open/details:rotate-90 transition-transform text-xs">▶</span>
+                                    Saison 2 — Le Purgatoire
+                                </summary>
+                                <div className="mt-4 pt-4 border-t border-amber-900/20 space-y-4 text-sm text-stone-400 leading-relaxed">
+                                    <p>
+                                        Durant cette saison, nous partagerons des solutions tangibles aux dysfonctionnements exposés à la saison 1, en analysant et en respectant les besoins de l'ensemble des classes sociales et des métiers indispensables à l'édification d'une société socialement juste et économiquement viable.
+                                    </p>
+                                    <div>
+                                        <p className="text-stone-300 font-medium mb-2">Actions du Mouvement ECHO :</p>
+                                        <ul className="space-y-2">
+                                            <li className="flex gap-2"><span className="text-amber-400/60 shrink-0">•</span> Développer les services de la plateforme ECHOLink, invitant chaque spectateur à devenir acteur du changement.</li>
+                                            <li className="flex gap-2"><span className="text-amber-400/60 shrink-0">•</span> Simplifier la mise en relation entre les individus et l'ECHOSystem afin de les accompagner et les aider à financer leurs initiatives.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+
+                        {/* Phase 3 — La Régénération */}
+                        <div className="group rounded-2xl border border-emerald-900/30 bg-gradient-to-b from-emerald-950/20 to-stone-950 p-6 sm:p-8 hover:border-emerald-800/50 transition-colors">
+                            <div className="flex items-center gap-3 mb-4">
+                                <span className="w-10 h-10 rounded-full bg-emerald-900/30 text-emerald-400 flex items-center justify-center font-bold text-sm">3</span>
+                                <div>
+                                    <span className="text-xs text-emerald-400/70 font-mono tracking-wider block">PHASE 3</span>
+                                    <h3 className="text-xl sm:text-2xl font-bold text-white">La Régénération</h3>
+                                </div>
+                            </div>
+
+                            <p className="text-xs text-emerald-400/60 font-mono mb-4 leading-relaxed">
+                                <span className="text-emerald-400 font-bold">E</span>arth's <span className="text-emerald-400 font-bold">C</span>onservation and <span className="text-emerald-400 font-bold">H</span>ealing <span className="text-emerald-400 font-bold">O</span>rganization
+                            </p>
+
+                            <p className="text-stone-400 text-sm leading-relaxed mb-4">
+                                <strong className="text-stone-300">Objectif :</strong> Préserver les ressources naturelles, restaurer les écosystèmes afin de réparer les dommages engendrés par l'activité humaine.
+                            </p>
+
+                            <details className="group/details">
+                                <summary className="cursor-pointer text-amber-500 text-sm font-medium hover:text-amber-400 transition-colors flex items-center gap-1.5 select-none">
+                                    <span className="group-open/details:rotate-90 transition-transform text-xs">▶</span>
+                                    Saison 3 — Le Paradis
+                                </summary>
+                                <div className="mt-4 pt-4 border-t border-emerald-900/20 space-y-4 text-sm text-stone-400 leading-relaxed">
+                                    <p>
+                                        Dans cette ultime saison, nous offrons une vision idéale d'une société réformée où l'unité entre les individus, la nature et les institutions est pleinement retrouvée. Solidarité et harmonie constituent les fondements de cette nouvelle réalité.
+                                    </p>
+                                    <div>
+                                        <p className="text-stone-300 font-medium mb-2">Actions du Mouvement ECHO :</p>
+                                        <ul className="space-y-2">
+                                            <li className="flex gap-2"><span className="text-emerald-400/60 shrink-0">•</span> Mettre en œuvre des projets de préservation et de restauration des milieux naturels.</li>
+                                            <li className="flex gap-2"><span className="text-emerald-400/60 shrink-0">•</span> Encourager et organiser des actions participatives, en invitant des spectateurs sélectionnés à co-créer les scénarios des épisodes.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+
+                    {/* Conclusion */}
+                    <div className="mt-12 sm:mt-16 text-center max-w-3xl mx-auto">
+                        <p className="text-stone-300 text-base sm:text-lg leading-relaxed italic">
+                            ECHO ne se limite pas à une série : c'est un écosystème collaboratif où chacun peut s'informer, s'engager et proposer des solutions pour bâtir un avenir meilleur. Nous croyons profondément qu'il est possible de repenser et de reconstruire nos structures économiques et sociales, en misant sur la <span className="text-amber-400 font-medium not-italic">créativité</span> et l'<span className="text-amber-400 font-medium not-italic">intelligence collective</span>.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+
             {/* --- Équipe --- */}
             <section id="equipe" className="py-24 relative overflow-hidden">
                 <div className="container mx-auto px-4 text-center">
