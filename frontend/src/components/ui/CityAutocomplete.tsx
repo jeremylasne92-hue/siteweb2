@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import { MapPin } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { MapPin, Check } from 'lucide-react';
 
 interface NominatimResult {
     display_name: string;
@@ -32,8 +32,22 @@ export function CityAutocomplete({ label, name, placeholder, required, value: co
     const [suggestions, setSuggestions] = useState<CityDisplay[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isValidated, setIsValidated] = useState(false);
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const knownCitiesRef = useRef<Set<string>>(new Set());
+
+    // Update custom validity whenever isValidated or query changes
+    useEffect(() => {
+        const input = inputRef.current;
+        if (!input) return;
+        if (!isValidated && query.trim().length > 0) {
+            input.setCustomValidity('Veuillez sélectionner une ville dans la liste');
+        } else {
+            input.setCustomValidity('');
+        }
+    }, [isValidated, query]);
 
     // Close dropdown on outside click
     useEffect(() => {
@@ -44,6 +58,15 @@ export function CityAutocomplete({ label, name, placeholder, required, value: co
         };
         document.addEventListener('mousedown', handleClick);
         return () => document.removeEventListener('mousedown', handleClick);
+    }, []);
+
+    const checkExactMatch = useCallback((value: string) => {
+        const lower = value.trim().toLowerCase();
+        if (knownCitiesRef.current.has(lower)) {
+            setIsValidated(true);
+            return true;
+        }
+        return false;
     }, []);
 
     const searchCities = async (q: string) => {
@@ -69,6 +92,8 @@ export function CityAutocomplete({ label, name, placeholder, required, value: co
                     const key = city.toLowerCase();
                     if (seen.has(key)) continue;
                     seen.add(key);
+                    // Remember this city for exact-match validation
+                    knownCitiesRef.current.add(key);
                     const dept = addr.county || addr.state || '';
                     results.push({
                         city,
@@ -78,6 +103,9 @@ export function CityAutocomplete({ label, name, placeholder, required, value: co
                 }
                 setSuggestions(results.slice(0, 5));
                 setIsOpen(results.length > 0);
+
+                // Check if current query exactly matches a returned city
+                checkExactMatch(q);
             }
         } catch {
             // Silently fail — user can still type manually
@@ -91,6 +119,9 @@ export function CityAutocomplete({ label, name, placeholder, required, value: co
         setQuery(val);
         onChange?.(val);
 
+        // Invalidate until re-selected or exact match found
+        setIsValidated(false);
+
         if (debounceRef.current) clearTimeout(debounceRef.current);
         debounceRef.current = setTimeout(() => searchCities(val), 300);
     };
@@ -100,13 +131,22 @@ export function CityAutocomplete({ label, name, placeholder, required, value: co
         onChange?.(item.city);
         setIsOpen(false);
         setSuggestions([]);
+        setIsValidated(true);
     };
+
+    // Determine border/ring style based on validation state
+    const borderClass = !isValidated && query.trim().length > 0
+        ? 'border-amber-500/60 focus:border-amber-500/80 focus:ring-amber-500/40'
+        : isValidated
+            ? 'border-emerald-500/50 focus:border-emerald-500/60 focus:ring-emerald-500/30'
+            : 'border-white/10 focus:border-[#D4AF37]/50 focus:ring-[#D4AF37]/30';
 
     return (
         <div ref={wrapperRef} className="relative">
             <label className="block text-sm font-medium text-neutral-300 mb-1.5">{label}</label>
             <div className="relative">
                 <input
+                    ref={inputRef}
                     type="text"
                     name={name}
                     value={query}
@@ -117,13 +157,15 @@ export function CityAutocomplete({ label, name, placeholder, required, value: co
                     minLength={2}
                     maxLength={100}
                     autoComplete="off"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-[#D4AF37]/50 focus:ring-1 focus:ring-[#D4AF37]/30 transition-colors"
+                    className={`w-full px-4 py-3 bg-white/5 border rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:ring-1 transition-colors ${borderClass}`}
                 />
-                {isLoading && (
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
+                    {isLoading ? (
                         <div className="w-4 h-4 border-2 border-neutral-500 border-t-[#D4AF37] rounded-full animate-spin" />
-                    </div>
-                )}
+                    ) : isValidated ? (
+                        <Check className="w-4 h-4 text-emerald-400" />
+                    ) : null}
+                </div>
             </div>
             {isOpen && suggestions.length > 0 && (
                 <ul className="absolute z-50 w-full mt-1 bg-[#1A1A1A] border border-white/10 rounded-lg shadow-xl overflow-hidden">

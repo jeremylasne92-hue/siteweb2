@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { PARTNERS_API, API_URL } from '../config/api';
 import { BOOKING_URL } from '../config/booking';
+import { isValidPhone, sanitizePhone } from '../utils/validation';
 import { PartnerAnalytics, type PartnerStats } from '../components/partners/PartnerAnalytics';
 
 const API_BASE = PARTNERS_API;
@@ -194,7 +195,17 @@ export default function MyPartnerAccount() {
         setAddressSuggestions([]);
     };
 
+    const [saveError, setSaveError] = useState('');
+
     const handleSave = async () => {
+        setSaveError('');
+
+        // Validate phone before saving
+        if (form.contact_phone && !isValidPhone(form.contact_phone)) {
+            setSaveError('Numéro de téléphone invalide.');
+            return;
+        }
+
         setIsSaving(true);
         setSaveSuccess(false);
         try {
@@ -471,9 +482,25 @@ export default function MyPartnerAccount() {
                                 <h3 className="text-sm font-medium text-white flex items-center gap-2">
                                     <Phone size={16} className="text-echo-gold" /> Contact & Liens
                                 </h3>
+                                {saveError && (
+                                    <p className="text-sm text-red-400 bg-red-500/10 p-3 rounded border border-red-500/20">{saveError}</p>
+                                )}
                                 <div className="grid grid-cols-2 gap-4">
-                                    <Input label="Téléphone" name="contact_phone" value={form.contact_phone} onChange={handleInputChange}
-                                        className="pl-3" />
+                                    <Input
+                                        label="Téléphone"
+                                        name="contact_phone"
+                                        type="tel"
+                                        value={form.contact_phone}
+                                        onChange={handleInputChange}
+                                        maxLength={20}
+                                        pattern="[+0][\d\s.\-()]{5,19}"
+                                        title="Numéro de téléphone valide (chiffres, espaces, tirets)"
+                                        onInput={(e) => {
+                                            const input = e.currentTarget;
+                                            input.value = sanitizePhone(input.value);
+                                            handleInputChange({ target: { name: 'contact_phone', value: input.value } } as React.ChangeEvent<HTMLInputElement>);
+                                        }}
+                                    />
                                     <Input label="Site Web" name="website_url" value={form.website_url} onChange={handleInputChange} />
                                 </div>
                                 <div className="grid grid-cols-3 gap-3">
@@ -533,15 +560,15 @@ export default function MyPartnerAccount() {
 
                     {/* RGPD — Données personnelles */}
                     <div className="mt-10 pt-8 border-t border-red-500/20">
-                        <h3 className="text-lg font-serif text-white mb-2">Donnees personnelles</h3>
+                        <h3 className="text-lg font-serif text-white mb-2">Données personnelles</h3>
                         <p className="text-sm text-gray-400 mb-4">
-                            Conformement au RGPD, vous pouvez exporter ou supprimer vos donnees.
+                            Conformément au RGPD, vous pouvez exporter ou supprimer vos données.
                         </p>
                         <div className="flex flex-wrap gap-3">
                             <button onClick={handleExportData} disabled={isExporting}
                                 className="flex items-center gap-2 px-4 py-2 text-sm bg-white/5 border border-white/10 rounded-lg text-gray-300 hover:bg-white/10 transition-colors disabled:opacity-50">
                                 <Download size={16} />
-                                {isExporting ? 'Export...' : 'Exporter mes donnees'}
+                                {isExporting ? 'Export...' : 'Exporter mes données'}
                             </button>
                             <button onClick={() => setShowDeleteConfirm(true)}
                                 className="flex items-center gap-2 px-4 py-2 text-sm bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 hover:bg-red-500/20 transition-colors">
@@ -558,7 +585,7 @@ export default function MyPartnerAccount() {
                     <div className="bg-[#1a1a1a] border border-white/10 rounded-xl p-6 max-w-md w-full">
                         <h3 className="text-lg font-serif text-white mb-3">Supprimer votre compte ?</h3>
                         <p className="text-sm text-gray-400 mb-6">
-                            Cette action est irreversible. Toutes vos donnees seront definitivement supprimees.
+                            Cette action est irréversible. Toutes vos données seront définitivement supprimées.
                         </p>
                         <div className="flex gap-3 justify-end">
                             <button onClick={() => setShowDeleteConfirm(false)}

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ChevronDown, HelpCircle, Search } from 'lucide-react';
 import { SEO } from '../components/seo/SEO';
-import { Breadcrumbs } from '../components/seo/Breadcrumbs';
 
 interface FAQItem {
     q: string;
@@ -184,7 +183,6 @@ export function FAQ() {
                     })}
                 </script>
             </Helmet>
-            <Breadcrumbs items={[{ label: 'FAQ' }]} />
 
             {/* Hero */}
             <section className="relative py-20 bg-echo-darker">

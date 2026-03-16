@@ -6,7 +6,7 @@ import { Input } from '../ui/Input';
 import { CityAutocomplete } from '../ui/CityAutocomplete';
 import { StepProgress } from '../ui/StepProgress';
 import { API_URL } from '../../config/api';
-import { sanitizePhone } from '../../utils/validation';
+import { sanitizePhone, isValidPhone, isValidEmail } from '../../utils/validation';
 
 const SKILL_CATEGORIES: Record<string, string[]> = {
     'Création audiovisuelle': ['Vidéo', 'Montage', 'Réalisation', 'Production', "Jeu d'acteur", 'Voix off', 'Mise en scène', 'Sound design'],
@@ -125,13 +125,31 @@ export function VolunteerApplicationForm() {
         if (!form) return;
 
         if (step === 1) {
+            setError('');
             const nameInput = form.querySelector('input[name="name"]') as HTMLInputElement;
             const emailInput = form.querySelector('input[name="email"]') as HTMLInputElement;
             const cityInput = form.querySelector('input[name="city"]') as HTMLInputElement;
             const phoneInput = form.querySelector('input[name="phone"]') as HTMLInputElement;
             if (!nameInput?.checkValidity()) { nameInput?.reportValidity(); return; }
             if (!emailInput?.checkValidity()) { emailInput?.reportValidity(); return; }
+            if (!isValidEmail(emailInput?.value)) {
+                setError('Adresse email invalide. Vérifiez le format (ex: nom@domaine.com).');
+                return;
+            }
             if (phoneInput?.value && !phoneInput.checkValidity()) { phoneInput.reportValidity(); return; }
+            if (phoneInput?.value && !isValidPhone(phoneInput.value)) {
+                const trimmed = phoneInput.value.trim();
+                let msg: string;
+                if (!trimmed.startsWith('0') && !trimmed.startsWith('+')) {
+                    msg = 'Le numéro doit commencer par 0 (français) ou + (international).';
+                } else if (trimmed.startsWith('0')) {
+                    msg = 'Numéro français invalide (10 chiffres attendus, ex: 06 12 34 56 78).';
+                } else {
+                    msg = 'Numéro international invalide (6 à 15 chiffres attendus).';
+                }
+                setError(msg);
+                return;
+            }
             if (!cityInput?.checkValidity()) { cityInput?.reportValidity(); return; }
         }
         if (step === 2) {
@@ -193,8 +211,8 @@ export function VolunteerApplicationForm() {
                         name="phone"
                         type="tel"
                         placeholder="06 12 34 56 78"
-                        maxLength={20}
-                        pattern="[+]?[\d\s.\-()]{6,20}"
+                        maxLength={18}
+                        pattern="[+0][\d\s.\-()]{5,19}"
                         title="Numéro de téléphone valide (chiffres, espaces, tirets)"
                         onInput={(e) => {
                             const input = e.currentTarget;
@@ -203,6 +221,9 @@ export function VolunteerApplicationForm() {
                     />
                     <CityAutocomplete label="Ville" name="city" placeholder="Commencez à taper votre ville..." required />
                 </div>
+                {error && step === 1 && (
+                    <p className="text-sm text-red-400 bg-red-500/10 p-3 rounded border border-red-500/20">{error}</p>
+                )}
                 <div className="text-sm text-neutral-400 p-4 border border-white/5 rounded-md bg-white/5 mt-2">
                     Vos informations seront utilisées uniquement pour traiter votre candidature de <strong>bénévole</strong> au Mouvement ECHO.
                 </div>

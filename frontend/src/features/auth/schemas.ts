@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isValidEmail } from '../../utils/validation';
 
 // ==================== REGISTER ====================
 
@@ -8,7 +9,8 @@ export const registerSchema = z.object({
         .max(30, 'Le nom d\'utilisateur ne peut pas dépasser 30 caractères')
         .regex(/^[a-zA-Z0-9_]+$/, 'Seuls les lettres, chiffres et underscores sont autorisés'),
     email: z.string()
-        .email('Adresse email invalide'),
+        .email('Adresse email invalide')
+        .refine(val => isValidEmail(val), 'Extension email non reconnue (ex: .com, .fr, .org)'),
     password: z.string()
         .min(8, 'Le mot de passe doit contenir au moins 8 caractères')
         .regex(/[A-Z]/, 'Le mot de passe doit contenir au moins 1 majuscule')
@@ -69,7 +71,8 @@ export const strengthLabels: Record<PasswordStrength, string> = {
 
 export const forgotPasswordSchema = z.object({
     email: z.string()
-        .email('Adresse email invalide'),
+        .email('Adresse email invalide')
+        .refine(val => isValidEmail(val), 'Extension email non reconnue (ex: .com, .fr, .org)'),
 });
 
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;

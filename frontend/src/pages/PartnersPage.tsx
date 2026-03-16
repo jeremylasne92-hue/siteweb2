@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { PartnersHero } from '../components/partners/PartnersHero';
 import { PartnersStats } from '../components/partners/PartnersStats';
 import { PartnersFilters, PartnersViewSwitch } from '../components/partners/PartnersFilters';
@@ -105,6 +105,18 @@ export default function PartnersPage() {
         return () => clearTimeout(timer);
     }, [selectedCategory, selectedThematics, searchQuery]);
 
+    // Filter members client-side when search query changes
+    const filteredMapMembers = useMemo(() => {
+        if (!searchQuery.trim()) return mapMembers;
+        const q = searchQuery.trim().toLowerCase();
+        return mapMembers.filter(m =>
+            m.display_name?.toLowerCase().includes(q) ||
+            m.city?.toLowerCase().includes(q) ||
+            m.role_title?.toLowerCase().includes(q) ||
+            m.skills?.some(s => s.toLowerCase().includes(q))
+        );
+    }, [mapMembers, searchQuery]);
+
     return (
         <>
             <SEO
@@ -117,7 +129,7 @@ export default function PartnersPage() {
             <PartnersStats stats={stats} membersCount={membersCount} />
 
             <div id="cartographie" className="max-w-7xl mx-auto px-6 lg:px-8 pb-32 z-10 relative">
-                <h2 className="text-2xl sm:text-3xl font-serif text-white mb-8 text-center">Cartographie des Partenaires</h2>
+                <h2 className="text-2xl sm:text-3xl font-serif text-white mb-8 text-center">Cartographie de l'ECHOSystem</h2>
                 <PartnersFilters
                     searchQuery={searchQuery}
                     setSearchQuery={setSearchQuery}
@@ -146,7 +158,7 @@ export default function PartnersPage() {
                             <PartnersMap
                                 partners={partners}
                                 onPartnerClick={setSelectedPartner}
-                                members={mapMembers}
+                                members={filteredMapMembers}
                                 onMemberClick={handleMemberClick}
                             />
                         </Suspense>

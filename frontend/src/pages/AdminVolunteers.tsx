@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { API_URL } from '../config/api';
-import { isValidEmail, parse422Detail } from '../utils/validation';
+import { isValidEmail, isValidPhone, parse422Detail } from '../utils/validation';
 
 type VolunteerStatus = 'pending' | 'entretien' | 'accepted' | 'rejected';
 type AvailabilityType = 'punctual' | 'regular' | 'active';
@@ -266,6 +266,13 @@ export default function AdminVolunteers() {
         const emailValue = editForm.email as string | undefined;
         if (emailValue && !isValidEmail(emailValue)) {
             setEditError('Adresse email invalide.');
+            return;
+        }
+
+        // Validate phone before sending
+        const phoneValue = editForm.phone as string | undefined;
+        if (phoneValue && !isValidPhone(phoneValue)) {
+            setEditError('Numéro de téléphone invalide.');
             return;
         }
 

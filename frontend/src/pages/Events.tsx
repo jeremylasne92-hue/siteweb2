@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { EVENTS_API } from '../config/api';
 import { SEO } from '../components/seo/SEO';
-import { Breadcrumbs } from '../components/seo/Breadcrumbs';
 
 interface EventItem {
     id: string;
@@ -172,7 +171,6 @@ export function Events() {
                 description="Événements et projections du Mouvement ECHO. Rencontres, ateliers et conférences autour de la transition écologique."
                 url="https://mouvementecho.fr/agenda"
             />
-            <Breadcrumbs items={[{ label: 'Événements' }]} />
             {/* Hero Section */}
             <section className="relative py-20 md:py-32 flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-echo-darker">

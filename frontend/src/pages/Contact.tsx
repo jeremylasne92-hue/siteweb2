@@ -3,8 +3,8 @@ import { Mail, MapPin, Send, Instagram, Twitter, Linkedin, Facebook } from 'luci
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { SEO } from '../components/seo/SEO';
-import { Breadcrumbs } from '../components/seo/Breadcrumbs';
 import { API_URL } from '../config/api';
+import { isValidEmail } from '../utils/validation';
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -28,6 +28,12 @@ export function Contact() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!consentRGPD) return;
+
+        if (!isValidEmail(email)) {
+            setStatus('error');
+            setErrorMsg('Adresse email invalide. Vérifiez le format (ex: nom@domaine.com).');
+            return;
+        }
 
         setStatus('loading');
         setErrorMsg('');
@@ -78,7 +84,6 @@ export function Contact() {
                 description="Contactez Mouvement ECHO. Association loi 1901, Bougival (78). Formulaire de contact et informations."
                 url="https://mouvementecho.fr/contact"
             />
-            <Breadcrumbs items={[{ label: 'Contact' }]} />
             <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1516387938699-a93567ec168e?q=80&w=2671&auto=format&fit=crop')] bg-cover bg-center opacity-10" />
 
             <div className="container mx-auto px-4 relative z-10">

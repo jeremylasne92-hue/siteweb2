@@ -51,7 +51,7 @@ export const PartnersFilters: React.FC<PartnersFiltersProps> = ({
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                         <Input
                             type="text"
-                            placeholder="Nom, ville..."
+                            placeholder="Partenaire, membre, ville..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="pl-10 pb-0 pt-0 h-10 w-full bg-white/5 border-white/10"

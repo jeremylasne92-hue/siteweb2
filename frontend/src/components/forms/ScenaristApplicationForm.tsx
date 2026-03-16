@@ -5,6 +5,7 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { StepProgress } from '../ui/StepProgress';
 import { API_URL } from '../../config/api';
+import { isValidEmail } from '../../utils/validation';
 
 const WRITING_GENRES = [
     'Scénario', 'Fiction', 'Documentaire', 'Poésie',
@@ -86,10 +87,15 @@ export function ScenaristApplicationForm() {
         if (!form) return;
 
         if (step === 1) {
+            setError('');
             const nameInput = form.querySelector('input[name="name"]') as HTMLInputElement;
             const emailInput = form.querySelector('input[name="email"]') as HTMLInputElement;
             if (!nameInput?.checkValidity()) { nameInput?.reportValidity(); return; }
             if (!emailInput?.checkValidity()) { emailInput?.reportValidity(); return; }
+            if (!isValidEmail(emailInput?.value)) {
+                setError('Adresse email invalide. Vérifiez le format (ex: nom@domaine.com).');
+                return;
+            }
         }
         if (step === 2) {
             if (selectedGenres.length === 0) {
@@ -135,6 +141,9 @@ export function ScenaristApplicationForm() {
                     <Input label="Email de contact" name="email" type="email" placeholder="votre@email.com" required />
                     <Input label="Portfolio / travaux en ligne (optionnel)" name="portfolio_url" type="url" placeholder="https://votre-site.com, Wattpad, blog..." />
                 </div>
+                {error && step === 1 && (
+                    <p className="text-sm text-red-400 bg-red-500/10 p-3 rounded border border-red-500/20">{error}</p>
+                )}
                 <div className="text-sm text-neutral-400 p-4 border border-white/5 rounded-md bg-white/5 mt-2">
                     Votre adresse email sera utilisée pour vous recontacter concernant votre candidature comme <strong>scénariste</strong> pour la série ECHO.
                 </div>

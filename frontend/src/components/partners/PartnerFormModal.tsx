@@ -8,7 +8,7 @@ import { MapPin, Upload, ChevronRight, ChevronLeft, CheckCircle2, CalendarDays, 
 import { ApplicationSuccessCTA } from '../forms/ApplicationSuccessCTA';
 import { PARTNERS_API } from '../../config/api';
 import { BOOKING_URL } from '../../config/booking';
-import { sanitizePhone } from '../../utils/validation';
+import { sanitizePhone, isValidPhone, isValidEmail } from '../../utils/validation';
 
 interface PartnerFormModalProps {
     isOpen: boolean;
@@ -303,7 +303,7 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
                     value={formData.contact_phone}
                     onChange={handleInputChange}
                     maxLength={20}
-                    pattern="[+]?[\d\s.\-()]{6,20}"
+                    pattern="[+0][\d\s.\-()]{5,19}"
                     title="Numéro de téléphone valide (chiffres, espaces, tirets)"
                     onInput={(e) => {
                         const input = e.currentTarget;
@@ -343,7 +343,7 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
 
     const isStep1Valid = formData.name && formData.description && formData.thematics.length > 0;
     const isStep2Valid = formData.address && formData.city && formData.postal_code && formData.latitude !== 0;
-    const isStep3Valid = formData.contact_name && formData.contact_email;
+    const isStep3Valid = formData.contact_name && formData.contact_email && isValidEmail(formData.contact_email) && isValidPhone(formData.contact_phone);
     const isStep4Valid = formData.password.length >= 8;
 
     return (
@@ -471,10 +471,10 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
                                         required
                                     />
                                     <span>
-                                        J'accepte que mes donnees soient traitees conformement a la{' '}
+                                        J'accepte que mes données soient traitées conformément à la{' '}
                                         <a href="/politique-de-confidentialite" target="_blank" rel="noopener noreferrer"
                                            className="text-echo-gold hover:underline">
-                                            politique de confidentialite
+                                            politique de confidentialité
                                         </a>.
                                     </span>
                                 </label>

@@ -5,7 +5,6 @@ import { Modal } from '../components/ui/Modal';
 import { YouTubeEmbed } from '../components/ui/YouTubeEmbed';
 import { Helmet } from 'react-helmet-async';
 import { SEO } from '../components/seo/SEO';
-import { Breadcrumbs } from '../components/seo/Breadcrumbs';
 import { ScenaristApplicationForm } from '../components/forms/ScenaristApplicationForm';
 import { useAuthStore } from '../features/auth/store';
 import { API_URL } from '../config/api';
@@ -268,7 +267,6 @@ export function Serie() {
                     })}
                 </script>
             </Helmet>
-            <Breadcrumbs items={[{ label: 'La Série' }]} />
             {/* HERO SECTION */}
             <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-echo-red/20 via-black to-black z-10" />

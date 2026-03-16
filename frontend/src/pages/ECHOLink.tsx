@@ -5,7 +5,6 @@ import { Button } from '../components/ui/Button';
 import { TechApplicationForm } from '../components/forms/TechApplicationForm';
 import { useAnalytics } from '../hooks/useAnalytics';
 import { SEO } from '../components/seo/SEO';
-import { Breadcrumbs } from '../components/seo/Breadcrumbs';
 
 export function ECHOLink() {
     const { trackEvent } = useAnalytics();
@@ -17,7 +16,6 @@ export function ECHOLink() {
                 description="ECHOLink : réseau de mise en relation des acteurs du changement. Passez de spectateur à acteur de la transition écologique."
                 url="https://mouvementecho.fr/echolink"
             />
-            <Breadcrumbs items={[{ label: 'ECHOLink' }]} />
             {/* Hero */}
             <section className="relative h-[60vh] sm:h-[70vh] md:h-[80vh] flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-echo-darker">
