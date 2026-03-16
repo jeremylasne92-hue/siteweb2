@@ -48,13 +48,14 @@ async def _process_candidature(
     # Anti-spam: rate limiting (max 3 per hour per IP)
     await check_rate_limit(db, request, "candidature", max_requests=3, window_minutes=60)
 
-    # Store candidature
+    # Store candidature (normalize data for consistency)
+    from utils.normalize import normalize_email
     project = project_override or data.project
     candidature = TechCandidature(
-        name=data.name,
-        email=data.email,
+        name=data.name.strip(),
+        email=normalize_email(data.email),
         project=project,
-        skills=data.skills,
+        skills=data.skills.strip().lower() if data.skills else data.skills,
         message=data.message,
         portfolio_url=data.portfolio_url,
         creative_interests=data.creative_interests,

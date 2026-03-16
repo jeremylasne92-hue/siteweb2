@@ -63,11 +63,15 @@ async def register_user(data: UserRegister, db: AsyncIOMotorDatabase) -> dict:
             detail="Vous devez certifier avoir plus de 15 ans."
         )
 
+    # Normalize email for consistent storage
+    from utils.normalize import normalize_email
+    normalized_email = normalize_email(data.email)
+
     # Check for existing username or email
     existing = await db.users.find_one({
         "$or": [
             {"username": data.username},
-            {"email": data.email}
+            {"email": normalized_email}
         ]
     })
     if existing:
@@ -89,7 +93,7 @@ async def register_user(data: UserRegister, db: AsyncIOMotorDatabase) -> dict:
     # Create user
     user = User(
         username=data.username,
-        email=data.email,
+        email=normalized_email,
         password_hash=hash_password(data.password),
         interests=cleaned_interests,
     )
@@ -107,10 +111,13 @@ async def register_user(data: UserRegister, db: AsyncIOMotorDatabase) -> dict:
 
 async def login_user(data: UserLoginLocal, db: AsyncIOMotorDatabase) -> dict:
     """Authenticate user by email or username + password. Returns user + session_token."""
-    # Lookup by email or username
+    # Normalize identifier for case-insensitive email lookup
+    from utils.normalize import normalize_email
+    normalized_identifier = normalize_email(data.identifier)
+    # Lookup by email (normalized) or username (exact)
     user_doc = await db.users.find_one({
         "$or": [
-            {"email": data.identifier},
+            {"email": normalized_identifier},
             {"username": data.identifier}
         ]
     })

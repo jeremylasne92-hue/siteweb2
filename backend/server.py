@@ -103,6 +103,15 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Audit index creation: {e}")
 
+    # Analytics composite index for dashboard time-range queries (data quality audit 2026-03-16)
+    try:
+        await db.analytics_events.create_index([("category", 1), ("action", 1), ("created_at", -1)])
+        await db.media_resources.create_index([("is_published", 1), ("sort_order", 1)])
+        await db.admin_actions.create_index("timestamp")
+        await db.admin_actions.create_index("created_at", expireAfterSeconds=94608000)  # 3 years retention
+    except Exception as e:
+        logger.warning(f"Data quality index creation: {e}")
+
     logger.info("Rate limit and retention indexes ensured")
 
     yield  # Application runs here

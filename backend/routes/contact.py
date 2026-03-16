@@ -34,10 +34,11 @@ async def submit_contact(
     # Rate limiting
     await check_rate_limit(db, request, "contact", max_requests=3, window_minutes=60)
 
-    # Store in MongoDB
+    # Store in MongoDB (normalize email for consistency)
+    from utils.normalize import normalize_email
     doc = {
-        "name": data.name,
-        "email": data.email,
+        "name": data.name.strip(),
+        "email": normalize_email(data.email),
         "subject": data.subject,
         "message": data.message,
         "ip_address": anonymize_ip(request.client.host if request.client else "unknown"),

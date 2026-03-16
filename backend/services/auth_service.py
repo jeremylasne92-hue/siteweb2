@@ -97,8 +97,9 @@ async def google_callback_service(code: str, db) -> dict:
 
         user_info = userinfo_response.json()
 
-    # 3. Check if user exists or create
-    email = user_info.get("email")
+    # 3. Check if user exists or create (normalize email)
+    from utils.normalize import normalize_email
+    email = normalize_email(user_info.get("email"))
     user_doc = await db.users.find_one({"email": email})
 
     if user_doc:

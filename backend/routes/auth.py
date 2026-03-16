@@ -434,16 +434,19 @@ async def delete_user(
             detail="You can only delete your own account"
         )
     
-    # Delete user data (cascade)
+    # Delete user data (cascade — all collections referencing this user)
     try:
         await db.users.delete_one({"id": user_id})
         await db.user_sessions.delete_many({"user_id": user_id})
         await db.video_progress.delete_many({"user_id": user_id})
         await db.pending_2fa.delete_many({"user_id": user_id})
         await db.partners.delete_many({"user_id": user_id})
+        await db.member_profiles.delete_many({"user_id": user_id})
+        await db.episode_optins.delete_many({"user_id": user_id})
         if current_user.email:
             await db.tech_candidatures.delete_many({"email": current_user.email})
-        await db.episode_optins.delete_many({"user_id": user_id})
+            await db.volunteer_applications.delete_many({"email": current_user.email})
+            await db.contact_messages.delete_many({"email": current_user.email})
     except PyMongoError as e:
         logger.error(f"Failed to delete user data for {user_id}: {e}")
         raise HTTPException(status_code=503, detail="Impossible de supprimer votre compte. Veuillez réessayer.")

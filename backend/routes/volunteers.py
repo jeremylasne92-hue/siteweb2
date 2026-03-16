@@ -38,14 +38,15 @@ async def submit_volunteer_application(
     # Anti-spam: rate limiting (max 3 per hour per IP)
     await check_rate_limit(db, request, "volunteer", max_requests=3, window_minutes=60)
 
-    # Store application
+    # Store application (normalize data for consistency)
+    from utils.normalize import normalize_email, normalize_skills, normalize_phone
     application = VolunteerApplication(
-        name=data.name,
-        email=data.email,
-        phone=data.phone,
-        city=data.city,
+        name=data.name.strip(),
+        email=normalize_email(data.email),
+        phone=normalize_phone(data.phone),
+        city=data.city.strip() if data.city else data.city,
         motivation=data.motivation,
-        skills=data.skills,
+        skills=normalize_skills(data.skills),
         experience_level=data.experience_level,
         availability=data.availability,
         values_accepted=data.values_accepted,
