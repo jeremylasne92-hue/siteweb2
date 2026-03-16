@@ -8,3 +8,5 @@ export const EPISODES_API = `${API_URL}/episodes`;
 export const CANDIDATURES_API = `${API_URL}/candidatures`;
 export const MEMBERS_API = `${API_URL}/members`;
 export const ANALYTICS_API = `${API_URL}/analytics`;
+export const MEDIATHEQUE_API = `${API_URL}/mediatheque`;
+export const ADMIN_MEDIATHEQUE_API = `${API_URL}/admin/mediatheque`;

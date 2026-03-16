@@ -15,7 +15,7 @@ from pymongo.errors import PyMongoError
 from pathlib import Path
 
 # Import routes
-from routes import auth, episodes, progress, videos, users, thematics, resources, partners, candidatures, events, analytics, contact, volunteers, members
+from routes import auth, episodes, progress, videos, users, thematics, resources, partners, candidatures, events, analytics, contact, volunteers, members, mediatheque
 from routes.admin_dashboard import router as admin_dashboard_router
 
 ROOT_DIR = Path(__file__).parent
@@ -140,6 +140,8 @@ api_router.include_router(volunteers.router)
 api_router.include_router(members.router)
 api_router.include_router(members.admin_router)
 api_router.include_router(admin_dashboard_router)
+api_router.include_router(mediatheque.router)
+api_router.include_router(mediatheque.admin_router)
 
 # Health check endpoint
 @api_router.get("/")

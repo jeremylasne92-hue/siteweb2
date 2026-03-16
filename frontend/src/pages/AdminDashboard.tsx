@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
     Shield, Users, Calendar, Download, FileText, Heart,
-    Clock, ChevronRight, AlertTriangle, MessageSquare
+    Clock, ChevronRight, AlertTriangle, MessageSquare, BookOpen
 } from 'lucide-react';
 import { API_URL, PARTNERS_API, CANDIDATURES_API } from '../config/api';
 
@@ -136,6 +136,13 @@ export default function AdminDashboard() {
             active: true,
             notificationCount: unreadMessageCount,
             notificationColor: 'bg-blue-500',
+        },
+        {
+            title: 'Médiathèque',
+            description: 'Gérer les ressources : documents, vidéos, livres, outils',
+            icon: <BookOpen size={24} />,
+            href: '/admin/mediatheque',
+            active: true,
         },
         {
             title: 'Exports',
