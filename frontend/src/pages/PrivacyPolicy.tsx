@@ -14,7 +14,7 @@ export function PrivacyPolicy() {
           Politique de Confidentialité
         </h1>
         <p className="text-gray-400 mb-12">
-          Dernière mise à jour : 15 mars 2026
+          Dernière mise à jour : 16 mars 2026
         </p>
 
         {/* Responsable du traitement */}
@@ -273,11 +273,20 @@ export function PrivacyPolicy() {
           <h2 className="text-2xl font-serif text-amber-500 mb-4">
             8. Hébergement
           </h2>
-          <p className="text-gray-300 leading-relaxed">
-            La plateforme est hébergée par{' '}
-            <strong className="text-white">OVHcloud</strong> (2, rue Kellermann — 59100 Roubaix, France). Les données sont
-            stockées sur des serveurs sécurisés situés en France.
+          <p className="text-gray-300 leading-relaxed mb-4">
+            La plateforme utilise plusieurs services d'hébergement :
           </p>
+          <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4">
+            <li>
+              <strong className="text-white">OVHcloud</strong> (2, rue Kellermann — 59100 Roubaix, France) — hébergement du site web (frontend statique), serveurs situés en France
+            </li>
+            <li>
+              <strong className="text-white">Render Services, Inc.</strong> (525 Brannan St, San Francisco, CA 94107, États-Unis) — hébergement de l'API backend, serveur situé à Francfort (UE)
+            </li>
+            <li>
+              <strong className="text-white">MongoDB, Inc.</strong> (1633 Broadway, 38th Floor, New York, NY 10019, États-Unis) — hébergement de la base de données (MongoDB Atlas), serveur situé à Paris (UE, région AWS eu-west-3)
+            </li>
+          </ul>
         </section>
 
         {/* Destinataires */}
@@ -290,7 +299,13 @@ export function PrivacyPolicy() {
           </p>
           <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4">
             <li>
-              <strong className="text-white">OVHcloud</strong> (hébergement) — serveurs situés en France/UE
+              <strong className="text-white">OVHcloud</strong> (hébergement frontend) — serveurs situés en France
+            </li>
+            <li>
+              <strong className="text-white">Render Services, Inc.</strong> (hébergement API backend) — serveur situé à Francfort (UE)
+            </li>
+            <li>
+              <strong className="text-white">MongoDB, Inc.</strong> (base de données MongoDB Atlas) — serveur situé à Paris (UE)
             </li>
             <li>
               <strong className="text-white">Google Analytics 4</strong> (statistiques anonymes) — mode cookieless, données agrégées uniquement
@@ -317,14 +332,20 @@ export function PrivacyPolicy() {
           </p>
           <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4">
             <li>
-              <strong className="text-white">Google (Analytics, reCAPTCHA)</strong> — transferts encadrés par le EU-US Data Privacy Framework
+              <strong className="text-white">Google (Analytics, reCAPTCHA, OAuth)</strong> — transferts encadrés par le EU-US Data Privacy Framework
             </li>
             <li>
               <strong className="text-white">SendGrid/Twilio</strong> — transferts encadrés par les clauses contractuelles types (CCT) de la Commission européenne
             </li>
+            <li>
+              <strong className="text-white">Render Services, Inc.</strong> — société américaine, serveur API situé dans l'UE (Francfort), transferts encadrés par le EU-US Data Privacy Framework
+            </li>
+            <li>
+              <strong className="text-white">MongoDB, Inc.</strong> — société américaine, base de données située dans l'UE (Paris, AWS eu-west-3), transferts encadrés par le EU-US Data Privacy Framework
+            </li>
           </ul>
           <p className="text-gray-300 leading-relaxed mt-4">
-            L'hébergement principal (OVHcloud) est situé en France.
+            L'hébergement du frontend (OVHcloud) est situé en France. Le backend et la base de données sont hébergés dans l'Union européenne (Francfort et Paris respectivement).
           </p>
         </section>
 

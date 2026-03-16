@@ -14,7 +14,7 @@ export function LegalNotice() {
           Mentions Légales
         </h1>
         <p className="text-gray-400 mb-12">
-          Dernière mise à jour : 15 mars 2026
+          Dernière mise à jour : 16 mars 2026
         </p>
 
         {/* Éditeur */}
@@ -71,11 +71,11 @@ export function LegalNotice() {
             3. Hébergement
           </h2>
           <p className="text-gray-300 leading-relaxed mb-2">
-            Le site est hébergé par :
+            Le site utilise plusieurs services d'hébergement :
           </p>
           <ul className="text-gray-300 space-y-2 mt-2 ml-4">
             <li>
-              <strong className="text-white">OVHcloud</strong>
+              <strong className="text-white">Frontend (site web) — OVHcloud</strong>
             </li>
             <li>
               2, rue Kellermann — 59100 Roubaix, France
@@ -87,6 +87,40 @@ export function LegalNotice() {
               Site web :{' '}
               <a href="https://www.ovhcloud.com" target="_blank" rel="noopener noreferrer" className="text-amber-500 hover:text-amber-400 underline">
                 www.ovhcloud.com
+              </a>
+            </li>
+          </ul>
+          <ul className="text-gray-300 space-y-2 mt-4 ml-4">
+            <li>
+              <strong className="text-white">Backend (API) — Render Services, Inc.</strong>
+            </li>
+            <li>
+              525 Brannan St, San Francisco, CA 94107, États-Unis
+            </li>
+            <li>
+              Serveur situé à Francfort (Union européenne)
+            </li>
+            <li>
+              Site web :{' '}
+              <a href="https://render.com" target="_blank" rel="noopener noreferrer" className="text-amber-500 hover:text-amber-400 underline">
+                render.com
+              </a>
+            </li>
+          </ul>
+          <ul className="text-gray-300 space-y-2 mt-4 ml-4">
+            <li>
+              <strong className="text-white">Base de données — MongoDB, Inc.</strong>
+            </li>
+            <li>
+              1633 Broadway, 38th Floor, New York, NY 10019, États-Unis
+            </li>
+            <li>
+              Serveur situé à Paris (Union européenne, AWS eu-west-3)
+            </li>
+            <li>
+              Site web :{' '}
+              <a href="https://www.mongodb.com" target="_blank" rel="noopener noreferrer" className="text-amber-500 hover:text-amber-400 underline">
+                www.mongodb.com
               </a>
             </li>
           </ul>
