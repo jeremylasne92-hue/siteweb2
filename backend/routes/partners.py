@@ -151,6 +151,11 @@ async def get_public_partners(
     if bounds:
         try:
             lat_min, lng_min, lat_max, lng_max = map(float, bounds.split(","))
+            # Validate geographic coordinate ranges
+            if not (-90 <= lat_min <= 90 and -90 <= lat_max <= 90):
+                raise HTTPException(status_code=400, detail="Latitude must be between -90 and 90")
+            if not (-180 <= lng_min <= 180 and -180 <= lng_max <= 180):
+                raise HTTPException(status_code=400, detail="Longitude must be between -180 and 180")
             query["latitude"] = {"$gte": lat_min, "$lte": lat_max}
             query["longitude"] = {"$gte": lng_min, "$lte": lng_max}
         except ValueError:

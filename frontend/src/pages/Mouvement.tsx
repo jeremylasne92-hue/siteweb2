@@ -432,8 +432,12 @@ export function Mouvement() {
                                         onError={(e) => {
                                             const target = e.currentTarget;
                                             target.style.display = 'none';
-                                            target.parentElement!.classList.add('bg-stone-800', 'flex', 'items-center', 'justify-center');
-                                            target.parentElement!.innerHTML = '<span class="text-stone-600 text-2xl font-bold">' + member.name.split(' ').map(n => n[0]).join('') + '</span>';
+                                            const parent = target.parentElement!;
+                                            parent.classList.add('bg-stone-800', 'flex', 'items-center', 'justify-center');
+                                            const span = document.createElement('span');
+                                            span.className = 'text-stone-600 text-2xl font-bold';
+                                            span.textContent = member.name.split(' ').map(n => n[0]).join('');
+                                            parent.appendChild(span);
                                         }}
                                     />
                                 </div>

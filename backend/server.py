@@ -200,7 +200,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
             "font-src 'self' https://fonts.gstatic.com; "
             "img-src 'self' data: https:; "
-            "connect-src 'self'; "
+            f"connect-src 'self' {settings.FRONTEND_URL} https://nominatim.openstreetmap.org https://www.google.com https://www.google-analytics.com https://region1.google-analytics.com; "
             "frame-src https://www.google.com https://www.youtube-nocookie.com https://www.youtube.com;"
         )
         if settings.is_production:
