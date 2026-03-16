@@ -38,11 +38,13 @@ export function CityAutocomplete({ label, name, placeholder, required, value: co
     const inputRef = useRef<HTMLInputElement>(null);
     const knownCitiesRef = useRef<Set<string>>(new Set());
 
-    // Update custom validity whenever isValidated or query changes
+    // Update custom validity — only block if suggestions were loaded but user didn't pick one.
+    // If API failed (no suggestions ever loaded), allow manual entry (no blocking).
+    const hasSuggestionsLoaded = useRef(false);
     useEffect(() => {
         const input = inputRef.current;
         if (!input) return;
-        if (!isValidated && query.trim().length > 0) {
+        if (!isValidated && query.trim().length > 0 && hasSuggestionsLoaded.current) {
             input.setCustomValidity('Veuillez sélectionner une ville dans la liste');
         } else {
             input.setCustomValidity('');
@@ -103,6 +105,7 @@ export function CityAutocomplete({ label, name, placeholder, required, value: co
                 }
                 setSuggestions(results.slice(0, 5));
                 setIsOpen(results.length > 0);
+                if (results.length > 0) hasSuggestionsLoaded.current = true;
 
                 // Check if current query exactly matches a returned city
                 checkExactMatch(q);

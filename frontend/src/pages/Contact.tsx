@@ -169,15 +169,16 @@ export function Contact() {
                                 </div>
 
                                 {/* Honeypot field */}
-                                <input
-                                    type="text"
-                                    name="website"
-                                    value={website}
-                                    onChange={(e) => setWebsite(e.target.value)}
-                                    style={{ position: 'absolute', left: '-9999px', tabIndex: -1 } as React.CSSProperties}
-                                    autoComplete="off"
-                                    aria-hidden="true"
-                                />
+                                <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }}>
+                                    <input
+                                        type="text"
+                                        name="website"
+                                        value={website}
+                                        onChange={(e) => setWebsite(e.target.value)}
+                                        tabIndex={-1}
+                                        autoComplete="off"
+                                    />
+                                </div>
 
                                 <div>
                                     <label className="block text-sm font-medium text-neutral-300 mb-1">Sujet</label>

@@ -1,31 +1,14 @@
-/** Common TLDs for basic email validation (not exhaustive but covers 99%+ of real emails). */
-const COMMON_TLDS = new Set([
-    'com', 'fr', 'net', 'org', 'eu', 'io', 'co', 'dev', 'app', 'info',
-    'biz', 'me', 'tv', 'cc', 'be', 'ch', 'de', 'uk', 'us', 'ca', 'au',
-    'nl', 'it', 'es', 'pt', 'at', 'pl', 'cz', 'se', 'no', 'dk', 'fi',
-    'ie', 'lu', 'ro', 'bg', 'hr', 'sk', 'si', 'lt', 'lv', 'ee', 'hu',
-    'gr', 'cy', 'mt', 'jp', 'kr', 'cn', 'in', 'br', 'mx', 'ar', 'cl',
-    'ru', 'ua', 'za', 'nz', 'sg', 'hk', 'tw', 'th', 'id', 'ph', 'vn',
-    'xyz', 'online', 'site', 'tech', 'store', 'cloud', 'pro', 'live',
-    'email', 'name', 'space', 'shop', 'design', 'digital', 'media',
-    'studio', 'agency', 'social', 'world', 'global', 'education',
-    'asso', 'gouv', 'ac', 'edu', 'gov', 'mil', 'int',
-]);
-
 /**
  * Validates an email address format.
  * Returns true if the email is valid or empty/null (optional fields).
- * Checks format + TLD against common TLDs list.
+ * Checks format via regex (RFC-like). TLD must be 2-20 alphabetic chars.
+ * No TLD whitelist — avoids false rejections on valid gTLDs (.ai, .eco, .bzh, etc.).
  */
 export function isValidEmail(email: string | null | undefined): boolean {
     if (!email || email.trim() === '') return true; // empty = optional, OK
     const trimmed = email.trim();
-    // Basic format: local@domain.tld
-    if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,20}$/.test(trimmed)) return false;
-    // Extract TLD and check against known TLDs
-    const tld = trimmed.split('.').pop()?.toLowerCase();
-    if (!tld || !COMMON_TLDS.has(tld)) return false;
-    return true;
+    // Format: local@domain.tld — TLD must be 2-20 alphabetic characters
+    return /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,20}$/.test(trimmed);
 }
 
 /**

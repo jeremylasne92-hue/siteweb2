@@ -6,10 +6,10 @@
 
 ## 📋 État du Projet
 
-**Dernière mise à jour** : 2026-03-15
+**Dernière mise à jour** : 2026-03-16
 **Phase actuelle** : Post-Epics — Pré-lancement (lancement 20 mars 2026)
-**Statut** : ✅ Opérationnel — KPI BI Analytics + Audit RGPD 14/14 corrigé
-**Dernier milestone** : KPI BI Analytics (14 KPIs, UTM/session tracking, admin dashboard) + Audit RGPD complet (14 écarts corrigés)
+**Statut** : ✅ Opérationnel — Code review complète + 3 fixes critiques
+**Dernier milestone** : Code review 5 agents (3 issues corrigées : TLD whitelist, CityAutocomplete, honeypot Contact)
 
 ### ⚠️ Rappels Pré-Lancement (20 mars 2026)
 - [ ] **Revoir le Dashboard Partenaire** avant la sortie officielle (UX, données, design)
@@ -156,6 +156,8 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-16 | Code review 5 agents parallèles + scoring : 3 issues critiques corrigées. (1) Suppression TLD whitelist dans isValidEmail — rejetait .ai, .re, .bzh, .eco, etc., bloquait inscription/reset. (2) CityAutocomplete : setCustomValidity ne bloque plus si API Nominatim échoue (flag hasSuggestionsLoaded). (3) Contact.tsx honeypot : tabIndex dans style→JSX prop, structure alignée sur les autres formulaires. Messages d'erreur schemas.ts mis à jour. README.md + source-tree.md réécrits. Niveau STANDARD. | Claude Code (Opus 4.6) |
+| 2026-03-16 | Audit complet validation formulaires : isValidEmail (TLD check), isValidPhone (regex + digit count), sanitizePhone, isValidPostalCode. Applied on PartnerFormModal, MyPartnerAccount, AdminVolunteers, Contact, auth schemas. Breadcrumbs supprimés (à restaurer — backlog). Accents français corrigés. 21 fichiers, 18 tests, build OK. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-15 | Fix partenaires invisibles : Partner model (models_partner.py) champs address/city/postal_code/latitude/longitude/contact_name/contact_email rendus Optional (étaient str/float requis, causaient Pydantic ValidationError 500 quand DB avait null). AddressAutocomplete (ui/AddressAutocomplete.tsx) intégré dans AdminPartners pour auto-remplir ville/CP/pays/GPS via Nominatim. Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-15 | Carte membres : fix marqueurs superposés (même ville). Ajout utilitaire markerOffsets.ts (offset circulaire 0.15° pour co-localisés). Popups enrichis (avatar, projet, skills, ville, "Voir le profil"). Auto-geocoding backend quand ville modifiée (PATCH admin/members). Re-geocoding batch des 10 membres. Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-15 | AdminMembers fix : ajout "serie_echo" et "projet_echo" au ProjectType backend (models_member.py) + PROJECT_LABELS frontend (candidatures.ts) + dropdown et filtres AdminMembers.tsx. Error feedback : handleStatusChange n'avait aucun feedback (catch vide + pas de message d'erreur API), ajout de messages verts/rouges pour statut et save. type="button" explicite sur Button save. Niveau HOTFIX. | Claude Code (Opus 4.6) |
@@ -218,6 +220,8 @@ frontend/src/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-16 | 🟡 STANDARD | Code review 5 agents + 3 fixes (TLD whitelist, CityAutocomplete, honeypot) + docs (README, source-tree) | ~30min | Claude Code (Opus 4.6) |
+| 2026-03-16 | 🟡 STANDARD | Audit validation formulaires (21 fichiers, email/phone/postal, accents) | ~25min | Claude Code (Opus 4.6) |
 | 2026-03-15 | 🟢 HOTFIX | Carte membres : fix marqueurs superposés (markerOffsets.ts, popups enrichis, auto-geocoding, batch re-geocoding) | ~40min | Claude Code (Opus 4.6) |
 | 2026-03-15 | 🟢 HOTFIX | AdminMembers fix (ProjectType +2 options, error feedback statut/save, 4 fichiers) | ~10min | Claude Code (Opus 4.6) |
 | 2026-03-15 | 🟢 HOTFIX | Carte membres (pins Klein blue, légende 5 catégories, Dark Matter, CityAutocomplete fix, photos équipe) | ~30min | Claude Code (Opus 4.6) |
@@ -400,3 +404,5 @@ _Aucune spec en cours._
 | 29 | Gestion multi-admin — verrouillage optimiste et indicateur "en cours de traitement par X" sur les candidatures | Moyenne | À faire |
 | 30 | Scoring de candidature — indicateurs objectifs (compétences, portfolio, expérience) pour prioriser le traitement | Basse | À faire |
 | 31 | Relances automatiques email — candidature pending >7j → alerte admin, entretien >14j → relance candidat | Moyenne | À faire |
+| 32 | Adhérents (utilisateurs inscrits) sur la carte ECHOSystem — ajouter les users avec is_member=true et coordonnées GPS à la vue carte publique, avec consentement opt-in de visibilité | Moyenne | À faire |
+| 33 | Refonte complète validation formulaires — centraliser toute la validation (email, phone, URL, file upload) dans un système cohérent : créer isValidURL(), ajouter validation taille/type fichiers logo (2Mo, jpeg/png/webp) côté client, honeypot sur PartnerFormModal, maxLength/minLength cohérents sur tous les champs, indicateur force mot de passe sur PartnerFormModal, feedback erreur temps réel sur saisie (pas seulement au submit), validation URL sociale (LinkedIn/Instagram/Twitter) | Haute | À faire |

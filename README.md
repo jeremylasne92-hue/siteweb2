@@ -1,158 +1,177 @@
+# 🌳 Mouvement ECHO — Plateforme Citoyenne
 
-# 🌳 Mouvement ECHO - Plateforme Complète
+Plateforme web full-stack connectant le public à une série documentaire sur la transition écologique.
+Lancement : **20 mars 2026**.
 
-Plateforme web pour la série ECHO avec gestion d'épisodes, authentification, progression vidéo et panel administrateur complet.
+## Stack Technique
 
-## 🏗️ Stack Technique
+| Couche | Technologies |
+|--------|-------------|
+| **Frontend** | React 19 + TypeScript 5.9 + Vite 7 + Tailwind CSS 4 |
+| **Backend** | FastAPI 0.110 + Python 3.11 + Motor 3.3 (async MongoDB) |
+| **Base de données** | MongoDB |
+| **Auth** | Cookie httpOnly + Google OAuth + 2FA |
+| **Tests** | Vitest (frontend) + Pytest (backend) |
+| **Déploiement** | Webstrator (static + API) |
 
-- **Frontend**: React 19 + React Router + Tailwind CSS + Shadcn UI
-- **Backend**: FastAPI + Python 3.11
-- **Base de données**: MongoDB
-- **Authentification**: Google OAuth (Emergent) + Login classique + 2FA
+## Installation
 
-## 📦 Déploiement sur Webstrator
-
-### 1. Frontend
+### Frontend
 
 ```bash
 cd frontend
-yarn install
-yarn build
+npm install
+npm run dev        # Dev server (port 5173)
+npm run build      # Build production
 ```
 
-Upload le dossier `frontend/build/` sur Webstrator.
-
-### 2. Backend
-
-Upload tous les fichiers du dossier `backend/` :
-- server.py
-- models.py, models_extended.py
-- auth_utils.py, email_service.py
-- routes/ (tout le dossier)
-- requirements.txt
-
-### 3. Variables d'Environnement
-
-**Backend (.env)**:
-```
-MONGO_URL=mongodb://votre-url-mongodb:27017
-DB_NAME=echo_database
-CORS_ORIGINS=https://votre-domaine.com
-```
-
-**Frontend (.env)**:
-```
-REACT_APP_BACKEND_URL=https://api.votre-domaine.com
-```
-
-### 4. Installation Backend
+### Backend
 
 ```bash
+cd backend
 pip install -r requirements.txt
-uvicorn server:app --host 0.0.0.0 --port 8001
+uvicorn server:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### 5. MongoDB
+### Variables d'environnement
 
-Créer une base de données MongoDB et configurer MONGO_URL.
-Les collections seront créées automatiquement :
-- users, episodes, thematics, resources, actors
-- video_progress, user_sessions, pending_2fa
+**Backend** (`.env`) :
+```env
+MONGO_URL=mongodb://...
+DB_NAME=echo_database
+CORS_ORIGINS=https://mouvementecho.fr
+SECRET_KEY=...
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+SENDGRID_API_KEY=...
+RECAPTCHA_SECRET_KEY=...
+ENVIRONMENT=production
+```
 
-## 🔑 Compte Admin
+**Frontend** (`.env`) :
+```env
+VITE_API_URL=https://api.mouvementecho.fr
+VITE_RECAPTCHA_SITE_KEY=...
+```
 
-**Username**: darkthony
-**Password**: ProjetEchoAdmin123!
-**Email**: Admin@projet-echo.link
+## Commandes
 
-## 📡 Endpoints API
+```bash
+# Tests frontend
+cd frontend && npx vitest run
 
-### Authentification
-- POST /api/auth/register
-- POST /api/auth/login
-- POST /api/auth/google-oauth
-- GET /api/auth/me
-- POST /api/auth/logout
+# Tests backend (flag -p no:recording OBLIGATOIRE)
+cd backend && python -m pytest -p no:recording -q
 
-### Épisodes
-- GET /api/episodes
-- GET /api/episodes/stats
-- POST /api/episodes (admin)
-- PUT /api/episodes/{id} (admin)
-- DELETE /api/episodes/{id} (admin)
+# Lint
+cd frontend && npx eslint .
 
-### Thématiques
-- GET /api/thematics/episode/{episode_id}
-- POST /api/thematics (admin)
-- PUT /api/thematics/{id} (admin)
-- DELETE /api/thematics/{id} (admin)
+# Build production
+cd frontend && npm run build
+```
 
-### Ressources
-- GET /api/resources/episode/{episode_id}
-- POST /api/resources (admin)
-- DELETE /api/resources/{id} (admin)
+## Structure du Projet
 
-### Acteurs
-- GET /api/actors
-- POST /api/actors (admin)
-- DELETE /api/actors/{id} (admin)
+```
+frontend/src/
+├── pages/            # 29 pages (publiques + admin)
+├── components/
+│   ├── layout/       # Header, Footer, Layout
+│   ├── ui/           # Button, Card, Input, Modal, CookieBanner, YouTubeEmbed...
+│   ├── forms/        # Formulaires candidature (Tech, Scénariste, Bénévole)
+│   ├── partners/     # Cartes, carte, filtres, analytics partenaires/membres
+│   └── seo/          # SEO (meta), Breadcrumbs (JSON-LD)
+├── features/auth/    # Auth complet (login, register, OAuth, 2FA, reset)
+├── hooks/            # useAnalytics, usePageTracking, useUrlFilters
+├── config/           # api.ts, booking.ts, donation.ts, candidatures.ts
+├── utils/            # validation.ts, analytics.ts
+└── types/            # member.ts
 
-### Utilisateurs (Admin)
-- GET /api/users
-- GET /api/users/count
-- PUT /api/users/{id}/username
-- PUT /api/users/{id}/password
-- DELETE /api/users/{id}
+backend/
+├── server.py         # Entry point FastAPI
+├── models.py         # Pydantic models principaux
+├── models_extended.py
+├── models_partner.py
+├── models_member.py
+├── auth_utils.py
+├── routes/           # 16 routers (auth, partners, members, events, analytics...)
+├── services/         # Auth, password reset
+├── utils/            # Rate limiting, geocoding, audit log
+├── core/config.py    # Settings centralisé
+└── tests/            # Pytest
+```
 
-## 🎨 Pages Publiques
+## Pages Publiques
 
-- `/` - Accueil
-- `/serie` - Présentation série
-- `/watch` - Visionnage épisodes avec thématiques et ressources
-- `/mouvement` - Design arbre avec équipe
-- `/partenaires` - ECHOSystem
-- `/echolink` - Plateforme (en construction)
-- `/auth` - Connexion/Inscription
+| Page | Route |
+|------|-------|
+| Accueil | `/` |
+| La Série | `/serie` |
+| Le Mouvement | `/mouvement` |
+| CogniSphère | `/cognisphere` |
+| ECHOLink | `/echolink` |
+| ECHOSystem (Partenaires) | `/partenaires` |
+| Événements | `/agenda` |
+| Ressources | `/ressources` |
+| Soutenir | `/soutenir` |
+| Contact | `/contact` |
+| FAQ | `/faq` |
+| À propos | `/a-propos` |
 
-## 🔐 Pages Admin
+## Pages Auth & Profil
 
-- `/admin` - Dashboard
-- `/admin/create` - Créer épisode
-- `/admin/episodes` - Liste épisodes
-- `/admin/episodes/:id` - Modifier épisode
-- `/admin/episodes/:id/manage` - Gérer thématiques et ressources
-- `/admin/users` - Gérer utilisateurs
+| Page | Route |
+|------|-------|
+| Connexion | `/login` |
+| Inscription | `/register` |
+| Mot de passe oublié | `/forgot-password` |
+| Reset mot de passe | `/reset-password` |
+| Profil | `/profil` |
+| Mes données (RGPD) | `/mes-donnees` |
+| Mon compte partenaire | `/mon-compte/partenaire` |
 
-## ✨ Fonctionnalités
+## Pages Admin
 
-### Utilisateurs
-- Inscription/Connexion
-- Google OAuth
-- 2FA (mode démo)
-- Profil utilisateur
-- Progression vidéo
+| Page | Route |
+|------|-------|
+| Dashboard | `/admin` |
+| Partenaires | `/admin/partenaires` |
+| Candidatures | `/admin/candidatures` |
+| Bénévoles | `/admin/benevoles` |
+| Membres | `/admin/members` |
+| Événements | `/admin/events` |
+| Messages | `/admin/messages` |
+| Analytics | `/admin/analytics` |
+| Exports | `/admin/exports` |
 
-### Admin
-- Dashboard avec stats temps réel
-- CRUD épisodes complets
-- Gestion thématiques par épisode (pagination)
-- Gestion ressources par épisode
-- Gestion utilisateurs
-- Upload vidéos local
+## Architecture & Sécurité
 
-### Lecteur
-- YouTube embed
-- Panneau latéral thématiques (repliable)
-- Panneau latéral ressources (repliable)
-- Lecteur réduit automatiquement quand panel ouvert
-- Progression sauvegardée
+- **Auth** : Cookie httpOnly uniquement — jamais de token en localStorage
+- **CAPTCHA** : reCAPTCHA v3 server-side (skip si clé absente)
+- **2FA** : 6 digits, CSPRNG (`secrets.choice`)
+- **Rate limiting** : IP-based (5 tentatives/15min sur /verify-2fa)
+- **RGPD** : Bannière cookies, consentement formulaires, export/suppression données, RoPA
+- **Anti-spam** : Honeypot + rate limiting sur tous les formulaires publics
 
-## 🎯 Pour Aller Plus Loin
+## Documentation
 
-### Migration AWS S3
-Pour héberger les vidéos sur AWS S3 + CloudFront, remplacer `/backend/routes/videos.py` et ajouter les clés AWS.
+| Document | Chemin |
+|----------|--------|
+| Architecture | `docs/architecture.md` |
+| Contrats API (50+ endpoints) | `docs/api-contracts.md` |
+| Modèles de données | `docs/data-models.md` |
+| Guide développement | `docs/development-guide.md` |
+| Inventaire composants | `docs/component-inventory.md` |
+| Arborescence source | `docs/source-tree.md` |
+| Stratégie SEO/GEO | `docs/echo-strategy-seo-geo.md` |
+| RGPD — Registre traitements | `docs/rgpd/registre-traitements-ropa.md` |
+| RGPD — Procédure violations | `docs/rgpd/procedure-violation-donnees.md` |
+| PRD Phase 2 | `_bmad-output/planning-artifacts/prd.md` |
+| Mémoire partagée BMAD | `.agent/memory/shared-context.md` |
 
-### Emails Réels
-Pour activer l'envoi d'emails (2FA, etc.), configurer SendGrid ou AWS SES dans `/backend/email_service.py`.
+## Méthodologie
 
-Documentation complète dans `/app/contracts.md`
+Ce projet suit la **méthodologie BMAD** (multi-agents) avec mémoire partagée.
+Développé en parallèle avec **Claude Code** (Anthropic) et **Antigravity** (Google Gemini).
+
+Voir `CLAUDE.md` et `.gemini/GEMINI.md` pour les conventions détaillées.

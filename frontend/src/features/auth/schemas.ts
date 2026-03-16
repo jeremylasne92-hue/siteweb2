@@ -10,7 +10,7 @@ export const registerSchema = z.object({
         .regex(/^[a-zA-Z0-9_]+$/, 'Seuls les lettres, chiffres et underscores sont autorisés'),
     email: z.string()
         .email('Adresse email invalide')
-        .refine(val => isValidEmail(val), 'Extension email non reconnue (ex: .com, .fr, .org)'),
+        .refine(val => isValidEmail(val), 'Adresse email invalide. Vérifiez le format (ex: nom@domaine.com).'),
     password: z.string()
         .min(8, 'Le mot de passe doit contenir au moins 8 caractères')
         .regex(/[A-Z]/, 'Le mot de passe doit contenir au moins 1 majuscule')
@@ -72,7 +72,7 @@ export const strengthLabels: Record<PasswordStrength, string> = {
 export const forgotPasswordSchema = z.object({
     email: z.string()
         .email('Adresse email invalide')
-        .refine(val => isValidEmail(val), 'Extension email non reconnue (ex: .com, .fr, .org)'),
+        .refine(val => isValidEmail(val), 'Adresse email invalide. Vérifiez le format (ex: nom@domaine.com).'),
 });
 
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
