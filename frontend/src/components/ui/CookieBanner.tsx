@@ -133,10 +133,24 @@ export function CookieBanner() {
         setVisible(false);
     }, []);
 
+    const revokeAnalytics = useCallback(() => {
+        // Revoke GA4 consent
+        try { gtag('consent', 'update', { analytics_storage: 'denied' }); } catch { /* gtag not loaded */ }
+        // Delete existing GA cookies
+        document.cookie.split(';').forEach(c => {
+            const name = c.trim().split('=')[0];
+            if (name.startsWith('_ga')) {
+                document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=.${window.location.hostname}`;
+                document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+            }
+        });
+    }, []);
+
     const refuseAll = useCallback(() => {
         saveConsent('refused');
+        revokeAnalytics();
         setVisible(false);
-    }, []);
+    }, [revokeAnalytics]);
 
     const saveCustom = useCallback(() => {
         if (analyticsEnabled) {
@@ -144,9 +158,10 @@ export function CookieBanner() {
             try { gtag('consent', 'update', { analytics_storage: 'granted' }); } catch { /* gtag not loaded */ }
         } else {
             saveConsent('essential-only');
+            revokeAnalytics();
         }
         setVisible(false);
-    }, [analyticsEnabled]);
+    }, [analyticsEnabled, revokeAnalytics]);
 
     if (!visible) return null;
 

@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { API_URL } from '../config/api';
+import { hasAnalyticsConsent } from '../components/ui/CookieBanner';
 
 // Generate or retrieve session ID from sessionStorage
 function getSessionId(): string {
@@ -66,6 +67,9 @@ function sendEvent(payload: Record<string, unknown>) {
 export function useAnalytics() {
   const trackEvent = useCallback(
     (category: string, action: string, partnerId?: string, label?: string) => {
+      // RGPD: no tracking without explicit consent
+      if (!hasAnalyticsConsent()) return;
+
       // GA4
       if (typeof window.gtag === 'function') {
         window.gtag('event', action, {
@@ -90,6 +94,9 @@ export function useAnalytics() {
   );
 
   const trackPageView = useCallback(() => {
+    // RGPD: no tracking without explicit consent
+    if (!hasAnalyticsConsent()) return;
+
     const ctx = getTrackingContext();
     sendEvent({
       category: 'page_view',

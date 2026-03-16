@@ -20,6 +20,7 @@ const AboutPage = lazy(() => import('./pages/AboutPage').then(m => ({ default: m
 import { ProtectedRoute } from './features/auth/components/ProtectedRoute';
 import { useAuthStore } from './features/auth/store';
 import { usePageTracking } from './hooks/usePageTracking';
+import { CookieBanner } from './components/ui/CookieBanner';
 
 // Lazy-loaded routes: admin, auth, protected pages, partners (heavy map)
 const Cognisphere = lazy(() => import('./pages/Cognisphere').then(m => ({ default: m.Cognisphere })));
@@ -133,6 +134,7 @@ function App() {
           </Suspense>
         </ErrorBoundary>
       </Layout>
+      <CookieBanner />
     </Router>
   );
 }
