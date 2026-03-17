@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field, EmailStr, field_validator
 from typing import Optional, Literal, List
-from datetime import datetime
+from datetime import datetime, UTC
 import uuid
 import secrets
 from enum import Enum
@@ -377,3 +377,76 @@ class VolunteerBatchStatusUpdate(BaseModel):
     ids: list[str] = Field(min_length=1)
     status: Literal["pending", "entretien", "accepted", "rejected"]
     status_note: Optional[str] = None
+
+
+# --- Student/Intern Application Models ---
+
+class StudentApplicationRequest(BaseModel):
+    name: str = Field(min_length=2, max_length=100)
+    email: EmailStr
+    phone: Optional[str] = Field(None, max_length=20)
+    city: str = Field(min_length=2, max_length=100)
+    school: str = Field(min_length=2, max_length=200)
+    study_field: str = Field(min_length=2, max_length=200)
+    skills: list[str] = Field(min_length=1, max_length=50)
+    availability: Literal["stage_court", "stage_long", "alternance", "temps_partiel"]
+    start_date: Optional[str] = None
+    message: Optional[str] = Field(None, max_length=2000)
+    website: Optional[str] = None  # honeypot field
+
+    @field_validator("start_date")
+    @classmethod
+    def validate_start_date(cls, v):
+        if v is None:
+            return v
+        import re
+        if not re.match(r"^\d{4}-(0[1-9]|1[0-2])$", v):
+            raise ValueError("Le format doit être YYYY-MM (ex: 2026-06)")
+        return v
+
+
+class StudentApplication(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    email: EmailStr
+    phone: Optional[str] = None
+    city: str
+    school: str
+    study_field: str
+    skills: list[str] = Field(default_factory=list)
+    availability: Literal["stage_court", "stage_long", "alternance", "temps_partiel"]
+    start_date: Optional[str] = None
+    message: Optional[str] = None
+    status: Literal["pending", "entretien", "accepted", "rejected"] = "pending"
+    status_note: Optional[str] = None
+    admin_notes: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    ip_address: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: Optional[datetime] = None
+
+
+class StudentStatusUpdate(BaseModel):
+    status: Literal["pending", "entretien", "accepted", "rejected"]
+    status_note: Optional[str] = None
+
+
+class StudentBatchStatusUpdate(BaseModel):
+    ids: list[str] = Field(min_length=1)
+    status: Literal["pending", "entretien", "accepted", "rejected"]
+    status_note: Optional[str] = None
+
+
+class StudentEditUpdate(BaseModel):
+    name: Optional[str] = Field(None, min_length=2, max_length=100)
+    email: Optional[EmailStr] = None
+    phone: Optional[str] = Field(None, max_length=20)
+    city: Optional[str] = Field(None, min_length=2, max_length=100)
+    school: Optional[str] = Field(None, min_length=2, max_length=200)
+    study_field: Optional[str] = Field(None, min_length=2, max_length=200)
+    skills: Optional[list[str]] = None
+    availability: Optional[Literal["stage_court", "stage_long", "alternance", "temps_partiel"]] = None
+    start_date: Optional[str] = None
+    message: Optional[str] = Field(None, max_length=2000)
+    admin_notes: Optional[str] = None
