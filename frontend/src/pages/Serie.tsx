@@ -795,7 +795,7 @@ export function Serie() {
                             <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 flex flex-col">
                                 <span className="text-xs font-mono text-[#D4AF37]/60 tracking-widest uppercase mb-3">Écriture</span>
                                 <h3 className="text-xl sm:text-2xl font-serif font-bold text-white mb-4">Devenez scénariste</h3>
-                                <p className="text-[#D1D5DB] text-sm sm:text-base leading-relaxed mb-6 flex-1">
+                                <p className="text-[#D1D5DB] text-base sm:text-lg leading-relaxed mb-6 flex-1 font-serif italic">
                                     Les scénarios sont en cours d'écriture. Vous avez une plume et des convictions ?
                                     Rejoignez l'équipe de création et participez à l'écriture des épisodes.
                                 </p>
@@ -812,7 +812,7 @@ export function Serie() {
                                 <span className="text-xs font-mono text-[#D4AF37]/60 tracking-widest uppercase mb-3">Production</span>
                                 <h3 className="text-xl sm:text-2xl font-serif font-bold text-white mb-4">Étudiants &amp; stagiaires</h3>
                                 <p className="text-[#D1D5DB] text-sm sm:text-base leading-relaxed mb-5 flex-1">
-                                    Participez à la production de la série documentaire dans votre ville.
+                                    Participez à la production de la série dans votre ville.
                                 </p>
 
                                 {/* Villes teasers */}
