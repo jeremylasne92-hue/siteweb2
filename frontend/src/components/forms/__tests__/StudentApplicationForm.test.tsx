@@ -5,7 +5,7 @@ import { StudentApplicationForm } from '../StudentApplicationForm';
 
 // Mock fetch
 const mockFetch = vi.fn();
-global.fetch = mockFetch;
+(globalThis as Record<string, unknown>).fetch = mockFetch;
 
 // Mock CityAutocomplete to avoid external API calls
 vi.mock('../../ui/CityAutocomplete', () => ({
@@ -53,8 +53,8 @@ describe('StudentApplicationForm', () => {
             renderForm();
             // Mock checkValidity to return false for empty name
             const nameInput = screen.getByPlaceholderText('Votre prénom et nom');
-            vi.spyOn(nameInput, 'checkValidity').mockReturnValue(false);
-            vi.spyOn(nameInput, 'reportValidity').mockReturnValue(false);
+            vi.spyOn(nameInput as HTMLInputElement, 'checkValidity').mockReturnValue(false);
+            vi.spyOn(nameInput as HTMLInputElement, 'reportValidity').mockReturnValue(false);
 
             fireEvent.click(screen.getByText('Suivant'));
 
@@ -72,11 +72,11 @@ describe('StudentApplicationForm', () => {
 
             // Name is valid
             fireEvent.change(nameInput, { target: { value: 'Jean Dupont' } });
-            vi.spyOn(nameInput, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(nameInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
 
             // Email passes browser checkValidity but fails isValidEmail
             fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
-            vi.spyOn(emailInput, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(emailInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
 
             fireEvent.click(screen.getByText('Suivant'));
 
@@ -93,9 +93,9 @@ describe('StudentApplicationForm', () => {
             fireEvent.change(emailInput, { target: { value: 'jean@test.com' } });
             fireEvent.change(cityInput, { target: { value: 'Paris' } });
 
-            vi.spyOn(nameInput, 'checkValidity').mockReturnValue(true);
-            vi.spyOn(emailInput, 'checkValidity').mockReturnValue(true);
-            vi.spyOn(cityInput, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(nameInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(emailInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(cityInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
 
             fireEvent.click(screen.getByText('Suivant'));
 
@@ -115,9 +115,9 @@ describe('StudentApplicationForm', () => {
             fireEvent.change(emailInput, { target: { value: 'jean@test.com' } });
             fireEvent.change(cityInput, { target: { value: 'Paris' } });
 
-            vi.spyOn(nameInput, 'checkValidity').mockReturnValue(true);
-            vi.spyOn(emailInput, 'checkValidity').mockReturnValue(true);
-            vi.spyOn(cityInput, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(nameInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(emailInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(cityInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
 
             fireEvent.click(screen.getByText('Suivant'));
         };
@@ -131,8 +131,8 @@ describe('StudentApplicationForm', () => {
             fireEvent.change(schoolInput, { target: { value: 'Ecole de Cinema' } });
             fireEvent.change(studyInput, { target: { value: 'Cinema' } });
 
-            vi.spyOn(schoolInput, 'checkValidity').mockReturnValue(true);
-            vi.spyOn(studyInput, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(schoolInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(studyInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
 
             // Click next without selecting any skills
             fireEvent.click(screen.getByText('Suivant'));
@@ -149,8 +149,8 @@ describe('StudentApplicationForm', () => {
             fireEvent.change(schoolInput, { target: { value: 'Ecole de Cinema' } });
             fireEvent.change(studyInput, { target: { value: 'Cinema' } });
 
-            vi.spyOn(schoolInput, 'checkValidity').mockReturnValue(true);
-            vi.spyOn(studyInput, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(schoolInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(studyInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
 
             // Expand a category and select a skill
             fireEvent.click(screen.getByText('Image'));
@@ -171,8 +171,8 @@ describe('StudentApplicationForm', () => {
             fireEvent.change(schoolInput, { target: { value: 'Ecole de Cinema' } });
             fireEvent.change(studyInput, { target: { value: 'Cinema' } });
 
-            vi.spyOn(schoolInput, 'checkValidity').mockReturnValue(true);
-            vi.spyOn(studyInput, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(schoolInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(studyInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
 
             // Select a skill
             fireEvent.click(screen.getByText('Image'));
@@ -200,9 +200,9 @@ describe('StudentApplicationForm', () => {
             fireEvent.change(emailInput, { target: { value: 'jean@test.com' } });
             fireEvent.change(cityInput, { target: { value: 'Paris' } });
 
-            vi.spyOn(nameInput, 'checkValidity').mockReturnValue(true);
-            vi.spyOn(emailInput, 'checkValidity').mockReturnValue(true);
-            vi.spyOn(cityInput, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(nameInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(emailInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(cityInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
 
             fireEvent.click(screen.getByText('Suivant'));
 
@@ -213,8 +213,8 @@ describe('StudentApplicationForm', () => {
             fireEvent.change(schoolInput, { target: { value: 'Ecole de Cinema' } });
             fireEvent.change(studyInput, { target: { value: 'Cinema' } });
 
-            vi.spyOn(schoolInput, 'checkValidity').mockReturnValue(true);
-            vi.spyOn(studyInput, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(schoolInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(studyInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
 
             fireEvent.click(screen.getByText('Image'));
             fireEvent.click(screen.getByText('Photographie'));
@@ -247,9 +247,9 @@ describe('StudentApplicationForm', () => {
             fireEvent.change(emailInput, { target: { value: 'jean@test.com' } });
             fireEvent.change(cityInput, { target: { value: 'Paris' } });
 
-            vi.spyOn(nameInput, 'checkValidity').mockReturnValue(true);
-            vi.spyOn(emailInput, 'checkValidity').mockReturnValue(true);
-            vi.spyOn(cityInput, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(nameInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(emailInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(cityInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
 
             fireEvent.click(screen.getByText('Suivant'));
 
@@ -259,8 +259,8 @@ describe('StudentApplicationForm', () => {
             fireEvent.change(schoolInput, { target: { value: 'Ecole de Cinema' } });
             fireEvent.change(studyInput, { target: { value: 'Cinema' } });
 
-            vi.spyOn(schoolInput, 'checkValidity').mockReturnValue(true);
-            vi.spyOn(studyInput, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(schoolInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(studyInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
 
             fireEvent.click(screen.getByText('Image'));
             fireEvent.click(screen.getByText('Photographie'));
@@ -322,9 +322,9 @@ describe('StudentApplicationForm', () => {
             fireEvent.change(emailInput, { target: { value: 'jean@test.com' } });
             fireEvent.change(cityInput, { target: { value: 'Paris' } });
 
-            vi.spyOn(nameInput, 'checkValidity').mockReturnValue(true);
-            vi.spyOn(emailInput, 'checkValidity').mockReturnValue(true);
-            vi.spyOn(cityInput, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(nameInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(emailInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(cityInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
 
             // Go to step 2
             fireEvent.click(screen.getByText('Suivant'));
@@ -348,9 +348,9 @@ describe('StudentApplicationForm', () => {
             fireEvent.change(emailInput, { target: { value: 'jean@test.com' } });
             fireEvent.change(cityInput, { target: { value: 'Paris' } });
 
-            vi.spyOn(nameInput, 'checkValidity').mockReturnValue(true);
-            vi.spyOn(emailInput, 'checkValidity').mockReturnValue(true);
-            vi.spyOn(cityInput, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(nameInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(emailInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(cityInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
 
             fireEvent.click(screen.getByText('Suivant'));
 
@@ -363,8 +363,8 @@ describe('StudentApplicationForm', () => {
             fireEvent.change(schoolInput, { target: { value: 'Ecole de Cinema' } });
             fireEvent.change(studyInput, { target: { value: 'Cinema' } });
 
-            vi.spyOn(schoolInput, 'checkValidity').mockReturnValue(true);
-            vi.spyOn(studyInput, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(schoolInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
+            vi.spyOn(studyInput as HTMLInputElement, 'checkValidity').mockReturnValue(true);
 
             fireEvent.click(screen.getByText('Image'));
             fireEvent.click(screen.getByText('Photographie'));
