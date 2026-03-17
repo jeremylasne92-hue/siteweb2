@@ -385,50 +385,12 @@ export function Serie() {
                         </div>
                     </div>
 
-                    {/* CTA - REJOINDRE */}
-                    <div className="text-center max-w-3xl mx-auto">
-                        <p className="text-2xl md:text-3xl text-[#D1D5DB] mb-8 font-serif italic leading-snug">
-                            Les scénarios sont en cours d'écriture. Vous avez une plume et des convictions ?<br />Participez à la création d'ECHO.
-                        </p>
-                        <Button
-                            className="bg-[#D4AF37] text-[#0A0A0A] hover:bg-[#FFD700] hover:shadow-[0_0_24px_rgba(212,175,55,0.6)] px-8 py-4 text-sm font-bold tracking-widest uppercase rounded-lg transition-all transform hover:scale-105"
-                            onClick={() => { trackEvent('cta_click', 'serie_candidature_scenariste'); setShowScenaristForm(true); }}
-                        >
-                            Rejoindre l'aventure
-                        </Button>
-                        {/* Encart stages production */}
-                        <div className="mt-12 pt-8 border-t border-white/10 max-w-2xl mx-auto">
-                            <p className="text-[#D1D5DB] text-base sm:text-lg mb-4">
-                                La série ECHO se tourne près de chez vous
-                            </p>
-                            <p className="text-[#9CA3AF] text-sm sm:text-base mb-5">
-                                Nous recherchons des <span className="text-white font-medium">étudiants et stagiaires</span> pour
-                                participer à la production de la série documentaire.
-                            </p>
-                            <div className="flex flex-wrap justify-center gap-2 mb-4">
-                                {["Lyon", "Lille", "Bordeaux"].map(city => (
-                                    <span key={city} className="px-3 py-1 rounded-full text-xs font-medium bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/30">
-                                        {city} — tournage en cours
-                                    </span>
-                                ))}
-                            </div>
-                            <div className="flex flex-wrap justify-center gap-2 mb-6">
-                                {["Nantes", "Rambouillet", "Paris", "Toulouse", "Rouen", "Marseille", "Brest", "Strasbourg"].map(city => (
-                                    <span key={city} className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-[#9CA3AF] border border-white/10">
-                                        {city}
-                                    </span>
-                                ))}
-                            </div>
-                            <Link to="/contact">
-                                <Button
-                                    variant="outline"
-                                    className="border-white/20 text-[#D1D5DB] hover:bg-white/10 hover:text-white text-sm"
-                                    onClick={() => trackEvent('cta_click', 'serie_stage_production')}
-                                >
-                                    Nous contacter
-                                </Button>
-                            </Link>
-                        </div>
+                    {/* Lien ancre vers la section recrutement en bas de page */}
+                    <div className="text-center">
+                        <a href="#rejoindre-serie" className="inline-flex items-center gap-2 text-[#D4AF37] hover:text-[#FFD700] font-serif text-lg sm:text-xl italic transition-colors group">
+                            Participez à la création d'ECHO
+                            <span className="group-hover:translate-x-1 transition-transform">→</span>
+                        </a>
                     </div>
                 </div>
             </section>
@@ -810,6 +772,81 @@ export function Serie() {
                             description="Directeur général, incarne le vice de la trahison. Il représente les intérêts privés, l'influence du pouvoir politique, du lobbying et du patronat. Sa réputation l'importe plus que tout. Ses mécanismes de domination, fondée sur le contrôle et la peur, se retourneront à terme contre lui."
                             image="/images/characters/mathieu.jpeg"
                         />
+                    </div>
+                </div>
+            </section>
+
+            {/* SECTION RECRUTEMENT — Participez à la création */}
+            <section id="rejoindre-serie" className="py-24 px-4 container mx-auto">
+                <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-[#1A1A1A] border border-[#D4AF37]/20 p-6 sm:p-8 md:p-12 lg:p-16">
+                    {/* Background Texture */}
+                    <div className="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-repeat" />
+
+                    <div className="relative z-10">
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-white text-center mb-3">
+                            La série ECHO se construit <span className="text-[#D4AF37]">avec vous</span>
+                        </h2>
+                        <p className="text-[#9CA3AF] text-center max-w-2xl mx-auto mb-10 sm:mb-14 text-sm sm:text-base">
+                            Deux façons de participer à cette aventure collective.
+                        </p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                            {/* Carte Scénariste */}
+                            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 flex flex-col">
+                                <span className="text-xs font-mono text-[#D4AF37]/60 tracking-widest uppercase mb-3">Écriture</span>
+                                <h3 className="text-xl sm:text-2xl font-serif font-bold text-white mb-4">Devenez scénariste</h3>
+                                <p className="text-[#D1D5DB] text-sm sm:text-base leading-relaxed mb-6 flex-1">
+                                    Les scénarios sont en cours d'écriture. Vous avez une plume et des convictions ?
+                                    Rejoignez l'équipe de création et participez à l'écriture des épisodes.
+                                </p>
+                                <Button
+                                    className="bg-[#D4AF37] text-[#0A0A0A] hover:bg-[#FFD700] hover:shadow-[0_0_24px_rgba(212,175,55,0.6)] px-6 py-3 text-sm font-bold tracking-widest uppercase rounded-lg transition-all w-full sm:w-auto"
+                                    onClick={() => { trackEvent('cta_click', 'serie_candidature_scenariste'); setShowScenaristForm(true); }}
+                                >
+                                    Rejoindre l'aventure
+                                </Button>
+                            </div>
+
+                            {/* Carte Étudiants / Production */}
+                            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6 sm:p-8 flex flex-col">
+                                <span className="text-xs font-mono text-[#D4AF37]/60 tracking-widest uppercase mb-3">Production</span>
+                                <h3 className="text-xl sm:text-2xl font-serif font-bold text-white mb-4">Étudiants &amp; stagiaires</h3>
+                                <p className="text-[#D1D5DB] text-sm sm:text-base leading-relaxed mb-5 flex-1">
+                                    Participez à la production de la série documentaire dans votre ville.
+                                </p>
+
+                                {/* Villes teasers */}
+                                <div className="flex flex-wrap gap-2 mb-3">
+                                    {["Lyon", "Lille", "Bordeaux"].map(city => (
+                                        <span key={city} className="px-3 py-1 rounded-full text-xs font-medium bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/30">
+                                            {city} — teaser à produire
+                                        </span>
+                                    ))}
+                                </div>
+
+                                {/* Autres villes */}
+                                <div className="flex flex-wrap gap-2 mb-6">
+                                    {["Nantes", "Rambouillet", "Paris", "Toulouse", "Rouen", "Marseille", "Brest", "Strasbourg"].map(city => (
+                                        <span key={city} className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-[#9CA3AF] border border-white/10">
+                                            {city}
+                                        </span>
+                                    ))}
+                                </div>
+                                <p className="text-[#9CA3AF] text-xs mb-5 italic">
+                                    Production d'épisodes en partenariat avec les écoles locales.
+                                </p>
+
+                                <Link to="/contact">
+                                    <Button
+                                        variant="outline"
+                                        className="border-white/20 text-[#D1D5DB] hover:bg-white/10 hover:text-white text-sm w-full sm:w-auto"
+                                        onClick={() => trackEvent('cta_click', 'serie_stage_production')}
+                                    >
+                                        Nous contacter
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
