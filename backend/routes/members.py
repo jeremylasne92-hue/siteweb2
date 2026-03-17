@@ -484,7 +484,7 @@ async def admin_seed_profile(
     collection_map = {
         "tech": "tech_candidatures",
         "volunteer": "volunteer_applications",
-        "scenariste": "scenariste_candidatures",
+        "scenariste": "tech_candidatures",
     }
     collection = collection_map.get(body.candidature_type, "volunteer_applications")
     candidature = await db[collection].find_one({"id": candidature_id})

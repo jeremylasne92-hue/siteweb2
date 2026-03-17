@@ -822,6 +822,14 @@ async def admin_delete_logo(
     return {"success": True, "message": "Logo supprimé"}
 
 
+def _sanitize_csv_cell(value) -> str:
+    """Escape CSV injection characters for Excel safety."""
+    s = str(value) if value is not None else ""
+    if s and s[0] in ('=', '+', '-', '@', '\t', '\r'):
+        return "'" + s
+    return s
+
+
 @router.get("/admin/export")
 async def admin_export_partners_csv(
     admin: User = Depends(require_admin),
@@ -850,31 +858,31 @@ async def admin_export_partners_csv(
             validated = validated.isoformat()
         thematics = ";".join(p.get("thematics", []))
         writer.writerow([
-            p.get("id", ""),
-            p.get("name", ""),
-            p.get("category", ""),
-            p.get("status", ""),
-            p.get("city", ""),
-            p.get("postal_code", ""),
-            p.get("country", ""),
-            p.get("address", ""),
+            _sanitize_csv_cell(p.get("id", "")),
+            _sanitize_csv_cell(p.get("name", "")),
+            _sanitize_csv_cell(p.get("category", "")),
+            _sanitize_csv_cell(p.get("status", "")),
+            _sanitize_csv_cell(p.get("city", "")),
+            _sanitize_csv_cell(p.get("postal_code", "")),
+            _sanitize_csv_cell(p.get("country", "")),
+            _sanitize_csv_cell(p.get("address", "")),
             p.get("latitude", ""),
             p.get("longitude", ""),
-            p.get("contact_name", ""),
-            p.get("contact_role", ""),
-            p.get("contact_email", ""),
-            p.get("contact_phone", ""),
-            thematics,
-            p.get("description", ""),
-            p.get("description_long", "") or "",
-            p.get("website_url", "") or "",
-            p.get("linkedin_url", "") or "",
-            p.get("instagram_url", "") or "",
-            p.get("twitter_url", "") or "",
+            _sanitize_csv_cell(p.get("contact_name", "")),
+            _sanitize_csv_cell(p.get("contact_role", "")),
+            _sanitize_csv_cell(p.get("contact_email", "")),
+            _sanitize_csv_cell(p.get("contact_phone", "")),
+            _sanitize_csv_cell(thematics),
+            _sanitize_csv_cell(p.get("description", "")),
+            _sanitize_csv_cell(p.get("description_long", "") or ""),
+            _sanitize_csv_cell(p.get("website_url", "") or ""),
+            _sanitize_csv_cell(p.get("linkedin_url", "") or ""),
+            _sanitize_csv_cell(p.get("instagram_url", "") or ""),
+            _sanitize_csv_cell(p.get("twitter_url", "") or ""),
             p.get("is_featured", False),
             created,
             validated or "",
-            p.get("rejection_reason", "") or "",
+            _sanitize_csv_cell(p.get("rejection_reason", "") or ""),
         ])
 
     output.seek(0)

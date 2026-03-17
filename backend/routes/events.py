@@ -28,7 +28,7 @@ async def get_events(db: AsyncIOMotorDatabase = Depends(get_db)):
 @router.get("/{event_id}", response_model=Event)
 async def get_event(event_id: str, db: AsyncIOMotorDatabase = Depends(get_db)):
     """Get a specific event by ID"""
-    event = await db.events.find_one({"id": event_id})
+    event = await db.events.find_one({"id": event_id, "is_published": True})
     if not event:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
     return Event(**event)

@@ -15,6 +15,7 @@ import httpx
 import csv
 import io
 import json
+import hmac
 import logging
 import os
 
@@ -259,7 +260,7 @@ async def verify_2fa(data: Verify2FARequest, response: Response, request: Reques
         )
 
     # Verify code
-    if pending["code"] != data.code:
+    if not hmac.compare_digest(pending["code"], data.code):
         await db.pending_2fa.update_one(
             {"user_id": data.user_id},
             {"$inc": {"attempts": 1}}
@@ -669,6 +670,14 @@ async def do_reset_password(request: Request, token: str, data: ResetPasswordReq
     return result
 
 
+def _sanitize_csv_cell(value) -> str:
+    """Escape CSV injection characters for Excel safety."""
+    s = str(value) if value is not None else ""
+    if s and s[0] in ('=', '+', '-', '@', '\t', '\r'):
+        return "'" + s
+    return s
+
+
 @router.get("/admin/export-users")
 async def export_users_csv(
     admin: User = Depends(require_admin),
@@ -689,11 +698,11 @@ async def export_users_csv(
         if hasattr(last_login, "isoformat"):
             last_login = last_login.isoformat()
         writer.writerow([
-            u.get("id", ""),
-            u.get("username", ""),
-            u.get("email", ""),
-            u.get("role", ""),
-            u.get("oauth_provider", ""),
+            _sanitize_csv_cell(u.get("id", "")),
+            _sanitize_csv_cell(u.get("username", "")),
+            _sanitize_csv_cell(u.get("email", "")),
+            _sanitize_csv_cell(u.get("role", "")),
+            _sanitize_csv_cell(u.get("oauth_provider", "")),
             u.get("is_2fa_enabled", False),
             created,
             last_login or "",

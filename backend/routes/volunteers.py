@@ -125,6 +125,14 @@ async def delete_volunteer_application(
     return {"message": "Candidature supprimée"}
 
 
+def _sanitize_csv_cell(value) -> str:
+    """Escape CSV injection characters for Excel safety."""
+    s = str(value) if value is not None else ""
+    if s and s[0] in ('=', '+', '-', '@', '\t', '\r'):
+        return "'" + s
+    return s
+
+
 @router.get("/admin/export")
 async def export_volunteer_applications(
     admin: User = Depends(require_admin),
@@ -151,18 +159,18 @@ async def export_volunteer_applications(
         if isinstance(motivation, list):
             motivation = ", ".join(motivation)
         writer.writerow([
-            a.get("id", ""),
-            a.get("name", ""),
-            a.get("email", ""),
-            a.get("phone", ""),
-            a.get("city", ""),
-            skills,
-            a.get("experience_level", ""),
-            a.get("availability", ""),
-            motivation,
-            a.get("message", ""),
-            a.get("status", "pending"),
-            a.get("status_note", ""),
+            _sanitize_csv_cell(a.get("id", "")),
+            _sanitize_csv_cell(a.get("name", "")),
+            _sanitize_csv_cell(a.get("email", "")),
+            _sanitize_csv_cell(a.get("phone", "")),
+            _sanitize_csv_cell(a.get("city", "")),
+            _sanitize_csv_cell(skills),
+            _sanitize_csv_cell(a.get("experience_level", "")),
+            _sanitize_csv_cell(a.get("availability", "")),
+            _sanitize_csv_cell(motivation),
+            _sanitize_csv_cell(a.get("message", "")),
+            _sanitize_csv_cell(a.get("status", "pending")),
+            _sanitize_csv_cell(a.get("status_note", "")),
             created,
         ])
 

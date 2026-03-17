@@ -149,6 +149,14 @@ async def delete_tech_candidature(
     return {"message": "Candidature supprimée"}
 
 
+def _sanitize_csv_cell(value) -> str:
+    """Escape CSV injection characters for Excel safety."""
+    s = str(value) if value is not None else ""
+    if s and s[0] in ('=', '+', '-', '@', '\t', '\r'):
+        return "'" + s
+    return s
+
+
 @router.get("/admin/export")
 async def export_tech_candidatures(
     admin: User = Depends(require_admin),
@@ -169,17 +177,17 @@ async def export_tech_candidatures(
         if hasattr(created, "isoformat"):
             created = created.isoformat()
         writer.writerow([
-            c.get("id", ""),
-            c.get("name", ""),
-            c.get("email", ""),
-            c.get("project", ""),
-            c.get("skills", ""),
-            c.get("message", ""),
-            c.get("portfolio_url", ""),
-            c.get("creative_interests", ""),
-            c.get("experience_level", ""),
-            c.get("status", "pending"),
-            c.get("status_note", ""),
+            _sanitize_csv_cell(c.get("id", "")),
+            _sanitize_csv_cell(c.get("name", "")),
+            _sanitize_csv_cell(c.get("email", "")),
+            _sanitize_csv_cell(c.get("project", "")),
+            _sanitize_csv_cell(c.get("skills", "")),
+            _sanitize_csv_cell(c.get("message", "")),
+            _sanitize_csv_cell(c.get("portfolio_url", "")),
+            _sanitize_csv_cell(c.get("creative_interests", "")),
+            _sanitize_csv_cell(c.get("experience_level", "")),
+            _sanitize_csv_cell(c.get("status", "pending")),
+            _sanitize_csv_cell(c.get("status_note", "")),
             created,
         ])
 

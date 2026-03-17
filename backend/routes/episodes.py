@@ -163,6 +163,14 @@ async def get_my_optins(
     return [{"season": o["season"], "episode": o["episode"]} for o in optins]
 
 
+def _sanitize_csv_cell(value) -> str:
+    """Escape CSV injection characters for Excel safety."""
+    s = str(value) if value is not None else ""
+    if s and s[0] in ('=', '+', '-', '@', '\t', '\r'):
+        return "'" + s
+    return s
+
+
 # ==================== ADMIN EXPORT ROUTES ====================
 
 @router.get("/admin/export-optins")
@@ -190,7 +198,7 @@ async def export_optins_csv(
         if hasattr(created, "isoformat"):
             created = created.isoformat()
         writer.writerow([
-            emails_map.get(o["user_id"], ""),
+            _sanitize_csv_cell(emails_map.get(o["user_id"], "")),
             o["season"],
             o["episode"],
             created,
