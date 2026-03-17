@@ -112,7 +112,7 @@ export default function Profile() {
             const res = await fetch(`${API_URL}/volunteers/me`, { credentials: 'include' });
             if (res.ok) {
                 const data = await res.json();
-                setMyVolunteerCandidature(data);
+                setMyVolunteerCandidature(Array.isArray(data) && data.length > 0 ? data[0] : null);
             }
         } catch {
             // silent — not critical
