@@ -410,11 +410,10 @@ export function Mouvement() {
             {/* --- Équipe --- */}
             <section id="equipe" className="py-24 relative overflow-hidden">
                 <div className="container mx-auto px-4 text-center">
-                    <h2 className="text-4xl font-bold text-white mb-4">Équipe ECHO</h2>
-                    <p className="text-amber-500 text-lg mb-16">Une dizaine de membres actifs portés par la même sève.</p>
+                    <h2 className="text-4xl font-bold text-white mb-12 sm:mb-16">Équipe <span className="text-amber-500">Cœur</span> ECHO</h2>
 
                     {/* Main Team */}
-                    <div className="flex flex-wrap justify-center gap-6 sm:gap-8 md:gap-12 mb-12 sm:mb-16">
+                    <div className="flex flex-wrap justify-center gap-6 sm:gap-8 md:gap-12 mb-10 sm:mb-12">
                         {[
                             { name: "Jérémy Lasne", role: "Cofondateur", photo: "/images/Photo équipe/jeremy-lasne 2.png", pos: "50% 20%" },
                             { name: "Eddyason Koffi", role: "Cofondateur", photo: "/images/Photo équipe/eddyason-koffi.jpg", pos: "50% 20%" },
@@ -446,6 +445,11 @@ export function Mouvement() {
                             </div>
                         ))}
                     </div>
+
+                    <p className="text-stone-400 text-sm sm:text-base max-w-3xl mx-auto">
+                        Une dizaine de <span className="text-amber-500 font-medium">membres bénévoles actifs</span> portés par la même sève nous
+                        accompagnent ponctuellement sur les scénarios, le design, le développement d'application.
+                    </p>
                 </div>
             </section>
 

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Play, BookOpen, Facebook, Linkedin, Twitter, Flame, Mountain, Star, Instagram, Palette, Gamepad2, Bell, BellRing, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
 import { YouTubeEmbed } from '../components/ui/YouTubeEmbed';
@@ -395,6 +396,39 @@ export function Serie() {
                         >
                             Rejoindre l'aventure
                         </Button>
+                        {/* Encart stages production */}
+                        <div className="mt-12 pt-8 border-t border-white/10 max-w-2xl mx-auto">
+                            <p className="text-[#D1D5DB] text-base sm:text-lg mb-4">
+                                La série ECHO se tourne près de chez vous
+                            </p>
+                            <p className="text-[#9CA3AF] text-sm sm:text-base mb-5">
+                                Nous recherchons des <span className="text-white font-medium">étudiants et stagiaires</span> pour
+                                participer à la production de la série documentaire.
+                            </p>
+                            <div className="flex flex-wrap justify-center gap-2 mb-4">
+                                {["Lyon", "Lille", "Bordeaux"].map(city => (
+                                    <span key={city} className="px-3 py-1 rounded-full text-xs font-medium bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/30">
+                                        {city} — tournage en cours
+                                    </span>
+                                ))}
+                            </div>
+                            <div className="flex flex-wrap justify-center gap-2 mb-6">
+                                {["Nantes", "Rambouillet", "Paris", "Toulouse", "Rouen", "Marseille", "Brest", "Strasbourg"].map(city => (
+                                    <span key={city} className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-[#9CA3AF] border border-white/10">
+                                        {city}
+                                    </span>
+                                ))}
+                            </div>
+                            <Link to="/contact">
+                                <Button
+                                    variant="outline"
+                                    className="border-white/20 text-[#D1D5DB] hover:bg-white/10 hover:text-white text-sm"
+                                    onClick={() => trackEvent('cta_click', 'serie_stage_production')}
+                                >
+                                    Nous contacter
+                                </Button>
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </section>
