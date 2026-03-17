@@ -12,6 +12,18 @@ class UserRole(str, Enum):
     PARTNER = "partner"
 
 
+class NotificationPreferences(BaseModel):
+    newsletter: bool = True
+    episodes: bool = True
+    events: bool = True
+    partners: bool = False
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str = Field(min_length=8, max_length=128)
+
+
 class User(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     username: str
@@ -29,12 +41,7 @@ class User(BaseModel):
     bio: Optional[str] = None
     interests: list[str] = Field(default_factory=list)
     avatar_url: Optional[str] = None
-    notification_prefs: dict = Field(default_factory=lambda: {
-        "newsletter": True,
-        "episodes": True,
-        "events": True,
-        "partners": False,
-    })
+    notification_prefs: NotificationPreferences = Field(default_factory=NotificationPreferences)
     is_member: bool = False
     member_since: Optional[datetime] = None
 

@@ -1,7 +1,7 @@
 from pydantic import BaseModel as PydanticBaseModel
 from fastapi import APIRouter, HTTPException, Depends, status, Response, Request
 from fastapi.responses import RedirectResponse, StreamingResponse, JSONResponse
-from models import User, UserCreate, UserLogin, UserRegister, UserLoginLocal, UserSession, Pending2FA
+from models import User, UserCreate, UserLogin, UserRegister, UserLoginLocal, UserSession, Pending2FA, ChangePasswordRequest, NotificationPreferences
 from auth_utils import hash_password, verify_password, generate_session_token, generate_2fa_code
 from services.auth_local_service import register_user, login_user
 from services.password_reset_service import request_reset, verify_token, reset_password as reset_pwd
@@ -400,7 +400,7 @@ class ProfileUpdate(PydanticBaseModel):
     bio: str | None = None
     interests: list[str] | None = None
     avatar_url: str | None = None
-    notification_prefs: dict | None = None
+    notification_prefs: NotificationPreferences | None = None
 
 
 VALID_INTERESTS = [
@@ -443,9 +443,7 @@ async def update_profile(
         update_data["avatar_url"] = updates.avatar_url
 
     if updates.notification_prefs is not None:
-        allowed_keys = {"newsletter", "episodes", "events", "partners"}
-        cleaned_prefs = {k: bool(v) for k, v in updates.notification_prefs.items() if k in allowed_keys}
-        update_data["notification_prefs"] = cleaned_prefs
+        update_data["notification_prefs"] = updates.notification_prefs.model_dump()
 
     if not update_data:
         raise HTTPException(status_code=400, detail="No valid fields to update")
@@ -675,6 +673,38 @@ async def logout(request: Request, response: Response, current_user: User = Depe
 
     return {"message": "Logged out successfully"}
 
+
+
+@router.post("/change-password")
+async def change_password(
+    data: ChangePasswordRequest,
+    request: Request,
+    db=Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Change le mot de passe de l'utilisateur connecté (exige l'ancien mot de passe)."""
+    user_doc = await db.users.find_one({"id": current_user.id})
+    if not user_doc or not user_doc.get("password_hash"):
+        raise HTTPException(status_code=400, detail="Compte sans mot de passe (OAuth uniquement)")
+
+    if not verify_password(data.current_password, user_doc["password_hash"]):
+        raise HTTPException(status_code=400, detail="Mot de passe actuel incorrect")
+
+    new_hash = hash_password(data.new_password)
+    await db.users.update_one(
+        {"id": current_user.id},
+        {"$set": {"password_hash": new_hash}}
+    )
+
+    # Invalidate all OTHER sessions (keep current one)
+    session_token = request.cookies.get("session_token")
+    if session_token:
+        await db.user_sessions.delete_many({
+            "user_id": current_user.id,
+            "session_token": {"$ne": session_token}
+        })
+
+    return {"message": "Mot de passe modifié avec succès"}
 
 
 # ==================== PASSWORD RESET (Story 1.3) ====================
