@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock
 from server import app
 from routes.auth import get_db, get_current_user, require_admin
 from models import User, UserRole
-from datetime import datetime
+from datetime import datetime, UTC
 
 client = TestClient(app)
 
@@ -15,7 +15,7 @@ ADMIN_USER = User(
     username="admin",
     email="admin@echo.fr",
     role=UserRole.ADMIN,
-    created_at=datetime.utcnow(),
+    created_at=datetime.now(UTC),
 )
 
 VALID_EVENT = {
@@ -41,8 +41,8 @@ CREATED_EVENT_DOC = {
     "booking_enabled": False,
     "booking_url": None,
     "is_published": True,
-    "created_at": datetime.utcnow(),
-    "updated_at": datetime.utcnow(),
+    "created_at": datetime.now(UTC),
+    "updated_at": datetime.now(UTC),
 }
 
 

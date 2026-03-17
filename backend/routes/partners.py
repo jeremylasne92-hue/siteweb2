@@ -2,7 +2,7 @@ from fastapi.responses import StreamingResponse
 from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form, BackgroundTasks, Request
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional, Dict, Any
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 import csv
 import io
 import json
@@ -21,6 +21,7 @@ from routes.auth import get_current_user, require_admin, get_db, hash_password
 from email_service import send_email
 from utils.rate_limit import anonymize_ip, check_rate_limit
 from utils.audit import log_admin_action
+from utils.date_helpers import format_date_csv
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 logger = logging.getLogger(__name__)
@@ -388,7 +389,7 @@ async def get_my_partner_stats(
     partner_id = partner["id"]
     
     # Date 30 jours en arrière pour le graphe
-    since = datetime.utcnow() - timedelta(days=30)
+    since = datetime.now(UTC) - timedelta(days=30)
     
     pipeline = [
         {"$match": {
@@ -459,7 +460,7 @@ async def update_my_partner_account(
         raise HTTPException(status_code=404, detail="Partner account not found")
     
     # Build update dict with only provided fields
-    update_data: Dict[str, Any] = {"updated_at": datetime.utcnow()}
+    update_data: Dict[str, Any] = {"updated_at": datetime.now(UTC)}
     
     for field_name, value in [
         ("description", description),
@@ -544,9 +545,9 @@ async def admin_approve_partner(
         {"id": partner_id},
         {"$set": {
             "status": PartnerStatus.APPROVED,
-            "validated_at": datetime.utcnow(),
+            "validated_at": datetime.now(UTC),
             "validated_by": admin.id,
-            "updated_at": datetime.utcnow()
+            "updated_at": datetime.now(UTC)
         }}
     )
     
@@ -580,7 +581,7 @@ async def admin_reject_partner(
         {"$set": {
             "status": PartnerStatus.REJECTED,
             "rejection_reason": body.reason,
-            "updated_at": datetime.utcnow()
+            "updated_at": datetime.now(UTC)
         }}
     )
     
@@ -612,7 +613,7 @@ async def admin_toggle_feature(
         {"id": partner_id},
         {"$set": {
             "is_featured": is_featured,
-            "updated_at": datetime.utcnow()
+            "updated_at": datetime.now(UTC)
         }}
     )
     
@@ -637,7 +638,7 @@ async def admin_suspend_partner(
     new_status = PartnerStatus.APPROVED if partner["status"] == PartnerStatus.SUSPENDED else PartnerStatus.SUSPENDED
     await db.partners.update_one(
         {"id": partner_id},
-        {"$set": {"status": new_status, "updated_at": datetime.utcnow()}}
+        {"$set": {"status": new_status, "updated_at": datetime.now(UTC)}}
     )
     await log_admin_action(db, admin.id, "suspend", "partner", partner_id)
 
@@ -728,7 +729,7 @@ async def admin_edit_partner(
         except Exception as e:
             logger.warning(f"Partner geocoding error for city '{updates['city']}': {e}")
 
-    updates["updated_at"] = datetime.utcnow()
+    updates["updated_at"] = datetime.now(UTC)
 
     result = await db.partners.update_one(
         {"id": partner_id},
@@ -792,7 +793,7 @@ async def admin_upload_logo(
     logo_url = f"/api/uploads/partners/logos/{safe_filename}"
     await db.partners.update_one(
         {"id": partner_id},
-        {"$set":  {"logo_url": logo_url, "updated_at": datetime.utcnow()}}
+        {"$set":  {"logo_url": logo_url, "updated_at": datetime.now(UTC)}}
     )
     
     return {"success": True, "logo_url": logo_url}
@@ -816,7 +817,7 @@ async def admin_delete_logo(
     
     await db.partners.update_one(
         {"id": partner_id},
-        {"$set":  {"logo_url": None, "updated_at": datetime.utcnow()}}
+        {"$set":  {"logo_url": None, "updated_at": datetime.now(UTC)}}
     )
     
     return {"success": True, "message": "Logo supprimé"}
@@ -850,12 +851,8 @@ async def admin_export_partners_csv(
         "is_featured", "created_at", "validated_at", "rejection_reason",
     ])
     for p in partners:
-        created = p.get("created_at", "")
-        if hasattr(created, "isoformat"):
-            created = created.isoformat()
-        validated = p.get("validated_at", "")
-        if hasattr(validated, "isoformat"):
-            validated = validated.isoformat()
+        created = format_date_csv(p.get("created_at"))
+        validated = format_date_csv(p.get("validated_at"))
         thematics = ";".join(p.get("thematics", []))
         writer.writerow([
             _sanitize_csv_cell(p.get("id", "")),

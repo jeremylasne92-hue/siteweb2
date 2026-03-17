@@ -3,7 +3,7 @@ from models import VideoProgress, VideoProgressCreate, User
 from routes.auth import get_current_user, get_db
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, UTC
 import logging
 
 logger = logging.getLogger(__name__)
@@ -86,7 +86,7 @@ async def save_progress(
         current_time=progress_data.current_time,
         duration=progress_data.duration,
         progress_percent=progress_percent,
-        last_updated=datetime.utcnow()
+        last_updated=datetime.now(UTC)
     )
     
     # Upsert progress

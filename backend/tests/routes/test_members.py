@@ -7,7 +7,7 @@ from server import app
 from routes.auth import get_db, get_current_user, require_admin
 from routes.members import auto_seed_member_profile, deactivate_member_profile
 from models import User, UserRole
-from datetime import datetime
+from datetime import datetime, UTC
 import pytest
 
 client = TestClient(app)
@@ -17,7 +17,7 @@ MOCK_ADMIN = User(
     username="admin",
     email="admin@echo.fr",
     role=UserRole.ADMIN,
-    created_at=datetime.utcnow(),
+    created_at=datetime.now(UTC),
 )
 
 REGULAR_USER = User(
@@ -25,7 +25,7 @@ REGULAR_USER = User(
     username="testuser",
     email="test@example.com",
     role=UserRole.USER,
-    created_at=datetime.utcnow(),
+    created_at=datetime.now(UTC),
 )
 
 SAMPLE_PROFILE = {
@@ -60,9 +60,9 @@ SAMPLE_PROFILE = {
     "candidature_id": "cand-123",
     "candidature_type": "tech",
     "membership_status": "active",
-    "joined_at": datetime.utcnow().isoformat(),
-    "created_at": datetime.utcnow().isoformat(),
-    "updated_at": datetime.utcnow().isoformat(),
+    "joined_at": datetime.now(UTC).isoformat(),
+    "created_at": datetime.now(UTC).isoformat(),
+    "updated_at": datetime.now(UTC).isoformat(),
 }
 
 

@@ -648,7 +648,7 @@ export default function AdminStudents() {
                                                 <AvailBadge availability={s.availability} />
                                             </td>
                                             <td className="px-4 py-3 text-sm text-echo-textMuted whitespace-nowrap" onClick={() => setSelected(s)}>
-                                                {s.start_date || '\u2014'}
+                                                {s.start_date ? new Date(s.start_date + 'T00:00:00').toLocaleDateString('fr-FR') : '\u2014'}
                                             </td>
                                             <td className="px-4 py-3" onClick={() => setSelected(s)}>
                                                 <StatusBadge status={s.status || 'pending'} createdAt={s.created_at} />
@@ -753,8 +753,8 @@ export default function AdminStudents() {
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="text-xs text-echo-textMuted block mb-1">Date de début souhaitée (YYYY-MM)</label>
-                                            <input type="text" value={(editForm.start_date as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, start_date: e.target.value }))} placeholder="Ex: 2026-06" className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40 placeholder-neutral-500" />
+                                            <label className="text-xs text-echo-textMuted block mb-1">Date de début souhaitée (YYYY-MM-DD)</label>
+                                            <input type="text" value={(editForm.start_date as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, start_date: e.target.value }))} placeholder="Ex: 2026-06-01" className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40 placeholder-neutral-500" />
                                         </div>
                                         <div>
                                             <label className="text-xs text-echo-textMuted block mb-1">Message</label>

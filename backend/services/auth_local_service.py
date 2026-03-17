@@ -4,7 +4,7 @@ Logique métier pour l'inscription et la connexion classique.
 """
 import re
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from fastapi import HTTPException, status
 from models import User, UserSession, UserRegister, UserLoginLocal
@@ -137,13 +137,13 @@ async def login_user(data: UserLoginLocal, db: AsyncIOMotorDatabase) -> dict:
     # Update last login
     await db.users.update_one(
         {"id": user.id},
-        {"$set": {"last_login": datetime.utcnow()}}
+        {"$set": {"last_login": datetime.now(UTC)}}
     )
 
     # Create session
     session = UserSession(
         user_id=user.id,
-        expires_at=datetime.utcnow() + timedelta(days=7)
+        expires_at=datetime.now(UTC) + timedelta(days=7)
     )
     await db.user_sessions.insert_one(session.model_dump())
 

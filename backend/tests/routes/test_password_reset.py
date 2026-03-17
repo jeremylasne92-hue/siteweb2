@@ -3,7 +3,7 @@ Tests for Story 1.3: Réinitialisation de Mot de Passe.
 Tests forgot-password and reset-password endpoints.
 """
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from fastapi.testclient import TestClient
 from unittest.mock import AsyncMock, MagicMock, patch
 from server import app
@@ -81,7 +81,7 @@ def test_verify_token_valid():
         "token": "valid-token-123",
         "user_id": "user-123",
         "used": False,
-        "expires_at": datetime.utcnow() + timedelta(hours=1)
+        "expires_at": datetime.now(UTC) + timedelta(hours=1)
     })
     app.dependency_overrides[get_db] = lambda: db
 
@@ -99,7 +99,7 @@ def test_verify_token_expired():
         "token": "expired-token-123",
         "user_id": "user-123",
         "used": False,
-        "expires_at": datetime.utcnow() - timedelta(hours=1)
+        "expires_at": datetime.now(UTC) - timedelta(hours=1)
     })
     app.dependency_overrides[get_db] = lambda: db
 
@@ -120,7 +120,7 @@ def test_reset_password_success():
         "token": "valid-token-123",
         "user_id": "user-123",
         "used": False,
-        "expires_at": datetime.utcnow() + timedelta(hours=1)
+        "expires_at": datetime.now(UTC) + timedelta(hours=1)
     })
     app.dependency_overrides[get_db] = lambda: db
 
@@ -144,7 +144,7 @@ def test_reset_password_weak():
         "token": "valid-token-123",
         "user_id": "user-123",
         "used": False,
-        "expires_at": datetime.utcnow() + timedelta(hours=1)
+        "expires_at": datetime.now(UTC) + timedelta(hours=1)
     })
     app.dependency_overrides[get_db] = lambda: db
 

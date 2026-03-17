@@ -47,12 +47,12 @@ def make_mock_db():
 
 def _make_authenticated_db(db, user_id="user-123", email="test@example.com", role="user"):
     """Set up mock db so that session + user lookup succeeds for cookie auth."""
-    from datetime import datetime, timedelta
+    from datetime import datetime, timedelta, UTC
 
     db.user_sessions.find_one = AsyncMock(return_value={
         "session_token": "valid-session-token",
         "user_id": user_id,
-        "expires_at": datetime.utcnow() + timedelta(days=1),
+        "expires_at": datetime.now(UTC) + timedelta(days=1),
     })
     db.users.find_one = AsyncMock(return_value={
         "id": user_id,
@@ -107,10 +107,10 @@ def test_export_my_data_authenticated():
         "session_token": "valid-session-token",
         "user_id": "user-123",
     }
-    from datetime import datetime, timedelta
+    from datetime import datetime, timedelta, UTC
     session_with_expiry = {
         **session_doc,
-        "expires_at": datetime.utcnow() + timedelta(days=1),
+        "expires_at": datetime.now(UTC) + timedelta(days=1),
     }
 
     # find_one is called multiple times: session lookup, user lookup, export user, export partner

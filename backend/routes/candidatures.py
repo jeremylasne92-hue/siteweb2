@@ -4,10 +4,11 @@ from pymongo.errors import PyMongoError
 from models import TechCandidature, TechCandidatureRequest, TechCandidatureStatusUpdate, TechCandidatureBatchStatusUpdate, TechCandidatureEditUpdate, User
 from routes.auth import get_db, require_admin, get_current_user
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from datetime import datetime
+from datetime import datetime, UTC
 from email_service import send_email, send_candidature_confirmation, send_candidature_interview, send_candidature_accepted, send_candidature_rejected
 from routes.members import auto_seed_member_profile, deactivate_member_profile
 from core.config import settings
+from utils.date_helpers import format_date_csv
 from utils.rate_limit import anonymize_ip, check_rate_limit
 from utils.audit import log_admin_action
 import asyncio
@@ -173,9 +174,7 @@ async def export_tech_candidatures(
     writer = csv.writer(output)
     writer.writerow(["id", "name", "email", "project", "skills", "message", "portfolio_url", "creative_interests", "experience_level", "status", "status_note", "created_at"])
     for c in candidatures:
-        created = c.get("created_at", "")
-        if hasattr(created, "isoformat"):
-            created = created.isoformat()
+        created = format_date_csv(c.get("created_at"))
         writer.writerow([
             _sanitize_csv_cell(c.get("id", "")),
             _sanitize_csv_cell(c.get("name", "")),
@@ -212,7 +211,7 @@ async def edit_tech_candidature(
     update_fields = data.model_dump(exclude_none=True)
     if not update_fields:
         raise HTTPException(status_code=400, detail="Aucun champ à mettre à jour")
-    update_fields["updated_at"] = datetime.utcnow()
+    update_fields["updated_at"] = datetime.now(UTC)
     result = await db.tech_candidatures.update_one(
         {"id": candidature_id},
         {"$set": update_fields},
@@ -232,7 +231,7 @@ async def update_candidature_status(
     db: AsyncIOMotorDatabase = Depends(get_db),
 ):
     """Update a tech candidature status (admin only)."""
-    update_fields = {"status": data.status, "updated_at": datetime.utcnow()}
+    update_fields = {"status": data.status, "updated_at": datetime.now(UTC)}
     if data.status_note is not None:
         update_fields["status_note"] = data.status_note
     result = await db.tech_candidatures.update_one(
@@ -282,7 +281,7 @@ async def batch_update_candidature_status(
     db: AsyncIOMotorDatabase = Depends(get_db),
 ):
     """Batch update tech candidature statuses (admin only)."""
-    update_fields = {"status": data.status, "updated_at": datetime.utcnow()}
+    update_fields = {"status": data.status, "updated_at": datetime.now(UTC)}
     if data.status_note is not None:
         update_fields["status_note"] = data.status_note
     result = await db.tech_candidatures.update_many(

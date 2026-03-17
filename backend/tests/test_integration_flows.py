@@ -8,7 +8,7 @@ Tests 3 critical paths:
 """
 from fastapi.testclient import TestClient
 from unittest.mock import AsyncMock, MagicMock, patch
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 from server import app
 from routes.auth import get_db
@@ -99,7 +99,7 @@ class TestAuthFlow:
             "role": "user",
             "picture": None,
             "is_2fa_enabled": False,
-            "created_at": datetime.utcnow(),
+            "created_at": datetime.now(UTC),
             "last_login": None,
             "oauth_provider": None,
             "oauth_id": None,
@@ -140,7 +140,7 @@ class TestAuthFlow:
             "role": "user",
             "picture": None,
             "is_2fa_enabled": False,
-            "created_at": datetime.utcnow(),
+            "created_at": datetime.now(UTC),
             "last_login": None,
             "oauth_provider": None,
             "oauth_id": None,
@@ -156,7 +156,7 @@ class TestAuthFlow:
         session_doc = {
             "user_id": "user-123",
             "session_token": "tok_abc",
-            "expires_at": datetime.utcnow() + timedelta(days=7),
+            "expires_at": datetime.now(UTC) + timedelta(days=7),
         }
         self.db.user_sessions.find_one = AsyncMock(return_value=session_doc)
         self.db.users.find_one = AsyncMock(return_value=user_doc)
@@ -182,7 +182,7 @@ class TestAuthFlow:
             "role": "user",
             "picture": None,
             "is_2fa_enabled": False,
-            "created_at": datetime.utcnow(),
+            "created_at": datetime.now(UTC),
             "last_login": None,
             "oauth_provider": None,
             "oauth_id": None,
@@ -198,7 +198,7 @@ class TestAuthFlow:
         session_doc = {
             "user_id": "user-123",
             "session_token": "tok_abc",
-            "expires_at": datetime.utcnow() + timedelta(days=7),
+            "expires_at": datetime.now(UTC) + timedelta(days=7),
         }
         self.db.user_sessions.find_one = AsyncMock(return_value=session_doc)
         self.db.users.find_one = AsyncMock(return_value=user_doc)
@@ -241,7 +241,7 @@ class TestAuthFlow:
             "role": "user",
             "picture": None,
             "is_2fa_enabled": False,
-            "created_at": datetime.utcnow(),
+            "created_at": datetime.now(UTC),
             "last_login": None,
             "oauth_provider": None,
             "oauth_id": None,
@@ -269,7 +269,7 @@ class TestAuthFlow:
         self.db.user_sessions.find_one = AsyncMock(return_value={
             "user_id": registered_id,
             "session_token": session_token,
-            "expires_at": datetime.utcnow() + timedelta(days=7),
+            "expires_at": datetime.now(UTC) + timedelta(days=7),
         })
 
         me_client = TestClient(app, cookies={"session_token": session_token})

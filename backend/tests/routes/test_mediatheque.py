@@ -2,7 +2,7 @@
 Tests for the Médiathèque (media resources CRUD).
 """
 import io
-from datetime import datetime
+from datetime import datetime, UTC
 from unittest.mock import AsyncMock, MagicMock
 
 from bson import ObjectId
@@ -19,7 +19,7 @@ ADMIN_USER = User(
     username="admin",
     email="admin@echo.fr",
     role=UserRole.ADMIN,
-    created_at=datetime.utcnow(),
+    created_at=datetime.now(UTC),
 )
 
 FAKE_OID = ObjectId()
@@ -50,8 +50,8 @@ PUBLISHED_DOC = {
     "is_featured": False,
     "is_published": True,
     "sort_order": 0,
-    "created_at": datetime.utcnow(),
-    "updated_at": datetime.utcnow(),
+    "created_at": datetime.now(UTC),
+    "updated_at": datetime.now(UTC),
 }
 
 UNPUBLISHED_DOC = {

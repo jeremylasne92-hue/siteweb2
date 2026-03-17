@@ -8,8 +8,9 @@ from services.password_reset_service import request_reset, verify_token, reset_p
 from email_service import send_2fa_code
 from pymongo.errors import PyMongoError
 from utils.rate_limit import check_rate_limit
+from utils.date_helpers import format_date_csv
 from core.config import settings
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import httpx
 import csv
@@ -54,7 +55,7 @@ async def get_current_user(request: Request, db: AsyncIOMotorDatabase = Depends(
     
     # Find session
     session = await db.user_sessions.find_one({"session_token": session_token})
-    if not session or session["expires_at"] < datetime.utcnow():
+    if not session or session["expires_at"] < datetime.now(UTC):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired session"
@@ -198,7 +199,7 @@ async def login(request: Request, credentials: UserLogin, response: Response, db
     # Update last login
     await db.users.update_one(
         {"id": user.id},
-        {"$set": {"last_login": datetime.utcnow()}}
+        {"$set": {"last_login": datetime.now(UTC)}}
     )
     
     # If 2FA enabled, send code
@@ -211,7 +212,7 @@ async def login(request: Request, credentials: UserLogin, response: Response, db
         pending_2fa = Pending2FA(
             user_id=user.id,
             code=code,
-            expires_at=datetime.utcnow() + timedelta(minutes=10)
+            expires_at=datetime.now(UTC) + timedelta(minutes=10)
         )
         await db.pending_2fa.insert_one(pending_2fa.model_dump())
         
@@ -233,7 +234,7 @@ async def login(request: Request, credentials: UserLogin, response: Response, db
     # Create session
     session = UserSession(
         user_id=user.id,
-        expires_at=datetime.utcnow() + timedelta(days=7)
+        expires_at=datetime.now(UTC) + timedelta(days=7)
     )
     await db.user_sessions.insert_one(session.model_dump())
     
@@ -276,7 +277,7 @@ async def verify_2fa(data: Verify2FARequest, response: Response, request: Reques
         )
 
     # Check expiration
-    if pending["expires_at"] < datetime.utcnow():
+    if pending["expires_at"] < datetime.now(UTC):
         await db.pending_2fa.delete_one({"user_id": data.user_id})
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -308,7 +309,7 @@ async def verify_2fa(data: Verify2FARequest, response: Response, request: Reques
     # Create session
     session = UserSession(
         user_id=data.user_id,
-        expires_at=datetime.utcnow() + timedelta(days=7)
+        expires_at=datetime.now(UTC) + timedelta(days=7)
     )
     await db.user_sessions.insert_one(session.model_dump())
     
@@ -525,7 +526,7 @@ async def export_my_data(
         "sessions": sessions,
         "episode_optins": optins,
         "partner": partner,
-        "exported_at": datetime.utcnow().isoformat(),
+        "exported_at": datetime.now(UTC).isoformat(),
     }
 
     return export
@@ -587,7 +588,7 @@ async def export_my_data_download(
         "tech_candidatures": tech_candidatures,
         "analytics_events": analytics,
         "video_progress": video_progress,
-        "exported_at": datetime.utcnow().isoformat(),
+        "exported_at": datetime.now(UTC).isoformat(),
     })
 
     content = json.dumps(export, ensure_ascii=False, indent=2)
@@ -609,7 +610,7 @@ async def request_account_deletion(
     Marks the account for deletion rather than deleting immediately."""
     await db.users.update_one(
         {"id": current_user.id},
-        {"$set": {"deletion_requested_at": datetime.utcnow()}}
+        {"$set": {"deletion_requested_at": datetime.now(UTC)}}
     )
 
     logger.info(f"User {current_user.id} requested account deletion (RGPD art. 17)")
@@ -766,12 +767,8 @@ async def export_users_csv(
     writer = csv.writer(output)
     writer.writerow(["id", "username", "email", "role", "oauth_provider", "is_2fa_enabled", "created_at", "last_login"])
     for u in users:
-        created = u.get("created_at", "")
-        if hasattr(created, "isoformat"):
-            created = created.isoformat()
-        last_login = u.get("last_login", "")
-        if hasattr(last_login, "isoformat"):
-            last_login = last_login.isoformat()
+        created = format_date_csv(u.get("created_at"))
+        last_login = format_date_csv(u.get("last_login"))
         writer.writerow([
             _sanitize_csv_cell(u.get("id", "")),
             _sanitize_csv_cell(u.get("username", "")),

@@ -3,7 +3,7 @@ from pydantic import ValidationError
 import asyncio
 import logging
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from typing import Dict, Any, Optional
 
 from models import AnalyticsEventCreate, AnalyticsEvent, User
@@ -110,7 +110,7 @@ async def get_admin_dashboard(
     Returns acquisition, engagement, conversion, and partner metrics.
     """
     db = request.app.db
-    cutoff = datetime.utcnow() - timedelta(days=period)
+    cutoff = datetime.now(UTC) - timedelta(days=period)
 
     # Run all queries in parallel
     (

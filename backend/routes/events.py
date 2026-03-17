@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, status
 from models import Event, EventCreate, User
 from routes.auth import require_admin, get_db
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import List
 import logging
 import os
@@ -101,7 +101,7 @@ async def update_event(
 
     update_data = data.model_dump()
     update_data["images"] = update_data.get("images", [])[:10]
-    update_data["updated_at"] = datetime.utcnow()
+    update_data["updated_at"] = datetime.now(UTC)
 
     await db.events.update_one({"id": event_id}, {"$set": update_data})
     updated = await db.events.find_one({"id": event_id})

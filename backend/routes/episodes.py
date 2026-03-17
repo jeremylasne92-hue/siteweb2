@@ -7,6 +7,7 @@ from typing import Optional, List
 import csv
 import io
 import logging
+from utils.date_helpers import format_date_csv
 
 logger = logging.getLogger(__name__)
 
@@ -92,8 +93,8 @@ async def update_episode(
             detail="Episode not found"
         )
     
-    from datetime import datetime
-    episode_data.updated_at = datetime.utcnow()
+    from datetime import datetime, UTC
+    episode_data.updated_at = datetime.now(UTC)
     
     await db.episodes.update_one(
         {"id": episode_id},
@@ -194,9 +195,7 @@ async def export_optins_csv(
     writer = csv.writer(output)
     writer.writerow(["email", "season", "episode", "created_at"])
     for o in optins:
-        created = o.get("created_at", "")
-        if hasattr(created, "isoformat"):
-            created = created.isoformat()
+        created = format_date_csv(o.get("created_at"))
         writer.writerow([
             _sanitize_csv_cell(emails_map.get(o["user_id"], "")),
             o["season"],

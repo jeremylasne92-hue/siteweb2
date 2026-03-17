@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock
 from server import app
 from routes.auth import get_current_user, require_admin
 from models import User, UserRole
-from datetime import datetime
+from datetime import datetime, UTC
 
 client = TestClient(app)
 
@@ -15,7 +15,7 @@ MOCK_ADMIN = User(
     username="admin_analytics",
     email="admin-analytics@test.com",
     role=UserRole.ADMIN,
-    created_at=datetime.utcnow(),
+    created_at=datetime.now(UTC),
 )
 
 MOCK_USER = User(
@@ -23,7 +23,7 @@ MOCK_USER = User(
     username="user_analytics",
     email="user-analytics@test.com",
     role=UserRole.USER,
-    created_at=datetime.utcnow(),
+    created_at=datetime.now(UTC),
 )
 
 

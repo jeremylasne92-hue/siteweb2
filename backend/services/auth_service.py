@@ -10,7 +10,7 @@ import secrets
 from models import User, UserSession, Pending2FA
 from auth_utils import generate_2fa_code
 from email_service import send_2fa_code
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from urllib.parse import urlencode
 from core.config import settings
 import logging
@@ -107,7 +107,7 @@ async def google_callback_service(code: str, db) -> dict:
     if user_doc:
         user = User(**user_doc)
         # Verify provider and update if needed
-        updates = {"last_login": datetime.utcnow()}
+        updates = {"last_login": datetime.now(UTC)}
         if not user.oauth_provider:
             updates["oauth_provider"] = "google"
             updates["oauth_id"] = user_info.get("id")
@@ -145,7 +145,7 @@ async def google_callback_service(code: str, db) -> dict:
         pending_2fa = Pending2FA(
             user_id=user.id,
             code=code,
-            expires_at=datetime.utcnow() + timedelta(minutes=10)
+            expires_at=datetime.now(UTC) + timedelta(minutes=10)
         )
         await db.pending_2fa.insert_one(pending_2fa.model_dump())
 
@@ -167,7 +167,7 @@ async def google_callback_service(code: str, db) -> dict:
     # 5. Create Session (only if 2FA not enabled)
     session = UserSession(
         user_id=user.id,
-        expires_at=datetime.utcnow() + timedelta(days=7)
+        expires_at=datetime.now(UTC) + timedelta(days=7)
     )
     await db.user_sessions.insert_one(session.model_dump())
 

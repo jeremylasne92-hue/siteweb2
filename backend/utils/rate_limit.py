@@ -21,7 +21,7 @@ def anonymize_ip(ip: str) -> str:
         return ':'.join(parts[:4]) + '::0'
     return ip
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 import logging
 
 logger = logging.getLogger(__name__)
@@ -40,7 +40,7 @@ async def check_rate_limit(
     within the last window_minutes for the given action.
     """
     client_ip = request.client.host if request.client else "unknown"
-    window_start = datetime.utcnow() - timedelta(minutes=window_minutes)
+    window_start = datetime.now(UTC) - timedelta(minutes=window_minutes)
 
     count = await db.rate_limits.count_documents({
         "ip": client_ip,
@@ -59,7 +59,7 @@ async def check_rate_limit(
     await db.rate_limits.insert_one({
         "ip": client_ip,
         "action": action,
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.now(UTC),
     })
 
 

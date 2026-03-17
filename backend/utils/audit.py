@@ -1,6 +1,6 @@
 """Minimal audit trail -- logs admin actions to MongoDB."""
 import logging
-from datetime import datetime
+from datetime import datetime, UTC
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ async def log_admin_action(
             "target_type": target_type,
             "target_id": target_id,
             "changes": changes,
-            "timestamp": datetime.utcnow(),
+            "timestamp": datetime.now(UTC),
         })
     except Exception as e:
         logger.warning(f"Audit log failed: {e}")

@@ -1,5 +1,5 @@
 """Pydantic models for the Médiathèque (media resources)."""
-from datetime import datetime
+from datetime import datetime, UTC
 from enum import Enum
 from typing import Optional
 
@@ -50,5 +50,5 @@ class MediaResource(BaseModel):
     is_featured: bool = False
     is_published: bool = False
     sort_order: int = 0
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

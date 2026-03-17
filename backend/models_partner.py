@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, EmailStr
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, UTC
 from enum import Enum
 import uuid
 
@@ -71,8 +71,8 @@ class Partner(BaseModel):
 
     # Métadonnées
     partnership_date: Optional[datetime] = None  # Date début partenariat officiel
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     validated_at: Optional[datetime] = None
     validated_by: Optional[str] = None           # Admin ID qui a validé
 

@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from datetime import datetime
+from datetime import datetime, UTC
 import uuid
 from slugify import slugify
 from dotenv import load_dotenv
@@ -148,8 +148,8 @@ partners_data = [
 for p in partners_data:
     p["_id"] = str(uuid.uuid4())
     p["slug"] = slugify(p["name"])
-    p["created_at"] = datetime.utcnow()
-    p["updated_at"] = datetime.utcnow()
+    p["created_at"] = datetime.now(UTC)
+    p["updated_at"] = datetime.now(UTC)
     
     # Check if exists by name to avoid duplicates
     if not db.partners.find_one({"name": p["name"]}):

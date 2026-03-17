@@ -31,7 +31,7 @@ VALID_STUDENT_DATA = {
     "study_field": "Audiovisuel et Multimédia",
     "skills": ["Montage vidéo", "Étalonnage"],
     "availability": "stage_long",
-    "start_date": "2026-06",
+    "start_date": "2026-06-01",
     "message": "Très motivée pour rejoindre l'équipe de production.",
     "website": "",
 }
@@ -160,9 +160,9 @@ class TestStudentApply:
         assert resp.status_code == 422
 
     def test_student_apply_valid_start_date(self):
-        """POST /api/students/apply with YYYY-MM start_date is accepted."""
+        """POST /api/students/apply with YYYY-MM-DD start_date is accepted."""
         client = TestClient(app)
-        payload = {**VALID_STUDENT_DATA, "start_date": "2026-09"}
+        payload = {**VALID_STUDENT_DATA, "start_date": "2026-09-10"}
         with patch("routes.students.send_email", new_callable=AsyncMock), \
              patch("routes.students.send_student_confirmation", new_callable=AsyncMock), \
              patch("routes.students.geocode_city", new_callable=AsyncMock, return_value=None):
@@ -422,7 +422,7 @@ class TestAdminExportCSV:
             "study_field": "Audiovisuel",
             "skills": ["Montage vidéo"],
             "availability": "stage_long",
-            "start_date": "2026-06",
+            "start_date": "2026-06-01",
             "status": "pending",
             "message": "Motivée",
             "admin_notes": "",

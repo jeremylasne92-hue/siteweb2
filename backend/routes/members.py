@@ -6,7 +6,7 @@ from routes.auth import get_db, get_current_user, require_admin
 from models import User
 from utils.audit import log_admin_action
 from models_member import MemberProfileUpdate, VisibilityUpdate, MembershipStatus, _slugify
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import Literal
 import asyncio
 import logging
@@ -60,7 +60,7 @@ async def update_my_profile(
 ):
     """Update own profile (partial update)."""
     update_data = data.model_dump(exclude_none=True)
-    update_data["updated_at"] = datetime.utcnow()
+    update_data["updated_at"] = datetime.now(UTC)
 
     result = await db.member_profiles.update_one(
         {"user_id": current_user.id},
@@ -86,7 +86,7 @@ async def update_visibility(
         update_data["visible"] = data.visible
     if data.visibility_overrides is not None:
         update_data["visibility_overrides"] = data.visibility_overrides.model_dump()
-    update_data["updated_at"] = datetime.utcnow()
+    update_data["updated_at"] = datetime.now(UTC)
 
     result = await db.member_profiles.update_one(
         {"user_id": current_user.id},
@@ -266,7 +266,7 @@ async def admin_update_status(
     db: AsyncIOMotorDatabase = Depends(get_db),
 ):
     """Change membership_status. Admin only."""
-    update: dict = {"membership_status": body.membership_status, "updated_at": datetime.utcnow()}
+    update: dict = {"membership_status": body.membership_status, "updated_at": datetime.now(UTC)}
     if body.membership_status in ("inactive", "suspended"):
         update["visible"] = False
 
@@ -291,7 +291,7 @@ async def admin_update_member(
     update_data = data.model_dump(exclude_none=True)
     if not update_data:
         raise HTTPException(status_code=400, detail="Aucun champ à mettre à jour")
-    update_data["updated_at"] = datetime.utcnow()
+    update_data["updated_at"] = datetime.now(UTC)
 
     # Auto-geocode if city changed
     if "city" in update_data:
@@ -362,7 +362,7 @@ async def auto_seed_member_profile(
         # Reactivate the existing profile
         await db.member_profiles.update_one(
             {"candidature_id": candidature_id},
-            {"$set": {"visible": True, "membership_status": "active", "updated_at": datetime.utcnow()}},
+            {"$set": {"visible": True, "membership_status": "active", "updated_at": datetime.now(UTC)}},
         )
         logger.info("Member profile reactivated for candidature %s", candidature_id)
         existing["visible"] = True
@@ -396,7 +396,7 @@ async def auto_seed_member_profile(
         slug = f"{base_slug}-{counter}"
         counter += 1
 
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     profile = {
         "id": str(uuid.uuid4()),
         "user_id": None,
@@ -464,7 +464,7 @@ async def deactivate_member_profile(
     """
     result = await db.member_profiles.update_one(
         {"candidature_id": candidature_id},
-        {"$set": {"visible": False, "membership_status": "inactive", "updated_at": datetime.utcnow()}},
+        {"$set": {"visible": False, "membership_status": "inactive", "updated_at": datetime.now(UTC)}},
     )
     if result.matched_count > 0:
         logger.info("Member profile deactivated for candidature %s", candidature_id)

@@ -1,7 +1,7 @@
 """Pydantic models for the member_profiles collection."""
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional, Literal
-from datetime import datetime
+from datetime import datetime, UTC
 import re
 import unicodedata
 import uuid
@@ -168,8 +168,8 @@ class MemberProfile(BaseModel):
     candidature_id: Optional[str] = None
     candidature_type: Optional[str] = None
     membership_status: MembershipStatus = "active"
-    joined_at: datetime = Field(default_factory=datetime.utcnow)
+    joined_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     last_active_at: Optional[datetime] = None
 
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

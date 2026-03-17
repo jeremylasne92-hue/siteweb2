@@ -141,8 +141,8 @@ export default function AdminEvents() {
         const payload = {
             title: form.title,
             description: form.description || null,
-            date: new Date(form.date).toISOString(),
-            date_end: form.date_end ? new Date(form.date_end).toISOString() : null,
+            date: new Date(form.date + 'T00:00:00').toISOString(),
+            date_end: form.date_end ? new Date(form.date_end + 'T00:00:00').toISOString() : null,
             time: form.time || null,
             location: form.location,
             type: form.type,

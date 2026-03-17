@@ -1,7 +1,7 @@
 """Routes for the Médiathèque (media resources CRUD)."""
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import Optional
 
 from bson import ObjectId
@@ -86,7 +86,7 @@ async def create_resource(
     db: AsyncIOMotorDatabase = Depends(get_db),
 ):
     """Create a new media resource."""
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     doc = resource.model_dump()
     doc["created_at"] = now
     doc["updated_at"] = now
@@ -105,7 +105,7 @@ async def update_resource(
 ):
     """Update an existing media resource."""
     doc = resource.model_dump()
-    doc["updated_at"] = datetime.utcnow()
+    doc["updated_at"] = datetime.now(UTC)
 
     result = await db.media_resources.find_one_and_update(
         {"_id": ObjectId(resource_id)},
@@ -144,7 +144,7 @@ async def toggle_publish(
     new_status = not doc.get("is_published", False)
     result = await db.media_resources.find_one_and_update(
         {"_id": ObjectId(resource_id)},
-        {"$set": {"is_published": new_status, "updated_at": datetime.utcnow()}},
+        {"$set": {"is_published": new_status, "updated_at": datetime.now(UTC)}},
         return_document=True
     )
     return _doc_to_resource(result)

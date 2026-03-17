@@ -4,7 +4,7 @@ Gestion des tokens sécurisés et du changement de mot de passe.
 """
 import os
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from fastapi import HTTPException, status
 from models import PasswordResetToken
@@ -38,7 +38,7 @@ async def request_reset(email: str, db: AsyncIOMotorDatabase) -> dict:
         # Create reset token (1h TTL)
         token = PasswordResetToken(
             user_id=user["id"],
-            expires_at=datetime.utcnow() + timedelta(hours=RESET_TOKEN_TTL_HOURS)
+            expires_at=datetime.now(UTC) + timedelta(hours=RESET_TOKEN_TTL_HOURS)
         )
         await db.password_reset_tokens.insert_one(token.model_dump())
 
@@ -68,7 +68,7 @@ async def _get_valid_token(token: str, db: AsyncIOMotorDatabase) -> dict:
             detail="Ce lien de réinitialisation est invalide ou a déjà été utilisé."
         )
 
-    if datetime.utcnow() > token_doc["expires_at"]:
+    if datetime.now(UTC) > token_doc["expires_at"]:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Ce lien de réinitialisation a expiré. Veuillez en demander un nouveau."

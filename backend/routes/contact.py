@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, HTTPException, BackgroundTasks, Depends
-from datetime import datetime
+from datetime import datetime, UTC
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from bson import ObjectId
 import logging
@@ -43,7 +43,7 @@ async def submit_contact(
         "subject": data.subject,
         "message": data.message,
         "ip_address": anonymize_ip(request.client.host if request.client else "unknown"),
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.now(UTC),
         "read": False,
         "status": "unread",
     }

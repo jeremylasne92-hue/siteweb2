@@ -8,6 +8,7 @@ from datetime import datetime, UTC
 from email_service import send_email, send_student_confirmation, send_student_interview, send_student_accepted, send_student_rejected
 from core.config import settings
 from utils.rate_limit import anonymize_ip, check_rate_limit
+from utils.date_helpers import format_date_csv, format_date_str_fr
 from utils.audit import log_admin_action
 from utils.geocode import geocode_city
 from routes.members import auto_seed_member_profile, deactivate_member_profile
@@ -162,9 +163,7 @@ async def export_student_applications(
     writer = csv.writer(output)
     writer.writerow(["ID", "Nom", "Email", "Téléphone", "Ville", "École", "Formation", "Compétences", "Disponibilité", "Date début souhaitée", "Statut", "Message", "Notes admin", "Date candidature"])
     for a in applications:
-        created = a.get("created_at", "")
-        if hasattr(created, "isoformat"):
-            created = created.isoformat()
+        created = format_date_csv(a.get("created_at"))
         skills = a.get("skills", [])
         if isinstance(skills, list):
             skills = ", ".join(skills)
@@ -180,7 +179,7 @@ async def export_student_applications(
             _sanitize_csv_cell(a.get("study_field", "")),
             _sanitize_csv_cell(skills),
             _sanitize_csv_cell(availability_label),
-            _sanitize_csv_cell(a.get("start_date", "")),
+            _sanitize_csv_cell(format_date_str_fr(a.get("start_date", ""))),
             _sanitize_csv_cell(a.get("status", "pending")),
             _sanitize_csv_cell(a.get("message", "")),
             _sanitize_csv_cell(a.get("admin_notes", "")),

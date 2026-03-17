@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from server import app
 from routes.auth import get_db, require_admin, get_current_user
 from models import User, UserRole
-from datetime import datetime
+from datetime import datetime, UTC
 
 client = TestClient(app)
 
@@ -126,7 +126,7 @@ ADMIN_USER = User(
     username="admin",
     email="admin@echo.fr",
     role=UserRole.ADMIN,
-    created_at=datetime.utcnow(),
+    created_at=datetime.now(UTC),
 )
 
 REGULAR_USER = User(
@@ -134,7 +134,7 @@ REGULAR_USER = User(
     username="testuser",
     email="john@example.com",
     role=UserRole.USER,
-    created_at=datetime.utcnow(),
+    created_at=datetime.now(UTC),
 )
 
 
@@ -192,7 +192,7 @@ def test_get_my_candidatures():
     db = MagicMock()
     fake_docs = [
         {"id": "c1", "name": "John Doe", "email": "john@example.com", "project": "cognisphere",
-         "skills": "React", "message": "Motivation", "status": "pending", "created_at": datetime.utcnow()},
+         "skills": "React", "message": "Motivation", "status": "pending", "created_at": datetime.now(UTC)},
     ]
 
     class AsyncCursorMock:
@@ -435,7 +435,7 @@ def test_export_csv_contains_experience_level():
         {"id": "c1", "name": "Test", "email": "t@t.com", "project": "cognisphere",
          "skills": "React", "message": "Msg", "portfolio_url": None,
          "creative_interests": None, "experience_level": "professional",
-         "status": "pending", "status_note": "", "created_at": datetime.utcnow()},
+         "status": "pending", "status_note": "", "created_at": datetime.now(UTC)},
     ]
 
     class AsyncCursorMock:

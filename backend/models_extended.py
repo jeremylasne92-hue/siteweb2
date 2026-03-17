@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, UTC
 import uuid
 from enum import Enum
 
@@ -22,7 +22,7 @@ class Thematic(BaseModel):
     description: str
     image_url: Optional[str] = None
     order: int = 0  # For sorting multiple thematics
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class ResourceType(str, Enum):
@@ -44,7 +44,7 @@ class Resource(BaseModel):
     image_url: Optional[str] = None
     author: Optional[str] = None
     order: int = 0
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class Actor(BaseModel):
@@ -54,4 +54,4 @@ class Actor(BaseModel):
     photo_url: Optional[str] = None
     bio: Optional[str] = None
     order: int = 0
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

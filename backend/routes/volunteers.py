@@ -4,10 +4,11 @@ from pymongo.errors import PyMongoError
 from models import VolunteerApplication, VolunteerApplicationRequest, VolunteerStatusUpdate, VolunteerBatchStatusUpdate, VolunteerEditUpdate, User
 from routes.auth import get_db, require_admin, get_current_user
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from datetime import datetime
+from datetime import datetime, UTC
 from email_service import send_email, send_volunteer_confirmation, send_volunteer_interview, send_volunteer_accepted, send_volunteer_rejected
 from core.config import settings
 from utils.rate_limit import anonymize_ip, check_rate_limit
+from utils.date_helpers import format_date_csv
 from utils.audit import log_admin_action
 from utils.geocode import geocode_city
 from routes.members import auto_seed_member_profile, deactivate_member_profile
@@ -149,9 +150,7 @@ async def export_volunteer_applications(
     writer = csv.writer(output)
     writer.writerow(["id", "name", "email", "phone", "city", "skills", "experience_level", "availability", "motivation", "message", "status", "status_note", "created_at"])
     for a in applications:
-        created = a.get("created_at", "")
-        if hasattr(created, "isoformat"):
-            created = created.isoformat()
+        created = format_date_csv(a.get("created_at"))
         skills = a.get("skills", [])
         if isinstance(skills, list):
             skills = ", ".join(skills)
@@ -195,7 +194,7 @@ async def edit_volunteer_application(
     update_fields = data.model_dump(exclude_none=True)
     if not update_fields:
         raise HTTPException(status_code=400, detail="Aucun champ à mettre à jour")
-    update_fields["updated_at"] = datetime.utcnow()
+    update_fields["updated_at"] = datetime.now(UTC)
 
     # Re-geocode if city changed
     if "city" in update_fields:
@@ -223,7 +222,7 @@ async def update_volunteer_status(
     db: AsyncIOMotorDatabase = Depends(get_db),
 ):
     """Update a volunteer application status (admin only)."""
-    update_fields = {"status": data.status, "updated_at": datetime.utcnow()}
+    update_fields = {"status": data.status, "updated_at": datetime.now(UTC)}
     if data.status_note is not None:
         update_fields["status_note"] = data.status_note
     result = await db.volunteer_applications.update_one(
@@ -271,7 +270,7 @@ async def batch_update_volunteer_status(
     db: AsyncIOMotorDatabase = Depends(get_db),
 ):
     """Batch update volunteer application statuses (admin only)."""
-    update_fields = {"status": data.status, "updated_at": datetime.utcnow()}
+    update_fields = {"status": data.status, "updated_at": datetime.now(UTC)}
     if data.status_note is not None:
         update_fields["status_note"] = data.status_note
     result = await db.volunteer_applications.update_many(

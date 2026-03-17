@@ -35,7 +35,7 @@ class User(BaseModel):
     role: UserRole = UserRole.USER
     is_2fa_enabled: bool = False
     totp_secret: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     last_login: Optional[datetime] = None
     email_opt_out: bool = False
     bio: Optional[str] = None
@@ -86,7 +86,7 @@ class UserSession(BaseModel):
     user_id: str
     session_token: str = Field(default_factory=lambda: secrets.token_urlsafe(32))
     expires_at: datetime
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class PasswordResetToken(BaseModel):
@@ -94,7 +94,7 @@ class PasswordResetToken(BaseModel):
     user_id: str
     expires_at: datetime
     used: bool = False
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class Episode(BaseModel):
@@ -107,8 +107,8 @@ class Episode(BaseModel):
     thumbnail_url: str
     video_url: str  # Local path or future S3 URL
     is_published: bool = False
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     model_config = ConfigDict(json_schema_extra={
         "example": {
@@ -133,7 +133,7 @@ class VideoProgress(BaseModel):
     current_time: float  # seconds
     duration: float  # seconds
     progress_percent: float
-    last_updated: datetime = Field(default_factory=datetime.utcnow)
+    last_updated: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class VideoProgressCreate(BaseModel):
@@ -151,7 +151,7 @@ class EpisodeOptIn(BaseModel):
     user_id: str
     season: int
     episode: int
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class EpisodeOptInRequest(BaseModel):
@@ -173,7 +173,7 @@ class TechCandidature(BaseModel):
     creative_interests: Optional[str] = None
     experience_level: Optional[Literal["professional", "student", "self_taught", "motivated"]] = None
     ip_address: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: Optional[datetime] = None
 
 
@@ -245,8 +245,8 @@ class Event(BaseModel):
     booking_url: Optional[str] = None
     organizer: Optional[str] = None
     is_published: bool = True
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class EventCreate(BaseModel):
@@ -269,7 +269,7 @@ class Pending2FA(BaseModel):
     code: str  # 6-digit code
     attempts: int = 0
     expires_at: datetime
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class ContactMessageRequest(BaseModel):
@@ -295,7 +295,7 @@ class ContactMessage(BaseModel):
     subject: str
     message: str
     ip_address: str  # anonymisé
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     read: bool = False
     status: Literal["unread", "read", "treated"] = "unread"
     admin_note: Optional[str] = None
@@ -316,7 +316,7 @@ class AnalyticsEventCreate(BaseModel):
 
 class AnalyticsEvent(AnalyticsEventCreate):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 # --- Volunteer Application Models ---
@@ -339,7 +339,7 @@ class VolunteerApplication(BaseModel):
     status_note: Optional[str] = None
     admin_notes: Optional[str] = None  # Notes internes admin (non visibles par le candidat)
     ip_address: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: Optional[datetime] = None
 
 
@@ -408,8 +408,8 @@ class StudentApplicationRequest(BaseModel):
         if v is None:
             return v
         import re
-        if not re.match(r"^\d{4}-(0[1-9]|1[0-2])(-(0[1-9]|[12]\d|3[01]))?$", v):
-            raise ValueError("Le format doit être YYYY-MM-DD (ex: 2026-09-10) ou YYYY-MM")
+        if not re.match(r"^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$", v):
+            raise ValueError("Le format doit être YYYY-MM-DD (ex: 2026-09-10)")
         return v
 
 
