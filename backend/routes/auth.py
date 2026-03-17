@@ -148,9 +148,13 @@ async def login(request: Request, credentials: UserLogin, response: Response, db
     else:
         logger.warning("RECAPTCHA_SECRET_KEY not set — skipping server-side verification in dev")
     
-    # Find user
+    # H1 — Timing attack protection: always run bcrypt even if user not found
+    DUMMY_HASH = hash_password("DummyP@ss1")
     user_doc = await db.users.find_one({"username": credentials.username})
-    if not user_doc or not verify_password(credentials.password, user_doc.get("password_hash", "")):
+    stored_hash = user_doc.get("password_hash", DUMMY_HASH) if user_doc else DUMMY_HASH
+    password_ok = verify_password(credentials.password, stored_hash)
+
+    if not user_doc or not password_ok:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials"

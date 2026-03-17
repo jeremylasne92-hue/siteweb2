@@ -95,6 +95,8 @@ async def send_password_reset(email: str, reset_link: str) -> bool:
 
 async def send_email(email: str, subject: str, message: str, user_id: str = None, db=None) -> bool:
     """Generic email sender for notifications. Checks email_opt_out if user_id and db provided."""
+    import html as html_mod
+
     # Check opt-out for non-transactional emails
     if user_id and db:
         user = await db.users.find_one({"id": user_id}, {"email_opt_out": 1})
@@ -116,7 +118,8 @@ async def send_email(email: str, subject: str, message: str, user_id: str = None
             f'Pour vous desinscrire des emails : '
             f'<a href="{base}/api/auth/unsubscribe/{user_id}?token={token}" style="color:#D4AF37;">cliquez ici</a></p>'
         )
-    html = f"<div style='white-space:pre-line;'>{message}</div>{unsubscribe}"
+    safe_message = html_mod.escape(message)
+    html = f"<div style='white-space:pre-line;'>{safe_message}</div>{unsubscribe}"
     if _use_sendgrid():
         return await _send_via_sendgrid(email, subject, html)
     return await _log_email(email, subject, message)
@@ -133,10 +136,12 @@ PROJECT_LABELS = {
 
 async def send_candidature_confirmation(email: str, name: str, project: str) -> bool:
     """Send confirmation email when a candidature is submitted."""
+    import html as html_mod
     label = PROJECT_LABELS.get(project, project)
+    safe_name = html_mod.escape(name)
     subject = f"Candidature reçue — {label}"
     html = (
-        f"<h2>Bonjour {name},</h2>"
+        f"<h2>Bonjour {safe_name},</h2>"
         f"<p>Nous avons bien reçu votre candidature pour le projet <strong>{label}</strong> "
         f"et nous vous remercions pour l'intérêt que vous portez au Mouvement ECHO.</p>"
         f"<p>Notre équipe prendra le temps d'examiner votre profil avec attention. "
@@ -152,9 +157,11 @@ async def send_candidature_confirmation(email: str, name: str, project: str) -> 
 
 async def send_candidature_interview(email: str, name: str, booking_url: str) -> bool:
     """Send interview invitation with a booking link."""
+    import html as html_mod
+    safe_name = html_mod.escape(name)
     subject = "Invitation à un entretien — Mouvement ECHO"
     html = (
-        f"<h2>Bonjour {name},</h2>"
+        f"<h2>Bonjour {safe_name},</h2>"
         f"<p>Bonne nouvelle ! Votre candidature a retenu toute notre attention "
         f"et nous aimerions échanger avec vous lors d'un court entretien.</p>"
         f"<p>Cet échange nous permettra de mieux comprendre vos motivations "
@@ -176,10 +183,12 @@ async def send_candidature_interview(email: str, name: str, booking_url: str) ->
 
 async def send_candidature_accepted(email: str, name: str, project: str) -> bool:
     """Send acceptance notification email."""
+    import html as html_mod
     label = PROJECT_LABELS.get(project, project)
+    safe_name = html_mod.escape(name)
     subject = f"Bienvenue dans l'équipe — {label}"
     html = (
-        f"<h2>Bonjour {name},</h2>"
+        f"<h2>Bonjour {safe_name},</h2>"
         f"<p>Nous avons le plaisir de vous confirmer que votre candidature pour "
         f"le projet <strong>{label}</strong> a été retenue. "
         f"Bienvenue dans l'aventure ECHO !</p>"
@@ -196,14 +205,17 @@ async def send_candidature_accepted(email: str, name: str, project: str) -> bool
 
 async def send_candidature_rejected(email: str, name: str, status_note: str | None) -> bool:
     """Send rejection notification with optional reason."""
+    import html as html_mod
+    safe_name = html_mod.escape(name)
     subject = "Retour sur votre candidature — Mouvement ECHO"
     reason_html = ""
     reason_text = ""
     if status_note:
-        reason_html = f"<p><strong>Motif :</strong> {status_note}</p>"
+        safe_note = html_mod.escape(status_note)
+        reason_html = f"<p><strong>Motif :</strong> {safe_note}</p>"
         reason_text = f"\nMotif : {status_note}"
     html = (
-        f"<h2>Bonjour {name},</h2>"
+        f"<h2>Bonjour {safe_name},</h2>"
         f"<p>Nous tenons à vous remercier pour le temps que vous avez consacré "
         f"à votre candidature auprès du Mouvement ECHO.</p>"
         f"<p>Après un examen attentif de votre profil, nous ne sommes malheureusement "
@@ -226,9 +238,11 @@ async def send_candidature_rejected(email: str, name: str, status_note: str | No
 
 async def send_volunteer_confirmation(email: str, name: str) -> bool:
     """Send confirmation email when a volunteer application is submitted."""
+    import html as html_mod
+    safe_name = html_mod.escape(name)
     subject = "Candidature bénévole reçue — Mouvement ECHO"
     html = (
-        f"<h2>Bonjour {name},</h2>"
+        f"<h2>Bonjour {safe_name},</h2>"
         f"<p>Nous avons bien reçu votre candidature bénévole "
         f"et nous vous remercions pour l'intérêt que vous portez au Mouvement ECHO.</p>"
         f"<p>Notre équipe prendra le temps d'examiner votre profil avec attention. "
@@ -244,9 +258,11 @@ async def send_volunteer_confirmation(email: str, name: str) -> bool:
 
 async def send_volunteer_interview(email: str, name: str, booking_url: str) -> bool:
     """Send interview invitation with a booking link for volunteer applicants."""
+    import html as html_mod
+    safe_name = html_mod.escape(name)
     subject = "Invitation à un entretien — Mouvement ECHO"
     html = (
-        f"<h2>Bonjour {name},</h2>"
+        f"<h2>Bonjour {safe_name},</h2>"
         f"<p>Bonne nouvelle ! Votre candidature bénévole a retenu toute notre attention "
         f"et nous aimerions échanger avec vous lors d'un court entretien.</p>"
         f"<p>Cet échange nous permettra de mieux comprendre vos motivations "
@@ -268,9 +284,11 @@ async def send_volunteer_interview(email: str, name: str, booking_url: str) -> b
 
 async def send_volunteer_accepted(email: str, name: str) -> bool:
     """Send acceptance notification email for volunteer applicants."""
+    import html as html_mod
+    safe_name = html_mod.escape(name)
     subject = "Bienvenue dans l'équipe — Mouvement ECHO"
     html = (
-        f"<h2>Bonjour {name},</h2>"
+        f"<h2>Bonjour {safe_name},</h2>"
         f"<p>Nous avons le plaisir de vous confirmer que votre candidature bénévole "
         f"a été retenue. Bienvenue dans l'aventure ECHO !</p>"
         f"<p>Un membre de notre équipe vous contactera très prochainement "
@@ -286,14 +304,17 @@ async def send_volunteer_accepted(email: str, name: str) -> bool:
 
 async def send_volunteer_rejected(email: str, name: str, status_note: str | None) -> bool:
     """Send rejection notification with optional reason for volunteer applicants."""
+    import html as html_mod
+    safe_name = html_mod.escape(name)
     subject = "Retour sur votre candidature — Mouvement ECHO"
     reason_html = ""
     reason_text = ""
     if status_note:
-        reason_html = f"<p><strong>Motif :</strong> {status_note}</p>"
+        safe_note = html_mod.escape(status_note)
+        reason_html = f"<p><strong>Motif :</strong> {safe_note}</p>"
         reason_text = f"\nMotif : {status_note}"
     html = (
-        f"<h2>Bonjour {name},</h2>"
+        f"<h2>Bonjour {safe_name},</h2>"
         f"<p>Nous tenons à vous remercier pour le temps que vous avez consacré "
         f"à votre candidature bénévole auprès du Mouvement ECHO.</p>"
         f"<p>Après un examen attentif de votre profil, nous ne sommes malheureusement "

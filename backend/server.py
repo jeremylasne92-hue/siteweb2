@@ -74,6 +74,7 @@ async def lifespan(app: FastAPI):
     try:
         await db.user_sessions.create_index("session_token")
         await db.user_sessions.create_index("user_id")
+        await db.user_sessions.create_index("expires_at", expireAfterSeconds=0)
         await db.users.create_index("email")
         await db.users.create_index("username")
         await db.users.create_index("id", unique=True)

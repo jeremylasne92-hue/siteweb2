@@ -22,8 +22,8 @@ async def get_pending_counts(
         recent_actions,
     ) = await asyncio.gather(
         db.partners.count_documents({"status": "pending"}),
-        db.candidatures.count_documents({"status": "pending"}),
-        db.volunteers.count_documents({"status": "pending"}),
+        db.tech_candidatures.count_documents({"status": "pending"}),
+        db.volunteer_applications.count_documents({"status": "pending"}),
         db.member_profiles.count_documents({"membership_status": "pending"}),
         db.contact_messages.count_documents(
             {"$or": [{"status": "unread"}, {"status": {"$exists": False}}]}

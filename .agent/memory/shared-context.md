@@ -6,15 +6,22 @@
 
 ## 📋 État du Projet
 
-**Dernière mise à jour** : 2026-03-16
-**Phase actuelle** : Post-Epics — Pré-lancement (lancement 20 mars 2026)
-**Statut** : ✅ Opérationnel — Code review complète + 3 fixes critiques
-**Dernier milestone** : Code review 5 agents (3 issues corrigées : TLD whitelist, CityAutocomplete, honeypot Contact)
+**Dernière mise à jour** : 2026-03-17
+**Phase actuelle** : Pré-lancement J-3 (lancement 20 mars 2026)
+**Statut** : ✅ Opérationnel — Audit sécurité + cookie consent + déploiement infra en cours
+**Dernier milestone** : Audit externe vérifié (4 fixes appliqués, 6 faux positifs rejetés) + bandeau cookies RGPD intégré
 
 ### ⚠️ Rappels Pré-Lancement (20 mars 2026)
+- [x] Bandeau cookies RGPD intégré + tracking conditionné au consentement
+- [x] Audit sécurité : XSS fix, CSP whitelist, geo validation, deps nettoyées
+- [x] Backend déployé sur Render (echo-api-kfre.onrender.com)
+- [x] MongoDB Atlas M0 configuré (echo-cluster, Paris)
+- [ ] **CNAME DNS** : api.mouvementecho.fr → echo-api-kfre.onrender.com (OVH)
+- [ ] **Custom domain** dans Render Dashboard
+- [ ] **GOOGLE_CLIENT_SECRET** dans Render env vars
+- [ ] Build de production (`npm run build`) + FTP upload `dist/` sur OVH
+- [ ] Recette manuelle (5 parcours utilisateur)
 - [ ] **Revoir le Dashboard Partenaire** avant la sortie officielle (UX, données, design)
-- [ ] Build de production (`npm run build`)
-- [ ] Déploiement final
 
 ---
 
@@ -63,8 +70,8 @@ backend/
 ```
 frontend/src/
 ├── hooks/
-│   ├── useAnalytics.ts    # Tracking GA4 + interne (SendBeacon)
-│   └── usePageTracking.ts # Tracking de navigation GA4
+│   ├── useAnalytics.ts    # Tracking GA4 + interne (SendBeacon) — conditionné à hasAnalyticsConsent()
+│   └── usePageTracking.ts # Tracking de navigation GA4 — conditionné à hasAnalyticsConsent()
 └── components/partners/
     ├── PartnerAnalytics.tsx  # Graphiques Recharts (vues/clics 30j)
     ├── PartnerModal.tsx      # Fiche partenaire — tracking vues + clics site
@@ -156,6 +163,9 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-17 | Audit externe pré-lancement : 16 findings analysés, 8 confirmés, 6 faux positifs (37.5%). 4 fixes appliqués : (1) XSS innerHTML→textContent Mouvement.tsx, (2) CSP connect-src whitelist (API, Nominatim, GA4, reCAPTCHA), (3) validation bornes géo partners.py, (4) requirements.txt nettoyé (77→59 deps, dev séparé). 4 reportés S+1 (.catch silencieux, console.log, token TTL, is_active). Niveau STANDARD. | Claude Code (Opus 4.6) |
+| 2026-03-17 | Cookie consent RGPD intégré : CookieBanner monté dans App.tsx, tracking GA4+interne conditionné à hasAnalyticsConsent() dans useAnalytics et usePageTracking, révocation GA4 + suppression cookies _ga* sur refus, lien "Gérer mes cookies" dans footer déjà câblé. Niveau STANDARD. | Claude Code (Opus 4.6) |
+| 2026-03-17 | Data quality + déploiement : normalisation emails/skills/phones (normalize.py), cascade deletes (member_profiles, volunteer_applications, contact_messages), 3 index analytiques, .htaccess SPA+HTTPS+security headers, smoke test script, pages légales (Render+Atlas hébergeurs), bcrypt downgrade 4.0.1, python-slugify ajouté. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-16 | Sécurité + CSP : (1) CSP frame-src étendu avec youtube-nocookie.com + youtube.com pour permettre l'embed bande-annonce. (2) Clé SendGrid retirée de backend/.env + fichier retiré du tracking git (git rm --cached). (3) backend/.env ajouté explicitement au .gitignore. Clé à révoquer dans dashboard SendGrid. .env.example déjà complet avec toutes les variables documentées. Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-16 | Mouvement page : (1) Plan 3 phases paragraphe simplifié ("Notre vision suit une progression en trois phases, chacune portée par une saison de la série ECHO."). (2) Tailles agrandies (titres 4xl→6xl, texte base→lg). (3) "Le Plan" ajouté au sous-menu Mouvement dans Header.tsx. (4) Conclusion mise à jour (ajout "s'informer"). Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-16 | Readiness report pré-lancement : score 78/100, GO CONDITIONNEL. 4 blocages critiques : (1) clé SendGrid exposée dans .env — révoquer immédiatement ✅ FAIT, (2) .env production non configuré (OAuth placeholders, CORS dev, ENVIRONMENT absent, secrets par défaut), (3) CSP bloque YouTube iframes ✅ FAIT, (4) données de test non nettoyées. Rapport complet : `_bmad-output/implementation-artifacts/readiness-report-20260316.md`. Niveau STANDARD. | Claude Code (Sonnet 4.6) |
@@ -223,6 +233,9 @@ frontend/src/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-17 | 🟡 STANDARD | Audit externe vérifié (16 findings → 4 fixes: XSS, CSP, géo, deps) | ~30min | Claude Code (Opus 4.6) |
+| 2026-03-17 | 🟡 STANDARD | Cookie consent RGPD (bandeau + guards tracking + révocation GA4) | ~20min | Claude Code (Opus 4.6) |
+| 2026-03-17 | 🟡 STANDARD | Data quality (normalize.py, cascades, indexes) + déploiement infra (.htaccess, smoke test, legal pages, deps fixes) | ~45min | Claude Code (Opus 4.6) |
 | 2026-03-16 | 🟡 STANDARD | Code review 5 agents + 3 fixes (TLD whitelist, CityAutocomplete, honeypot) + docs (README, source-tree) | ~30min | Claude Code (Opus 4.6) |
 | 2026-03-16 | 🟡 STANDARD | Audit validation formulaires (21 fichiers, email/phone/postal, accents) | ~25min | Claude Code (Opus 4.6) |
 | 2026-03-15 | 🟢 HOTFIX | Carte membres : fix marqueurs superposés (markerOffsets.ts, popups enrichis, auto-geocoding, batch re-geocoding) | ~40min | Claude Code (Opus 4.6) |

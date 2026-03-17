@@ -491,8 +491,6 @@ async def update_my_partner_account(
             img.verify()
         except Exception:
             raise HTTPException(status_code=400, detail="Le fichier n'est pas une image valide")
-        await logo.seek(0)
-
         from pathlib import Path as FilePath
         upload_dir = FilePath(__file__).parent.parent / "uploads" / "partners" / "logos"
         upload_dir.mkdir(parents=True, exist_ok=True)
@@ -503,7 +501,7 @@ async def update_my_partner_account(
         file_path = upload_dir / safe_filename
 
         with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(logo.file, buffer)
+            buffer.write(contents)
             
         update_data["logo_url"] = f"/api/uploads/partners/logos/{safe_filename}"
     

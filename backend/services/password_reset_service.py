@@ -109,6 +109,9 @@ async def reset_password(token: str, new_password: str, new_password_confirm: st
         {"$set": {"used": True}}
     )
 
+    # Invalidate all existing sessions (forces re-login on all devices)
+    await db.user_sessions.delete_many({"user_id": token_doc["user_id"]})
+
     logger.info(f"Password reset completed for user {token_doc['user_id']}")
 
     return {"message": "Mot de passe réinitialisé avec succès."}
