@@ -15,7 +15,7 @@ from pymongo.errors import PyMongoError
 from pathlib import Path
 
 # Import routes
-from routes import auth, episodes, progress, videos, users, thematics, resources, partners, candidatures, events, analytics, contact, volunteers, members, mediatheque
+from routes import auth, episodes, progress, videos, users, thematics, resources, partners, candidatures, events, analytics, contact, volunteers, members, mediatheque, students
 from routes.admin_dashboard import router as admin_dashboard_router
 
 ROOT_DIR = Path(__file__).parent
@@ -47,6 +47,7 @@ async def lifespan(app: FastAPI):
         await db.analytics_events.create_index("created_at", expireAfterSeconds=31536000)
         await db.password_reset_tokens.create_index("created_at", expireAfterSeconds=86400)
         await db.volunteer_applications.create_index("created_at", expireAfterSeconds=94608000)
+        await db.student_applications.create_index("created_at", expireAfterSeconds=94608000)  # 3 years RGPD
     except Exception as e:
         logger.warning(f"TTL index creation: {e}")
 
@@ -99,6 +100,9 @@ async def lifespan(app: FastAPI):
         await db.volunteer_applications.create_index("email")
         await db.volunteer_applications.create_index("status")
         await db.volunteer_applications.create_index([("ip_address", 1), ("created_at", 1)])
+        await db.student_applications.create_index("email")
+        await db.student_applications.create_index("status")
+        await db.student_applications.create_index([("ip_address", 1), ("created_at", 1)])
         await db.contact_messages.create_index([("ip_address", 1), ("created_at", 1)])
         await db.pending_2fa.create_index("created_at", expireAfterSeconds=600)
     except Exception as e:
@@ -147,6 +151,7 @@ api_router.include_router(events.router)
 api_router.include_router(analytics.router)
 api_router.include_router(contact.router)
 api_router.include_router(volunteers.router)
+api_router.include_router(students.router)
 api_router.include_router(members.router)
 api_router.include_router(members.admin_router)
 api_router.include_router(admin_dashboard_router)

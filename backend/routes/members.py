@@ -182,7 +182,7 @@ class StatusUpdate(BaseModel):
 
 
 class SeedRequest(BaseModel):
-    candidature_type: Literal["tech", "volunteer", "scenariste"]
+    candidature_type: Literal["tech", "volunteer", "scenariste", "student"]
 
 
 @admin_router.get("/")
@@ -485,6 +485,7 @@ async def admin_seed_profile(
         "tech": "tech_candidatures",
         "volunteer": "volunteer_applications",
         "scenariste": "tech_candidatures",
+        "student": "student_applications",
     }
     collection = collection_map.get(body.candidature_type, "volunteer_applications")
     candidature = await db[collection].find_one({"id": candidature_id})
