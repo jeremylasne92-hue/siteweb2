@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, Request
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -192,6 +192,35 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization"],
 )
+
+
+@app.middleware("http")
+async def csrf_origin_check(request: Request, call_next):
+    """Validate Origin header on mutating requests to prevent CSRF attacks."""
+    if request.method in ("POST", "PUT", "PATCH", "DELETE"):
+        # Exempt OAuth callback (redirect doesn't send Origin)
+        if request.url.path == "/api/auth/google/callback":
+            return await call_next(request)
+
+        origin = request.headers.get("origin")
+        referer = request.headers.get("referer")
+        allowed_origins = settings.CORS_ORIGINS.split(",")
+
+        if origin:
+            allowed = any(origin == o or origin.startswith(o) for o in allowed_origins)
+            if not allowed:
+                from starlette.responses import JSONResponse as _JSONResponse
+                return _JSONResponse(status_code=403, content={"detail": "Origin not allowed"})
+        elif referer:
+            from urllib.parse import urlparse
+            ref_origin = f"{urlparse(referer).scheme}://{urlparse(referer).netloc}"
+            allowed = any(ref_origin == o for o in allowed_origins)
+            if not allowed:
+                from starlette.responses import JSONResponse as _JSONResponse
+                return _JSONResponse(status_code=403, content={"detail": "Origin not allowed"})
+        # If neither Origin nor Referer → allow (server-to-server, API clients)
+
+    return await call_next(request)
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: StarletteRequest, call_next):

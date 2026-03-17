@@ -67,6 +67,7 @@ class UserRegister(BaseModel):
     password_confirm: str
     interests: list[str] = Field(default_factory=list)
     age_consent: bool = False
+    captcha_token: str = ""
 
 
 class UserLoginLocal(BaseModel):

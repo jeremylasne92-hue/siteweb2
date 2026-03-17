@@ -85,6 +85,38 @@ async def require_admin(current_user: User = Depends(get_current_user)) -> User:
 async def register(request: Request, user_data: UserRegister, db: AsyncIOMotorDatabase = Depends(get_db)):
     """Register new user with email/password (Service Pattern)."""
     await check_rate_limit(db, request, "register", max_requests=5, window_minutes=15)
+
+    # Server-side reCAPTCHA v3 verification
+    recaptcha_secret = settings.RECAPTCHA_SECRET_KEY
+    if recaptcha_secret:
+        if not user_data.captcha_token:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Captcha token required"
+            )
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as http_client:
+                recaptcha_resp = await http_client.post(
+                    "https://www.google.com/recaptcha/api/siteverify",
+                    data={"secret": recaptcha_secret, "response": user_data.captcha_token}
+                )
+                recaptcha_data = recaptcha_resp.json()
+                if not recaptcha_data.get("success") or recaptcha_data.get("score", 0) < 0.5:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="Captcha verification failed"
+                    )
+        except HTTPException:
+            raise
+        except Exception:
+            logger.error("reCAPTCHA API unreachable — blocking registration for security")
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Security verification service temporarily unavailable. Please retry."
+            )
+    else:
+        logger.warning("RECAPTCHA_SECRET_KEY not set — skipping server-side verification in dev")
+
     try:
         result = await register_user(user_data, db)
     except PyMongoError as e:
@@ -609,6 +641,19 @@ async def unsubscribe_emails(
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="User not found")
     return {"message": "Vous etes desinscrits des emails non-transactionnels."}
+
+
+@router.post("/logout-all")
+async def logout_all(
+    request: Request,
+    db: AsyncIOMotorDatabase = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Déconnecte toutes les sessions de l'utilisateur."""
+    result = await db.user_sessions.delete_many({"user_id": current_user.id})
+    response = JSONResponse(content={"message": f"{result.deleted_count} session(s) fermée(s)"})
+    response.delete_cookie("session_token", path="/", httponly=True, samesite="lax")
+    return response
 
 
 @router.post("/logout")
