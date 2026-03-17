@@ -7,7 +7,9 @@ import hmac
 import hashlib
 import time
 import secrets
-from models import User, UserSession
+from models import User, UserSession, Pending2FA
+from auth_utils import generate_2fa_code
+from email_service import send_2fa_code
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
 from core.config import settings
@@ -133,7 +135,36 @@ async def google_callback_service(code: str, db) -> dict:
         )
         await db.users.insert_one(user.model_dump())
 
-    # 4. Create Session
+    # 4. Check if user has 2FA enabled
+    if user.is_2fa_enabled:
+        code = generate_2fa_code()
+
+        # Delete old pending 2FA
+        await db.pending_2fa.delete_many({"user_id": user.id})
+
+        pending_2fa = Pending2FA(
+            user_id=user.id,
+            code=code,
+            expires_at=datetime.utcnow() + timedelta(minutes=10)
+        )
+        await db.pending_2fa.insert_one(pending_2fa.model_dump())
+
+        # Send email
+        await send_2fa_code(user.email, code)
+        logger.info(f"2FA code sent to {user.email} (OAuth login)")
+
+        return {
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "role": user.role
+            },
+            "requires_2fa": True,
+            "message": "Code 2FA envoyé par email"
+        }
+
+    # 5. Create Session (only if 2FA not enabled)
     session = UserSession(
         user_id=user.id,
         expires_at=datetime.utcnow() + timedelta(days=7)
@@ -149,7 +180,7 @@ async def google_callback_service(code: str, db) -> dict:
             "picture": user.picture
         },
         "session_token": session.session_token,
-        "requires_2fa": False  # Google OAuth proves identity
+        "requires_2fa": False
     }
 
 
