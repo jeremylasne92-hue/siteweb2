@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
     Shield, Users, Calendar, Download, FileText, Heart,
-    Clock, ChevronRight, AlertTriangle, MessageSquare, BookOpen
+    Clock, ChevronRight, AlertTriangle, MessageSquare, BookOpen, GraduationCap
 } from 'lucide-react';
 import { API_URL, PARTNERS_API, CANDIDATURES_API } from '../config/api';
 
@@ -113,6 +113,13 @@ export default function AdminDashboard() {
             badgeColor: '#10B981',
             notificationCount: pendingVolunteerCount,
             notificationColor: 'bg-amber-500',
+        },
+        {
+            title: 'Stages & Alternance',
+            description: 'G\u00e9rer les candidatures stages et alternance',
+            icon: <GraduationCap size={24} />,
+            href: '/admin/students',
+            active: true,
         },
         {
             title: 'Membres',
