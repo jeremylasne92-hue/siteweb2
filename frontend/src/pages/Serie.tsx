@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Play, BookOpen, Facebook, Linkedin, Twitter, Flame, Mountain, Star, Instagram, Palette, Gamepad2, Bell, BellRing, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
 import { YouTubeEmbed } from '../components/ui/YouTubeEmbed';
 import { Helmet } from 'react-helmet-async';
 import { SEO } from '../components/seo/SEO';
 import { ScenaristApplicationForm } from '../components/forms/ScenaristApplicationForm';
+import { StudentApplicationForm } from '../components/forms/StudentApplicationForm';
 import { useAuthStore } from '../features/auth/store';
 import { API_URL } from '../config/api';
 import { useAnalytics } from '../hooks/useAnalytics';
@@ -140,6 +140,7 @@ export function Serie() {
     const [activeSeason, setActiveSeason] = useState(1);
     const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null);
     const [showScenaristForm, setShowScenaristForm] = useState(false);
+    const [showStudentForm, setShowStudentForm] = useState(false);
     const { trackEvent } = useAnalytics();
     const [myOptins, setMyOptins] = useState<{ season: number; episode: number }[]>([]);
     const [optinLoading, setOptinLoading] = useState(false);
@@ -836,15 +837,12 @@ export function Serie() {
                                     Production d'épisodes en partenariat avec les écoles locales.
                                 </p>
 
-                                <Link to="/contact">
-                                    <Button
-                                        variant="outline"
-                                        className="border-white/20 text-[#D1D5DB] hover:bg-white/10 hover:text-white text-sm w-full sm:w-auto"
-                                        onClick={() => trackEvent('cta_click', 'serie_stage_production')}
-                                    >
-                                        Nous contacter
-                                    </Button>
-                                </Link>
+                                <button
+                                    className="bg-[#D4AF37] text-[#0A0A0A] hover:bg-[#FFD700] hover:shadow-[0_0_24px_rgba(212,175,55,0.6)] px-6 py-3 text-sm font-bold tracking-widest uppercase rounded-lg transition-all w-full sm:w-auto"
+                                    onClick={() => setShowStudentForm(true)}
+                                >
+                                    Postuler
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -865,6 +863,24 @@ export function Serie() {
                             </button>
                         </div>
                         <ScenaristApplicationForm />
+                    </div>
+                </div>
+            )}
+
+            {/* MODALE CANDIDATURE STAGE PRODUCTION */}
+            {showStudentForm && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowStudentForm(false)}>
+                    <div
+                        className="bg-[#121212] border border-[#D4AF37]/30 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-serif text-white">Candidature Stage Production</h2>
+                            <button onClick={() => setShowStudentForm(false)} className="p-1 text-[#D1D5DB] hover:text-white transition-colors">
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <StudentApplicationForm />
                     </div>
                 </div>
             )}
