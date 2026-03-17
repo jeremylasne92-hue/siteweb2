@@ -10,7 +10,7 @@ interface PartnersHeroProps {
 
 export const PartnersHero: React.FC<PartnersHeroProps> = ({ onApplyClick }) => {
     return (
-        <section className="relative pt-32 pb-16 overflow-hidden">
+        <section id="rejoindre" className="relative pt-32 pb-16 overflow-hidden">
             {/* Background Effects */}
             <div className="absolute inset-0 bg-echo-darker z-0" />
             <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-echo-gold/10 rounded-full blur-[120px] -translate-y-1/2 pointer-events-none z-0" />

@@ -9,11 +9,11 @@ import { API_URL } from '../../config/api';
 import { sanitizePhone, isValidPhone, isValidEmail } from '../../utils/validation';
 
 const SKILL_GROUPS: Record<string, string[]> = {
-    "Image": ["Caméra / Cadrage", "Éclairage", "Photographie", "Drone"],
-    "Son": ["Prise de son", "Mixage", "Sound design"],
-    "Post-production": ["Montage vidéo", "Étalonnage", "Motion design", "VFX"],
-    "Régie & Logistique": ["Régie", "Direction de production", "Assistanat réalisation", "Décors & accessoires"],
-    "Communication": ["Réseaux sociaux", "Graphisme", "Rédaction", "Community management"],
+    "Image": ["Caméra / Cadrage", "Éclairage", "Photographie", "Drone", "Autre (Image)"],
+    "Son": ["Prise de son", "Mixage", "Sound design", "Autre (Son)"],
+    "Post-production": ["Montage vidéo", "Étalonnage", "Motion design", "VFX", "Autre (Post-production)"],
+    "Régie & Logistique": ["Régie", "Direction de production", "Assistant réalisateur", "Décors & accessoires", "Autre (Régie)"],
+    "Communication": ["Réseaux sociaux", "Graphisme", "Rédaction", "Community management", "Autre (Communication)"],
 };
 
 const AVAILABILITY_OPTIONS = [
@@ -296,10 +296,10 @@ export function StudentApplicationForm() {
                 <div>
                     <label className="block text-sm font-medium text-neutral-300 mb-1" htmlFor="start_date">Date de début souhaitée</label>
                     <input
-                        type="month"
+                        type="date"
                         id="start_date"
                         name="start_date"
-                        className="w-full bg-black/20 border border-white/10 rounded-md py-2 px-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-white/30 text-sm"
+                        className="w-full bg-black/20 border border-white/10 rounded-md py-2 px-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-white/30 text-sm [&::-webkit-calendar-picker-indicator]:invert"
                     />
                 </div>
 
@@ -323,7 +323,7 @@ export function StudentApplicationForm() {
                             { label: "Domaine d'études", value: summaryData.study_field },
                             { label: 'Compétences', value: selectedSkills.join(', ') },
                             { label: 'Disponibilité', value: AVAILABILITY_OPTIONS.find(o => o.value === availability)?.label },
-                            { label: 'Date de début', value: summaryData.start_date },
+                            { label: 'Date de début', value: summaryData.start_date ? new Date(summaryData.start_date).toLocaleDateString('fr-FR') : '' },
                         ].filter(item => item.value).map(item => (
                             <div key={item.label} className="flex items-start gap-2 px-4 py-2.5 rounded-lg bg-stone-800/50 border border-white/5">
                                 <span className="text-amber-500 font-semibold shrink-0 min-w-[120px]">{item.label}</span>

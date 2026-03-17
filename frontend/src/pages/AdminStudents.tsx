@@ -46,8 +46,8 @@ const AVAIL_LABELS: Record<string, string> = {
 const statusConfig: Record<StudentStatus, { label: string; color: string; icon: React.ReactNode }> = {
     pending: { label: 'En attente', color: '#F59E0B', icon: <Clock size={14} /> },
     entretien: { label: 'Entretien', color: '#3B82F6', icon: <Users size={14} /> },
-    accepted: { label: 'Accept\u00e9', color: '#10B981', icon: <CheckCircle2 size={14} /> },
-    rejected: { label: 'Rejet\u00e9', color: '#EF4444', icon: <XCircle size={14} /> },
+    accepted: { label: 'Accepté', color: '#10B981', icon: <CheckCircle2 size={14} /> },
+    rejected: { label: 'Rejeté', color: '#EF4444', icon: <XCircle size={14} /> },
 };
 
 const availConfig: Record<AvailabilityType, { label: string; color: string }> = {
@@ -147,7 +147,7 @@ export default function AdminStudents() {
                 credentials: 'include',
             });
             if (res.status === 401 || res.status === 403) {
-                setError('Acc\u00e8s refus\u00e9.');
+                setError('Accès refusé.');
                 return;
             }
             if (!res.ok) throw new Error('Erreur serveur');
@@ -217,7 +217,7 @@ export default function AdminStudents() {
     };
 
     const handleDelete = async (id: string) => {
-        if (!window.confirm("Supprimer cette candidature ? Cette action est irr\u00e9versible.")) return;
+        if (!window.confirm("Supprimer cette candidature ? Cette action est irréversible.")) return;
         setActionLoading(true);
         try {
             const res = await fetch(`${API_URL}/students/admin/${id}`, {
@@ -273,7 +273,7 @@ export default function AdminStudents() {
         // Validate phone before sending
         const phoneValue = editForm.phone as string | undefined;
         if (phoneValue && !isValidPhone(phoneValue)) {
-            setEditError('Num\u00e9ro de t\u00e9l\u00e9phone invalide.');
+            setEditError('Numéro de téléphone invalide.');
             return;
         }
 
@@ -316,7 +316,7 @@ export default function AdminStudents() {
                 setEditError(`Erreur ${res.status}: ${detail}`);
             }
         } catch {
-            setEditError('Erreur r\u00e9seau.');
+            setEditError('Erreur réseau.');
         } finally {
             setActionLoading(false);
         }
@@ -343,8 +343,8 @@ export default function AdminStudents() {
         { key: 'all', label: 'Tous' },
         { key: 'pending', label: 'En attente' },
         { key: 'entretien', label: 'Entretien' },
-        { key: 'accepted', label: 'Accept\u00e9s' },
-        { key: 'rejected', label: 'Rejet\u00e9s' },
+        { key: 'accepted', label: 'Acceptés' },
+        { key: 'rejected', label: 'Rejetés' },
     ];
 
     const availabilityFilters: { key: AvailabilityFilter; label: string }[] = [
@@ -418,7 +418,7 @@ export default function AdminStudents() {
                         <button
                             onClick={fetchStudents}
                             className="p-2 text-echo-textMuted hover:text-echo-gold transition-colors"
-                            title="Rafra\u00eechir"
+                            title="Rafraîchir"
                         >
                             <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
                         </button>
@@ -462,7 +462,7 @@ export default function AdminStudents() {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-echo-textMuted" />
                     <input
                         type="text"
-                        placeholder="Rechercher par nom, email, \u00e9cole ou ville..."
+                        placeholder="Rechercher par nom, email, école ou ville..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-echo-textMuted/50 focus:border-echo-gold/40 focus:outline-none"
@@ -473,7 +473,7 @@ export default function AdminStudents() {
                 {checkedIds.size > 0 && (
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4 p-3 bg-echo-gold/10 border border-echo-gold/20 rounded-xl">
                         <span className="text-sm text-echo-gold font-medium">
-                            {checkedIds.size} s\u00e9lectionn\u00e9e{checkedIds.size > 1 ? 's' : ''}
+                            {checkedIds.size} sélectionnée{checkedIds.size > 1 ? 's' : ''}
                         </span>
                         <div className="flex flex-wrap gap-2 sm:ml-auto">
                             <Button
@@ -551,7 +551,7 @@ export default function AdminStudents() {
                                     </th>
                                     <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3 hidden md:table-cell cursor-pointer select-none hover:text-echo-gold transition-colors" onClick={() => handleSort('school')}>
                                         <span className="inline-flex items-center gap-1">
-                                            \u00c9cole / Formation
+                                            École / Formation
                                             {sortField === 'school' ? (
                                                 sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
                                             ) : (
@@ -559,10 +559,10 @@ export default function AdminStudents() {
                                             )}
                                         </span>
                                     </th>
-                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3 hidden md:table-cell">Comp\u00e9tences</th>
+                                    <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3 hidden md:table-cell">Compétences</th>
                                     <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3 cursor-pointer select-none hover:text-echo-gold transition-colors" onClick={() => handleSort('availability')}>
                                         <span className="inline-flex items-center gap-1">
-                                            Disponibilit\u00e9
+                                            Disponibilité
                                             {sortField === 'availability' ? (
                                                 sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
                                             ) : (
@@ -572,7 +572,7 @@ export default function AdminStudents() {
                                     </th>
                                     <th className="text-left text-xs text-echo-textMuted font-medium px-4 py-3 cursor-pointer select-none hover:text-echo-gold transition-colors" onClick={() => handleSort('start_date')}>
                                         <span className="inline-flex items-center gap-1">
-                                            Date d\u00e9but
+                                            Date début
                                             {sortField === 'start_date' ? (
                                                 sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />
                                             ) : (
@@ -724,7 +724,7 @@ export default function AdminStudents() {
                                             <input type="email" value={(editForm.email as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40" />
                                         </div>
                                         <div>
-                                            <label className="text-xs text-echo-textMuted block mb-1">T\u00e9l\u00e9phone</label>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Téléphone</label>
                                             <input type="text" value={(editForm.phone as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, phone: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40" />
                                         </div>
                                         <div>
@@ -732,19 +732,19 @@ export default function AdminStudents() {
                                             <input type="text" value={(editForm.city as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, city: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40" />
                                         </div>
                                         <div>
-                                            <label className="text-xs text-echo-textMuted block mb-1">\u00c9cole</label>
+                                            <label className="text-xs text-echo-textMuted block mb-1">École</label>
                                             <input type="text" value={(editForm.school as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, school: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40" />
                                         </div>
                                         <div>
-                                            <label className="text-xs text-echo-textMuted block mb-1">Formation / Fili\u00e8re</label>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Formation / Filière</label>
                                             <input type="text" value={(editForm.study_field as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, study_field: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40" />
                                         </div>
                                         <div>
-                                            <label className="text-xs text-echo-textMuted block mb-1">Comp\u00e9tences (s\u00e9par\u00e9es par des virgules)</label>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Compétences (séparées par des virgules)</label>
                                             <input type="text" value={(editForm.skills as string[])?.join(', ') ?? ''} onChange={e => setEditForm(f => ({ ...f, skills: e.target.value.split(',').map(s => s.trim()).filter(Boolean) }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40" />
                                         </div>
                                         <div>
-                                            <label className="text-xs text-echo-textMuted block mb-1">Disponibilit\u00e9</label>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Disponibilité</label>
                                             <select value={(editForm.availability as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, availability: e.target.value as AvailabilityType }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40">
                                                 <option value="stage_court">Stage court</option>
                                                 <option value="stage_long">Stage long</option>
@@ -753,7 +753,7 @@ export default function AdminStudents() {
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="text-xs text-echo-textMuted block mb-1">Date de d\u00e9but souhait\u00e9e (YYYY-MM)</label>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Date de début souhaitée (YYYY-MM)</label>
                                             <input type="text" value={(editForm.start_date as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, start_date: e.target.value }))} placeholder="Ex: 2026-06" className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40 placeholder-neutral-500" />
                                         </div>
                                         <div>
@@ -819,7 +819,7 @@ export default function AdminStudents() {
 
                             {/* School / Study Field */}
                             <div className="mb-6">
-                                <h3 className="text-sm font-medium text-white mb-2">\u00c9cole / Formation</h3>
+                                <h3 className="text-sm font-medium text-white mb-2">École / Formation</h3>
                                 <p className="text-sm text-echo-textMuted">
                                     {selected.school} &mdash; {selected.study_field}
                                 </p>
@@ -827,7 +827,7 @@ export default function AdminStudents() {
 
                             {/* Availability */}
                             <div className="mb-6">
-                                <h3 className="text-sm font-medium text-white mb-2">Disponibilit\u00e9</h3>
+                                <h3 className="text-sm font-medium text-white mb-2">Disponibilité</h3>
                                 <p className="text-sm text-echo-textMuted">
                                     {AVAIL_LABELS[selected.availability] || selected.availability}
                                 </p>
@@ -836,14 +836,14 @@ export default function AdminStudents() {
                             {/* Start Date */}
                             {selected.start_date && (
                                 <div className="mb-6">
-                                    <h3 className="text-sm font-medium text-white mb-2">Date de d\u00e9but souhait\u00e9e</h3>
+                                    <h3 className="text-sm font-medium text-white mb-2">Date de début souhaitée</h3>
                                     <p className="text-sm text-echo-textMuted">{selected.start_date}</p>
                                 </div>
                             )}
 
                             {/* Skills */}
                             <div className="mb-6">
-                                <h3 className="text-sm font-medium text-white mb-2">Comp\u00e9tences</h3>
+                                <h3 className="text-sm font-medium text-white mb-2">Compétences</h3>
                                 <div className="flex flex-wrap gap-2">
                                     {selected.skills.map((skill, i) => (
                                         <span
@@ -932,7 +932,7 @@ export default function AdminStudents() {
                                     href={`mailto:${selected.email}?subject=Candidature stage/alternance — Mouvement ECHO`}
                                     className="text-sm text-echo-gold hover:underline"
                                 >
-                                    R\u00e9pondre par email
+                                    Répondre par email
                                 </a>
 
                                 {deleteConfirm === selected.id ? (

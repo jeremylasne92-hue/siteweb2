@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Send, CheckCircle, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Send, CheckCircle, ChevronRight, ChevronLeft, ChevronDown } from 'lucide-react';
 import { ApplicationSuccessCTA } from './ApplicationSuccessCTA';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
@@ -12,10 +12,26 @@ const WRITING_GENRES = [
     'Narration', 'Dialogue', 'Dramaturgie', 'Analyse littéraire',
 ];
 
-const INTEREST_TAGS = [
-    'Écologie', 'Sciences', 'Philosophie', 'Société',
-    'Technologie', 'Arts', 'Politique', 'Spiritualité',
-];
+const INTEREST_GROUPS: Record<string, string[]> = {
+    "Thématiques sociétales": [
+        "Dérèglement climatique", "Économie & Finance", "Géopolitique & Guerre",
+        "Politique & Gouvernance", "Droit & Justice", "Immigration",
+        "Médias & Réseaux sociaux", "Sécurité alimentaire", "Industrie pharmaceutique",
+        "Transhumanisme & IA", "Urbanisme & Logement", "Greenwashing",
+    ],
+    "Thématiques sociales": [
+        "Inégalités sociales", "Éducation", "Féminisme & Patriarcat",
+        "Violence conjugale", "Santé & Psychiatrie", "Consommation & Publicité",
+        "Industrie de la mode", "Art & Cinéma", "Musique",
+        "Communication non violente", "Énergie",
+    ],
+    "Thématiques existentielles": [
+        "Philosophie & Éthique", "Psychologie & Neurosciences", "Spiritualité & Mysticisme",
+        "Mythologie & Civilisations anciennes", "Religions & Karma",
+        "Physique quantique & Cosmogonie", "Chamanisme & Médiumnité",
+        "Développement personnel", "Nature de la réalité",
+    ],
+};
 
 const EXPERIENCE_LEVELS = [
     { value: 'professional', label: 'Professionnel·le', desc: 'Publication, production ou commande professionnelle' },
@@ -33,9 +49,18 @@ export function ScenaristApplicationForm() {
     const [step, setStep] = useState(1);
     const [consentRGPD, setConsentRGPD] = useState(false);
     const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+    const [otherGenre, setOtherGenre] = useState('');
     const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+    const [otherInterest, setOtherInterest] = useState('');
+    const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
     const [experienceLevel, setExperienceLevel] = useState('');
     const formRef = useRef<HTMLFormElement>(null);
+
+    const toggleCategory = (category: string) => {
+        setExpandedCategories(prev =>
+            prev.includes(category) ? prev.filter(c => c !== category) : [...prev, category]
+        );
+    };
 
     const toggleTag = (tag: string, list: string[], setter: React.Dispatch<React.SetStateAction<string[]>>) => {
         setter(list.includes(tag) ? list.filter(t => t !== tag) : [...list, tag]);
@@ -56,12 +81,14 @@ export function ScenaristApplicationForm() {
                 body: JSON.stringify({
                     name: formData.get('name'),
                     email: formData.get('email'),
-                    skills: selectedGenres.join(', '),
+                    skills: [...selectedGenres, ...(otherGenre.trim() ? [`Autre: ${otherGenre.trim()}`] : [])].join(', '),
                     message: formData.get('message'),
                     project: 'scenariste',
                     website: formData.get('website') || '',
                     portfolio_url: formData.get('portfolio_url') || null,
-                    creative_interests: selectedInterests.length > 0 ? selectedInterests.join(', ') : null,
+                    creative_interests: [...selectedInterests, ...(otherInterest.trim() ? [`Autre: ${otherInterest.trim()}`] : [])].length > 0
+                        ? [...selectedInterests, ...(otherInterest.trim() ? [`Autre: ${otherInterest.trim()}`] : [])].join(', ')
+                        : null,
                     experience_level: experienceLevel || null,
                 }),
             });
@@ -174,6 +201,16 @@ export function ScenaristApplicationForm() {
                             </button>
                         ))}
                     </div>
+                    <div className="mt-3">
+                        <input
+                            type="text"
+                            value={otherGenre}
+                            onChange={(e) => setOtherGenre(e.target.value)}
+                            placeholder="Autre genre d'écriture..."
+                            maxLength={100}
+                            className="w-full bg-black/20 border border-white/10 rounded-md py-2 px-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-amber-500/50 text-sm"
+                        />
+                    </div>
                     <p className="text-xs text-neutral-500 mt-2">Sélectionnez un ou plusieurs genres.</p>
                 </div>
 
@@ -206,22 +243,59 @@ export function ScenaristApplicationForm() {
             <div className={`space-y-5 ${step !== 3 ? 'hidden' : 'animate-fade-in delay-100'}`}>
                 <div>
                     <label className="block text-sm font-medium text-neutral-300 mb-3">Quelles thématiques vous passionnent ?</label>
-                    <div className="flex flex-wrap gap-2">
-                        {INTEREST_TAGS.map(tag => (
-                            <button
-                                key={tag}
-                                type="button"
-                                aria-pressed={selectedInterests.includes(tag)}
-                                onClick={() => toggleTag(tag, selectedInterests, setSelectedInterests)}
-                                className={`px-4 py-2 rounded-full text-sm font-medium transition-all border ${
-                                    selectedInterests.includes(tag)
-                                        ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
-                                        : 'bg-white/5 text-neutral-400 border-white/10 hover:bg-white/10 hover:text-white'
-                                }`}
-                            >
-                                {tag}
-                            </button>
-                        ))}
+                    <div className="space-y-2">
+                        {Object.entries(INTEREST_GROUPS).map(([category, tags]) => {
+                            const count = tags.filter(t => selectedInterests.includes(t)).length;
+                            return (
+                                <div key={category} className="border border-white/10 rounded-lg overflow-hidden bg-stone-800/50">
+                                    <button
+                                        type="button"
+                                        onClick={() => toggleCategory(category)}
+                                        className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-white hover:bg-white/5 transition-colors"
+                                    >
+                                        <span className="flex items-center gap-2">
+                                            {category}
+                                            {count > 0 && (
+                                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-semibold">{count}</span>
+                                            )}
+                                        </span>
+                                        <ChevronDown className={`w-4 h-4 text-neutral-400 transition-transform duration-200 ${expandedCategories.includes(category) ? 'rotate-180' : ''}`} />
+                                    </button>
+                                    {expandedCategories.includes(category) && (
+                                        <div className="px-4 pb-3 flex flex-wrap gap-2">
+                                            {tags.map(tag => (
+                                                <button
+                                                    key={tag}
+                                                    type="button"
+                                                    aria-pressed={selectedInterests.includes(tag)}
+                                                    onClick={() => toggleTag(tag, selectedInterests, setSelectedInterests)}
+                                                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
+                                                        selectedInterests.includes(tag)
+                                                            ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
+                                                            : 'bg-white/5 text-neutral-400 border-white/10 hover:bg-white/10 hover:text-white'
+                                                    }`}
+                                                >
+                                                    {tag}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    {selectedInterests.length > 0 && (
+                        <p className="text-xs text-amber-400/70 mt-2">{selectedInterests.length} thématique{selectedInterests.length > 1 ? 's' : ''} sélectionnée{selectedInterests.length > 1 ? 's' : ''}</p>
+                    )}
+                    <div className="mt-3">
+                        <input
+                            type="text"
+                            value={otherInterest}
+                            onChange={(e) => setOtherInterest(e.target.value)}
+                            placeholder="Autre thématique..."
+                            maxLength={100}
+                            className="w-full bg-black/20 border border-white/10 rounded-md py-2 px-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-amber-500/50 text-sm"
+                        />
                     </div>
                     <p className="text-xs text-neutral-500 mt-2">Sélectionnez une ou plusieurs thématiques (optionnel).</p>
                 </div>

@@ -90,6 +90,7 @@ export function Header() {
         {
             name: 'Partenaires', path: '/partenaires',
             children: [
+                { name: 'Devenir Partenaire', anchor: '#rejoindre' },
                 { name: 'Cartographie', anchor: '#cartographie' },
                 { name: 'Membres', anchor: '#membres' },
             ]

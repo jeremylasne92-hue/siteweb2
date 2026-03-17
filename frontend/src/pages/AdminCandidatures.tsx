@@ -664,7 +664,7 @@ export default function AdminCandidatures() {
                                             <input type="text" value={(editForm.portfolio_url as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, portfolio_url: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40" />
                                         </div>
                                         <div>
-                                            <label className="text-xs text-echo-textMuted block mb-1">Intérêts créatifs</label>
+                                            <label className="text-xs text-echo-textMuted block mb-1">Thématiques</label>
                                             <input type="text" value={(editForm.creative_interests as string) ?? ''} onChange={e => setEditForm(f => ({ ...f, creative_interests: e.target.value }))} className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-echo-gold/40" />
                                         </div>
                                         <div>
@@ -764,10 +764,10 @@ export default function AdminCandidatures() {
                                 </div>
                             )}
 
-                            {/* Creative Interests (scenariste) */}
+                            {/* Creative Interests / Thématiques (scenariste) */}
                             {selected.creative_interests && (
                                 <div className="mb-6">
-                                    <h3 className="text-sm font-medium text-white mb-2">Intérêts créatifs</h3>
+                                    <h3 className="text-sm font-medium text-white mb-2">Thématiques</h3>
                                     <div className="flex flex-wrap gap-2">
                                         {selected.creative_interests.split(',').map((interest, i) => (
                                             <span

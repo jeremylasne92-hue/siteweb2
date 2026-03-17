@@ -408,8 +408,8 @@ class StudentApplicationRequest(BaseModel):
         if v is None:
             return v
         import re
-        if not re.match(r"^\d{4}-(0[1-9]|1[0-2])$", v):
-            raise ValueError("Le format doit être YYYY-MM (ex: 2026-06)")
+        if not re.match(r"^\d{4}-(0[1-9]|1[0-2])(-(0[1-9]|[12]\d|3[01]))?$", v):
+            raise ValueError("Le format doit être YYYY-MM-DD (ex: 2026-09-10) ou YYYY-MM")
         return v
 
 
