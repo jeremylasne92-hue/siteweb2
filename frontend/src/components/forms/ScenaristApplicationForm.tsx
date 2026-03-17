@@ -100,6 +100,24 @@ export function ScenaristApplicationForm() {
                 } else {
                     setSubmitted(true);
                 }
+            } else if (res.status === 422) {
+                try {
+                    const errData = await res.json();
+                    const details = errData.detail;
+                    if (Array.isArray(details)) {
+                        const msgs = details.map((e: { loc?: string[]; msg?: string }) => {
+                            const field = e.loc?.slice(-1)[0] || '?';
+                            return `${field}: ${e.msg}`;
+                        });
+                        setError(`Erreur de validation : ${msgs.join(', ')}`);
+                    } else {
+                        setError(typeof details === 'string' ? details : 'Erreur de validation.');
+                    }
+                } catch {
+                    setError('Erreur de validation. Vérifiez vos données.');
+                }
+            } else if (res.status === 429) {
+                setError('Trop de soumissions récentes. Réessayez plus tard.');
             } else {
                 setError('Une erreur est survenue. Veuillez réessayer.');
             }

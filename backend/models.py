@@ -458,3 +458,13 @@ class StudentEditUpdate(BaseModel):
     start_date: Optional[str] = None
     message: Optional[str] = Field(None, max_length=2000)
     admin_notes: Optional[str] = None
+
+    @field_validator("start_date")
+    @classmethod
+    def validate_start_date(cls, v):
+        if v is None:
+            return v
+        import re
+        if not re.match(r"^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$", v):
+            raise ValueError("Le format doit être YYYY-MM-DD (ex: 2026-09-10)")
+        return v

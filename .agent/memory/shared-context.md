@@ -163,6 +163,7 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-17 | Harmonisation dates complète : (1) datetime.utcnow()→datetime.now(UTC) dans 31 fichiers backend (models, routes, services, utils, tests), (2) helper format_date_csv (DD/MM/YYYY HH:MM) + format_date_str_fr pour CSV exports lisibles Excel, (3) start_date strict YYYY-MM-DD (suppression YYYY-MM), (4) fix timezone AdminEvents.tsx, (5) affichage start_date DD/MM/YYYY dans AdminStudents, (6) script migration MongoDB (scripts/migrate_dates_utc.py) pour dates naïves→UTC-aware. 39 fichiers, 205 tests backend + 32 frontend. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-17 | Refonte Home hero (logo image, trailer modal YouTube, attribution Dante, lien Rejoindre→/mouvement#rejoindre), Serie.tsx timeline info saisons, sous-menus Header (Rejoindre Série + Partenaires), Modal scroll fix, AdminDashboard badges pending-only, debounce Nominatim PartnerFormModal. Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-17 | Audit #3 pré-lancement (22 findings, 23% faux positifs). 7 fixes critiques appliqués (commit 56ed9b0) : (1) admin_dashboard collections corrigées, (2) XSS html.escape emails, (3) sessions invalidées post-reset MDP, (4) logo upload fix, (5) timing attack /login DUMMY_HASH, (6) contact_messages ObjectId lookup, (7) TTL index user_sessions. 8 reportés S+1. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-17 | Audit externe pré-lancement : 16 findings analysés, 8 confirmés, 6 faux positifs (37.5%). 4 fixes appliqués : (1) XSS innerHTML→textContent Mouvement.tsx, (2) CSP connect-src whitelist (API, Nominatim, GA4, reCAPTCHA), (3) validation bornes géo partners.py, (4) requirements.txt nettoyé (77→59 deps, dev séparé). 4 reportés S+1 (.catch silencieux, console.log, token TTL, is_active). Niveau STANDARD. | Claude Code (Opus 4.6) |
@@ -235,6 +236,7 @@ frontend/src/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-17 | 🟡 STANDARD | Harmonisation dates (utcnow→now(UTC) 31 fichiers, CSV DD/MM/YYYY, start_date strict, timezone fix, migration script MongoDB) | ~20min | Claude Code (Opus 4.6) |
 | 2026-03-17 | 🟢 HOTFIX | Refonte Home hero + Serie timeline + Header sous-menus Rejoindre + Modal scroll + AdminDashboard badges | ~45min | Claude Code (Opus 4.6) |
 | 2026-03-17 | 🟡 STANDARD | Audit #3 vérifié (22 findings → 7 fixes critiques: collections admin, XSS email, sessions, logo, timing, ObjectId, TTL) | ~25min | Claude Code (Opus 4.6) |
 | 2026-03-17 | 🟡 STANDARD | Audit externe vérifié (16 findings → 4 fixes: XSS, CSP, géo, deps) | ~30min | Claude Code (Opus 4.6) |
