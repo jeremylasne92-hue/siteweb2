@@ -8,11 +8,9 @@ import { API_URL, PARTNERS_API, CANDIDATURES_API } from '../config/api';
 
 export default function AdminDashboard() {
     const [pendingCount, setPendingCount] = useState<number | null>(null);
-    const [totalCount, setTotalCount] = useState<number | null>(null);
-    const [candidatureCount, setCandidatureCount] = useState<number | null>(null);
     const [pendingCandidatureCount, setPendingCandidatureCount] = useState<number>(0);
-    const [volunteerCount, setVolunteerCount] = useState<number | null>(null);
     const [pendingVolunteerCount, setPendingVolunteerCount] = useState<number>(0);
+    const [pendingStudentCount, setPendingStudentCount] = useState<number>(0);
     const [unreadMessageCount, setUnreadMessageCount] = useState<number>(0);
     const [pending, setPending] = useState<{
         partners: number; candidatures: number; volunteers: number;
@@ -26,7 +24,6 @@ export default function AdminDashboard() {
                 });
                 if (res.ok) {
                     const partners = await res.json();
-                    setTotalCount(partners.length);
                     setPendingCount(partners.filter((p: { status: string }) => p.status === 'pending').length);
                 }
             } catch {
@@ -38,7 +35,6 @@ export default function AdminDashboard() {
                 });
                 if (res.ok) {
                     const candidatures = await res.json();
-                    setCandidatureCount(candidatures.length);
                     setPendingCandidatureCount(candidatures.filter((c: { status: string }) => c.status === 'pending').length);
                 }
             } catch {
@@ -50,8 +46,18 @@ export default function AdminDashboard() {
                 });
                 if (res.ok) {
                     const volunteers = await res.json();
-                    setVolunteerCount(volunteers.length);
                     setPendingVolunteerCount(volunteers.filter((v: { status: string }) => v.status === 'pending').length);
+                }
+            } catch {
+                // silent
+            }
+            try {
+                const res = await fetch(`${API_URL}/students/admin/all`, {
+                    credentials: 'include',
+                });
+                if (res.ok) {
+                    const students = await res.json();
+                    setPendingStudentCount(students.filter((s: { status: string }) => s.status === 'pending').length);
                 }
             } catch {
                 // silent
@@ -89,8 +95,8 @@ export default function AdminDashboard() {
             active: true,
             badge: pendingCount && pendingCount > 0
                 ? `${pendingCount} en attente`
-                : totalCount !== null ? `${totalCount} partenaires` : undefined,
-            badgeColor: pendingCount && pendingCount > 0 ? '#F59E0B' : '#10B981',
+                : undefined,
+            badgeColor: '#F59E0B',
         },
         {
             title: 'Candidatures',
@@ -98,10 +104,8 @@ export default function AdminDashboard() {
             icon: <FileText size={24} />,
             href: '/admin/candidatures',
             active: true,
-            badge: candidatureCount !== null && candidatureCount > 0 ? `${candidatureCount} candidature${candidatureCount > 1 ? 's' : ''}` : undefined,
-            badgeColor: '#A78BFA',
-            notificationCount: pendingCandidatureCount,
-            notificationColor: 'bg-amber-500',
+            badge: pendingCandidatureCount > 0 ? `${pendingCandidatureCount} en attente` : undefined,
+            badgeColor: '#F59E0B',
         },
         {
             title: 'Candidatures bénévoles',
@@ -109,17 +113,17 @@ export default function AdminDashboard() {
             icon: <Heart size={24} />,
             href: '/admin/benevoles',
             active: true,
-            badge: volunteerCount !== null && volunteerCount > 0 ? `${volunteerCount} candidature${volunteerCount > 1 ? 's' : ''}` : undefined,
-            badgeColor: '#10B981',
-            notificationCount: pendingVolunteerCount,
-            notificationColor: 'bg-amber-500',
+            badge: pendingVolunteerCount > 0 ? `${pendingVolunteerCount} en attente` : undefined,
+            badgeColor: '#F59E0B',
         },
         {
             title: 'Stages & Alternance',
-            description: 'G\u00e9rer les candidatures stages et alternance',
+            description: 'Gérer les candidatures stages et alternance',
             icon: <GraduationCap size={24} />,
             href: '/admin/students',
             active: true,
+            badge: pendingStudentCount > 0 ? `${pendingStudentCount} en attente` : undefined,
+            badgeColor: '#F59E0B',
         },
         {
             title: 'Membres',

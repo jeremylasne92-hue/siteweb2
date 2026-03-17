@@ -62,7 +62,7 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
                     </button>
                 </div>
 
-                <div className="p-6">
+                <div className="p-6 overflow-y-auto max-h-[calc(100vh-10rem)]">
                     {children}
                 </div>
             </div>

@@ -1,11 +1,14 @@
-import { Play, Users, Link as LinkIcon } from 'lucide-react';
+import { useState } from 'react';
+import { Play, Users, Link as LinkIcon, X } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Link } from 'react-router-dom';
 import { SEO } from '../components/seo/SEO';
 import { useAnalytics } from '../hooks/useAnalytics';
+import { YouTubeEmbed } from '../components/ui/YouTubeEmbed';
 
 export function Home() {
     const { trackEvent } = useAnalytics();
+    const [showTrailer, setShowTrailer] = useState(false);
 
     return (
         <div className="flex flex-col">
@@ -20,27 +23,30 @@ export function Home() {
                 <div className="absolute inset-0 bg-gradient-to-b from-echo-dark via-echo-dark/50 to-echo-dark z-10" />
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2672&auto=format&fit=crop')] bg-cover bg-center opacity-30 animate-pulse" />
 
-                <div className="relative z-20 text-center max-w-4xl px-4 animate-fade-in">
-                    <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white mb-4 sm:mb-6 tracking-tighter text-shadow">
-                        ECHO
-                    </h1>
-                    <p className="text-base sm:text-xl md:text-2xl text-echo-textMuted mb-6 sm:mb-8 italic font-serif">
+                <div className="relative z-20 text-center max-w-4xl px-4 animate-fade-in flex flex-col items-center justify-center -mt-32 sm:-mt-40 md:-mt-48">
+                    <img src="/logo-echo-transparent.png" alt="ECHO" className="h-72 sm:h-[22rem] md:h-[32rem] w-auto object-contain -mb-16 sm:-mb-20 md:-mb-28" />
+                    <h1 className="sr-only">ECHO — Mouvement citoyen pour la transition écologique</h1>
+                    <p className="text-base sm:text-xl md:text-2xl text-echo-textMuted italic font-serif">
                         "Au milieu de mon chemin de vie, je me suis retrouvé dans une forêt en feu,<br />
-                        car la voie droite était perdue."
+                        car la voie droite était perdue." *
                     </p>
+                    <div className="mb-4" />
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link to="/serie" onClick={() => trackEvent('cta_click', 'home_decouvrir_serie')}>
-                            <Button variant="primary" size="lg" className="w-full sm:w-auto">
-                                <Play className="mr-2" size={20} /> Découvrir la Série
-                            </Button>
-                        </Link>
-                        <Link to="/mouvement" onClick={() => trackEvent('cta_click', 'home_rejoindre')}>
+                        <Button variant="primary" size="lg" className="w-full sm:w-auto" onClick={() => { setShowTrailer(true); trackEvent('cta_click', 'home_decouvrir_serie'); }}>
+                            <Play className="mr-2" size={20} /> Découvrir la Série
+                        </Button>
+                        <Link to="/mouvement#rejoindre" onClick={() => trackEvent('cta_click', 'home_rejoindre')}>
                             <Button variant="secondary" size="lg" className="w-full sm:w-auto">
                                 <Users className="mr-2" size={20} /> Rejoindre le Mouvement
                             </Button>
                         </Link>
                     </div>
                 </div>
+
+                {/* Attribution Dante */}
+                <span className="absolute bottom-4 right-4 z-20 text-[9px] text-white/15 italic">
+                    * Tercet légèrement adapté de <em>La Divine Comédie</em> de Dante
+                </span>
 
                 {/* Scroll Indicator */}
                 <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 animate-bounce">
@@ -151,6 +157,32 @@ export function Home() {
                     </div>
                 </div>
             </section>
+
+            {/* Trailer Modal */}
+            {showTrailer && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8" onClick={() => setShowTrailer(false)}>
+                    <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" />
+                    <div className="relative w-full max-w-5xl z-10" onClick={e => e.stopPropagation()}>
+                        <button
+                            onClick={() => setShowTrailer(false)}
+                            className="absolute -top-12 right-0 text-white/70 hover:text-white transition-colors"
+                            aria-label="Fermer la vidéo"
+                        >
+                            <X size={32} />
+                        </button>
+                        <div className="aspect-video rounded-xl overflow-hidden border border-echo-gold/30 shadow-[0_0_60px_rgba(212,175,55,0.2)]">
+                            <YouTubeEmbed videoId="5NvxbMIbjAo" title="ECHO — Bande-annonce" />
+                        </div>
+                        <div className="text-center mt-6">
+                            <Link to="/serie" onClick={() => setShowTrailer(false)}>
+                                <Button variant="secondary" size="lg">
+                                    Découvrir tous les épisodes
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

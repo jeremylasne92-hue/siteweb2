@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
@@ -55,6 +55,7 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
     const [logoFile, setLogoFile] = useState<File | null>(null);
     const [consentRGPD, setConsentRGPD] = useState(false);
     const [addressSuggestions, setAddressSuggestions] = useState<Array<{ display_name: string; lat: string; lon: string; address?: Record<string, string> }>>([]);
+    const addressDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Reset on close
     useEffect(() => {
@@ -89,17 +90,25 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
         }));
     };
 
-    const handleAddressSearch = async (query: string) => {
+    const handleAddressSearch = (query: string) => {
         handleInputChange({ target: { name: 'address', value: query } } as React.ChangeEvent<HTMLInputElement>);
-        if (query.length < 5) return;
-
-        try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&countrycodes=fr`);
-            const data = await res.json();
-            setAddressSuggestions(data.slice(0, 5));
-        } catch (err) {
-            console.error(err);
+        if (query.length < 3) {
+            setAddressSuggestions([]);
+            return;
         }
+
+        if (addressDebounceRef.current) clearTimeout(addressDebounceRef.current);
+        addressDebounceRef.current = setTimeout(async () => {
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&countrycodes=fr&limit=5`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setAddressSuggestions(data.slice(0, 5));
+                }
+            } catch {
+                // Nominatim unavailable
+            }
+        }, 400);
     };
 
     const selectAddress = (suggestion: { display_name: string; lat: string; lon: string; address?: Record<string, string> }) => {

@@ -471,7 +471,10 @@ export function Serie() {
             {/* SECTION 3: SAISONS */}
             <section id="saisons" className="min-h-screen py-24 border-b border-white/5 bg-[#0A0A0A]">
                 <div className="container mx-auto px-4">
-                    <h2 className="text-[48px] font-serif font-bold text-white mb-16 text-center">Les Saisons</h2>
+                    <h2 className="text-[48px] font-serif font-bold text-white mb-6 text-center">Les Saisons</h2>
+                    <p className="text-center text-sm sm:text-base text-echo-textMuted max-w-2xl mx-auto mb-16">
+                        En fonction de la levée de fonds, la première saison est prévue idéalement fin 2026, avec un objectif de diffusion avant avril 2027.
+                    </p>
 
                     {/* TABS */}
                     <div className="flex justify-center gap-4 mb-20 flex-wrap">
@@ -774,6 +777,10 @@ export function Serie() {
                             image="/images/characters/mathieu.jpeg"
                         />
                     </div>
+
+                    <p className="text-[#9CA3AF] text-center text-xs sm:text-sm mt-8 sm:mt-12 max-w-3xl mx-auto italic">
+                        * Les images des personnages ont été générées par intelligence artificielle à des fins de présentation de la série et de ses personnages, et pour illustrer la bande-annonce. Nous recherchons activement de véritables acteurs et actrices pour incarner ces rôles.
+                    </p>
                 </div>
             </section>
 

@@ -60,6 +60,7 @@ export function Header() {
                 { name: 'Prologue', anchor: '#prologue' },
                 { name: 'Saisons', anchor: '#saisons' },
                 { name: 'Personnages', anchor: '#personnages' },
+                { name: 'Rejoindre', anchor: '#rejoindre-serie' },
             ]
         },
         {
