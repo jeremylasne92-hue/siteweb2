@@ -330,3 +330,111 @@ async def send_volunteer_rejected(email: str, name: str, status_note: str | None
     if _use_sendgrid():
         return await _send_via_sendgrid(email, subject, html)
     return await _log_email(email, subject, f"Candidature bénévole non retenue pour {name}{reason_text}")
+
+
+# --- Student/intern application email functions ---
+
+
+async def send_student_confirmation(to_email: str, name: str) -> bool:
+    """Send confirmation email when a student/intern application is submitted."""
+    import html as html_mod
+    safe_name = html_mod.escape(name)
+    subject = "Candidature stage reçue — Mouvement ECHO"
+    html = (
+        f"<div style='font-family:Arial,sans-serif;max-width:600px;margin:0 auto;'>"
+        f"<h2 style='color:#D4AF37;'>Bonjour {safe_name},</h2>"
+        f"<p>Nous avons bien reçu votre candidature de stage "
+        f"et nous vous remercions pour l'intérêt que vous portez au Mouvement ECHO.</p>"
+        f"<p>Notre équipe prendra le temps d'examiner votre profil avec attention. "
+        f"Nous reviendrons vers vous dans les meilleurs délais pour vous tenir "
+        f"informé(e) de la suite donnée à votre candidature.</p>"
+        f"<p>En attendant, n'hésitez pas à suivre nos actualités sur notre site.</p>"
+        f"<p>Bien cordialement,<br>L'équipe Mouvement ECHO</p>"
+        f"</div>"
+    )
+    if _use_sendgrid():
+        return await _send_via_sendgrid(to_email, subject, html)
+    return await _log_email(to_email, subject, f"Confirmation candidature stage pour {name}")
+
+
+async def send_student_interview(to_email: str, name: str, booking_url: str) -> bool:
+    """Send interview invitation with a booking link for student/intern applicants."""
+    import html as html_mod
+    safe_name = html_mod.escape(name)
+    subject = "Invitation à un entretien — Mouvement ECHO"
+    html = (
+        f"<div style='font-family:Arial,sans-serif;max-width:600px;margin:0 auto;'>"
+        f"<h2 style='color:#D4AF37;'>Bonjour {safe_name},</h2>"
+        f"<p>Bonne nouvelle ! Votre candidature de stage a retenu toute notre attention "
+        f"et nous aimerions échanger avec vous lors d'un court entretien.</p>"
+        f"<p>Cet échange nous permettra de mieux comprendre vos motivations "
+        f"et de vous présenter le projet plus en détail. "
+        f"C'est avant tout une discussion ouverte et bienveillante.</p>"
+        f"<p style='text-align:center;margin:24px 0;'>"
+        f"<a href='{booking_url}' style='background:#D4AF37;color:#fff;padding:12px 32px;"
+        f"text-decoration:none;border-radius:6px;font-weight:bold;'>Réserver mon créneau d'entretien</a></p>"
+        f"<p>Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :</p>"
+        f"<p>{booking_url}</p>"
+        f"<p>Si aucun créneau ne vous convient, répondez simplement à cet email "
+        f"et nous trouverons un moment adapté.</p>"
+        f"<p>À très bientôt,<br>L'équipe Mouvement ECHO</p>"
+        f"</div>"
+    )
+    if _use_sendgrid():
+        return await _send_via_sendgrid(to_email, subject, html)
+    return await _log_email(to_email, subject, f"Invitation entretien stage pour {name} — {booking_url}")
+
+
+async def send_student_accepted(to_email: str, name: str) -> bool:
+    """Send acceptance notification email for student/intern applicants."""
+    import html as html_mod
+    safe_name = html_mod.escape(name)
+    subject = "Bienvenue dans l'équipe — Mouvement ECHO"
+    html = (
+        f"<div style='font-family:Arial,sans-serif;max-width:600px;margin:0 auto;'>"
+        f"<h2 style='color:#D4AF37;'>Bonjour {safe_name},</h2>"
+        f"<p>Nous avons le plaisir de vous confirmer que votre candidature de stage "
+        f"a été retenue pour la production de notre série documentaire. "
+        f"Bienvenue dans l'aventure ECHO !</p>"
+        f"<p>Un membre de notre équipe vous contactera très prochainement "
+        f"pour vous présenter les prochaines étapes et faciliter votre intégration.</p>"
+        f"<p>Nous sommes ravis de vous compter parmi nous "
+        f"et avons hâte de collaborer avec vous.</p>"
+        f"<p>Chaleureusement,<br>L'équipe Mouvement ECHO</p>"
+        f"</div>"
+    )
+    if _use_sendgrid():
+        return await _send_via_sendgrid(to_email, subject, html)
+    return await _log_email(to_email, subject, f"Candidature stage acceptée pour {name}")
+
+
+async def send_student_rejected(to_email: str, name: str, status_note: str = "") -> bool:
+    """Send rejection notification with optional reason for student/intern applicants."""
+    import html as html_mod
+    safe_name = html_mod.escape(name)
+    subject = "Retour sur votre candidature — Mouvement ECHO"
+    reason_html = ""
+    reason_text = ""
+    if status_note:
+        safe_note = html_mod.escape(status_note)
+        reason_html = f"<p><strong>Motif :</strong> {safe_note}</p>"
+        reason_text = f"\nMotif : {status_note}"
+    html = (
+        f"<div style='font-family:Arial,sans-serif;max-width:600px;margin:0 auto;'>"
+        f"<h2 style='color:#D4AF37;'>Bonjour {safe_name},</h2>"
+        f"<p>Nous tenons à vous remercier pour le temps que vous avez consacré "
+        f"à votre candidature de stage auprès du Mouvement ECHO.</p>"
+        f"<p>Après un examen attentif de votre profil, nous ne sommes malheureusement "
+        f"pas en mesure d'y donner une suite favorable pour le moment.</p>"
+        f"{reason_html}"
+        f"<p>Cette décision ne remet en aucun cas en question vos compétences. "
+        f"Nous vous encourageons à rester attentif(ve) à nos prochains appels "
+        f"à candidatures — nos besoins évoluent et votre profil pourrait "
+        f"correspondre à de futures opportunités.</p>"
+        f"<p>Nous vous souhaitons le meilleur dans vos projets.</p>"
+        f"<p>Cordialement,<br>L'équipe Mouvement ECHO</p>"
+        f"</div>"
+    )
+    if _use_sendgrid():
+        return await _send_via_sendgrid(to_email, subject, html)
+    return await _log_email(to_email, subject, f"Candidature stage non retenue pour {name}{reason_text}")
