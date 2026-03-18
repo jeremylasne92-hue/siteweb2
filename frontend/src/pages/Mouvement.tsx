@@ -8,14 +8,14 @@ import { useAnalytics } from '../hooks/useAnalytics';
 
 // Images locales — croissance de l'arbre (7 étapes)
 const TREE_STAGES = {
-    graine: '/images/Image arbre en croissance/Graine.jpeg',
-    germination: '/images/Image arbre en croissance/Germination.jpeg',
-    enracinement: '/images/Image arbre en croissance/Enracimennt.jpeg',
-    emergence: "/images/Image arbre en croissance/L'émergence ECHO.jpeg",
-    tronc: '/images/Image arbre en croissance/Tronc.png',
-    branches: '/images/Image arbre en croissance/Branches.png',
-    floraison: '/images/Image arbre en croissance/Floraison.jpeg',
-    fructification: '/images/Image arbre en croissance/Pommes.jpeg',
+    graine: '/images/tree-growth/graine.jpeg',
+    germination: '/images/tree-growth/germination.jpeg',
+    enracinement: '/images/tree-growth/enracinement.jpeg',
+    emergence: '/images/tree-growth/emergence-echo.jpeg',
+    tronc: '/images/tree-growth/tronc.jpeg',
+    branches: '/images/tree-growth/branches.jpeg',
+    floraison: '/images/tree-growth/floraison.jpeg',
+    fructification: '/images/tree-growth/pommes.jpeg',
 };
 
 
@@ -415,11 +415,11 @@ export function Mouvement() {
                     {/* Main Team */}
                     <div className="flex flex-wrap justify-center gap-6 sm:gap-8 md:gap-12 mb-10 sm:mb-12">
                         {[
-                            { name: "Jérémy Lasne", role: "Cofondateur", photo: "/images/Photo équipe/jeremy-lasne 2.png", pos: "50% 20%" },
-                            { name: "Eddyason Koffi", role: "Cofondateur", photo: "/images/Photo équipe/eddyason-koffi.jpg", pos: "50% 20%" },
-                            { name: "Déborah Prévaud", role: "Responsable des partenariats", photo: "/images/Photo équipe/deborah-prevaud.jpg", pos: "50% 20%" },
-                            { name: "Clément Grandmontagne", role: "Réalisateur", photo: "/images/Photo équipe/clement-grandmontagne.jpg", pos: "50% 20%" },
-                            { name: "Thierry Korutos-Chatam", role: "Responsable des partenariats", photo: "/images/Photo équipe/thierry-korutos-chatam 2.png", pos: "50% 20%" },
+                            { name: "Jérémy Lasne", role: "Cofondateur", photo: "/images/team/jeremy-lasne-2.jpeg", pos: "50% 20%" },
+                            { name: "Eddyason Koffi", role: "Cofondateur", photo: "/images/team/eddyason-koffi.jpg", pos: "50% 20%" },
+                            { name: "Déborah Prévaud", role: "Responsable des partenariats", photo: "/images/team/deborah-prevaud.jpg", pos: "50% 20%" },
+                            { name: "Clément Grandmontagne", role: "Réalisateur", photo: "/images/team/clement-grandmontagne.jpg", pos: "50% 20%" },
+                            { name: "Thierry Korutos-Chatam", role: "Responsable des partenariats", photo: "/images/team/thierry-korutos-chatam-2.jpeg", pos: "50% 20%" },
                         ].map((member, i) => (
                             <div key={i} className="flex flex-col items-center group w-28 sm:w-32 md:w-36">
                                 <div className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-stone-800 group-hover:border-amber-500 transition-colors mb-3 sm:mb-4">

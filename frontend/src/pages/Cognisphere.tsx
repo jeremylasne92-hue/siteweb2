@@ -173,7 +173,7 @@ export function Cognisphere() {
                                 {/* Screen */}
                                 <div className="rounded-2xl overflow-hidden bg-black aspect-[9/19]">
                                     <img
-                                        src="/images/cognisphere/mobile.png"
+                                        src="/images/cognisphere/mobile.jpeg"
                                         alt="Cognisphère Mobile — Tableau de bord"
                                         className="w-full h-full object-cover object-top"
                                     />

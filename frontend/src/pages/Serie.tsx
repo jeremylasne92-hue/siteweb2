@@ -689,7 +689,7 @@ export function Serie() {
                             name="PHILIPPE"
                             role="Le Prodigue"
                             description="Père de Sacha, Philippe est un homme dont les convictions radicales imprègnent chaque aspect de sa vie. Animé par des préjugés racistes et une mentalité matérialiste poussée à l'extrême, il affiche sans détour un caractère provocateur et agressif. Son autoritarisme et son intolérance sont autant de barrières qui le séparent de son fils."
-                            image="/images/characters/philippe.png"
+                            image="/images/characters/philippe.jpeg"
                         />
                         {/* NADINE */}
                         <CharacterCard
@@ -717,14 +717,14 @@ export function Serie() {
                             name="LILY"
                             role="La Rebelle"
                             description="Rencontre inattendue dans le parcours de Sacha, Lily est une femme libre et intuitive portée par une énergie rebelle. Experte en construction durable, elle allie écologie et sensibilité artistique. Habituée à ne compter que sur elle, son indépendance dissimule une blessure, la peur d'ouvrir pleinement son coeur. Par la suite elle deviendra un moteur de transformation pour elle-même et pour ceux qui l'entourent."
-                            image="/images/characters/lily.png"
+                            image="/images/characters/lily.jpeg"
                         />
                         {/* NOUR */}
                         <CharacterCard
                             name="NOUR"
                             role="Le Soutien"
                             description="Femme de ménage au sein de l'entreprise, Nour est animée d'une générosité sincère et chaleureuse. Malgré une vie modeste marquée par l'exil, elle apporte à Sacha un soutien émotionnel précieux, incarnant l'empathie véritable. Toutefois, son dévouement absolu aux autres révèle aussi sa vulnérabilité : celle de négliger sa propre identité et ses propres besoins pour le bonheur des autres."
-                            image="/images/characters/nour.png"
+                            image="/images/characters/nour.jpeg"
                         />
 
                         {/* COLLÈGUES (VICES) */}
@@ -732,7 +732,7 @@ export function Serie() {
                             name="MARIANNE"
                             role="Luxure"
                             description="Responsable des Ressources Humaines. Incarne le vice de la luxure. Elle symbolise les dérives de l'industrie du luxe, des médias et de la mode, où l'image est valorisée au détriment de l'authenticité. Son parcours amorce une transformation vers la sobriété, réconciliant l'esthétique avec l'éthique, jusque dans sa manière de communiquer, de s'habiller et de vivre."
-                            image="/images/characters/marianne.png"
+                            image="/images/characters/marianne.jpeg"
                         />
                         <CharacterCard
                             name="DOMINIQUE"
@@ -756,13 +756,13 @@ export function Serie() {
                             name="SARA"
                             role="Hérésie"
                             description="Responsable Recherche & Développement, symbolise le vice de l'hérésie. Elle incarne les excès des industries de la tech et en particulier de l'intelligence artificielle, où le culte du progrès technique s'impose au détriment des limites planétaires. Son parcours la conduit à s'intéresser aux ponts entre la science et la spiritualité afin de répondre aux défis contemporains."
-                            image="/images/characters/sara.png"
+                            image="/images/characters/sara.jpeg"
                         />
                         <CharacterCard
                             name="ROHAN"
                             role="Violence"
                             description="Responsable Logistique, Rohan incarne le vice de la violence. Il reflète la violence à tous les niveaux (conjugale, l'armée, la géopolitique). Son parcours amorce une métamorphose, ouvrant un chemin vers l'écoute, l'empathie et la réconciliation familiale. Le sport sera son vecteur d'apaisement, d'émancipation et de rassemblement."
-                            image="/images/characters/rohan.png"
+                            image="/images/characters/rohan.jpeg"
                         />
                         <CharacterCard
                             name="AYUMI"

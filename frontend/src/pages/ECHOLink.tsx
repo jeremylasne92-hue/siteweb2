@@ -171,7 +171,7 @@ export function ECHOLink() {
                     <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
                         <div className="order-2 md:order-1 rounded-2xl overflow-hidden border border-echo-blueLight/20">
                             <img
-                                src="/images/echolink/hub-carte.png"
+                                src="/images/echolink/hub-carte.jpeg"
                                 alt="Mockup ECHOLink — Carte interactive des Hubs de projets"
                                 className="w-full h-auto"
                             />
@@ -208,7 +208,7 @@ export function ECHOLink() {
                         </div>
                         <div className="rounded-2xl overflow-hidden border border-echo-blueLight/20">
                             <img
-                                src="/images/echolink/hub-projet.png"
+                                src="/images/echolink/hub-projet.jpeg"
                                 alt="Mockup ECHOLink — Fiche projet détaillée"
                                 className="w-full h-auto"
                             />
