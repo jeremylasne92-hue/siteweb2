@@ -90,12 +90,17 @@ async def register_user(data: UserRegister, db: AsyncIOMotorDatabase) -> dict:
     ]
     cleaned_interests = [i for i in (data.interests or []) if i in valid_interests]
 
-    # Create user
+    # Create user with acquisition tracking
     user = User(
         username=data.username,
         email=normalized_email,
         password_hash=hash_password(data.password),
         interests=cleaned_interests,
+        acquisition_source=data.acquisition_source,
+        first_utm_source=data.utm_source,
+        first_utm_medium=data.utm_medium,
+        first_utm_campaign=data.utm_campaign,
+        first_referrer=data.referrer,
     )
     await db.users.insert_one(user.model_dump())
 

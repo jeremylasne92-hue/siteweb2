@@ -260,6 +260,61 @@ class MongoDBErrorMiddleware(BaseHTTPMiddleware):
 app.add_middleware(MongoDBErrorMiddleware)
 
 
+class ActivityTrackingMiddleware(BaseHTTPMiddleware):
+    """Update last_active_at for authenticated users (throttled: max once per hour)."""
+
+    _cache: dict[str, float] = {}  # user_id → last_update_timestamp
+
+    async def dispatch(self, request: StarletteRequest, call_next):
+        response: StarletteResponse = await call_next(request)
+
+        # Only track successful authenticated requests
+        if response.status_code >= 400:
+            return response
+
+        session_token = request.cookies.get("session_token")
+        if not session_token:
+            return response
+
+        try:
+            db = request.app.state.db
+            # Lookup session
+            session = await db.user_sessions.find_one({"session_token": session_token})
+            if not session:
+                return response
+
+            user_id = session["user_id"]
+
+            # Throttle: only update once per hour per user
+            now = time.time()
+            last_update = self._cache.get(user_id, 0)
+            if now - last_update < 3600:
+                return response
+
+            self._cache[user_id] = now
+
+            from datetime import datetime, UTC
+            now_dt = datetime.now(UTC)
+
+            # Update user last_login (lightweight)
+            await db.users.update_one(
+                {"id": user_id},
+                {"$set": {"last_login": now_dt}},
+            )
+            # Update member_profiles last_active_at if member
+            await db.member_profiles.update_one(
+                {"user_id": user_id},
+                {"$set": {"last_active_at": now_dt}},
+            )
+        except Exception:
+            pass  # Never break requests for activity tracking
+
+        return response
+
+
+app.add_middleware(ActivityTrackingMiddleware)
+
+
 class RequestLoggingMiddleware(BaseHTTPMiddleware):
     """Log every HTTP request with method, path, status, and duration."""
 

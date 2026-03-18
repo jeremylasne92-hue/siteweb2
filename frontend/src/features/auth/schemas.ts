@@ -18,6 +18,7 @@ export const registerSchema = z.object({
         .regex(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/, 'Le mot de passe doit contenir au moins 1 caractère spécial'),
     password_confirm: z.string(),
     interests: z.array(z.string()).optional(),
+    acquisition_source: z.string().optional(),
     age_consent: z.boolean().refine(val => val === true, {
         message: 'Vous devez certifier avoir plus de 15 ans',
     }),

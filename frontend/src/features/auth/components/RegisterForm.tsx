@@ -46,6 +46,7 @@ export const RegisterForm = () => {
             password: '',
             password_confirm: '',
             interests: [],
+            acquisition_source: '',
             age_consent: false,
             rgpd_consent: false,
         },
@@ -202,6 +203,29 @@ export const RegisterForm = () => {
                         {selectedInterests.length} thématique{selectedInterests.length > 1 ? 's' : ''} sélectionnée{selectedInterests.length > 1 ? 's' : ''}
                     </p>
                 )}
+
+                {/* Acquisition source */}
+                <div className="mt-4">
+                    <label htmlFor="acquisition_source" className="block text-sm font-medium text-neutral-300 mb-1.5">
+                        Comment avez-vous connu ECHO ? <span className="text-neutral-500">(optionnel)</span>
+                    </label>
+                    <select
+                        id="acquisition_source"
+                        {...register('acquisition_source')}
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-1 focus:border-[#D4AF37]/50 focus:ring-[#D4AF37]/30 transition-colors"
+                    >
+                        <option value="">-- Sélectionnez --</option>
+                        <option value="bouche_a_oreille">Bouche-à-oreille</option>
+                        <option value="reseaux_sociaux">Réseaux sociaux</option>
+                        <option value="recherche_web">Recherche web (Google, etc.)</option>
+                        <option value="evenement_projection">Événement / Projection</option>
+                        <option value="partenaire">Un partenaire ECHO</option>
+                        <option value="presse_media">Presse / Médias</option>
+                        <option value="ecole_universite">École / Université</option>
+                        <option value="association">Association / ONG</option>
+                        <option value="autre">Autre</option>
+                    </select>
+                </div>
             </div>
 
             {/* Step 4 — Validation */}

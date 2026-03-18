@@ -8,6 +8,7 @@ interface RegisterPayload {
     password_confirm: string;
     interests?: string[];
     age_consent: boolean;
+    acquisition_source?: string;
 }
 
 interface RegisterResponse {
@@ -18,11 +19,20 @@ interface RegisterResponse {
 }
 
 async function registerUser(data: RegisterPayload): Promise<RegisterResponse> {
+    // Attach UTM params and referrer from sessionStorage
+    const enrichedData = {
+        ...data,
+        utm_source: sessionStorage.getItem('echo_utm_source') || undefined,
+        utm_medium: sessionStorage.getItem('echo_utm_medium') || undefined,
+        utm_campaign: sessionStorage.getItem('echo_utm_campaign') || undefined,
+        referrer: sessionStorage.getItem('echo_referrer') || undefined,
+    };
+
     const res = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify(data),
+        body: JSON.stringify(enrichedData),
     });
     if (!res.ok) {
         const error = await res.json();

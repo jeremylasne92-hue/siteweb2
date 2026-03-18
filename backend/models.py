@@ -44,6 +44,13 @@ class User(BaseModel):
     notification_prefs: NotificationPreferences = Field(default_factory=NotificationPreferences)
     is_member: bool = False
     member_since: Optional[datetime] = None
+    # Acquisition tracking (populated at registration)
+    acquisition_source: Optional[str] = None  # "Comment avez-vous connu ECHO ?"
+    first_utm_source: Optional[str] = None
+    first_utm_medium: Optional[str] = None
+    first_utm_campaign: Optional[str] = None
+    first_referrer: Optional[str] = None
+    deletion_requested_at: Optional[datetime] = None  # RGPD Art. 17
 
     model_config = ConfigDict(json_schema_extra={
         "example": {
@@ -75,6 +82,12 @@ class UserRegister(BaseModel):
     interests: list[str] = Field(default_factory=list)
     age_consent: bool = False
     captcha_token: str = ""
+    # Acquisition tracking (optional, sent by frontend)
+    acquisition_source: Optional[str] = Field(default=None, max_length=200)
+    utm_source: Optional[str] = Field(default=None, max_length=100)
+    utm_medium: Optional[str] = Field(default=None, max_length=100)
+    utm_campaign: Optional[str] = Field(default=None, max_length=200)
+    referrer: Optional[str] = Field(default=None, max_length=500)
 
 
 class UserLoginLocal(BaseModel):
