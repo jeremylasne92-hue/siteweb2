@@ -24,6 +24,7 @@ export const registerSchema = z.object({
     rgpd_consent: z.boolean().refine(val => val === true, {
         message: 'Vous devez accepter les CGU et la politique de confidentialité',
     }),
+    newsletter_opt_in: z.boolean(),
 }).refine(data => data.password === data.password_confirm, {
     message: 'Les mots de passe ne correspondent pas',
     path: ['password_confirm'],

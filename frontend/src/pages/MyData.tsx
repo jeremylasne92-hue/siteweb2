@@ -215,7 +215,7 @@ export default function MyData() {
                         </div>
 
                         <p className="text-xs text-neutral-500 mt-4">
-                            D&apos;autres données peuvent être associées à votre compte (sessions, candidatures, messages de contact, progression vidéo). Utilisez le bouton d&apos;export ci-dessous pour obtenir l&apos;intégralité de vos données.
+                            L&apos;export ci-dessous inclut l&apos;ensemble de vos données : informations de profil, sessions, candidatures, messages de contact, progression vidéo et événements analytics associés. Si vous pensez que des données sont manquantes, contactez-nous à contact@mouvementecho.fr.
                         </p>
                     </div>
 

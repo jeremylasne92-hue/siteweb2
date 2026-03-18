@@ -13,7 +13,7 @@ class UserRole(str, Enum):
 
 
 class NotificationPreferences(BaseModel):
-    newsletter: bool = True
+    newsletter: bool = False
     episodes: bool = True
     events: bool = True
     partners: bool = False
@@ -44,6 +44,8 @@ class User(BaseModel):
     notification_prefs: NotificationPreferences = Field(default_factory=NotificationPreferences)
     is_member: bool = False
     member_since: Optional[datetime] = None
+    consent_date: Optional[datetime] = None
+    consent_version: Optional[str] = None
 
     model_config = ConfigDict(json_schema_extra={
         "example": {
@@ -74,6 +76,7 @@ class UserRegister(BaseModel):
     password_confirm: str
     interests: list[str] = Field(default_factory=list)
     age_consent: bool = False
+    newsletter_opt_in: bool = False
     captcha_token: str = ""
 
 

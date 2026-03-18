@@ -48,6 +48,8 @@ async def lifespan(app: FastAPI):
         await db.password_reset_tokens.create_index("created_at", expireAfterSeconds=86400)
         await db.volunteer_applications.create_index("created_at", expireAfterSeconds=94608000)
         await db.student_applications.create_index("created_at", expireAfterSeconds=94608000)  # 3 years RGPD
+        # RGPD Art. 17: auto-purge accounts 30 days after deletion request
+        await db.users.create_index("deletion_requested_at", expireAfterSeconds=2592000)  # 30 days
     except Exception as e:
         logger.warning(f"TTL index creation: {e}")
 
