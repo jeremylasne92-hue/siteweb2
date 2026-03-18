@@ -90,7 +90,8 @@ async def register_user(data: UserRegister, db: AsyncIOMotorDatabase) -> dict:
     ]
     cleaned_interests = [i for i in (data.interests or []) if i in valid_interests]
 
-    # Create user with acquisition tracking
+    # Create user with acquisition tracking + RGPD consent proof
+    from models import NotificationPreferences
     user = User(
         username=data.username,
         email=normalized_email,
@@ -101,6 +102,12 @@ async def register_user(data: UserRegister, db: AsyncIOMotorDatabase) -> dict:
         first_utm_medium=data.utm_medium,
         first_utm_campaign=data.utm_campaign,
         first_referrer=data.referrer,
+        consent_date=datetime.now(UTC),
+        consent_version="v2026-03-20",
+        consent_ip=data.consent_ip,
+        notification_prefs=NotificationPreferences(
+            newsletter=data.newsletter_optin,
+        ),
     )
     await db.users.insert_one(user.model_dump())
 

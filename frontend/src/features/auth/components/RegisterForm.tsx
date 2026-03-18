@@ -47,6 +47,7 @@ export const RegisterForm = () => {
             password_confirm: '',
             interests: [],
             acquisition_source: '',
+            newsletter_optin: false,
             age_consent: false,
             rgpd_consent: false,
         },
@@ -290,6 +291,26 @@ export const RegisterForm = () => {
                         {errors.rgpd_consent.message}
                     </p>
                 )}
+
+                {/* Newsletter opt-in (RGPD: décoché par défaut) */}
+                <div className="flex items-start space-x-3 bg-white/5 p-4 rounded-lg border border-white/10 transition-colors hover:bg-white/10">
+                    <div className="flex items-center h-5 mt-0.5">
+                        <input
+                            id="newsletter_optin"
+                            type="checkbox"
+                            className="w-4 h-4 text-echo-gold bg-transparent border-white/40 rounded focus:ring-echo-gold focus:ring-2 cursor-pointer"
+                            {...register('newsletter_optin')}
+                        />
+                    </div>
+                    <div className="text-sm">
+                        <label htmlFor="newsletter_optin" className="font-medium text-white cursor-pointer select-none">
+                            Je souhaite recevoir la newsletter de Mouvement ECHO
+                        </label>
+                        <p className="text-echo-textMuted mt-1 text-xs">
+                            Actualités, épisodes, événements. Vous pouvez vous désinscrire à tout moment via votre profil.
+                        </p>
+                    </div>
+                </div>
 
                 {/* Server error */}
                 {registerMutation.isError && (

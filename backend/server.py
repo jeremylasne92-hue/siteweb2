@@ -117,6 +117,12 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Data quality index creation: {e}")
 
+    # RGPD Art. 17 — Auto-purge accounts with deletion_requested_at > 30 days
+    try:
+        await db.users.create_index("deletion_requested_at", expireAfterSeconds=2592000)  # 30 days
+    except Exception as e:
+        logger.warning(f"RGPD deletion TTL index: {e}")
+
     logger.info("Rate limit and retention indexes ensured")
 
     yield  # Application runs here

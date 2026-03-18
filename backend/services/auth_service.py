@@ -131,7 +131,8 @@ async def google_callback_service(code: str, db) -> dict:
             oauth_provider="google",
             oauth_id=user_info.get("id"),
             picture=user_info.get("picture"),
-            is_active=True
+            consent_date=datetime.now(UTC),
+            consent_version="v2026-03-20",
         )
         await db.users.insert_one(user.model_dump())
 

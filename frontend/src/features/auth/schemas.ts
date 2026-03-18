@@ -19,6 +19,7 @@ export const registerSchema = z.object({
     password_confirm: z.string(),
     interests: z.array(z.string()).optional(),
     acquisition_source: z.string().optional(),
+    newsletter_optin: z.boolean().optional(),
     age_consent: z.boolean().refine(val => val === true, {
         message: 'Vous devez certifier avoir plus de 15 ans',
     }),

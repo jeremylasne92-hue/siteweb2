@@ -13,7 +13,7 @@ class UserRole(str, Enum):
 
 
 class NotificationPreferences(BaseModel):
-    newsletter: bool = True
+    newsletter: bool = False  # RGPD: opt-in requis (CJUE Planet49)
     episodes: bool = True
     events: bool = True
     partners: bool = False
@@ -50,6 +50,10 @@ class User(BaseModel):
     first_utm_medium: Optional[str] = None
     first_utm_campaign: Optional[str] = None
     first_referrer: Optional[str] = None
+    # RGPD Art. 7.1 — Preuve de consentement
+    consent_date: Optional[datetime] = None
+    consent_version: Optional[str] = None  # ex: "v2026-03-20"
+    consent_ip: Optional[str] = None  # IP anonymisée (dernier octet masqué)
     deletion_requested_at: Optional[datetime] = None  # RGPD Art. 17
 
     model_config = ConfigDict(json_schema_extra={
@@ -88,6 +92,9 @@ class UserRegister(BaseModel):
     utm_medium: Optional[str] = Field(default=None, max_length=100)
     utm_campaign: Optional[str] = Field(default=None, max_length=200)
     referrer: Optional[str] = Field(default=None, max_length=500)
+    newsletter_optin: bool = False  # RGPD: opt-in explicite
+    # Set server-side (not from frontend)
+    consent_ip: Optional[str] = None
 
 
 class UserLoginLocal(BaseModel):

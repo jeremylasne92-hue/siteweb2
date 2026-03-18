@@ -119,6 +119,16 @@ async def register(request: Request, user_data: UserRegister, db: AsyncIOMotorDa
     else:
         logger.warning("RECAPTCHA_SECRET_KEY not set — skipping server-side verification in dev")
 
+    # RGPD Art. 7.1 — Store anonymized IP for consent proof
+    client_ip = request.client.host if request.client else "unknown"
+    # Anonymize: mask last octet (IPv4) or last 80 bits (IPv6)
+    if "." in client_ip:
+        user_data.consent_ip = ".".join(client_ip.split(".")[:3]) + ".0"
+    elif ":" in client_ip:
+        user_data.consent_ip = ":".join(client_ip.split(":")[:4]) + "::0"
+    else:
+        user_data.consent_ip = "unknown"
+
     try:
         result = await register_user(user_data, db)
     except PyMongoError as e:

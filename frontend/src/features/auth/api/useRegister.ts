@@ -9,6 +9,7 @@ interface RegisterPayload {
     interests?: string[];
     age_consent: boolean;
     acquisition_source?: string;
+    newsletter_optin?: boolean;
 }
 
 interface RegisterResponse {
