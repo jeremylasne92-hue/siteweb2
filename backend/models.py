@@ -410,6 +410,9 @@ class StudentApplicationRequest(BaseModel):
         import re
         if not re.match(r"^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$", v):
             raise ValueError("Le format doit être YYYY-MM-DD (ex: 2026-09-10)")
+        year = int(v[:4])
+        if year < 2024 or year > 2030:
+            raise ValueError("L'année doit être entre 2024 et 2030")
         return v
 
 
@@ -467,4 +470,7 @@ class StudentEditUpdate(BaseModel):
         import re
         if not re.match(r"^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$", v):
             raise ValueError("Le format doit être YYYY-MM-DD (ex: 2026-09-10)")
+        year = int(v[:4])
+        if year < 2024 or year > 2030:
+            raise ValueError("L'année doit être entre 2024 et 2030")
         return v

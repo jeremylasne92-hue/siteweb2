@@ -157,6 +157,20 @@ export function StudentApplicationForm() {
                 setError('Veuillez choisir votre disponibilité.');
                 return;
             }
+            // Validate start_date if provided
+            const startDateInput = form.querySelector('input[name="start_date"]') as HTMLInputElement;
+            if (startDateInput?.value) {
+                const dateVal = new Date(startDateInput.value);
+                const year = dateVal.getFullYear();
+                if (isNaN(year) || year < 2024 || year > 2030) {
+                    setError('La date de début doit être entre 2024 et 2030.');
+                    return;
+                }
+                if (dateVal < new Date()) {
+                    setError('La date de début ne peut pas être dans le passé.');
+                    return;
+                }
+            }
             // Capture form data for summary before moving to step 3
             const nameVal = (form.querySelector('input[name="name"]') as HTMLInputElement)?.value || '';
             const emailVal = (form.querySelector('input[name="email"]') as HTMLInputElement)?.value || '';
@@ -317,6 +331,8 @@ export function StudentApplicationForm() {
                         type="date"
                         id="start_date"
                         name="start_date"
+                        min={new Date().toISOString().split('T')[0]}
+                        max="2030-12-31"
                         className="w-full bg-black/20 border border-white/10 rounded-md py-2 px-3 text-white placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-white/30 text-sm [&::-webkit-calendar-picker-indicator]:invert"
                     />
                 </div>
