@@ -68,7 +68,8 @@ async def _get_valid_token(token: str, db: AsyncIOMotorDatabase) -> dict:
             detail="Ce lien de réinitialisation est invalide ou a déjà été utilisé."
         )
 
-    if datetime.now(UTC) > token_doc["expires_at"]:
+    from utils.date_helpers import ensure_aware
+    if datetime.now(UTC) > ensure_aware(token_doc["expires_at"]):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Ce lien de réinitialisation a expiré. Veuillez en demander un nouveau."

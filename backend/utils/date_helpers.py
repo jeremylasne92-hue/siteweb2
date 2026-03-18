@@ -1,4 +1,15 @@
-from datetime import datetime
+from datetime import datetime, timezone
+
+UTC = timezone.utc
+
+
+def ensure_aware(dt: datetime | None) -> datetime | None:
+    """Ensure a datetime is timezone-aware (UTC). Handles naive dates from pre-migration data."""
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=UTC)
+    return dt
 
 
 def format_date_csv(dt: datetime | None) -> str:

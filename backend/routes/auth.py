@@ -8,7 +8,7 @@ from services.password_reset_service import request_reset, verify_token, reset_p
 from email_service import send_2fa_code
 from pymongo.errors import PyMongoError
 from utils.rate_limit import check_rate_limit
-from utils.date_helpers import format_date_csv
+from utils.date_helpers import format_date_csv, ensure_aware
 from core.config import settings
 from datetime import datetime, timedelta, UTC
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -55,7 +55,8 @@ async def get_current_user(request: Request, db: AsyncIOMotorDatabase = Depends(
     
     # Find session
     session = await db.user_sessions.find_one({"session_token": session_token})
-    if not session or session["expires_at"] < datetime.now(UTC):
+    expires_at = ensure_aware(session["expires_at"]) if session else None
+    if not session or expires_at < datetime.now(UTC):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired session"
@@ -277,7 +278,7 @@ async def verify_2fa(data: Verify2FARequest, response: Response, request: Reques
         )
 
     # Check expiration
-    if pending["expires_at"] < datetime.now(UTC):
+    if ensure_aware(pending["expires_at"]) < datetime.now(UTC):
         await db.pending_2fa.delete_one({"user_id": data.user_id})
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
