@@ -293,11 +293,11 @@ async def admin_update_member(
         raise HTTPException(status_code=400, detail="Aucun champ à mettre à jour")
     update_data["updated_at"] = datetime.now(UTC)
 
-    # Auto-geocode if city changed
+    # Auto-geocode if city changed (no country restriction — members can be worldwide)
     if "city" in update_data:
         try:
             from utils.geocode import geocode_city
-            coords = await geocode_city(update_data["city"])
+            coords = await geocode_city(update_data["city"], country="")
             if coords:
                 update_data["latitude"] = coords[0]
                 update_data["longitude"] = coords[1]
@@ -519,7 +519,7 @@ async def admin_backfill_geocoding(
         "$or": [{"latitude": None}, {"latitude": {"$exists": False}}],
     })
     async for doc in cursor:
-        coords = await geocode_city(doc["city"])
+        coords = await geocode_city(doc["city"], country="")
         if coords:
             await db.member_profiles.update_one(
                 {"id": doc["id"]},
@@ -534,7 +534,7 @@ async def admin_backfill_geocoding(
         "$or": [{"latitude": None}, {"latitude": {"$exists": False}}],
     })
     async for doc in cursor:
-        coords = await geocode_city(doc["city"])
+        coords = await geocode_city(doc["city"], country="")
         if coords:
             await db.volunteer_applications.update_one(
                 {"id": doc["id"]},
