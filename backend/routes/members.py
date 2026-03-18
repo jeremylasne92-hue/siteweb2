@@ -551,3 +551,24 @@ async def admin_backfill_geocoding(
         "updated_members": updated_members,
         "updated_volunteers": updated_volunteers,
     }
+
+
+@admin_router.post("/backfill-visibility")
+async def admin_backfill_visibility(
+    admin: User = Depends(require_admin),
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    """Fix data inconsistency: set visible=True for all active members with visible=False."""
+    result = await db.member_profiles.update_many(
+        {"membership_status": "active", "visible": False},
+        {"$set": {"visible": True, "updated_at": datetime.now(UTC)}},
+    )
+    fixed = result.modified_count
+
+    await log_admin_action(
+        db, admin.id, "backfill_visibility",
+        "member_profiles", "bulk",
+        {"fixed": fixed},
+    )
+    logger.info(f"Admin {admin.id} backfill-visibility: {fixed} members fixed")
+    return {"fixed": fixed, "message": f"{fixed} membre(s) actif(s) remis visibles"}

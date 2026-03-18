@@ -40,7 +40,7 @@ async def get_all_users(
     """Get all users with pagination (admin only)"""
     users = await db.users.find(
         {},
-        {"password_hash": 0, "totp_secret": 0}  # Exclude sensitive fields
+        {"_id": 0, "password_hash": 0, "totp_secret": 0}  # Exclude sensitive + Mongo internal
     ).skip(skip).limit(limit).to_list(limit)
     
     total = await db.users.count_documents({})
