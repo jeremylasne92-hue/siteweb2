@@ -6,14 +6,17 @@
 
 ## 📋 État du Projet
 
-**Dernière mise à jour** : 2026-03-18 (soir)
+**Dernière mise à jour** : 2026-03-18 (nuit)
 **Phase actuelle** : Pré-lancement J-2 (lancement 20 mars 2026)
-**Statut** : ✅ Opérationnel — Code prêt pour déploiement. Audit code + harmonisation UX + tests endpoints manuels OK.
-**Dernier milestone** : Harmonisation complète formulaires (10 forms audités), password strength UI sur 3 formulaires, tests manuels endpoints (49/51 PASS)
+**Statut** : ✅ Opérationnel — Code prêt pour déploiement. Audit complet (code, sécurité, SEO, accessibilité, organisation fichiers, performance images).
+**Dernier milestone** : Audit pré-déploiement complet : images optimisées (144MB→6MB, -96%), organisation fichiers nettoyée, 0 vulnérabilités npm, 275 backend + 32 frontend tests OK, build OK.
 
 ### ⚠️ Rappels Pré-Lancement (20 mars 2026)
 - [x] Bandeau cookies RGPD intégré + tracking conditionné au consentement
-- [x] Audit sécurité : XSS fix, CSP whitelist, geo validation, deps nettoyées
+- [x] Audit sécurité : XSS fix, CSP whitelist, geo validation, deps nettoyées, npm 0 vulnérabilités
+- [x] Images optimisées (144MB→6MB), fichiers renommés (kebab-case, pas d'espaces/accents)
+- [x] Code mort nettoyé (Partners.tsx, Breadcrumbs.tsx, dossiers vides)
+- [x] Audit SEO (og tags, twitter:image, JSON-LD, canonical) + a11y (lang, alt, responsive)
 - [x] Backend déployé sur Render (echo-api-kfre.onrender.com)
 - [x] MongoDB Atlas M0 configuré (echo-cluster, Paris)
 - [ ] **CNAME DNS** : api.mouvementecho.fr → echo-api-kfre.onrender.com (OVH)
@@ -33,13 +36,31 @@
 ```
 frontend/src/
 ├── components/
-│   ├── layout/    # Header, Footer
-│   └── ui/        # Button, Card, Input
-├── pages/         # Home, Serie, Contact, Events, ECHOsystem
-├── App.tsx        # Router principal
+│   ├── layout/    # Header, Footer, Layout
+│   ├── ui/        # Button, Card, Input, Modal, Toast, CityAutocomplete...
+│   ├── forms/     # StudentApp, VolunteerApp, TechApp, ScenaristApp...
+│   ├── partners/  # PartnerModal, PartnersMap, PartnerAnalytics, MemberModal...
+│   └── seo/       # SEO (meta tags dynamiques)
+├── features/auth/ # Login, Register, ResetPassword, store, schemas
+├── pages/         # 36 pages (Home, Serie, Mouvement, admin/*, profil...)
+├── hooks/         # useAnalytics, usePageTracking, useUrlFilters
+├── config/        # api.ts, booking.ts, candidatures.ts, donation.ts
+├── utils/         # analytics.ts, validation.ts
+├── types/         # mediatheque.ts, member.ts
+├── App.tsx        # Router principal (35 routes, lazy-loaded)
 ├── main.tsx       # Point d'entrée
 └── index.css      # Styles globaux + thème Nature
 ```
+### Images (frontend/public/images/)
+```
+images/
+├── characters/    # 15 personnages série (800x1192px, JPEG optimisé)
+├── tree-growth/   # 8 étapes arbre (1200px, JPEG) — ex "Image arbre en croissance"
+├── team/          # 6 photos équipe (800px, JPEG) — ex "Photo équipe"
+├── cognisphere/   # 6 mockups app
+└── echolink/      # 3 mockups hub
+```
+> **Convention images** : kebab-case, pas d'espaces ni accents, JPEG optimisé ≤300KB
 
 ### Backend (FastAPI + MongoDB via Motor)
 ```
@@ -165,6 +186,7 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-18 | Audit pré-déploiement complet : (1) Images optimisées 144MB→6MB (-96%, Pillow resize+JPEG), 5 inutilisées supprimées, 32 compressées. (2) Renommage dossiers/fichiers images (espaces/accents→kebab-case : "Image arbre en croissance"→tree-growth, "Photo équipe"→team). (3) Nettoyage code mort (Partners.tsx doublon, Breadcrumbs.tsx orphelin, services/ vide, Logo/ vide). (4) twitter:image ajouté index.html. (5) npm audit fix (0 vulnérabilités). (6) Audit sécurité (CORS, CSP, cookies, rate limiting, validation input — tout OK). (7) Audit SEO/a11y (og tags, JSON-LD, lang=fr, responsive, error boundary — OK). (8) Audit organisation fichiers (routes 35/35 couvertes, imports sans circulaires, nommage cohérent). 275 backend + 32 frontend tests OK, build OK. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-18 | Fix UX validation disponibilité StudentApplicationForm + VolunteerApplicationForm : message d'erreur explicite listant les options (stage court, long, alternance, temps partiel), auto-clear erreur quand l'utilisateur sélectionne un radio ou une compétence. Test mis à jour. Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-18 | Harmonisation UX complète 10 formulaires : (1) placeholders email standardisés "votre@email.com" (RegisterForm, EmailLoginForm), (2) style erreur Contact.tsx aligné (bandeau rouge harmonisé), (3) messages succès candidatures uniformisés "avec succès" (TechApp, ScenaristApp), (4) honeypot anti-spam ajouté PartnerFormModal, (5) placeholders + "(optionnel)" ajoutés champs partenaire (contact_name, contact_role, contact_email, website_url), (6) loading text harmonisé "Envoi..." Contact.tsx. 32 tests + build OK. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-18 | Password strength UI harmonisé sur 3 formulaires : nouveau composant PasswordRequirements.tsx (checklist temps réel 4 critères : 8 chars, majuscule, chiffre, spécial), barre de force colorée (4 niveaux), intégré sur RegisterForm, ResetPasswordForm, PartnerFormModal. PartnerFormModal enrichi : œil show/hide (Eye/EyeOff), champ confirmation password, validation isStep4Valid étendue. Backend auth.py : validate_password_strength sur change-password. Niveau STANDARD. | Claude Code (Opus 4.6) |
@@ -246,6 +268,7 @@ frontend/src/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-18 | 🟡 STANDARD | Audit pré-déploiement (images 144→6MB, renommage fichiers, code mort, npm audit, sécurité, SEO, organisation) | ~30min | Claude Code (Opus 4.6) |
 | 2026-03-18 | 🟢 HOTFIX | Fix UX validation disponibilité (message explicite + auto-clear erreur, StudentApp + VolunteerApp) | ~10min | Claude Code (Opus 4.6) |
 | 2026-03-18 | 🟡 STANDARD | Harmonisation UX 10 formulaires (placeholders, erreurs, succès, honeypot, optionnel, loading) | ~20min | Claude Code (Opus 4.6) |
 | 2026-03-18 | 🟡 STANDARD | Password strength UI (PasswordRequirements.tsx, barre force, œil, confirm — 3 formulaires + backend) | ~25min | Claude Code (Opus 4.6) |
