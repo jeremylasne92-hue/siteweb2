@@ -6,8 +6,8 @@
 
 ## 📋 État du Projet
 
-**Dernière mise à jour** : 2026-03-17
-**Phase actuelle** : Pré-lancement J-3 (lancement 20 mars 2026)
+**Dernière mise à jour** : 2026-03-18
+**Phase actuelle** : Pré-lancement J-2 (lancement 20 mars 2026)
 **Statut** : ✅ Opérationnel — Audit sécurité + cookie consent + déploiement infra en cours
 **Dernier milestone** : Audit externe vérifié (4 fixes appliqués, 6 faux positifs rejetés) + bandeau cookies RGPD intégré
 
@@ -19,6 +19,8 @@
 - [ ] **CNAME DNS** : api.mouvementecho.fr → echo-api-kfre.onrender.com (OVH)
 - [ ] **Custom domain** dans Render Dashboard
 - [ ] **GOOGLE_CLIENT_SECRET** dans Render env vars
+- [ ] **SENDGRID_API_KEY** dans Render env vars (obligatoire pour emails : reset MDP, notifications candidatures)
+- [ ] **FRONTEND_URL** dans Render env vars (obligatoire pour liens dans les emails de reset MDP)
 - [ ] Build de production (`npm run build`) + FTP upload `dist/` sur OVH
 - [ ] Recette manuelle (5 parcours utilisateur)
 - [ ] **Revoir le Dashboard Partenaire** avant la sortie officielle (UX, données, design)
@@ -163,6 +165,7 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-18 | CityAutocomplete international : suppression restriction `countrycodes=fr` dans Nominatim API, ajout pays + région dans le détail des suggestions (ex: "Dublin, Comté de Dublin, Irlande"), déduplication par ville+pays. Ajout SENDGRID_API_KEY et FRONTEND_URL à la checklist pré-lancement Render. Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-18 | Carte mondiale + géocodeur international : (1) AutoFitBounds Leaflet pour ajuster le zoom à tous les marqueurs (monde entier), (2) geocode_city étendu — suppression restriction country=France, fallback mondial, (3) 10 candidatures test dans 10 pays (Japon, Brésil, Sénégal, Irlande, Pologne, Italie, Maroc, Danemark, Inde, Mexique), (4) validation dates année 2024-2030 (frontend min/max + backend), (5) textes CogniSphère/ECHOLink mis à jour ("Bêta", lancement 1T2027), (6) 3×15=45 tests API (Contact+Partenaires+Admin/Exports) : 42 PASS 0 FAIL 3 SKIP. Issue backlog : GET /contact/admin/all manque champ id. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-18 | Refonte page Soutenir (3 campagnes HelloAsso Lille/Lyon/Bordeaux), composant HelloAssoCounter iframe sécurisé, badge J-XX dynamique, config donation.ts 3 campagnes. Fix erreurs formulaires candidature (422→message précis au lieu de générique). Fix bug profil "Bénévole Invalid Date" (array vide truthy). Validateur start_date sur StudentEditUpdate. Batterie 25 tests API (12 candidatures + 13 utilisateurs) : 22 PASS, 3 FAIL (cookie session test-only). Checklist pré-lancement + design doc. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-17 | Harmonisation dates complète : (1) datetime.utcnow()→datetime.now(UTC) dans 31 fichiers backend (models, routes, services, utils, tests), (2) helper format_date_csv (DD/MM/YYYY HH:MM) + format_date_str_fr pour CSV exports lisibles Excel, (3) start_date strict YYYY-MM-DD (suppression YYYY-MM), (4) fix timezone AdminEvents.tsx, (5) affichage start_date DD/MM/YYYY dans AdminStudents, (6) script migration MongoDB (scripts/migrate_dates_utc.py) pour dates naïves→UTC-aware. 39 fichiers, 205 tests backend + 32 frontend. Niveau STANDARD. | Claude Code (Opus 4.6) |

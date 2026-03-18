@@ -11,6 +11,7 @@ interface NominatimResult {
 interface CityDisplay {
     city: string;
     detail: string;
+    country: string;
     raw: NominatimResult;
 }
 
@@ -79,27 +80,30 @@ export function CityAutocomplete({ label, name, placeholder, required, value: co
         setIsLoading(true);
         try {
             const res = await fetch(
-                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&addressdetails=1&countrycodes=fr`,
+                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&addressdetails=1&limit=10`,
                 { headers: { 'User-Agent': 'MouvementECHO/1.0' } },
             );
             if (res.ok) {
                 const data: NominatimResult[] = await res.json();
-                // Extract city from each result, deduplicate
+                // Extract city from each result, deduplicate by city+country
                 const seen = new Set<string>();
                 const results: CityDisplay[] = [];
-                for (const item of data.slice(0, 8)) {
+                for (const item of data.slice(0, 10)) {
                     const addr = item.address || {};
                     const city = extractCity(addr);
                     if (!city) continue;
-                    const key = city.toLowerCase();
+                    const country = addr.country || '';
+                    const key = `${city.toLowerCase()}|${country.toLowerCase()}`;
                     if (seen.has(key)) continue;
                     seen.add(key);
                     // Remember this city for exact-match validation
-                    knownCitiesRef.current.add(key);
-                    const dept = addr.county || addr.state || '';
+                    knownCitiesRef.current.add(city.toLowerCase());
+                    const region = addr.county || addr.state || '';
+                    const parts = [city, region, country].filter(Boolean);
                     results.push({
                         city,
-                        detail: dept ? `${city}, ${dept}` : city,
+                        detail: parts.join(', '),
+                        country,
                         raw: item,
                     });
                 }
