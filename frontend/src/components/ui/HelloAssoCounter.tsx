@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Heart } from 'lucide-react';
 
 interface HelloAssoCounterProps {
@@ -11,7 +12,26 @@ interface HelloAssoCounterProps {
 const isProduction = !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1');
 
 export function HelloAssoCounter({ src, title, objective = 1200, className = '' }: HelloAssoCounterProps) {
-    // En dev/localhost : afficher un compteur custom (HelloAsso bloque les iframes)
+    const iframeRef = useRef<HTMLIFrameElement>(null);
+
+    // Auto-resize identique au code officiel HelloAsso
+    useEffect(() => {
+        if (!isProduction) return;
+
+        const handleMessage = (e: MessageEvent) => {
+            const dataHeight = e.data?.height;
+            const iframe = iframeRef.current;
+            if (dataHeight && iframe) {
+                if (dataHeight > parseFloat(iframe.height || '0')) {
+                    iframe.height = dataHeight + 'px';
+                }
+            }
+        };
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, []);
+
+    // En dev/localhost : fallback statique (HelloAsso bloque les iframes)
     if (!isProduction) {
         return (
             <div
@@ -33,18 +53,19 @@ export function HelloAssoCounter({ src, title, objective = 1200, className = '' 
         );
     }
 
-    // En production : iframe HelloAsso widget compteur
+    // En production : iframe officielle HelloAsso (compteur temps réel)
     return (
         <div
-            className={`w-full max-w-[350px] mx-auto rounded-xl overflow-hidden border border-echo-gold/30 bg-white ${className}`}
+            className={`w-full max-w-[350px] mx-auto rounded-xl overflow-hidden border border-echo-gold/30 ${className}`}
             aria-label={title}
         >
             <iframe
+                ref={iframeRef}
                 src={src}
                 title={title}
-                className="w-full border-none"
-                style={{ height: '120px' }}
-                loading="lazy"
+                // @ts-expect-error — allowtransparency is a non-standard HTML attribute (requis par HelloAsso)
+                allowtransparency="true"
+                style={{ width: '100%', border: 'none' }}
             />
         </div>
     );
