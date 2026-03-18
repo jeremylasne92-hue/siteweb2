@@ -276,6 +276,8 @@ class ContactMessage(BaseModel):
     ip_address: str  # anonymisé
     created_at: datetime = Field(default_factory=datetime.utcnow)
     read: bool = False
+    read_at: Optional[datetime] = None
+    read_by: Optional[str] = None
 
 
 class AnalyticsEventCreate(BaseModel):
