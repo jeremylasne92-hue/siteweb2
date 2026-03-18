@@ -186,6 +186,7 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-18 | Page Soutenir : (1) Image de fond hero ajoutée (Unsplash mains en coupe, opacity 15%) pour cohérence avec les autres pages. (2) HelloAssoCounter refactorisé : code aligné sur l'embed officiel HelloAsso (allowtransparency, auto-resize postMessage, pas de sandbox). Iframe native en production (compteur temps réel mis à jour automatiquement avec les contributions), fallback custom en dev (HelloAsso bloque X-Frame-Options depuis localhost). Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-18 | Audit pré-déploiement complet : (1) Images optimisées 144MB→6MB (-96%, Pillow resize+JPEG), 5 inutilisées supprimées, 32 compressées. (2) Renommage dossiers/fichiers images (espaces/accents→kebab-case : "Image arbre en croissance"→tree-growth, "Photo équipe"→team). (3) Nettoyage code mort (Partners.tsx doublon, Breadcrumbs.tsx orphelin, services/ vide, Logo/ vide). (4) twitter:image ajouté index.html. (5) npm audit fix (0 vulnérabilités). (6) Audit sécurité (CORS, CSP, cookies, rate limiting, validation input — tout OK). (7) Audit SEO/a11y (og tags, JSON-LD, lang=fr, responsive, error boundary — OK). (8) Audit organisation fichiers (routes 35/35 couvertes, imports sans circulaires, nommage cohérent). 275 backend + 32 frontend tests OK, build OK. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-18 | Fix UX validation disponibilité StudentApplicationForm + VolunteerApplicationForm : message d'erreur explicite listant les options (stage court, long, alternance, temps partiel), auto-clear erreur quand l'utilisateur sélectionne un radio ou une compétence. Test mis à jour. Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-18 | Harmonisation UX complète 10 formulaires : (1) placeholders email standardisés "votre@email.com" (RegisterForm, EmailLoginForm), (2) style erreur Contact.tsx aligné (bandeau rouge harmonisé), (3) messages succès candidatures uniformisés "avec succès" (TechApp, ScenaristApp), (4) honeypot anti-spam ajouté PartnerFormModal, (5) placeholders + "(optionnel)" ajoutés champs partenaire (contact_name, contact_role, contact_email, website_url), (6) loading text harmonisé "Envoi..." Contact.tsx. 32 tests + build OK. Niveau STANDARD. | Claude Code (Opus 4.6) |
@@ -268,6 +269,7 @@ frontend/src/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-18 | 🟢 HOTFIX | Page Soutenir : image fond hero + HelloAssoCounter aligné code officiel (postMessage, allowtransparency, fallback dev) | ~15min | Claude Code (Opus 4.6) |
 | 2026-03-18 | 🟡 STANDARD | Audit pré-déploiement (images 144→6MB, renommage fichiers, code mort, npm audit, sécurité, SEO, organisation) | ~30min | Claude Code (Opus 4.6) |
 | 2026-03-18 | 🟢 HOTFIX | Fix UX validation disponibilité (message explicite + auto-clear erreur, StudentApp + VolunteerApp) | ~10min | Claude Code (Opus 4.6) |
 | 2026-03-18 | 🟡 STANDARD | Harmonisation UX 10 formulaires (placeholders, erreurs, succès, honeypot, optionnel, loading) | ~20min | Claude Code (Opus 4.6) |
