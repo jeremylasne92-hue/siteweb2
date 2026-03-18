@@ -20,7 +20,7 @@ interface HasCoordinates {
 export function computeMarkerOffsets<T extends HasCoordinates>(
     items: T[],
     precision = 2,
-    offsetRadius = 0.15
+    offsetRadius = 0.012
 ): Map<number, [number, number]> {
     const offsets = new Map<number, [number, number]>();
     const groups = new Map<string, number[]>();
