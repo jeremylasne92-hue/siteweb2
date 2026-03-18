@@ -63,7 +63,7 @@ export function Cognisphere() {
             <div className="bg-amber-500/10 border-b border-amber-500/20">
                 <div className="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-center gap-2 text-sm text-amber-400">
                     <span className="inline-block w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                    Plateforme en cours de développement — Lancement prévu : juin 2026
+                    Bêta en cours de développement — Lancement prévu : juin 2026
                 </div>
             </div>
 
