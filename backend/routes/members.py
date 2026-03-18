@@ -269,6 +269,8 @@ async def admin_update_status(
     update: dict = {"membership_status": body.membership_status, "updated_at": datetime.now(UTC)}
     if body.membership_status in ("inactive", "suspended"):
         update["visible"] = False
+    elif body.membership_status == "active":
+        update["visible"] = True
 
     result = await db.member_profiles.update_one(
         {"id": profile_id},
