@@ -58,7 +58,7 @@ export default function AdminAnalytics() {
         return r.json();
       })
       .then(d => { if (!cancelled) setData(d); })
-      .catch(console.error)
+      .catch((err) => { if (import.meta.env.DEV) console.error(err); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [period]);

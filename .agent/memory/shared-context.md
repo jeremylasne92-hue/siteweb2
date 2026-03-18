@@ -8,8 +8,8 @@
 
 **Dernière mise à jour** : 2026-03-18
 **Phase actuelle** : Pré-lancement J-2 (lancement 20 mars 2026)
-**Statut** : ✅ Opérationnel — Audit sécurité + cookie consent + déploiement infra en cours
-**Dernier milestone** : Audit externe vérifié (4 fixes appliqués, 6 faux positifs rejetés) + bandeau cookies RGPD intégré
+**Statut** : ✅ Opérationnel — Audit code complet + corrections RGPD + déploiement infra en cours
+**Dernier milestone** : Audit code exhaustif (~120 constats) analysé, 50% faux positifs identifiés, 15 corrections appliquées (P0+P1+P2)
 
 ### ⚠️ Rappels Pré-Lancement (20 mars 2026)
 - [x] Bandeau cookies RGPD intégré + tracking conditionné au consentement
@@ -165,6 +165,7 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-18 | Audit code exhaustif (~120 constats, 10 cycles adversariaux) analysé et trié : 50% faux positifs identifiés (14 CRITIQUES/HAUTES déjà corrigées). 15 corrections appliquées : P0 — CORS .strip(), .to_list() borné (10000 exports, 1000 queries), asyncio.gather return_exceptions (4 endpoints), ObjectId validation mediatheque, slug collision partner edit, contact messages UUID id, analytics rate limiting (100/min), Content-Length middleware (10MB). P1 — Button CSS spinner (remplace emoji ⏳), console.error conditionnel DEV, aria-label 8 boutons sociaux, localhost centralisé (GoogleLoginButton+analytics). P2 accessibilité — skip-to-main Layout, aria-expanded FAQ, focus trap Modal. Doublon "Le 47" supprimé + 7 partenaires sans id corrigés + offset carte réduit (0.15°→0.012°). 275 backend + 32 frontend tests OK. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-18 | CityAutocomplete international : suppression restriction `countrycodes=fr` dans Nominatim API, ajout pays + région dans le détail des suggestions (ex: "Dublin, Comté de Dublin, Irlande"), déduplication par ville+pays. Ajout SENDGRID_API_KEY et FRONTEND_URL à la checklist pré-lancement Render. Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-18 | Carte mondiale + géocodeur international : (1) AutoFitBounds Leaflet pour ajuster le zoom à tous les marqueurs (monde entier), (2) geocode_city étendu — suppression restriction country=France, fallback mondial, (3) 10 candidatures test dans 10 pays (Japon, Brésil, Sénégal, Irlande, Pologne, Italie, Maroc, Danemark, Inde, Mexique), (4) validation dates année 2024-2030 (frontend min/max + backend), (5) textes CogniSphère/ECHOLink mis à jour ("Bêta", lancement 1T2027), (6) 3×15=45 tests API (Contact+Partenaires+Admin/Exports) : 42 PASS 0 FAIL 3 SKIP. Issue backlog : GET /contact/admin/all manque champ id. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-18 | Refonte page Soutenir (3 campagnes HelloAsso Lille/Lyon/Bordeaux), composant HelloAssoCounter iframe sécurisé, badge J-XX dynamique, config donation.ts 3 campagnes. Fix erreurs formulaires candidature (422→message précis au lieu de générique). Fix bug profil "Bénévole Invalid Date" (array vide truthy). Validateur start_date sur StudentEditUpdate. Batterie 25 tests API (12 candidatures + 13 utilisateurs) : 22 PASS, 3 FAIL (cookie session test-only). Checklist pré-lancement + design doc. Niveau STANDARD. | Claude Code (Opus 4.6) |

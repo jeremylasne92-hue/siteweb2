@@ -180,13 +180,13 @@ async def export_optins_csv(
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
     """Export all opt-in emails as CSV (admin only)"""
-    optins = await db.episode_optins.find().to_list(None)
+    optins = await db.episode_optins.find().to_list(length=10000)
 
     # Build user_id -> email lookup
     user_ids = list({o["user_id"] for o in optins})
     emails_map = {}
     if user_ids:
-        users = await db.users.find({"id": {"$in": user_ids}}).to_list(None)
+        users = await db.users.find({"id": {"$in": user_ids}}).to_list(length=10000)
         emails_map = {u["id"]: u.get("email", "") for u in users}
 
     # Generate CSV with UTF-8 BOM for Excel compatibility

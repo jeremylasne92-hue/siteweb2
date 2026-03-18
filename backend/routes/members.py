@@ -238,10 +238,11 @@ async def admin_analytics(
             {"$group": {"_id": f"${field}", "count": {"$sum": 1}}},
             {"$sort": {"count": -1}},
         ]
-        return await db.member_profiles.aggregate(pipeline).to_list(length=None)
+        return await db.member_profiles.aggregate(pipeline).to_list(length=1000)
 
     results = await asyncio.gather(
-        *[run_pipeline(f) for f in fields.values()]
+        *[run_pipeline(f) for f in fields.values()],
+        return_exceptions=True,
     )
 
     data = {}

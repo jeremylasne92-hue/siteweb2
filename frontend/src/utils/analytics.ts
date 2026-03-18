@@ -6,14 +6,15 @@
  * (par ex, en cliquant un bouton externe comme HelloAsso).
  */
 
+import { ANALYTICS_API } from '../config/api';
+
 interface AnalyticsEvent {
     category: string;
     action: string;
     path: string;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
-const ANALYTICS_ENDPOINT = `${API_BASE_URL}/analytics/events`;
+const ANALYTICS_ENDPOINT = `${ANALYTICS_API}/events`;
 
 
 export const trackEvent = (category: string, action: string, path?: string) => {

@@ -5,6 +5,7 @@ from datetime import datetime, UTC
 from typing import Optional
 
 from bson import ObjectId
+from bson.errors import InvalidId
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
@@ -18,6 +19,14 @@ admin_router = APIRouter(prefix="/admin/mediatheque", tags=["Médiathèque Admin
 UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads", "media")
 ALLOWED_MIME_TYPES = {"application/pdf"}
 MAX_FILE_SIZE = 20 * 1024 * 1024  # 20 MB
+
+
+def _validate_object_id(resource_id: str) -> ObjectId:
+    """Validate and convert a string to ObjectId, raising 400 on invalid format."""
+    try:
+        return ObjectId(resource_id)
+    except (InvalidId, Exception):
+        raise HTTPException(status_code=400, detail="Invalid resource ID format")
 
 
 def _doc_to_resource(doc: dict) -> dict:
@@ -56,7 +65,7 @@ async def list_resources(
 async def get_resource(resource_id: str, db: AsyncIOMotorDatabase = Depends(get_db)):
     """Get a single published resource by ID."""
     doc = await db.media_resources.find_one({
-        "_id": ObjectId(resource_id),
+        "_id": _validate_object_id(resource_id),
         "is_published": True
     })
     if not doc:
@@ -108,7 +117,7 @@ async def update_resource(
     doc["updated_at"] = datetime.now(UTC)
 
     result = await db.media_resources.find_one_and_update(
-        {"_id": ObjectId(resource_id)},
+        {"_id": _validate_object_id(resource_id)},
         {"$set": doc},
         return_document=True
     )
@@ -124,7 +133,7 @@ async def delete_resource(
     db: AsyncIOMotorDatabase = Depends(get_db),
 ):
     """Delete a media resource."""
-    result = await db.media_resources.delete_one({"_id": ObjectId(resource_id)})
+    result = await db.media_resources.delete_one({"_id": _validate_object_id(resource_id)})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Resource not found")
     return {"message": "Resource deleted"}
@@ -137,13 +146,13 @@ async def toggle_publish(
     db: AsyncIOMotorDatabase = Depends(get_db),
 ):
     """Toggle the is_published status of a resource."""
-    doc = await db.media_resources.find_one({"_id": ObjectId(resource_id)})
+    doc = await db.media_resources.find_one({"_id": _validate_object_id(resource_id)})
     if not doc:
         raise HTTPException(status_code=404, detail="Resource not found")
 
     new_status = not doc.get("is_published", False)
     result = await db.media_resources.find_one_and_update(
-        {"_id": ObjectId(resource_id)},
+        {"_id": _validate_object_id(resource_id)},
         {"$set": {"is_published": new_status, "updated_at": datetime.now(UTC)}},
         return_document=True
     )

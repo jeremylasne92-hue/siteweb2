@@ -302,8 +302,9 @@ async def get_accepted_members(
 
     # Fetch both collections in parallel
     tech_docs, volunteer_docs = await asyncio.gather(
-        db.tech_candidatures.find({"status": "accepted"}, projection).sort("created_at", -1).to_list(length=None),
-        db.volunteer_applications.find({"status": "accepted"}, projection).sort("created_at", -1).to_list(length=None),
+        db.tech_candidatures.find({"status": "accepted"}, projection).sort("created_at", -1).to_list(length=1000),
+        db.volunteer_applications.find({"status": "accepted"}, projection).sort("created_at", -1).to_list(length=1000),
+        return_exceptions=True,
     )
 
     members = [{**doc, "type": "candidature"} for doc in tech_docs]

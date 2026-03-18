@@ -524,10 +524,10 @@ async def export_my_data(
     )
     sessions = await db.user_sessions.find(
         {"user_id": current_user.id}, {"_id": 0, "session_token": 0}
-    ).to_list(None)
+    ).to_list(length=1000)
     optins = await db.episode_optins.find(
         {"user_id": current_user.id}, {"_id": 0}
-    ).to_list(None)
+    ).to_list(length=1000)
     partner = await db.partners.find_one(
         {"user_id": current_user.id}, {"_id": 0, "ip_address": 0}
     )
@@ -566,28 +566,28 @@ async def export_my_data_download(
     )
     sessions = await db.user_sessions.find(
         {"user_id": current_user.id}, {"_id": 0, "session_token": 0}
-    ).to_list(None)
+    ).to_list(length=1000)
     optins = await db.episode_optins.find(
         {"user_id": current_user.id}, {"_id": 0}
-    ).to_list(None)
+    ).to_list(length=1000)
     partner = await db.partners.find_one(
         {"user_id": current_user.id}, {"_id": 0, "ip_address": 0}
     )
     contact_messages = await db.contact_messages.find(
         {"email": current_user.email}, {"_id": 0, "ip_address": 0}
-    ).to_list(None)
+    ).to_list(length=1000)
     volunteer_apps = await db.volunteer_applications.find(
         {"email": current_user.email}, {"_id": 0, "ip_address": 0}
-    ).to_list(None)
+    ).to_list(length=1000)
     tech_candidatures = await db.tech_candidatures.find(
         {"email": current_user.email}, {"_id": 0, "ip_address": 0}
-    ).to_list(None)
+    ).to_list(length=1000)
     analytics = await db.analytics_events.find(
         {"session_id": current_user.id}, {"_id": 0}
-    ).to_list(None)
+    ).to_list(length=1000)
     video_progress = await db.video_progress.find(
         {"user_id": current_user.id}, {"_id": 0}
-    ).to_list(None)
+    ).to_list(length=1000)
 
     export = _serialize_for_json({
         "user": user_data,
@@ -771,7 +771,7 @@ async def export_users_csv(
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
     """Export all users as CSV (admin only)"""
-    users = await db.users.find({}, {"_id": 0, "password_hash": 0, "totp_secret": 0}).to_list(None)
+    users = await db.users.find({}, {"_id": 0, "password_hash": 0, "totp_secret": 0}).to_list(length=10000)
 
     output = io.StringIO()
     output.write("﻿")

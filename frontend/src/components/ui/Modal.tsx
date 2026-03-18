@@ -1,4 +1,4 @@
-import React, { useEffect, useId, useCallback } from 'react';
+import React, { useEffect, useId, useCallback, useRef } from 'react';
 import { X } from 'lucide-react';
 import { cn } from './Button';
 
@@ -12,6 +12,40 @@ interface ModalProps {
 
 export function Modal({ isOpen, onClose, title, children, className }: ModalProps) {
     const titleId = useId();
+    const modalRef = useRef<HTMLDivElement>(null);
+
+    // Focus trap
+    useEffect(() => {
+        if (!isOpen) return;
+        const modal = modalRef.current;
+        if (!modal) return;
+
+        const focusableElements = modal.querySelectorAll<HTMLElement>(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstEl = focusableElements[0];
+        const lastEl = focusableElements[focusableElements.length - 1];
+
+        firstEl?.focus();
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key !== 'Tab') return;
+            if (e.shiftKey) {
+                if (document.activeElement === firstEl) {
+                    e.preventDefault();
+                    lastEl?.focus();
+                }
+            } else {
+                if (document.activeElement === lastEl) {
+                    e.preventDefault();
+                    firstEl?.focus();
+                }
+            }
+        };
+
+        modal.addEventListener('keydown', handleKeyDown);
+        return () => modal.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen]);
 
     useEffect(() => {
         if (isOpen) {
@@ -42,6 +76,7 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
 
             {/* Content */}
             <div
+                ref={modalRef}
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby={title ? titleId : undefined}

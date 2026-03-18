@@ -711,9 +711,13 @@ async def admin_edit_partner(
     if not updates:
         raise HTTPException(status_code=400, detail="No fields to update")
 
-    # Regenerate slug if name changed
+    # Regenerate slug if name changed, with uniqueness check
     if "name" in updates:
-        updates["slug"] = slugify.slugify(updates["name"])
+        new_slug = slugify.slugify(updates["name"])
+        existing = await db.partners.find_one({"slug": new_slug, "id": {"$ne": partner_id}})
+        if existing:
+            new_slug = f"{new_slug}-{partner_id[:6]}"
+        updates["slug"] = new_slug
 
     # Auto-geocode when city changes
     if "city" in updates:
@@ -837,7 +841,7 @@ async def admin_export_partners_csv(
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
     """Export all partners as CSV (admin only)"""
-    partners = await db.partners.find({}, {"_id": 0}).to_list(None)
+    partners = await db.partners.find({}, {"_id": 0}).to_list(length=10000)
 
     output = io.StringIO()
     output.write("﻿")

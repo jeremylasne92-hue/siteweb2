@@ -194,10 +194,21 @@ app.mount("/api/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=settings.CORS_ORIGINS.split(','),
+    allow_origins=[o.strip() for o in settings.CORS_ORIGINS.split(',')],
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization"],
 )
+
+
+@app.middleware("http")
+async def limit_request_size(request: Request, call_next):
+    """Reject requests larger than 10MB (except file upload endpoints)."""
+    content_length = request.headers.get("content-length")
+    if content_length and int(content_length) > 10 * 1024 * 1024:  # 10MB
+        if not request.url.path.endswith(("/logo", "/upload", "/image")):
+            from starlette.responses import JSONResponse as _JSONResp
+            return _JSONResp(status_code=413, content={"detail": "Request too large"})
+    return await call_next(request)
 
 
 @app.middleware("http")
@@ -210,7 +221,7 @@ async def csrf_origin_check(request: Request, call_next):
 
         origin = request.headers.get("origin")
         referer = request.headers.get("referer")
-        allowed_origins = settings.CORS_ORIGINS.split(",")
+        allowed_origins = [o.strip() for o in settings.CORS_ORIGINS.split(",")]
 
         if origin:
             allowed = any(origin == o or origin.startswith(o) for o in allowed_origins)

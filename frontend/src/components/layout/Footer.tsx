@@ -16,10 +16,10 @@ export function Footer() {
                             Une websérie sociale, éducative et interactive qui s'inspire de La Divine Comédie pour décrypter les défis contemporains et fédérer une communauté engagée.
                         </p>
                         <div className="flex gap-4">
-                            <SocialIcon icon={<Youtube size={20} />} href="#" />
-                            <SocialIcon icon={<Instagram size={20} />} href="#" />
-                            <SocialIcon icon={<Facebook size={20} />} href="#" />
-                            <SocialIcon icon={<Twitter size={20} />} href="#" />
+                            <SocialIcon icon={<Youtube size={20} />} href="#" label="YouTube" />
+                            <SocialIcon icon={<Instagram size={20} />} href="#" label="Instagram" />
+                            <SocialIcon icon={<Facebook size={20} />} href="#" label="Facebook" />
+                            <SocialIcon icon={<Twitter size={20} />} href="#" label="X (Twitter)" />
                         </div>
                     </div>
 
@@ -73,9 +73,9 @@ export function Footer() {
     );
 }
 
-function SocialIcon({ icon, href }: { icon: React.ReactNode, href: string }) {
+function SocialIcon({ icon, href, label }: { icon: React.ReactNode, href: string, label: string }) {
     return (
-        <a href={href} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-echo-gold hover:text-black transition-all duration-300">
+        <a href={href} aria-label={label} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-echo-gold hover:text-black transition-all duration-300">
             {icon}
         </a>
     );

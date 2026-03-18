@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request, BackgroundTasks, status
+from fastapi import APIRouter, Depends, HTTPException, Request, BackgroundTasks, status
 from pydantic import ValidationError
 import asyncio
 import logging
@@ -7,7 +7,8 @@ from datetime import datetime, timedelta, UTC
 from typing import Dict, Any, Optional
 
 from models import AnalyticsEventCreate, AnalyticsEvent, User
-from routes.auth import require_admin
+from routes.auth import require_admin, get_db
+from utils.rate_limit import check_rate_limit
 
 router = APIRouter(prefix="/analytics", tags=["analytics"])
 logger = logging.getLogger(__name__)
@@ -32,6 +33,15 @@ async def track_event(request: Request, background_tasks: BackgroundTasks):
     Ne bloque pas la requête, l'écriture se fait en tâche de fond.
     RGPD Compliant : N'enregistre aucune IP ni Cookie/Session.
     """
+    # Rate limit: max 100 events per minute per IP
+    try:
+        db = request.app.db
+        await check_rate_limit(db, request, "analytics", max_requests=100, window_minutes=1)
+    except HTTPException:
+        raise  # Re-raise 429 rate limit errors
+    except Exception:
+        pass  # Silently skip rate limiting if DB unavailable (e.g. tests)
+
     try:
         # Support sendBeacon (text/plain) ou JSON standard
         content_type = request.headers.get("content-type", "")
@@ -137,14 +147,14 @@ async def get_admin_dashboard(
         # CTA clicks
         db.analytics_events.find(
             {"category": "cta_click", "created_at": {"$gte": cutoff}}
-        ).to_list(None),
+        ).to_list(length=1000),
         # UTM sources
         db.analytics_events.aggregate([
             {"$match": {"utm_source": {"$ne": None}, "created_at": {"$gte": cutoff}}},
             {"$group": {"_id": "$utm_source", "count": {"$sum": 1}}},
             {"$sort": {"count": -1}},
             {"$limit": 10},
-        ]).to_list(None),
+        ]).to_list(length=1000),
         # Landing pages (first page_view per session)
         db.analytics_events.aggregate([
             {"$match": {"category": "page_view", "session_id": {"$ne": None}, "created_at": {"$gte": cutoff}}},
@@ -153,12 +163,12 @@ async def get_admin_dashboard(
             {"$group": {"_id": "$path", "count": {"$sum": 1}}},
             {"$sort": {"count": -1}},
             {"$limit": 10},
-        ]).to_list(None),
+        ]).to_list(length=1000),
         # Session data (for bounce rate + pages/session)
         db.analytics_events.aggregate([
             {"$match": {"category": "page_view", "session_id": {"$ne": None}, "created_at": {"$gte": cutoff}}},
             {"$group": {"_id": "$session_id", "page_count": {"$sum": 1}}},
-        ]).to_list(None),
+        ]).to_list(length=1000),
         # Conversion: registrations in period
         db.users.count_documents({"created_at": {"$gte": cutoff}, "role": {"$ne": "admin"}}),
         # Conversion: volunteers
@@ -186,6 +196,7 @@ async def get_admin_dashboard(
         # Partner totals
         db.partners.count_documents({}),
         db.partners.count_documents({"status": "approved"}),
+        return_exceptions=True,
     )
 
     # Compute session metrics
@@ -200,7 +211,7 @@ async def get_admin_dashboard(
         {"$group": {"_id": "$path", "views": {"$sum": 1}}},
         {"$sort": {"views": -1}},
         {"$limit": 10},
-    ]).to_list(None)
+    ]).to_list(length=1000)
 
     # Top CTAs
     cta_summary: Dict[str, int] = {}

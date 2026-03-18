@@ -29,6 +29,7 @@ async def get_pending_counts(
             {"$or": [{"status": "unread"}, {"status": {"$exists": False}}]}
         ),
         db.admin_actions.find({}, {"_id": 0}).sort("timestamp", -1).to_list(length=5),
+        return_exceptions=True,
     )
 
     total = (

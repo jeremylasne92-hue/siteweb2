@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '../../../components/ui/Button';
+import { API_URL } from '../../../config/api';
 
 const loginSchema = z.object({
     ageConsent: z.boolean().refine((val) => val === true, {
@@ -26,8 +27,7 @@ export const GoogleLoginButton = () => {
 
     const onSubmit = () => {
         // Redirection vers le backend pour l'authentification Google
-        const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
-        window.location.assign(`${backendUrl}/auth/google/login`);
+        window.location.assign(`${API_URL}/auth/google/login`);
     };
 
     return (

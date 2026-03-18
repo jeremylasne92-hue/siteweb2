@@ -118,8 +118,13 @@ export function Contact() {
                         <div className="mt-12">
                             <span className="block text-xs font-bold uppercase tracking-wider text-neutral-500 mb-4">Réseaux Sociaux</span>
                             <div className="flex gap-4">
-                                {[Instagram, Twitter, Linkedin, Facebook].map((Icon, i) => (
-                                    <a key={i} href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-neutral-400 hover:bg-echo-gold hover:text-black transition-all">
+                                {([
+                                    { Icon: Instagram, label: 'Instagram' },
+                                    { Icon: Twitter, label: 'X (Twitter)' },
+                                    { Icon: Linkedin, label: 'LinkedIn' },
+                                    { Icon: Facebook, label: 'Facebook' },
+                                ] as const).map(({ Icon, label }) => (
+                                    <a key={label} href="#" aria-label={label} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-neutral-400 hover:bg-echo-gold hover:text-black transition-all">
                                         <Icon className="w-5 h-5" />
                                     </a>
                                 ))}
