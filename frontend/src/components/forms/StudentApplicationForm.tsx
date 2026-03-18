@@ -41,6 +41,7 @@ export function StudentApplicationForm() {
         setSelectedSkills(prev =>
             prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill]
         );
+        setError('');
     };
 
     const toggleCategory = (category: string) => {
@@ -154,7 +155,7 @@ export function StudentApplicationForm() {
                 return;
             }
             if (!availability) {
-                setError('Veuillez choisir votre disponibilité.');
+                setError('Veuillez sélectionner un type de disponibilité (stage court, long, alternance ou temps partiel).');
                 return;
             }
             // Validate start_date if provided
@@ -311,7 +312,7 @@ export function StudentApplicationForm() {
                                     name="availability"
                                     value={option.value}
                                     checked={availability === option.value}
-                                    onChange={() => setAvailability(option.value)}
+                                    onChange={() => { setAvailability(option.value); setError(''); }}
                                     className="sr-only"
                                 />
                                 <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${

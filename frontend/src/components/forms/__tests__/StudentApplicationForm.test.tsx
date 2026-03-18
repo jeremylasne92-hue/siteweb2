@@ -159,7 +159,7 @@ describe('StudentApplicationForm', () => {
             // Click next without selecting availability
             fireEvent.click(screen.getByText('Suivant'));
 
-            expect(screen.getByText(/Veuillez choisir votre disponibilité/)).toBeInTheDocument();
+            expect(screen.getByText(/Veuillez sélectionner un type de disponibilité/)).toBeInTheDocument();
         });
 
         it('advances to step 3 when step 2 is valid', () => {

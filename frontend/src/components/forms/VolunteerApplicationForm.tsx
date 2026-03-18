@@ -183,7 +183,7 @@ export function VolunteerApplicationForm() {
         }
         if (step === 3) {
             if (!availability) {
-                setError('Veuillez choisir votre niveau de disponibilité.');
+                setError('Veuillez sélectionner votre niveau de disponibilité.');
                 return;
             }
             if (!valuesAccepted) {
@@ -367,7 +367,7 @@ export function VolunteerApplicationForm() {
                                     name="availability"
                                     value={option.value}
                                     checked={availability === option.value}
-                                    onChange={() => setAvailability(option.value)}
+                                    onChange={() => { setAvailability(option.value); setError(''); }}
                                     className="sr-only"
                                 />
                                 <div className="flex items-center gap-3">
