@@ -46,8 +46,9 @@ export function Support() {
             />
 
             {/* Hero Section */}
-            <section className="relative py-16 sm:py-20 bg-echo-darker">
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-echo-gold/20 via-black to-black" />
+            <section className="relative py-16 sm:py-20 bg-echo-darker overflow-hidden">
+                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?q=80&w=2670&auto=format&fit=crop')] bg-cover bg-center opacity-15" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-echo-gold/20 via-black/80 to-black" />
                 <div className="container mx-auto px-4 relative z-10 text-center max-w-4xl">
                     <div className="inline-block p-4 rounded-full bg-echo-gold/10 mb-6">
                         <Heart className="w-10 h-10 sm:w-12 sm:h-12 text-echo-gold" />
@@ -115,6 +116,7 @@ export function Support() {
                                         <HelloAssoCounter
                                             src={campaign.counterWidgetUrl}
                                             title={`Compteur de dons ECHO x ${campaign.city}`}
+                                            objective={campaign.objective}
                                         />
                                     </div>
 
