@@ -59,6 +59,7 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
 
     const [logoFile, setLogoFile] = useState<File | null>(null);
     const [consentRGPD, setConsentRGPD] = useState(false);
+    const [honeypot, setHoneypot] = useState('');
     const [addressSuggestions, setAddressSuggestions] = useState<Array<{ display_name: string; lat: string; lon: string; address?: Record<string, string> }>>([]);
     const addressDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -137,6 +138,7 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (honeypot) return; // Bot protection
         setError(null);
         setIsSubmitting(true);
 
@@ -304,14 +306,14 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
     const renderStep3 = () => (
         <div className="space-y-4 animate-fade-in">
             <div className="grid grid-cols-2 gap-4">
-                <Input label="Nom du contact *" name="contact_name" required value={formData.contact_name} onChange={handleInputChange} />
-                <Input label="Fonction (Rôle)" name="contact_role" value={formData.contact_role} onChange={handleInputChange} />
+                <Input label="Nom du contact *" name="contact_name" placeholder="Votre prénom et nom" required value={formData.contact_name} onChange={handleInputChange} />
+                <Input label="Fonction (optionnel)" name="contact_role" placeholder="Ex: Directeur, Responsable..." value={formData.contact_role} onChange={handleInputChange} />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-                <Input label="Email de contact *" type="email" name="contact_email" required value={formData.contact_email} onChange={handleInputChange} />
+                <Input label="Email de contact *" type="email" name="contact_email" placeholder="votre@email.com" required value={formData.contact_email} onChange={handleInputChange} />
                 <Input
-                    label="Téléphone"
+                    label="Téléphone (optionnel)"
                     type="tel"
                     name="contact_phone"
                     value={formData.contact_phone}
@@ -327,7 +329,7 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
                 />
             </div>
 
-            <Input label="Site Web" type="url" name="website_url" value={formData.website_url} onChange={handleInputChange} />
+            <Input label="Site Web (optionnel)" type="url" name="website_url" placeholder="https://votre-site.com" value={formData.website_url} onChange={handleInputChange} />
 
             <div className="grid grid-cols-3 gap-2">
                 <Input placeholder="LinkedIn URL" name="linkedin_url" value={formData.linkedin_url} onChange={handleInputChange} />
@@ -533,6 +535,17 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
                             </Button>
                         ) : (
                             <div className="flex flex-col items-end gap-3">
+                                {/* Honeypot */}
+                                <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }}>
+                                    <input
+                                        type="text"
+                                        name="website"
+                                        value={honeypot}
+                                        onChange={(e) => setHoneypot(e.target.value)}
+                                        tabIndex={-1}
+                                        autoComplete="off"
+                                    />
+                                </div>
                                 <label className="flex items-start gap-3 text-sm text-gray-300 cursor-pointer">
                                     <input
                                         type="checkbox"

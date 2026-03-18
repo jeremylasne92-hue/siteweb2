@@ -230,7 +230,7 @@ export function Contact() {
                                 </label>
 
                                 {status === 'error' && (
-                                    <p className="text-red-400 text-sm">{errorMsg}</p>
+                                    <p className="text-sm text-red-500 font-medium text-center bg-red-500/10 p-3 rounded-lg border border-red-500/20">{errorMsg}</p>
                                 )}
 
                                 <div className="flex justify-end">
@@ -239,7 +239,7 @@ export function Contact() {
                                         className="flex items-center gap-2"
                                         disabled={!consentRGPD || status === 'loading'}
                                     >
-                                        {status === 'loading' ? 'Envoi en cours...' : 'Envoyer'}
+                                        {status === 'loading' ? 'Envoi...' : 'Envoyer'}
                                         <Send className="w-4 h-4" />
                                     </Button>
                                 </div>

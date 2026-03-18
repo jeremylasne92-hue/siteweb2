@@ -109,7 +109,7 @@ export const RegisterForm = () => {
                 <Input
                     label="Adresse email"
                     type="email"
-                    placeholder="ex: john@example.com"
+                    placeholder="votre@email.com"
                     error={errors.email?.message}
                     {...register('email')}
                 />

@@ -166,7 +166,7 @@ export function ScenaristApplicationForm() {
                 <div className="w-16 h-16 rounded-full flex items-center justify-center mb-6" style={{ backgroundColor: `${accentHex}20` }}>
                     <CheckCircle className="w-8 h-8" style={{ color: accentHex }} />
                 </div>
-                <h3 className="text-2xl font-serif text-white mb-3">Candidature envoyée !</h3>
+                <h3 className="text-2xl font-serif text-white mb-3">Candidature envoyée avec succès !</h3>
                 <p className="text-neutral-400 max-w-md">
                     Merci pour votre intérêt. Notre équipe examinera votre profil créatif et vous contactera prochainement.
                 </p>

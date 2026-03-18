@@ -39,7 +39,7 @@ export const EmailLoginForm = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <Input
                 label="Email ou nom d'utilisateur"
-                placeholder="ex: john@example.com"
+                placeholder="votre@email.com"
                 error={errors.identifier?.message}
                 {...register('identifier')}
             />
