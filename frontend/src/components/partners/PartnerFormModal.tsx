@@ -4,11 +4,13 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import type { PartnerCategory } from './PartnerCard';
 import type { Thematic } from './ThematicTag';
-import { MapPin, Upload, ChevronRight, ChevronLeft, CheckCircle2, CalendarDays, Mail, Clock } from 'lucide-react';
+import { MapPin, Upload, ChevronRight, ChevronLeft, CheckCircle2, CalendarDays, Mail, Clock, Eye, EyeOff } from 'lucide-react';
 import { ApplicationSuccessCTA } from '../forms/ApplicationSuccessCTA';
 import { PARTNERS_API } from '../../config/api';
 import { BOOKING_URL } from '../../config/booking';
 import { sanitizePhone, isValidPhone, isValidEmail } from '../../utils/validation';
+import { PasswordRequirements } from '../../features/auth/components/PasswordRequirements';
+import { getPasswordStrength, strengthLabels } from '../../features/auth/schemas';
 
 interface PartnerFormModalProps {
     isOpen: boolean;
@@ -28,6 +30,8 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
 
     // Form State
     const [formData, setFormData] = useState({
@@ -50,6 +54,7 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
         instagram_url: '',
         twitter_url: '',
         password: '',
+        password_confirm: '',
     });
 
     const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -68,7 +73,7 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
                     name: '', category: 'expert' as PartnerCategory, thematics: [], description: '', description_long: '',
                     address: '', city: '', postal_code: '', latitude: 0, longitude: 0,
                     contact_name: '', contact_role: '', contact_email: '', contact_phone: '',
-                    website_url: '', linkedin_url: '', instagram_url: '', twitter_url: '', password: ''
+                    website_url: '', linkedin_url: '', instagram_url: '', twitter_url: '', password: '', password_confirm: ''
                 });
                 setLogoFile(null);
                 setConsentRGPD(false);
@@ -332,28 +337,85 @@ export function PartnerFormModal({ isOpen, onClose, thematicsList }: PartnerForm
         </div>
     );
 
-    const renderStep4 = () => (
-        <div className="space-y-4 animate-fade-in">
-            <div className="p-4 bg-white/5 border border-white/10 rounded-lg text-sm text-echo-textMuted mb-4">
-                Votre adresse email ({formData.contact_email || 'non renseignée'}) servira d'identifiant pour accéder à votre espace partenaire une fois votre candidature validée.
-            </div>
+    const renderStep4 = () => {
+        const strength = formData.password ? getPasswordStrength(formData.password) : null;
+        return (
+            <div className="space-y-5 animate-fade-in">
+                <div className="p-4 bg-white/5 border border-white/10 rounded-lg text-sm text-echo-textMuted mb-4">
+                    Votre adresse email ({formData.contact_email || 'non renseignée'}) servira d'identifiant pour accéder à votre espace partenaire une fois votre candidature validée.
+                </div>
 
-            <Input
-                label="Mot de passe du compte *"
-                type="password"
-                name="password"
-                required
-                minLength={8}
-                value={formData.password}
-                onChange={handleInputChange}
-            />
-        </div>
-    );
+                <div className="relative">
+                    <Input
+                        label="Mot de passe du compte *"
+                        type={showPassword ? 'text' : 'password'}
+                        name="password"
+                        placeholder="Min. 8 caractères"
+                        required
+                        minLength={8}
+                        value={formData.password}
+                        onChange={handleInputChange}
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-[34px] text-echo-textMuted hover:text-white transition-colors"
+                        tabIndex={-1}
+                    >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                </div>
+
+                {/* Password strength indicator */}
+                {strength && (
+                    <div className="space-y-1.5">
+                        <div className="flex gap-1">
+                            {[1, 2, 3, 4].map((level) => (
+                                <div
+                                    key={level}
+                                    className="h-1.5 flex-1 rounded-full transition-all duration-300"
+                                    style={{
+                                        backgroundColor: level <= strength.score ? strength.color : 'rgba(255,255,255,0.1)',
+                                    }}
+                                />
+                            ))}
+                        </div>
+                        <p className="text-xs text-echo-textMuted">
+                            Force : <span style={{ color: strength.color }}>{strengthLabels[strength.label]}</span>
+                        </p>
+                    </div>
+                )}
+
+                <PasswordRequirements password={formData.password} />
+
+                <div className="relative">
+                    <Input
+                        label="Confirmer le mot de passe *"
+                        type={showConfirm ? 'text' : 'password'}
+                        name="password_confirm"
+                        placeholder="Retapez votre mot de passe"
+                        required
+                        value={formData.password_confirm}
+                        onChange={handleInputChange}
+                        error={formData.password_confirm && formData.password !== formData.password_confirm ? 'Les mots de passe ne correspondent pas' : undefined}
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowConfirm(!showConfirm)}
+                        className="absolute right-3 top-[34px] text-echo-textMuted hover:text-white transition-colors"
+                        tabIndex={-1}
+                    >
+                        {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                </div>
+            </div>
+        );
+    };
 
     const isStep1Valid = formData.name && formData.description && formData.thematics.length > 0;
     const isStep2Valid = formData.address && formData.city && formData.postal_code && formData.latitude !== 0;
     const isStep3Valid = formData.contact_name && formData.contact_email && isValidEmail(formData.contact_email) && isValidPhone(formData.contact_phone);
-    const isStep4Valid = formData.password.length >= 8;
+    const isStep4Valid = formData.password.length >= 8 && /[A-Z]/.test(formData.password) && /[0-9]/.test(formData.password) && /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(formData.password) && formData.password === formData.password_confirm;
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Devenir Partenaire ECHO" className="max-w-2xl">

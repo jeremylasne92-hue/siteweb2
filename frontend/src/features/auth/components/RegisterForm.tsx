@@ -8,6 +8,7 @@ import { Input } from '../../../components/ui/Input';
 import { StepProgress } from '../../../components/ui/StepProgress';
 import { useRegister } from '../api/useRegister';
 import { registerSchema, type RegisterFormData, getPasswordStrength, strengthLabels } from '../schemas';
+import { PasswordRequirements } from './PasswordRequirements';
 
 const AVAILABLE_INTERESTS = [
     { id: 'philosophie-conscience', label: 'Philosophie & Conscience', emoji: '🧠' },
@@ -153,6 +154,8 @@ export const RegisterForm = () => {
                         </p>
                     </div>
                 )}
+
+                <PasswordRequirements password={passwordValue || ''} />
 
                 <div className="relative">
                     <Input

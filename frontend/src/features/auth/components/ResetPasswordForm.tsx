@@ -7,6 +7,7 @@ import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { useResetPassword } from '../api/useResetPassword';
 import { resetPasswordSchema, type ResetPasswordFormData, getPasswordStrength, strengthLabels } from '../schemas';
+import { PasswordRequirements } from './PasswordRequirements';
 
 interface ResetPasswordFormProps {
     token: string;
@@ -87,6 +88,8 @@ export const ResetPasswordForm = ({ token }: ResetPasswordFormProps) => {
                     </p>
                 </div>
             )}
+
+            <PasswordRequirements password={passwordValue || ''} />
 
             <div className="relative">
                 <Input

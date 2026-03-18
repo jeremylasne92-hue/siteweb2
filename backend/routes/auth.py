@@ -702,6 +702,10 @@ async def change_password(
     if not verify_password(data.current_password, user_doc["password_hash"]):
         raise HTTPException(status_code=400, detail="Mot de passe actuel incorrect")
 
+    # Enforce full password strength (same rules as register/reset)
+    from services.auth_local_service import validate_password_strength
+    validate_password_strength(data.new_password)
+
     new_hash = hash_password(data.new_password)
     await db.users.update_one(
         {"id": current_user.id},
