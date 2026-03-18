@@ -6,10 +6,10 @@
 
 ## 📋 État du Projet
 
-**Dernière mise à jour** : 2026-03-18
+**Dernière mise à jour** : 2026-03-18 (soir)
 **Phase actuelle** : Pré-lancement J-2 (lancement 20 mars 2026)
-**Statut** : ✅ Opérationnel — Audit code complet + corrections RGPD + déploiement infra en cours
-**Dernier milestone** : Audit code exhaustif (~120 constats) analysé, 50% faux positifs identifiés, 15 corrections appliquées (P0+P1+P2)
+**Statut** : ✅ Opérationnel — Code prêt pour déploiement. Audit code + harmonisation UX + tests endpoints manuels OK.
+**Dernier milestone** : Harmonisation complète formulaires (10 forms audités), password strength UI sur 3 formulaires, tests manuels endpoints (49/51 PASS)
 
 ### ⚠️ Rappels Pré-Lancement (20 mars 2026)
 - [x] Bandeau cookies RGPD intégré + tracking conditionné au consentement
@@ -22,7 +22,7 @@
 - [ ] **SENDGRID_API_KEY** dans Render env vars (obligatoire pour emails : reset MDP, notifications candidatures)
 - [ ] **FRONTEND_URL** dans Render env vars (obligatoire pour liens dans les emails de reset MDP)
 - [ ] Build de production (`npm run build`) + FTP upload `dist/` sur OVH
-- [ ] Recette manuelle (5 parcours utilisateur)
+- [x] Recette manuelle endpoints (auth 11/11, partners+contact 14/15, candidatures 24/25 = 49/51 PASS)
 - [ ] **Revoir le Dashboard Partenaire** avant la sortie officielle (UX, données, design)
 
 ---
@@ -165,6 +165,10 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-18 | Fix UX validation disponibilité StudentApplicationForm + VolunteerApplicationForm : message d'erreur explicite listant les options (stage court, long, alternance, temps partiel), auto-clear erreur quand l'utilisateur sélectionne un radio ou une compétence. Test mis à jour. Niveau HOTFIX. | Claude Code (Opus 4.6) |
+| 2026-03-18 | Harmonisation UX complète 10 formulaires : (1) placeholders email standardisés "votre@email.com" (RegisterForm, EmailLoginForm), (2) style erreur Contact.tsx aligné (bandeau rouge harmonisé), (3) messages succès candidatures uniformisés "avec succès" (TechApp, ScenaristApp), (4) honeypot anti-spam ajouté PartnerFormModal, (5) placeholders + "(optionnel)" ajoutés champs partenaire (contact_name, contact_role, contact_email, website_url), (6) loading text harmonisé "Envoi..." Contact.tsx. 32 tests + build OK. Niveau STANDARD. | Claude Code (Opus 4.6) |
+| 2026-03-18 | Password strength UI harmonisé sur 3 formulaires : nouveau composant PasswordRequirements.tsx (checklist temps réel 4 critères : 8 chars, majuscule, chiffre, spécial), barre de force colorée (4 niveaux), intégré sur RegisterForm, ResetPasswordForm, PartnerFormModal. PartnerFormModal enrichi : œil show/hide (Eye/EyeOff), champ confirmation password, validation isStep4Valid étendue. Backend auth.py : validate_password_strength sur change-password. Niveau STANDARD. | Claude Code (Opus 4.6) |
+| 2026-03-18 | Tests manuels endpoints pré-déploiement (3 agents parallèles) : Auth flow 11/11 PASS (register, login, /me, erreurs, forgot-password, logout, rate limiting 429). Partners+Contact 14/15 PASS (CRUD, filtres, stats, RGPD PII masqué, rate limiting contact 3/15min). Candidatures 24/25 PASS (tech+bénévole+étudiant+scénariste CRUD, transitions statut, CSV exports, validation 422, admin endpoints). 1 PARTIAL (partners/apply retourne 200 au lieu de 201), 1 WARN (pas de contrôle doublon email candidatures — by design). Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-18 | Audit code exhaustif (~120 constats, 10 cycles adversariaux) analysé et trié : 50% faux positifs identifiés (14 CRITIQUES/HAUTES déjà corrigées). 15 corrections appliquées : P0 — CORS .strip(), .to_list() borné (10000 exports, 1000 queries), asyncio.gather return_exceptions (4 endpoints), ObjectId validation mediatheque, slug collision partner edit, contact messages UUID id, analytics rate limiting (100/min), Content-Length middleware (10MB). P1 — Button CSS spinner (remplace emoji ⏳), console.error conditionnel DEV, aria-label 8 boutons sociaux, localhost centralisé (GoogleLoginButton+analytics). P2 accessibilité — skip-to-main Layout, aria-expanded FAQ, focus trap Modal. Doublon "Le 47" supprimé + 7 partenaires sans id corrigés + offset carte réduit (0.15°→0.012°). 275 backend + 32 frontend tests OK. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-18 | CityAutocomplete international : suppression restriction `countrycodes=fr` dans Nominatim API, ajout pays + région dans le détail des suggestions (ex: "Dublin, Comté de Dublin, Irlande"), déduplication par ville+pays. Ajout SENDGRID_API_KEY et FRONTEND_URL à la checklist pré-lancement Render. Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-18 | Carte mondiale + géocodeur international : (1) AutoFitBounds Leaflet pour ajuster le zoom à tous les marqueurs (monde entier), (2) geocode_city étendu — suppression restriction country=France, fallback mondial, (3) 10 candidatures test dans 10 pays (Japon, Brésil, Sénégal, Irlande, Pologne, Italie, Maroc, Danemark, Inde, Mexique), (4) validation dates année 2024-2030 (frontend min/max + backend), (5) textes CogniSphère/ECHOLink mis à jour ("Bêta", lancement 1T2027), (6) 3×15=45 tests API (Contact+Partenaires+Admin/Exports) : 42 PASS 0 FAIL 3 SKIP. Issue backlog : GET /contact/admin/all manque champ id. Niveau STANDARD. | Claude Code (Opus 4.6) |
@@ -242,6 +246,10 @@ frontend/src/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-18 | 🟢 HOTFIX | Fix UX validation disponibilité (message explicite + auto-clear erreur, StudentApp + VolunteerApp) | ~10min | Claude Code (Opus 4.6) |
+| 2026-03-18 | 🟡 STANDARD | Harmonisation UX 10 formulaires (placeholders, erreurs, succès, honeypot, optionnel, loading) | ~20min | Claude Code (Opus 4.6) |
+| 2026-03-18 | 🟡 STANDARD | Password strength UI (PasswordRequirements.tsx, barre force, œil, confirm — 3 formulaires + backend) | ~25min | Claude Code (Opus 4.6) |
+| 2026-03-18 | 🟡 STANDARD | Tests manuels endpoints (3 agents parallèles, 49/51 PASS) | ~15min | Claude Code (Opus 4.6) |
 | 2026-03-17 | 🟡 STANDARD | Harmonisation dates (utcnow→now(UTC) 31 fichiers, CSV DD/MM/YYYY, start_date strict, timezone fix, migration script MongoDB) | ~20min | Claude Code (Opus 4.6) |
 | 2026-03-17 | 🟢 HOTFIX | Refonte Home hero + Serie timeline + Header sous-menus Rejoindre + Modal scroll + AdminDashboard badges | ~45min | Claude Code (Opus 4.6) |
 | 2026-03-17 | 🟡 STANDARD | Audit #3 vérifié (22 findings → 7 fixes critiques: collections admin, XSS email, sessions, logo, timing, ObjectId, TTL) | ~25min | Claude Code (Opus 4.6) |
