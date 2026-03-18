@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import React, { useMemo, useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import type { Partner, PartnerCategory } from './PartnerCard';
@@ -55,6 +55,21 @@ const iconMap: Record<string, L.DivIcon> = {
     membre: createCustomIcon('membre'),
 };
 
+/** Auto-fit map bounds to show all markers */
+function AutoFitBounds({ positions }: { positions: [number, number][] }) {
+    const map = useMap();
+    useEffect(() => {
+        if (positions.length === 0) return;
+        if (positions.length === 1) {
+            map.setView(positions[0], 10);
+            return;
+        }
+        const bounds = L.latLngBounds(positions);
+        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 12 });
+    }, [map, positions]);
+    return null;
+}
+
 export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerClick, members = [], onMemberClick }) => {
     const { trackEvent } = useAnalytics();
 
@@ -89,14 +104,27 @@ export const PartnersMap: React.FC<PartnersMapProps> = ({ partners, onPartnerCli
 
     const { validPartners, partnerOffsets, memberOffsets } = allMarkerPositions;
 
+    // Collect all marker positions for auto-fit
+    const allPositions: [number, number][] = useMemo(() => {
+        const pos: [number, number][] = [];
+        validPartners.forEach(p => {
+            if (p.latitude && p.longitude) pos.push([p.latitude, p.longitude]);
+        });
+        members.forEach(m => {
+            if (m.latitude && m.longitude) pos.push([m.latitude, m.longitude]);
+        });
+        return pos;
+    }, [validPartners, members]);
+
     return (
         <div className="w-full h-[600px] rounded-2xl overflow-hidden border border-white/10 shadow-lg relative z-0">
             <MapContainer
                 center={defaultCenter}
                 zoom={defaultZoom}
                 scrollWheelZoom={true}
-                className="w-full h-full bg-[#121212]" // Dark background for the map loading state
+                className="w-full h-full bg-[#121212]"
             >
+                <AutoFitBounds positions={allPositions} />
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
                     url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?language=fr"
