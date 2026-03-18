@@ -121,6 +121,40 @@ async def send_email(email: str, subject: str, message: str, user_id: str = None
     return await _log_email(email, subject, message)
 
 
+# --- Watchdog alert functions ---
+
+
+async def send_watchdog_alert(alerts: list[str], total_stale: int) -> bool:
+    """Send a single digest email with all stale item alerts to all ALERT_EMAILS."""
+    recipients = [e.strip() for e in settings.ALERT_EMAILS.split(",") if e.strip()]
+    if not recipients:
+        logger.warning("Watchdog: no ALERT_EMAILS configured, skipping alert")
+        return False
+
+    subject = f"\u26a0\ufe0f ECHO — {total_stale} \u00e9l\u00e9ment(s) en attente de traitement"
+    items_html = "".join(f"<li>{a}</li>" for a in alerts)
+    html = (
+        f"<h2>Alertes plateforme Mouvement ECHO</h2>"
+        f"<p>Le syst\u00e8me de monitoring a d\u00e9tect\u00e9 des \u00e9l\u00e9ments en attente de traitement :</p>"
+        f"<ul>{items_html}</ul>"
+        f"<p>Connectez-vous \u00e0 l'interface d'administration pour traiter ces \u00e9l\u00e9ments :</p>"
+        f"<p><a href='{settings.FRONTEND_URL}/admin'>Acc\u00e9der au tableau de bord</a></p>"
+        f"<p style='font-size:12px;color:#888;'>Cet email est envoy\u00e9 automatiquement par le watchdog ECHO. "
+        f"Fr\u00e9quence : toutes les {settings.WATCHDOG_INTERVAL_HOURS}h. "
+        f"Cooldown entre alertes : {settings.WATCHDOG_ALERT_COOLDOWN_HOURS}h.</p>"
+    )
+
+    success = True
+    for email in recipients:
+        if _use_sendgrid():
+            ok = await _send_via_sendgrid(email, subject, html)
+        else:
+            ok = await _log_email(email, subject, "\n".join(alerts))
+        if not ok:
+            success = False
+    return success
+
+
 # --- Candidature email functions ---
 
 PROJECT_LABELS = {

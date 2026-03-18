@@ -10,6 +10,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pymongo.errors import PyMongoError
+import asyncio
 from pathlib import Path
 
 # Import routes
@@ -104,9 +105,19 @@ async def lifespan(app: FastAPI):
 
     logger.info("Rate limit and retention indexes ensured")
 
+    # --- Watchdog startup ---
+    from services.watchdog import watchdog_loop
+    watchdog_task = asyncio.create_task(watchdog_loop(db))
+    logger.info("Watchdog monitoring task started")
+
     yield  # Application runs here
 
     # --- Shutdown ---
+    watchdog_task.cancel()
+    try:
+        await watchdog_task
+    except asyncio.CancelledError:
+        logger.info("Watchdog task cancelled")
     client.close()
 
 
@@ -146,11 +157,27 @@ async def root():
 
 @api_router.get("/health")
 async def health_check():
-    """Health check endpoint — verifies MongoDB connectivity."""
+    """Health check endpoint — verifies MongoDB connectivity and watchdog status."""
     try:
         from server import db
         await db.command("ping")
-        return {"status": "healthy", "database": "connected"}
+
+        # Watchdog status
+        from datetime import datetime, timedelta
+        watchdog_status = "unknown"
+        state = await db.system_state.find_one({"_id": "watchdog_last_run"})
+        if state and state.get("last_run_at"):
+            elapsed = (datetime.utcnow() - state["last_run_at"]).total_seconds()
+            max_expected = settings.WATCHDOG_INTERVAL_HOURS * 3600 * 2
+            watchdog_status = "healthy" if elapsed < max_expected else "stale"
+        else:
+            watchdog_status = "never_run"
+
+        return {
+            "status": "healthy",
+            "database": "connected",
+            "watchdog": watchdog_status,
+        }
     except Exception as e:
         from starlette.responses import JSONResponse
         return JSONResponse(

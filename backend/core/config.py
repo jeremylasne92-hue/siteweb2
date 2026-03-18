@@ -37,6 +37,15 @@ class Settings:
     EMAIL_FROM: str = os.environ.get("EMAIL_FROM", "noreply@mouvement-echo.fr")
     EMAIL_FROM_NAME: str = os.environ.get("EMAIL_FROM_NAME", "Mouvement ECHO")
 
+    # Watchdog monitoring
+    ALERT_EMAILS: str = os.environ.get("ALERT_EMAILS", "mouvement.echo.france@gmail.com")
+    WATCHDOG_INTERVAL_HOURS: int = int(os.environ.get("WATCHDOG_INTERVAL_HOURS", "1"))
+    WATCHDOG_STALE_PARTNER_DAYS: int = int(os.environ.get("WATCHDOG_STALE_PARTNER_DAYS", "5"))
+    WATCHDOG_STALE_CANDIDATURE_DAYS: int = int(os.environ.get("WATCHDOG_STALE_CANDIDATURE_DAYS", "7"))
+    WATCHDOG_STALE_CONTACT_HOURS: int = int(os.environ.get("WATCHDOG_STALE_CONTACT_HOURS", "48"))
+    WATCHDOG_ALERT_COOLDOWN_HOURS: int = int(os.environ.get("WATCHDOG_ALERT_COOLDOWN_HOURS", "24"))
+    WATCHDOG_ADMIN_INACTIVE_DAYS: int = int(os.environ.get("WATCHDOG_ADMIN_INACTIVE_DAYS", "3"))
+
     # Booking (Google Calendar appointment link)
     BOOKING_URL: str = os.environ.get("BOOKING_URL", "https://calendar.app.google/GSpXrQq72uqWhhSx9")
 
