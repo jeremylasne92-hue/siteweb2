@@ -49,7 +49,7 @@ export function LegalNotice() {
             </li>
             <li>
               <strong className="text-white">Téléphone :</strong>{' '}
-              +33 6 00 00 00 00 [À COMPLÉTER]
+              06 12 75 23 66
             </li>
           </ul>
         </section>
