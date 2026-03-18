@@ -104,18 +104,28 @@ export function Resources() {
             />
 
             {/* Hero Section */}
-            <section className="relative py-20 bg-echo-darker border-b border-white/5">
-                <div className="container mx-auto px-4 max-w-4xl text-center">
-                    <h1 className="text-3xl sm:text-4xl md:text-6xl font-serif text-white mb-4 sm:mb-6">Médiathèque</h1>
-                    <p className="text-xl text-neutral-400 max-w-2xl mx-auto">
-                        Accédez à l'ensemble nos ressources pour comprendre, se former et agir.
+            <section className="relative py-20 md:py-32 flex items-center justify-center overflow-hidden">
+                <div className="absolute inset-0 bg-echo-darker">
+                    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2890&auto=format&fit=crop')] bg-cover bg-center opacity-20" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-echo-darker via-echo-darker/80 to-transparent" />
+                </div>
+
+                <div className="relative z-20 text-center max-w-4xl px-4 animate-fade-in">
+                    <div className="inline-block p-3 rounded-full bg-echo-gold/10 mb-6 border border-echo-gold/30">
+                        <BookOpen className="w-8 h-8 text-echo-gold" />
+                    </div>
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-serif text-white mb-4 sm:mb-6">
+                        Média<span className="text-echo-gold">thèque</span>
+                    </h1>
+                    <p className="text-xl text-neutral-300 max-w-2xl mx-auto font-light">
+                        Accédez à l'ensemble de nos ressources pour comprendre, se former et agir.
                         Libre d'accès et de partage.
                     </p>
                 </div>
             </section>
 
             {/* Main Content */}
-            <section className="py-12 px-4 min-h-screen bg-black/50">
+            <section id="ressources" className="py-12 px-4 min-h-screen bg-black/50">
                 <div className="container mx-auto max-w-7xl">
 
                     {/* Filters */}
