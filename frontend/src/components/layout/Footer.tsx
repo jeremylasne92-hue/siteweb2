@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+import { Instagram, Youtube } from 'lucide-react';
 import { openCookiePanel } from '../ui/CookieBanner';
 
 export function Footer() {
@@ -16,10 +16,9 @@ export function Footer() {
                             Une websérie sociale, éducative et interactive qui s'inspire de La Divine Comédie pour décrypter les défis contemporains et fédérer une communauté engagée.
                         </p>
                         <div className="flex gap-4">
-                            <SocialIcon icon={<Youtube size={20} />} href="#" label="YouTube" />
-                            <SocialIcon icon={<Instagram size={20} />} href="#" label="Instagram" />
-                            <SocialIcon icon={<Facebook size={20} />} href="#" label="Facebook" />
-                            <SocialIcon icon={<Twitter size={20} />} href="#" label="X (Twitter)" />
+                            <SocialIcon icon={<Youtube size={20} />} href="https://www.youtube.com/@MouvementECHOFrance" label="YouTube" />
+                            <SocialIcon icon={<Instagram size={20} />} href="https://www.instagram.com/mouvementecho" label="Instagram" />
+                            <SocialIcon icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" /></svg>} href="https://www.tiktok.com/@mouvementecho" label="TikTok" />
                         </div>
                     </div>
 
@@ -75,7 +74,7 @@ export function Footer() {
 
 function SocialIcon({ icon, href, label }: { icon: React.ReactNode, href: string, label: string }) {
     return (
-        <a href={href} aria-label={label} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-echo-gold hover:text-black transition-all duration-300">
+        <a href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-echo-gold hover:text-black transition-all duration-300">
             {icon}
         </a>
     );
