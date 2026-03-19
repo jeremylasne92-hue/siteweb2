@@ -6,10 +6,10 @@
 
 ## 📋 État du Projet
 
-**Dernière mise à jour** : 2026-03-18 (nuit)
-**Phase actuelle** : Pré-lancement J-2 (lancement 20 mars 2026)
-**Statut** : ✅ Opérationnel — Code prêt pour déploiement. Audit complet (code, sécurité, SEO, accessibilité, organisation fichiers, performance images).
-**Dernier milestone** : Audit pré-déploiement complet : images optimisées (144MB→6MB, -96%), organisation fichiers nettoyée, 0 vulnérabilités npm, 275 backend + 32 frontend tests OK, build OK.
+**Dernière mise à jour** : 2026-03-19
+**Phase actuelle** : Pré-lancement J-1 (lancement 20 mars 2026)
+**Statut** : ✅ Opérationnel — Code prêt pour déploiement. SendGrid configuré et testé. Liens sociaux actifs.
+**Dernier milestone** : SendGrid vérifié (sender mouvement.echo.france@gmail.com, emails test reçus), hero Resources redesigné, liens sociaux footer (YouTube/Instagram/TikTok), variables Render configurées (SENDGRID, EMAIL_*, ENVIRONMENT, CORS_ORIGINS, FRONTEND_URL).
 
 ### ⚠️ Rappels Pré-Lancement (20 mars 2026)
 - [x] Bandeau cookies RGPD intégré + tracking conditionné au consentement
@@ -22,8 +22,10 @@
 - [ ] **CNAME DNS** : api.mouvementecho.fr → echo-api-kfre.onrender.com (OVH)
 - [ ] **Custom domain** dans Render Dashboard
 - [ ] **GOOGLE_CLIENT_SECRET** dans Render env vars
-- [ ] **SENDGRID_API_KEY** dans Render env vars (obligatoire pour emails : reset MDP, notifications candidatures)
-- [ ] **FRONTEND_URL** dans Render env vars (obligatoire pour liens dans les emails de reset MDP)
+- [x] **SENDGRID_API_KEY** dans Render env vars ✅ (vérifié, emails fonctionnels)
+- [x] **FRONTEND_URL** dans Render env vars ✅ (https://mouvementecho.fr)
+- [x] **EMAIL_FROM/REPLY_TO** = mouvement.echo.france@gmail.com (sender vérifié SendGrid)
+- [x] **ENVIRONMENT** = production dans Render
 - [ ] Build de production (`npm run build`) + FTP upload `dist/` sur OVH
 - [x] Recette manuelle endpoints (auth 11/11, partners+contact 14/15, candidatures 24/25 = 49/51 PASS)
 - [ ] **Revoir le Dashboard Partenaire** avant la sortie officielle (UX, données, design)
@@ -186,6 +188,9 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-19 | Footer réseaux sociaux : liens placeholder (#) remplacés par les vraies URLs (YouTube @MouvementECHOFrance, Instagram @mouvementecho, TikTok @mouvementecho). Facebook et Twitter retirés (pas de comptes). Icône TikTok SVG custom. target=_blank + noopener noreferrer. Niveau HOTFIX. | Claude Code (Opus 4.6) |
+| 2026-03-19 | SendGrid configuré et testé : sender vérifié (mouvement.echo.france@gmail.com), clé API en local + Render, email test reçu (spams — normal en trial, domain auth à faire post-lancement). Variables Render mises à jour (SENDGRID_API_KEY, EMAIL_FROM, EMAIL_REPLY_TO, EMAIL_ALERT_TO, ENVIRONMENT=production, CORS_ORIGINS=mouvementecho.fr). Niveau HOTFIX. | Claude Code (Opus 4.6) |
+| 2026-03-19 | Page Resources redesignée : hero avec image de fond (Unsplash bibliothèque), radial gradient, grid pattern, icône BookOpen, typographie large serif, animation slide-up — aligné sur le format Cognisphere/ECHOLink. Email de bienvenue ajouté à l'inscription + centralisation alertes via EMAIL_ALERT_TO. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-18 | Page Soutenir : (1) Image de fond hero ajoutée (Unsplash mains en coupe, opacity 15%) pour cohérence avec les autres pages. (2) HelloAssoCounter refactorisé : code aligné sur l'embed officiel HelloAsso (allowtransparency, auto-resize postMessage, pas de sandbox). Iframe native en production (compteur temps réel mis à jour automatiquement avec les contributions), fallback custom en dev (HelloAsso bloque X-Frame-Options depuis localhost). Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-18 | Audit pré-déploiement complet : (1) Images optimisées 144MB→6MB (-96%, Pillow resize+JPEG), 5 inutilisées supprimées, 32 compressées. (2) Renommage dossiers/fichiers images (espaces/accents→kebab-case : "Image arbre en croissance"→tree-growth, "Photo équipe"→team). (3) Nettoyage code mort (Partners.tsx doublon, Breadcrumbs.tsx orphelin, services/ vide, Logo/ vide). (4) twitter:image ajouté index.html. (5) npm audit fix (0 vulnérabilités). (6) Audit sécurité (CORS, CSP, cookies, rate limiting, validation input — tout OK). (7) Audit SEO/a11y (og tags, JSON-LD, lang=fr, responsive, error boundary — OK). (8) Audit organisation fichiers (routes 35/35 couvertes, imports sans circulaires, nommage cohérent). 275 backend + 32 frontend tests OK, build OK. Niveau STANDARD. | Claude Code (Opus 4.6) |
 | 2026-03-18 | Fix UX validation disponibilité StudentApplicationForm + VolunteerApplicationForm : message d'erreur explicite listant les options (stage court, long, alternance, temps partiel), auto-clear erreur quand l'utilisateur sélectionne un radio ou une compétence. Test mis à jour. Niveau HOTFIX. | Claude Code (Opus 4.6) |
@@ -269,6 +274,9 @@ frontend/src/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-19 | 🟢 HOTFIX | Footer réseaux sociaux (YouTube, Instagram, TikTok — vraies URLs, Facebook/Twitter retirés) | ~10min | Claude Code (Opus 4.6) |
+| 2026-03-19 | 🟢 HOTFIX | SendGrid configuré (sender vérifié, email test, variables Render) | ~20min | Claude Code (Opus 4.6) |
+| 2026-03-19 | 🟡 STANDARD | Page Resources redesignée (hero Cognisphere/ECHOLink style) + email bienvenue + EMAIL_ALERT_TO | ~25min | Claude Code (Opus 4.6) |
 | 2026-03-18 | 🟢 HOTFIX | Page Soutenir : image fond hero + HelloAssoCounter aligné code officiel (postMessage, allowtransparency, fallback dev) | ~15min | Claude Code (Opus 4.6) |
 | 2026-03-18 | 🟡 STANDARD | Audit pré-déploiement (images 144→6MB, renommage fichiers, code mort, npm audit, sécurité, SEO, organisation) | ~30min | Claude Code (Opus 4.6) |
 | 2026-03-18 | 🟢 HOTFIX | Fix UX validation disponibilité (message explicite + auto-clear erreur, StudentApp + VolunteerApp) | ~10min | Claude Code (Opus 4.6) |
@@ -417,8 +425,8 @@ _Aucune spec en cours._
 | 11 | ~~Modifier images personnages~~ | Basse | ✅ Done (15 personnages remplacés, noms normalisés) |
 | 12 | ~~Corriger logo ECHO série~~ | Basse | ✅ Done (PNG transparent, mix-blend supprimé) |
 | 13 | Nouvelle charte graphique | Basse | À faire |
-| 14 | Configurer SendGrid en production | Haute | À faire |
-| 15 | Liens sociaux (12 href="#") — URLs à fournir | Moyenne | À faire |
+| 14 | ~~Configurer SendGrid en production~~ | Haute | ✅ Done (sender vérifié, emails test reçus, variables Render configurées) |
+| 15 | ~~Liens sociaux footer~~ | Moyenne | ✅ Done (YouTube, Instagram, TikTok — Facebook/Twitter retirés, pas de comptes) |
 | 16 | ~~Vérifier la barre en bas (footer) avec les liens~~ | Moyenne | ✅ Done (footer OK, seuls liens sociaux restent = #15) |
 | 17 | ~~Rédiger et compléter la FAQ~~ | Moyenne | ✅ Done |
 | 18 | ~~Dashboard partenaire avec métriques (clics site, etc.)~~ | Moyenne | ✅ Done (PartnerAnalytics.tsx, Recharts, 3 métriques, 30j) |
