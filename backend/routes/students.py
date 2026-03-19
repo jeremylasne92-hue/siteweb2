@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/students", tags=["Students"])
 
-ALERT_EMAIL = "stages@mouvementecho.fr"
+ALERT_EMAIL = settings.EMAIL_ALERT_TO
 
 AVAILABILITY_LABELS = {
     "stage_court": "Stage court (< 3 mois)",

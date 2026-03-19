@@ -19,6 +19,7 @@ from models import User, UserRole, UserCreate
 from models_partner import Partner, PartnerCategory, PartnerStatus, ThematicRef
 from routes.auth import get_current_user, require_admin, get_db, hash_password
 from email_service import send_email
+from core.config import settings
 from utils.rate_limit import anonymize_ip, check_rate_limit
 from utils.audit import log_admin_action
 from utils.date_helpers import format_date_csv
@@ -343,7 +344,7 @@ async def apply_partnership(
     # Send alert email to internal team (FR13)
     background_tasks.add_task(
         send_email,
-        "partenaires@mouvementecho.fr",
+        settings.EMAIL_ALERT_TO,
         f"Nouvelle candidature partenaire — {name}",
         f"Nom: {name}\nCatégorie: {category}\nVille: {city}\nContact: {contact_name} ({contact_email})\nDescription: {description}"
     )

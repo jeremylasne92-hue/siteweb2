@@ -7,6 +7,7 @@ import logging
 from pymongo.errors import PyMongoError
 from models import ContactMessageRequest, User
 from email_service import send_email
+from core.config import settings
 from utils.rate_limit import anonymize_ip, check_rate_limit
 from routes.auth import get_db, require_admin
 
@@ -72,7 +73,7 @@ async def submit_contact(
     # Email 2: alert to team
     background_tasks.add_task(
         send_email,
-        "contact@mouvementecho.fr",
+        settings.EMAIL_ALERT_TO,
         f"Nouveau message contact — {subject_label}",
         f"Nom : {data.name}\n"
         f"Email : {data.email}\n"

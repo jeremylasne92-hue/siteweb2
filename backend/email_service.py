@@ -62,6 +62,28 @@ def _use_sendgrid() -> bool:
     return bool(settings.SENDGRID_API_KEY) and settings.is_production
 
 
+async def send_welcome(email: str, name: str) -> bool:
+    """Send welcome email after registration."""
+    import html as html_mod
+    safe_name = html_mod.escape(name)
+    subject = "Bienvenue sur Mouvement ECHO !"
+    html = (
+        f"<h2>Bienvenue {safe_name} !</h2>"
+        f"<p>Votre compte sur Mouvement ECHO a bien été créé.</p>"
+        f"<p>Vous faites désormais partie d'une communauté engagée pour la transition "
+        f"écologique et sociale. Voici ce que vous pouvez faire dès maintenant :</p>"
+        f"<ul>"
+        f"<li>Découvrir la série documentaire ECHO</li>"
+        f"<li>Participer aux événements à venir</li>"
+        f"<li>Accéder à notre médiathèque de ressources</li>"
+        f"</ul>"
+        f"<p>À très bientôt,<br>L'équipe Mouvement ECHO</p>"
+    )
+    if _use_sendgrid():
+        return await _send_via_sendgrid(email, subject, html)
+    return await _log_email(email, subject, f"Bienvenue {name} sur Mouvement ECHO")
+
+
 async def send_2fa_code(email: str, code: str) -> bool:
     """Send 2FA verification code via email."""
     subject = "Code de verification ECHO"

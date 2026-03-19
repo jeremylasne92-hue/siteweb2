@@ -1,11 +1,11 @@
 from pydantic import BaseModel as PydanticBaseModel
-from fastapi import APIRouter, HTTPException, Depends, status, Response, Request
+from fastapi import APIRouter, HTTPException, Depends, status, Response, Request, BackgroundTasks
 from fastapi.responses import RedirectResponse, StreamingResponse, JSONResponse
 from models import User, UserCreate, UserLogin, UserRegister, UserLoginLocal, UserSession, Pending2FA, ChangePasswordRequest, NotificationPreferences
 from auth_utils import hash_password, verify_password, generate_session_token, generate_2fa_code
 from services.auth_local_service import register_user, login_user
 from services.password_reset_service import request_reset, verify_token, reset_password as reset_pwd
-from email_service import send_2fa_code
+from email_service import send_2fa_code, send_welcome
 from pymongo.errors import PyMongoError
 from utils.rate_limit import check_rate_limit
 from utils.date_helpers import format_date_csv, ensure_aware
@@ -84,7 +84,7 @@ async def require_admin(current_user: User = Depends(get_current_user)) -> User:
 
 
 @router.post("/register")
-async def register(request: Request, user_data: UserRegister, db: AsyncIOMotorDatabase = Depends(get_db)):
+async def register(request: Request, user_data: UserRegister, background_tasks: BackgroundTasks, db: AsyncIOMotorDatabase = Depends(get_db)):
     """Register new user with email/password (Service Pattern)."""
     await check_rate_limit(db, request, "register", max_requests=5, window_minutes=15)
 
@@ -134,6 +134,11 @@ async def register(request: Request, user_data: UserRegister, db: AsyncIOMotorDa
     except PyMongoError as e:
         logger.error(f"Failed to register user: {e}")
         raise HTTPException(status_code=503, detail="Impossible de créer votre compte. Veuillez réessayer.")
+
+    # Send welcome email (non-blocking)
+    display_name = user_data.username or user_data.email.split("@")[0]
+    background_tasks.add_task(send_welcome, user_data.email, display_name)
+
     return result
 
 
