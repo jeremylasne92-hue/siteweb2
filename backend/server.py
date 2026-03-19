@@ -137,6 +137,10 @@ app = FastAPI(
     description="API for ECHO series platform",
     version="1.0.0",
     lifespan=lifespan,
+    # Disable API docs in production to avoid exposing internals
+    docs_url=None if settings.is_production else "/docs",
+    redoc_url=None if settings.is_production else "/redoc",
+    openapi_url=None if settings.is_production else "/openapi.json",
 )
 
 # Create a router with the /api prefix
@@ -294,7 +298,7 @@ class ActivityTrackingMiddleware(BaseHTTPMiddleware):
             return response
 
         try:
-            db = request.app.state.db
+            db = request.app.db
             # Lookup session
             session = await db.user_sessions.find_one({"session_token": session_token})
             if not session:

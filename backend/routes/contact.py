@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Request, HTTPException, BackgroundTasks, Depends
 from datetime import datetime, UTC
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from bson import ObjectId
 import logging
 
 from pymongo.errors import PyMongoError
@@ -116,18 +115,12 @@ async def update_message_status(
     if new_status not in allowed_statuses:
         raise HTTPException(status_code=400, detail="Invalid status")
 
-    # Validate ObjectId format
-    try:
-        oid = ObjectId(message_id)
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid message ID format")
-
     update_fields: dict = {"status": new_status}
     if "admin_note" in data:
         update_fields["admin_note"] = data["admin_note"]
 
     result = await db.contact_messages.update_one(
-        {"_id": oid},
+        {"id": message_id},
         {"$set": update_fields},
     )
     if result.matched_count == 0:

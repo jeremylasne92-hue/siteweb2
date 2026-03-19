@@ -30,10 +30,10 @@ async def get_episode_stats(db: AsyncIOMotorDatabase = Depends(get_db)):
 @router.get("", response_model=List[Episode])
 async def get_episodes(season: Optional[int] = None, db: AsyncIOMotorDatabase = Depends(get_db)):
     """Get all episodes, optionally filtered by season"""
-    query = {}
+    query: dict = {"is_published": True}
     if season:
         query["season"] = season
-    
+
     episodes = await db.episodes.find(query).sort([("season", 1), ("episode", 1)]).to_list(length=100)
     return [Episode(**ep) for ep in episodes]
 

@@ -24,6 +24,10 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
+# H1 — Timing attack protection: pre-computed dummy hash so hash_password
+# is NOT called on every login request when a user is not found.
+DUMMY_HASH = hash_password("DummyP@ss1")
+
 
 class Verify2FARequest(PydanticBaseModel):
     user_id: str
@@ -199,7 +203,6 @@ async def login(request: Request, credentials: UserLogin, response: Response, db
         logger.warning("RECAPTCHA_SECRET_KEY not set — skipping server-side verification in dev")
     
     # H1 — Timing attack protection: always run bcrypt even if user not found
-    DUMMY_HASH = hash_password("DummyP@ss1")
     user_doc = await db.users.find_one({"username": credentials.username})
     stored_hash = user_doc.get("password_hash", DUMMY_HASH) if user_doc else DUMMY_HASH
     password_ok = verify_password(credentials.password, stored_hash)

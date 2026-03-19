@@ -1,8 +1,9 @@
 from fastapi.responses import StreamingResponse
-from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form, BackgroundTasks, Request
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form, BackgroundTasks, Request, Query
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta, UTC
+from pathlib import Path
 import csv
 import io
 import json
@@ -20,6 +21,7 @@ from models_partner import Partner, PartnerCategory, PartnerStatus, ThematicRef
 from routes.auth import get_current_user, require_admin, get_db, hash_password
 from email_service import send_email
 from core.config import settings
+from services.auth_local_service import validate_password_strength
 from utils.rate_limit import anonymize_ip, check_rate_limit
 from utils.audit import log_admin_action
 from utils.date_helpers import format_date_csv
@@ -30,6 +32,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/partners", tags=["Partners"])
 LOGO_MAX_SIZE = 2 * 1024 * 1024  # 2 Mo
 LOGO_ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"]
+LOGO_UPLOAD_DIR = Path(__file__).parent.parent / "uploads" / "partners" / "logos"
 
 # ==============================================================================
 # SCHEMAS (Pydantic Models for requests/responses)
@@ -129,8 +132,8 @@ async def get_public_partners(
     thematic: Optional[str] = None, # Comma separated list
     search: Optional[str] = None,
     bounds: Optional[str] = None, # lat_min,lng_min,lat_max,lng_max
-    skip: int = 0,
-    limit: int = 50,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
     """List approved partners with filters"""
@@ -177,20 +180,6 @@ async def get_public_partners(
         "total": total,
         "has_more": has_more
     }
-
-@router.get("/{slug}")
-async def get_partner_by_slug(slug: str, db: AsyncIOMotorDatabase = Depends(get_db)):
-    """Get single approved partner by slug"""
-    partner = await db.partners.find_one(
-        {"slug": slug, "status": PartnerStatus.APPROVED},
-        {"_id": 0}
-    )
-    if not partner:
-        raise HTTPException(status_code=404, detail="Partner not found")
-    # Strip personal contact data from public response (RGPD art. 5)
-    for field in PUBLIC_EXCLUDED_FIELDS:
-        partner.pop(field, None)
-    return partner
 
 @router.post("/apply")
 async def apply_partnership(
@@ -254,6 +243,9 @@ async def apply_partnership(
     except Exception:
         thematics_list = []
 
+    # Validate password strength before creating any record
+    validate_password_strength(password)
+
     # Create the user account with PARTNER role
     user_doc = User(
         username=name,
@@ -270,14 +262,12 @@ async def apply_partnership(
     # Save logo file (after user creation, since we need user_doc.id)
     try:
         if logo and logo_contents:
-            from pathlib import Path as FilePath
-            upload_dir = FilePath(__file__).parent.parent / "uploads" / "partners" / "logos"
-            upload_dir.mkdir(parents=True, exist_ok=True)
+            LOGO_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
             ext = os.path.splitext(logo.filename or "logo.png")[1].lower()
             if ext not in [".jpg", ".jpeg", ".png", ".webp"]:
                 ext = ".png"
             safe_filename = f"{user_doc.id}_{uuid_mod.uuid4().hex[:8]}{ext}"
-            file_path = upload_dir / safe_filename
+            file_path = LOGO_UPLOAD_DIR / safe_filename
 
             with open(file_path, "wb") as buffer:
                 buffer.write(logo_contents)
@@ -493,14 +483,12 @@ async def update_my_partner_account(
             img.verify()
         except Exception:
             raise HTTPException(status_code=400, detail="Le fichier n'est pas une image valide")
-        from pathlib import Path as FilePath
-        upload_dir = FilePath(__file__).parent.parent / "uploads" / "partners" / "logos"
-        upload_dir.mkdir(parents=True, exist_ok=True)
+        LOGO_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
         ext = os.path.splitext(logo.filename or "logo.png")[1].lower()
         if ext not in [".jpg", ".jpeg", ".png", ".webp"]:
             ext = ".png"
         safe_filename = f"{partner['id']}_{uuid_mod.uuid4().hex[:8]}{ext}"
-        file_path = upload_dir / safe_filename
+        file_path = LOGO_UPLOAD_DIR / safe_filename
 
         with open(file_path, "wb") as buffer:
             buffer.write(contents)
@@ -665,9 +653,10 @@ async def admin_delete_partner(
 
     # Delete partner logo file if exists
     if partner.get("logo_url"):
-        logo_path = partner["logo_url"].replace("/api/uploads/", "uploads/")
-        if os.path.exists(logo_path):
-            os.remove(logo_path)
+        logo_filename = os.path.basename(partner["logo_url"])
+        logo_path = LOGO_UPLOAD_DIR / logo_filename
+        if logo_path.exists():
+            logo_path.unlink()
 
     await db.partners.delete_one({"id": partner_id})
     await log_admin_action(db, admin.id, "delete", "partner", partner_id)
@@ -779,28 +768,28 @@ async def admin_upload_logo(
     
     # Delete old logo file if exists
     if partner.get("logo_url"):
-        old_path = partner["logo_url"].replace("/api/uploads/", "uploads/")
-        if os.path.exists(old_path):
-            os.remove(old_path)
-    
+        old_filename = os.path.basename(partner["logo_url"])
+        old_path = LOGO_UPLOAD_DIR / old_filename
+        if old_path.exists():
+            old_path.unlink()
+
     # Save new logo
-    upload_dir = "uploads/partners/logos"
-    os.makedirs(upload_dir, exist_ok=True)
+    LOGO_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     ext = os.path.splitext(logo.filename or "logo.png")[1].lower()
     if ext not in [".jpg", ".jpeg", ".png", ".webp"]:
         ext = ".png"
     safe_filename = f"{partner_id}_{uuid_mod.uuid4().hex[:8]}{ext}"
-    file_path = os.path.join(upload_dir, safe_filename)
-    
+    file_path = LOGO_UPLOAD_DIR / safe_filename
+
     with open(file_path, "wb") as buffer:
         buffer.write(contents)
-    
+
     logo_url = f"/api/uploads/partners/logos/{safe_filename}"
     await db.partners.update_one(
         {"id": partner_id},
         {"$set":  {"logo_url": logo_url, "updated_at": datetime.now(UTC)}}
     )
-    
+
     return {"success": True, "logo_url": logo_url}
 
 
@@ -816,15 +805,16 @@ async def admin_delete_logo(
         raise HTTPException(status_code=404, detail="Partner not found")
     
     if partner.get("logo_url"):
-        old_path = partner["logo_url"].replace("/api/uploads/", "uploads/")
-        if os.path.exists(old_path):
-            os.remove(old_path)
-    
+        old_filename = os.path.basename(partner["logo_url"])
+        old_path = LOGO_UPLOAD_DIR / old_filename
+        if old_path.exists():
+            old_path.unlink()
+
     await db.partners.update_one(
         {"id": partner_id},
         {"$set":  {"logo_url": None, "updated_at": datetime.now(UTC)}}
     )
-    
+
     return {"success": True, "message": "Logo supprimé"}
 
 
@@ -895,3 +885,22 @@ async def admin_export_partners_csv(
         media_type="text/csv; charset=utf-8",
         headers={"Content-Disposition": "attachment; filename=partenaires-export.csv"}
     )
+
+
+# ==============================================================================
+# SLUG ROUTE — must be declared last to avoid shadowing specific GET routes
+# ==============================================================================
+
+@router.get("/{slug}")
+async def get_partner_by_slug(slug: str, db: AsyncIOMotorDatabase = Depends(get_db)):
+    """Get single approved partner by slug"""
+    partner = await db.partners.find_one(
+        {"slug": slug, "status": PartnerStatus.APPROVED},
+        {"_id": 0}
+    )
+    if not partner:
+        raise HTTPException(status_code=404, detail="Partner not found")
+    # Strip personal contact data from public response (RGPD art. 5)
+    for field in PUBLIC_EXCLUDED_FIELDS:
+        partner.pop(field, None)
+    return partner

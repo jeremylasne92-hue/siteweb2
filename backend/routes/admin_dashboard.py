@@ -13,14 +13,7 @@ async def get_pending_counts(
     admin: User = Depends(require_admin),
 ):
     """Aggregated counts of items pending admin action."""
-    (
-        partners_pending,
-        candidatures_pending,
-        volunteers_pending,
-        members_pending,
-        messages_unread,
-        recent_actions,
-    ) = await asyncio.gather(
+    results = await asyncio.gather(
         db.partners.count_documents({"status": "pending"}),
         db.tech_candidatures.count_documents({"status": "pending"}),
         db.volunteer_applications.count_documents({"status": "pending"}),
@@ -31,6 +24,13 @@ async def get_pending_counts(
         db.admin_actions.find({}, {"_id": 0}).sort("timestamp", -1).to_list(length=5),
         return_exceptions=True,
     )
+
+    partners_pending = results[0] if not isinstance(results[0], Exception) else 0
+    candidatures_pending = results[1] if not isinstance(results[1], Exception) else 0
+    volunteers_pending = results[2] if not isinstance(results[2], Exception) else 0
+    members_pending = results[3] if not isinstance(results[3], Exception) else 0
+    messages_unread = results[4] if not isinstance(results[4], Exception) else 0
+    recent_actions = results[5] if not isinstance(results[5], Exception) else []
 
     total = (
         partners_pending

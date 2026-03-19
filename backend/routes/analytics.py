@@ -123,23 +123,7 @@ async def get_admin_dashboard(
     cutoff = datetime.now(UTC) - timedelta(days=period)
 
     # Run all queries in parallel
-    (
-        page_views,
-        cta_clicks,
-        utm_sources,
-        landing_pages,
-        session_data,
-        users_count,
-        volunteers_count,
-        partners_count,
-        scenaristes_count,
-        helloasso_clicks,
-        contact_count,
-        partner_views,
-        partner_clicks,
-        partners_total,
-        partners_approved,
-    ) = await asyncio.gather(
+    _results = await asyncio.gather(
         # Page views (total)
         db.analytics_events.count_documents({
             "category": "page_view", "created_at": {"$gte": cutoff}
@@ -198,6 +182,22 @@ async def get_admin_dashboard(
         db.partners.count_documents({"status": "approved"}),
         return_exceptions=True,
     )
+
+    page_views = _results[0] if not isinstance(_results[0], Exception) else 0
+    cta_clicks = _results[1] if not isinstance(_results[1], Exception) else []
+    utm_sources = _results[2] if not isinstance(_results[2], Exception) else []
+    landing_pages = _results[3] if not isinstance(_results[3], Exception) else []
+    session_data = _results[4] if not isinstance(_results[4], Exception) else []
+    users_count = _results[5] if not isinstance(_results[5], Exception) else 0
+    volunteers_count = _results[6] if not isinstance(_results[6], Exception) else 0
+    partners_count = _results[7] if not isinstance(_results[7], Exception) else 0
+    scenaristes_count = _results[8] if not isinstance(_results[8], Exception) else 0
+    helloasso_clicks = _results[9] if not isinstance(_results[9], Exception) else 0
+    contact_count = _results[10] if not isinstance(_results[10], Exception) else 0
+    partner_views = _results[11] if not isinstance(_results[11], Exception) else 0
+    partner_clicks = _results[12] if not isinstance(_results[12], Exception) else 0
+    partners_total = _results[13] if not isinstance(_results[13], Exception) else 0
+    partners_approved = _results[14] if not isinstance(_results[14], Exception) else 0
 
     # Compute session metrics
     unique_sessions = len(session_data)

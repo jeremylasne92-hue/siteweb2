@@ -7,7 +7,7 @@ Mouvement ECHO est une plateforme web full-stack connectant le public
 - **Frontend**: React 19 + TypeScript 5.9 + Vite 7 + Tailwind CSS 4
 - **Backend**: FastAPI 0.110 + MongoDB (Motor 3.3 async)
 - **Tests**: Vitest (frontend) + Pytest (backend)
-- **Déploiement**: Webstrator (static + API)
+- **Déploiement**: OVH mutualisé (frontend) + Render (backend API) + MongoDB Atlas (DB)
 
 ## Structure
 ```
@@ -24,6 +24,22 @@ backend/
   utils/          # Rate limiting, helpers
   server.py       # Point d'entrée FastAPI
 ```
+
+## Déploiement — RAPPEL OBLIGATOIRE
+**Après chaque modification, rappeler à l'utilisateur de déployer :**
+
+| Étape | Commande / Action | Automatique ? |
+|-------|-------------------|---------------|
+| 1. Build frontend | `cd frontend && npm run build` | ❌ Manuel |
+| 2. Git push | `git add . && git commit && git push` | ❌ Manuel |
+| 3. Backend Render | Render auto-deploy après git push | ✅ Auto |
+| 4. Frontend OVH | FileZilla : `dist/` → `/www/` sur `ftp.cluster121.hosting.ovh.net` (login: `mouvemd`) | ❌ Manuel |
+
+**Script tout-en-un : `scripts/deploy.bat`** (build + push + FTP)
+- Nécessite : `setx FTP_PASSWORD "mot_de_passe"` une fois
+
+⚠️ **RÈGLE** : À la fin de chaque session avec des modifications de code, TOUJOURS demander :
+> "Veux-tu déployer les changements ? (`scripts/deploy.bat` ou manuellement)"
 
 ## Commandes
 - Backend tests: `cd backend && python -m pytest -p no:recording -q`

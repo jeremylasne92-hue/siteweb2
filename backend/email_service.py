@@ -134,11 +134,20 @@ async def send_email(email: str, subject: str, message: str, user_id: str = None
             user_id.encode(),
             hashlib.sha256
         ).hexdigest()
-        base = settings.FRONTEND_URL if hasattr(settings, 'FRONTEND_URL') and settings.FRONTEND_URL else "https://mouvementecho.fr"
+        # Build the API base URL: the unsubscribe endpoint lives on the backend,
+        # not on the frontend. In production the API is at api.<domain>, so we
+        # derive it from FRONTEND_URL by prepending "api." to the hostname.
+        frontend_base = settings.FRONTEND_URL if hasattr(settings, 'FRONTEND_URL') and settings.FRONTEND_URL else "https://mouvementecho.fr"
+        if settings.is_production:
+            from urllib.parse import urlparse, urlunparse
+            parsed = urlparse(frontend_base)
+            api_base = urlunparse(parsed._replace(netloc=f"api.{parsed.netloc}"))
+        else:
+            api_base = frontend_base
         unsubscribe = (
             f'<p style="margin-top:20px;font-size:11px;color:#888;text-align:center;">'
             f'Pour vous desinscrire des emails : '
-            f'<a href="{base}/api/auth/unsubscribe/{user_id}?token={token}" style="color:#D4AF37;">cliquez ici</a></p>'
+            f'<a href="{api_base}/api/auth/unsubscribe/{user_id}?token={token}" style="color:#D4AF37;">cliquez ici</a></p>'
         )
     safe_message = html_mod.escape(message)
     html = f"<div style='white-space:pre-line;'>{safe_message}</div>{unsubscribe}"

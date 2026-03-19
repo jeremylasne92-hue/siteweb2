@@ -302,11 +302,13 @@ async def get_accepted_members(
     projection = {"_id": 0, "name": 1, "project": 1, "skills": 1, "experience_level": 1, "created_at": 1}
 
     # Fetch both collections in parallel
-    tech_docs, volunteer_docs = await asyncio.gather(
+    _results = await asyncio.gather(
         db.tech_candidatures.find({"status": "accepted"}, projection).sort("created_at", -1).to_list(length=1000),
         db.volunteer_applications.find({"status": "accepted"}, projection).sort("created_at", -1).to_list(length=1000),
         return_exceptions=True,
     )
+    tech_docs = _results[0] if not isinstance(_results[0], Exception) else []
+    volunteer_docs = _results[1] if not isinstance(_results[1], Exception) else []
 
     members = [{**doc, "type": "candidature"} for doc in tech_docs]
     for doc in volunteer_docs:

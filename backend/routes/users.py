@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from models import User
 from routes.auth import get_current_user, require_admin, get_db
 from auth_utils import hash_password
+from services.auth_local_service import validate_password_strength
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from typing import Optional, List
 import logging
@@ -92,6 +93,7 @@ async def reset_user_password(
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
     """Reset user's password (admin only)"""
+    validate_password_strength(body.new_password)
     result = await db.users.update_one(
         {"id": user_id},
         {"$set": {"password_hash": hash_password(body.new_password)}}
