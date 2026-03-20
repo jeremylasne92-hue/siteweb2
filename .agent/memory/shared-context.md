@@ -6,10 +6,10 @@
 
 ## 📋 État du Projet
 
-**Dernière mise à jour** : 2026-03-20
+**Dernière mise à jour** : 2026-03-20 (soir)
 **Phase actuelle** : 🚀 LANCÉ — Site en production (20 mars 2026)
-**Statut** : ✅ EN LIGNE — https://mouvementecho.fr accessible, HTTPS actif, Google Search Console vérifié
-**Dernier milestone** : Site lancé le 20/03/2026. HTTPS Let's Encrypt actif (expire 18/06/2026). Google Search Console vérifié + sitemap soumis. 12 bugs critiques/importants corrigés (code review). Résolution problème OVH "Site en construction" par recréation multisite.
+**Statut** : ✅ EN LIGNE — https://mouvementecho.fr accessible, HTTPS actif, Google Search Console vérifié, SendGrid DKIM/SPF authentifié, toutes variables Render configurées
+**Dernier milestone** : Site lancé le 20/03/2026. HTTPS Let's Encrypt actif (expire 18/06/2026). Google Search Console vérifié + sitemap soumis. 12 bugs critiques/importants corrigés (code review). Résolution problème OVH "Site en construction" par recréation multisite. Configuration production complète (SendGrid domain auth, secrets Render, comptes admin).
 
 ### ⚠️ Rappels Pré-Lancement (20 mars 2026)
 - [x] Bandeau cookies RGPD intégré + tracking conditionné au consentement
@@ -20,14 +20,21 @@
 - [x] Backend déployé sur Render (echo-api-kfre.onrender.com)
 - [x] MongoDB Atlas M0 configuré (echo-cluster, Paris)
 - [x] **CNAME DNS** : api.mouvementecho.fr → echo-api-kfre.onrender.com ✅ (configuré OVH)
-- [ ] **Custom domain** dans Render Dashboard
-- [ ] **GOOGLE_CLIENT_SECRET** dans Render env vars
+- [x] **Custom domain** dans Render Dashboard ✅ (api.mouvementecho.fr — Verified + Certificate Issued)
+- [x] **GOOGLE_CLIENT_SECRET** dans Render env vars ✅
 - [x] **SENDGRID_API_KEY** dans Render env vars ✅ (vérifié, emails fonctionnels)
 - [x] **FRONTEND_URL** dans Render env vars ✅ (https://mouvementecho.fr)
-- [x] **EMAIL_FROM/REPLY_TO** = mouvement.echo.france@gmail.com (sender vérifié SendGrid)
+- [x] **EMAIL_FROM** = noreply@mouvementecho.fr (domain authentifié DKIM/SPF/DMARC)
+- [x] **EMAIL_REPLY_TO** = contact@mouvementecho.fr
+- [x] **OAUTH_STATE_SECRET** dans Render env vars ✅
+- [x] **UNSUBSCRIBE_SECRET** dans Render env vars ✅
+- [x] **RECAPTCHA_SECRET_KEY** dans Render env vars ✅
+- [x] **SendGrid Domain Authentication** — mouvementecho.fr vérifié (DKIM s1/s2 + SPF + DMARC)
 - [x] **ENVIRONMENT** = production dans Render
 - [x] Build de production (`npm run build`) + FTP upload `dist/` sur OVH ✅ (déployé 20/03/2026)
 - [x] Recette manuelle endpoints (auth 11/11, partners+contact 14/15, candidatures 24/25 = 49/51 PASS)
+- [x] **Comptes admin** configurés (jeremy.lasne92@gmail.com + mouvement.echo.france@gmail.com → role: admin)
+- [x] **Base de données propre** — aucune donnée de test en production
 - [ ] **Revoir le Dashboard Partenaire** avant la sortie officielle (UX, données, design)
 
 ---
@@ -189,6 +196,7 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-20 | Configuration production complète : (1) SendGrid Domain Authentication — DKIM (s1/s2._domainkey CNAME), SPF (em9957 CNAME), DMARC (TXT v=DMARC1; p=none;) configurés chez OVH et vérifiés. Ancienne auth em8453 supprimée. (2) EMAIL_FROM changé de mouvement.echo.france@gmail.com → noreply@mouvementecho.fr. (3) Toutes variables Render vérifiées et complètes (OAUTH_STATE_SECRET, UNSUBSCRIBE_SECRET, RECAPTCHA_SECRET_KEY, GOOGLE_CLIENT_ID/SECRET, SENDGRID_API_KEY, etc.). (4) Custom domain Render api.mouvementecho.fr vérifié + certificat SSL émis. (5) Comptes admin MongoDB configurés (2 users role:admin). (6) Base de données production vérifiée propre (0 données de test). Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-20 | Ajustements post-lancement : (1) Saisons renommées partout — "L'Enfer/Le Purgatoire/Le Paradis" → "Diagnostic des crises/Solutions du terrain/Futurs souhaitables" (Serie.tsx, Mouvement.tsx). (2) Prologue : texte descriptif ajouté (storyboard IA, tournage réel, contre-pied voix/musique), crédits compacts restructurés, réseaux sociaux retirés → lien YouTube uniquement. (3) Nantes badge vert "teaser réalisé ✓". (4) Sous-nav "Rejoindre" ajoutée (Serie.tsx). (5) Profil : formatDisplayName() pour masquer suffixe hex OAuth. (6) Trailer vidéo mise à jour (R34yKJuPDWA). (7) Page À propos supprimée (AboutPage.tsx + route /a-propos + lien Footer) — jamais demandée. Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-19 | Footer réseaux sociaux : liens placeholder (#) remplacés par les vraies URLs (YouTube @MouvementECHOFrance, Instagram @mouvementecho, TikTok @mouvementecho). Facebook et Twitter retirés (pas de comptes). Icône TikTok SVG custom. target=_blank + noopener noreferrer. Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-19 | SendGrid configuré et testé : sender vérifié (mouvement.echo.france@gmail.com), clé API en local + Render, email test reçu (spams — normal en trial, domain auth à faire post-lancement). Variables Render mises à jour (SENDGRID_API_KEY, EMAIL_FROM, EMAIL_REPLY_TO, EMAIL_ALERT_TO, ENVIRONMENT=production, CORS_ORIGINS=mouvementecho.fr). Niveau HOTFIX. | Claude Code (Opus 4.6) |
@@ -276,6 +284,8 @@ frontend/src/
 
 | Date | Niveau | Feature | Durée réelle | Agent(s) |
 |------|--------|---------|--------------|----------|
+| 2026-03-20 | 🟢 HOTFIX | Config production (SendGrid DKIM/SPF/DMARC, variables Render, comptes admin, vérification DB) | ~30min | Claude Code (Opus 4.6) |
+| 2026-03-20 | 🟢 HOTFIX | Ajustements post-lancement (saisons, prologue, crédits, profil, trailer, suppression AboutPage) | ~45min | Claude Code (Opus 4.6) |
 | 2026-03-19 | 🟢 HOTFIX | Footer réseaux sociaux (YouTube, Instagram, TikTok — vraies URLs, Facebook/Twitter retirés) | ~10min | Claude Code (Opus 4.6) |
 | 2026-03-19 | 🟢 HOTFIX | SendGrid configuré (sender vérifié, email test, variables Render) | ~20min | Claude Code (Opus 4.6) |
 | 2026-03-19 | 🟡 STANDARD | Page Resources redesignée (hero Cognisphere/ECHOLink style) + email bienvenue + EMAIL_ALERT_TO | ~25min | Claude Code (Opus 4.6) |
@@ -392,10 +402,37 @@ _Aucune spec en cours._
 **Epic 3 (Partenaires & ECHOSystem) — TERMINE** (5/5 stories done)
 
 **Epic 4 (Back-Office Administration) — TERMINÉ** (4/4 stories done)
-1. ~~**Story 4.1** — Panel d'administration sécurisé~~ ✅ done
-2. ~~**Story 4.2** — Modération des candidatures partenaires~~ ✅ done
-3. ~~**Story 4.3** — Gestion de l'agenda événements~~ ✅ done
-4. ~~**Story 4.4** — Export de la base email opt-in~~ ✅ done (endpoint CSV + AdminExports + 4 tests + code review)
+
+**🚀 Configuration Production — TERMINÉ** (20/03/2026)
+- ~~SendGrid Domain Authentication (DKIM/SPF/DMARC)~~ ✅
+- ~~Variables Render (toutes)~~ ✅
+- ~~Custom domain API (api.mouvementecho.fr)~~ ✅
+- ~~Comptes admin MongoDB~~ ✅
+- ~~Base de données propre~~ ✅
+- ~~Google Search Console + sitemap~~ ✅
+- ~~HTTPS Let's Encrypt~~ ✅
+
+---
+
+## 📋 Backlog Post-Lancement (Phase 2)
+
+**Priorité haute — Semaine 1 post-lancement :**
+1. **Dashboard Partenaire** — Revoir UX, données affichées, design (existant mais à améliorer)
+2. **Monitoring** — Vérifier logs Render, erreurs 500, performance API (cold start Render free tier)
+3. **SEO** — Suivre indexation Google (Search Console), soumettre pages importantes
+4. **Tests utilisateurs** — Recueillir retours sur inscription, navigation, formulaires
+
+**Priorité moyenne — Mois 1 :**
+5. **Réseaux sociaux personnages** — Prévu mai 2026 (cf. memory)
+6. **Contenu épisodes** — Ajouter les premiers épisodes quand disponibles
+7. **Événements** — Créer les premiers événements dans l'agenda
+8. **Partenaires** — Onboarder les premiers partenaires via le formulaire
+
+**Priorité basse — Trimestre 1 :**
+9. **CogniSphère bêta** — Prévu juin 2026
+10. **ECHOLink** — Phase 2 prévue décembre 2026
+11. **Render plan payant** — Si le trafic augmente (cold start ~30s sur free tier)
+12. **MongoDB Atlas upgrade** — Si > 512MB données (M0 free tier)
 
 ### Notes techniques
 
