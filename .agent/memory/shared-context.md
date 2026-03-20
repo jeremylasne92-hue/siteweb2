@@ -37,6 +37,36 @@
 - [x] **Base de données propre** — aucune donnée de test en production
 - [ ] **Revoir le Dashboard Partenaire** avant la sortie officielle (UX, données, design)
 
+### 📋 Backlog Post-Lancement (Brainstorm 20/03/2026)
+
+**🔴 P0 — Cette semaine**
+- [ ] Passer Render en tier payant ($7/mois) — supprimer le cold start 30-60s
+- [ ] Email de bienvenue automatique post-inscription (SendGrid, séquence : bienvenue → présentation série → CTA candidature)
+- [ ] Post prologue IA sur LinkedIn/Instagram/TikTok (texte : contre-pied IA, voix et musique authentiques)
+- [ ] Messages personnels équipe (100 contacts, message personnalisé avec lien prologue)
+
+**🟠 P1 — Semaine 2-3**
+- [ ] Masquer/adapter compteurs communautaires Home si < seuil crédible (éviter effet preuve sociale inverse)
+- [ ] Newsletter mensuelle via SendGrid (template + liste inscrits email_opt_out=false)
+- [ ] Monitoring Render + Atlas (alertes latence > 2s, erreurs 5xx, stockage Atlas)
+- [ ] Tester réception emails FAI français (Orange, Free, SFR) — réputation domaine neuf
+
+**🟡 P2 — Mois 1**
+- [ ] Dashboard Partenaire — revoir UX, données, design avant premiers partenaires
+- [ ] Kit partenaire PDF téléchargeable (4 pages : concept, équipe, calendrier, participation)
+- [ ] Section Actualités/Blog simple + 1er article making-of prologue IA (SEO + contenu frais)
+- [ ] Tunnel de conversion post-vidéo : bande-annonce → inscription → choix du rôle
+- [ ] Page /pitch épurée pour les partenaires (prologue + chiffres + calendrier)
+
+**🟢 P3 — Mois 2+**
+- [ ] Séquence email onboarding (J+1 bienvenue, J+7 coulisses, J+14 CTA candidature)
+- [ ] Indicateur "Où en sommes-nous ?" sur page Mouvement (étape actuelle, objectifs)
+- [ ] Soumettre manuellement les URLs clés dans Google Search Console (accélérer indexation)
+- [ ] Réseaux sociaux personnages (prévu mai 2026)
+
+**❌ Exclu**
+- Pas de fonctionnalité de discussion/échange entre utilisateurs sur le site
+
 ---
 
 ## 🏗️ Architecture
