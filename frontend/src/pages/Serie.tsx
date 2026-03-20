@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Play, BookOpen, Facebook, Linkedin, Twitter, Flame, Mountain, Star, Instagram, Palette, Gamepad2, Bell, BellRing, X } from 'lucide-react';
+import { Play, BookOpen, Flame, Mountain, Star, Palette, Gamepad2, Bell, BellRing, X, Youtube } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
 import { YouTubeEmbed } from '../components/ui/YouTubeEmbed';
@@ -399,7 +399,10 @@ export function Serie() {
             {/* SECTION 2: PROLOGUE */}
             <section id="prologue" className="min-h-screen py-24 border-b border-white/5 bg-[#121212] relative">
                 <div className="container mx-auto px-4">
-                    <h2 className="text-[48px] font-serif font-bold text-white mb-16 text-center">Prologue</h2>
+                    <h2 className="text-[48px] font-serif font-bold text-white mb-6 text-center">Prologue</h2>
+                    <p className="text-white/50 text-sm sm:text-base text-center max-w-3xl mx-auto mb-12 leading-relaxed">
+                        Ce prologue est un storyboard animé assisté par intelligence artificielle. Il présente le concept, la palette chromatique, l&apos;univers narratif de la série ECHO et ses personnages. Faute de moyens et de temps, l&apos;IA nous a permis de donner forme à cette vision. La série sera produite en <span className="text-white/70 font-medium">tournage réel</span>. Les voix et la bande originale sont authentiques, un <span className="text-white/70 font-medium">contre-pied volontaire</span> à l&apos;IA.
+                    </p>
 
                     <div className="flex flex-col lg:flex-row gap-12 items-start">
                         {/* COLONNE GAUCHE : VIDÉO (60%) */}
@@ -417,49 +420,82 @@ export function Serie() {
                         {/* COLONNE DROITE : CRÉDITS (40%) */}
                         <div className="w-full lg:w-[40%]">
                             <div className="p-8 rounded-[16px] bg-[rgba(255,255,255,0.03)] backdrop-blur-[16px] border border-white/10 hover:border-[#D4AF37]/30 transition-colors duration-300">
-                                <h3 className="text-2xl font-serif text-white mb-8 border-b border-white/10 pb-4">Crédits</h3>
+                                <h3 className="text-xl font-serif text-white mb-4 border-b border-white/10 pb-3">Crédits</h3>
 
-                                <div className="space-y-6 text-sm">
+                                <div className="space-y-3 text-[11px] leading-snug">
+                                    {/* Écriture & Réalisation */}
                                     <div>
-                                        <h4 className="text-[#D4AF37] font-bold uppercase tracking-wider mb-2 text-xs">Réalisation & Visuels</h4>
-                                        <p className="text-[#D1D5DB]">Intelligence Artificielle (Storyboard Animé) avec Higgsfield et Flow.</p>
+                                        <h4 className="text-[#D4AF37] font-bold uppercase tracking-wider mb-0.5 text-[9px]">Écrit et réalisé par</h4>
+                                        <p className="text-[#D1D5DB]">Jérémy Lasne, Eddyason Koffi &amp; Clément Grandmontagne</p>
                                     </div>
 
+                                    {/* Création visuelle IA */}
                                     <div>
-                                        <h4 className="text-[#D4AF37] font-bold uppercase tracking-wider mb-2 text-xs">Scénario & Montage</h4>
-                                        <ul className="text-[#D1D5DB] space-y-1">
-                                            <li>Eddyason Koffi</li>
-                                            <li>Jérémy Lasne</li>
-                                            <li>Clément Grandmontagne</li>
-                                            <li>Déborah Prévaud</li>
-                                            <li>Thierry Korutos-Chatam</li>
-                                        </ul>
+                                        <h4 className="text-[#D4AF37] font-bold uppercase tracking-wider mb-0.5 text-[9px]">Création visuelle par IA</h4>
+                                        <p className="text-[#D1D5DB]">
+                                            Direction artistique, colorimétrie, génération images <span className="text-white/30">(Higgsfield, Nano Banana 2)</span> et vidéo <span className="text-white/30">(Higgsfield, Veo 3.1, Kling AI)</span> — J. Lasne &amp; C. Grandmontagne
+                                        </p>
                                     </div>
 
+                                    {/* Voix originales */}
                                     <div>
-                                        <h4 className="text-[#D4AF37] font-bold uppercase tracking-wider mb-2 text-xs">Composition Musicale</h4>
-                                        <p className="text-[#D1D5DB]">Erela</p>
+                                        <h4 className="text-[#D4AF37] font-bold uppercase tracking-wider mb-0.5 text-[9px]">Voix originales <span className="normal-case font-normal text-white/30">(par ordre d&apos;apparition)</span></h4>
+                                        <div className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-0 text-[#D1D5DB]">
+                                            <span>Rafael Brouard</span><span className="text-white/40 italic">Sacha</span>
+                                            <span>Jenny Sophie</span><span className="text-white/40 italic">Nadine</span>
+                                            <span>Eddyason Koffi</span><span className="text-white/40 italic">Akou</span>
+                                            <span>Marius Gaillard</span><span className="text-white/40 italic">Sacha (enfant)</span>
+                                            <span>Stéphane Gabbay</span><span className="text-white/40 italic">Philippe</span>
+                                            <span>Adèle Roqueta</span><span className="text-white/40 italic">Eva</span>
+                                            <span>Jenny Sophie</span><span className="text-white/40 italic">Marianne</span>
+                                            <span>Jean-Luc Claise</span><span className="text-white/40 italic">Dominique</span>
+                                            <span>Stéphane Gabbay</span><span className="text-white/40 italic">Alexandre</span>
+                                            <span>Sylvie Seyller</span><span className="text-white/40 italic">Lily</span>
+                                            <span>Pierre Gaillard</span><span className="text-white/40 italic">Rohan (enfant)</span>
+                                            <span>Adèle Roqueta</span><span className="text-white/40 italic">Femme de Rohan</span>
+                                            <span>Adèle Roqueta</span><span className="text-white/40 italic">Ayumi</span>
+                                            <span>Benjamin Garnier</span><span className="text-white/40 italic">Mathieu</span>
+                                            <span>Adèle Roqueta</span><span className="text-white/40 italic">Axelle</span>
+                                            <span>Stéphane Gabbay</span><span className="text-white/40 italic">Psychologue</span>
+                                        </div>
                                     </div>
 
+                                    {/* Image & Son */}
                                     <div>
-                                        <h4 className="text-[#D4AF37] font-bold uppercase tracking-wider mb-2 text-xs">Voix-Off</h4>
-                                        <p className="text-[#D1D5DB] italic">À venir</p>
+                                        <h4 className="text-[#D4AF37] font-bold uppercase tracking-wider mb-0.5 text-[9px]">Image &amp; Son</h4>
+                                        <p className="text-[#D1D5DB]">Montage image — C. Grandmontagne · Son, montage &amp; mixage — Visanth Moulta</p>
+                                    </div>
+
+                                    {/* Musiques */}
+                                    <div>
+                                        <h4 className="text-[#D4AF37] font-bold uppercase tracking-wider mb-0.5 text-[9px]">Musiques</h4>
+                                        <p className="text-[#D1D5DB]">
+                                            <span className="italic">&ldquo;Dance Zulu&rdquo;</span> <span className="text-white/30">— African Drums · Remix V. Moulta · ℗ 2009 African Rhythms Int.</span><br />
+                                            <span className="italic">&ldquo;Les racines du rêve&rdquo;</span> <span className="text-white/30">— H. Torgue &amp; S. Houppin · Hopi Mesa / Music Box Pub. · © 2019</span>
+                                        </p>
+                                    </div>
+
+                                    {/* Bande originale */}
+                                    <div>
+                                        <h4 className="text-[#D4AF37] font-bold uppercase tracking-wider mb-0.5 text-[9px]">Bande originale</h4>
+                                        <p className="text-[#D1D5DB]">
+                                            Arrangements &amp; adaptation — R. Brouard &amp; V. Moulta · Chants — R. Brouard<br />
+                                            <span className="text-white/30">Enregistrement &amp; mixage — V. Moulta · Studio Mithra Production</span>
+                                        </p>
+                                    </div>
+
+                                    {/* Remerciements */}
+                                    <div className="pt-2 border-t border-white/5">
+                                        <h4 className="text-[#D4AF37] font-bold uppercase tracking-wider mb-0.5 text-[9px]">Remerciements</h4>
+                                        <p className="text-white/40 text-[10px]">D. Prévaud, T. Korutos-Chatam, le Collectif 47 et le Studio Mithra Production.</p>
                                     </div>
                                 </div>
 
-                                {/* SOCIAL MEDIA */}
-                                <div className="mt-10 pt-6 border-t border-white/10 flex justify-center gap-6">
-                                    <a href="#" className="text-neutral-500 hover:text-[#D4AF37] transition-colors duration-300 transform hover:scale-110">
-                                        <Instagram size={24} />
-                                    </a>
-                                    <a href="#" className="text-neutral-500 hover:text-[#D4AF37] transition-colors duration-300 transform hover:scale-110">
-                                        <Facebook size={24} />
-                                    </a>
-                                    <a href="#" className="text-neutral-500 hover:text-[#D4AF37] transition-colors duration-300 transform hover:scale-110">
-                                        <Linkedin size={24} />
-                                    </a>
-                                    <a href="#" className="text-neutral-500 hover:text-[#D4AF37] transition-colors duration-300 transform hover:scale-110">
-                                        <Twitter size={24} />
+                                {/* YouTube */}
+                                <div className="mt-6 pt-4 border-t border-white/10 flex justify-center">
+                                    <a href="https://www.youtube.com/@MouvementECHOFrance" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-neutral-500 hover:text-[#D4AF37] transition-colors duration-300">
+                                        <Youtube size={20} />
+                                        <span className="text-xs tracking-wide">Notre chaîne YouTube</span>
                                     </a>
                                 </div>
                             </div>

@@ -145,6 +145,7 @@ frontend/src/
 | Politique de Confidentialité | `/politique-de-confidentialite` | ✅ Complète (RGPD) |
 | Mentions Légales | `/mentions-legales` | ✅ Complète (RGPD) |
 | CGU | `/cgu` | ✅ Complète (RGPD) |
+| ~~À propos~~ | ~~`/a-propos`~~ | ❌ Supprimée (20/03/2026 — jamais demandée par le client) |
 | Admin Exports | `/admin/exports` | ✅ Complète |
 | Admin Membres | `/admin/members` | ✅ Complète (édition profils, geocoding backfill) |
 
@@ -188,6 +189,7 @@ frontend/src/
 
 | Date | Décision | Agent |
 |------|----------|---------|
+| 2026-03-20 | Ajustements post-lancement : (1) Saisons renommées partout — "L'Enfer/Le Purgatoire/Le Paradis" → "Diagnostic des crises/Solutions du terrain/Futurs souhaitables" (Serie.tsx, Mouvement.tsx). (2) Prologue : texte descriptif ajouté (storyboard IA, tournage réel, contre-pied voix/musique), crédits compacts restructurés, réseaux sociaux retirés → lien YouTube uniquement. (3) Nantes badge vert "teaser réalisé ✓". (4) Sous-nav "Rejoindre" ajoutée (Serie.tsx). (5) Profil : formatDisplayName() pour masquer suffixe hex OAuth. (6) Trailer vidéo mise à jour (R34yKJuPDWA). (7) Page À propos supprimée (AboutPage.tsx + route /a-propos + lien Footer) — jamais demandée. Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-19 | Footer réseaux sociaux : liens placeholder (#) remplacés par les vraies URLs (YouTube @MouvementECHOFrance, Instagram @mouvementecho, TikTok @mouvementecho). Facebook et Twitter retirés (pas de comptes). Icône TikTok SVG custom. target=_blank + noopener noreferrer. Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-19 | SendGrid configuré et testé : sender vérifié (mouvement.echo.france@gmail.com), clé API en local + Render, email test reçu (spams — normal en trial, domain auth à faire post-lancement). Variables Render mises à jour (SENDGRID_API_KEY, EMAIL_FROM, EMAIL_REPLY_TO, EMAIL_ALERT_TO, ENVIRONMENT=production, CORS_ORIGINS=mouvementecho.fr). Niveau HOTFIX. | Claude Code (Opus 4.6) |
 | 2026-03-19 | Page Resources redesignée : hero avec image de fond (Unsplash bibliothèque), radial gradient, grid pattern, icône BookOpen, typographie large serif, animation slide-up — aligné sur le format Cognisphere/ECHOLink. Email de bienvenue ajouté à l'inscription + centralisation alertes via EMAIL_ALERT_TO. Niveau STANDARD. | Claude Code (Opus 4.6) |
