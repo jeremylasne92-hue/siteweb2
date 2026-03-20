@@ -6,10 +6,10 @@
 
 ## 📋 État du Projet
 
-**Dernière mise à jour** : 2026-03-19
-**Phase actuelle** : Pré-lancement J-1 (lancement 20 mars 2026)
-**Statut** : ✅ Opérationnel — Code prêt pour déploiement. SendGrid configuré et testé. Liens sociaux actifs.
-**Dernier milestone** : SendGrid vérifié (sender mouvement.echo.france@gmail.com, emails test reçus), hero Resources redesigné, liens sociaux footer (YouTube/Instagram/TikTok), variables Render configurées (SENDGRID, EMAIL_*, ENVIRONMENT, CORS_ORIGINS, FRONTEND_URL).
+**Dernière mise à jour** : 2026-03-20
+**Phase actuelle** : 🚀 LANCÉ — Site en production (20 mars 2026)
+**Statut** : ✅ EN LIGNE — https://mouvementecho.fr accessible, HTTPS actif, Google Search Console vérifié
+**Dernier milestone** : Site lancé le 20/03/2026. HTTPS Let's Encrypt actif (expire 18/06/2026). Google Search Console vérifié + sitemap soumis. 12 bugs critiques/importants corrigés (code review). Résolution problème OVH "Site en construction" par recréation multisite.
 
 ### ⚠️ Rappels Pré-Lancement (20 mars 2026)
 - [x] Bandeau cookies RGPD intégré + tracking conditionné au consentement
@@ -19,14 +19,14 @@
 - [x] Audit SEO (og tags, twitter:image, JSON-LD, canonical) + a11y (lang, alt, responsive)
 - [x] Backend déployé sur Render (echo-api-kfre.onrender.com)
 - [x] MongoDB Atlas M0 configuré (echo-cluster, Paris)
-- [ ] **CNAME DNS** : api.mouvementecho.fr → echo-api-kfre.onrender.com (OVH)
+- [x] **CNAME DNS** : api.mouvementecho.fr → echo-api-kfre.onrender.com ✅ (configuré OVH)
 - [ ] **Custom domain** dans Render Dashboard
 - [ ] **GOOGLE_CLIENT_SECRET** dans Render env vars
 - [x] **SENDGRID_API_KEY** dans Render env vars ✅ (vérifié, emails fonctionnels)
 - [x] **FRONTEND_URL** dans Render env vars ✅ (https://mouvementecho.fr)
 - [x] **EMAIL_FROM/REPLY_TO** = mouvement.echo.france@gmail.com (sender vérifié SendGrid)
 - [x] **ENVIRONMENT** = production dans Render
-- [ ] Build de production (`npm run build`) + FTP upload `dist/` sur OVH
+- [x] Build de production (`npm run build`) + FTP upload `dist/` sur OVH ✅ (déployé 20/03/2026)
 - [x] Recette manuelle endpoints (auth 11/11, partners+contact 14/15, candidatures 24/25 = 49/51 PASS)
 - [ ] **Revoir le Dashboard Partenaire** avant la sortie officielle (UX, données, design)
 

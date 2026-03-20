@@ -1,9 +1,10 @@
 # Diagnostic : Site OVH affiche "Site en construction"
 
-**Date** : 19 mars 2026
-**Statut** : ❌ NON RÉSOLU — En investigation
+**Date** : 19-20 mars 2026
+**Statut** : ✅ RÉSOLU — 20 mars 2026 à ~00h30
 **Impact** : Site inaccessible sur tous les navigateurs (PC et mobile)
 **Urgence** : CRITIQUE — Lancement prévu le 20 mars 2026
+**Résolution** : Suppression et recréation des entrées multisite OVH (Étape 2)
 
 ---
 
@@ -164,10 +165,37 @@ curl -sI https://mouvementecho.fr
 
 ---
 
-## Pour tester avec un autre outil (Antigravity / autre agent)
+## Résolution finale
 
-1. Lire ce document en premier
-2. Exécuter les commandes de test ci-dessus pour vérifier l'état actuel
-3. Suivre le plan de résolution étape par étape
-4. Mettre à jour la section "Chronologie des actions" avec les résultats
-5. Si résolu, mettre à jour le statut en haut du document
+### Cause racine
+La configuration des virtual hosts Apache sur le serveur OVH cluster121 était corrompue/désynchronisée. Les entrées multisite existantes ne routaient plus les requêtes vers le dossier `/www/`, bien qu'elles semblaient correctes dans l'interface OVH.
+
+### Solution appliquée (Étape 2)
+1. **Suppression** des entrées multisite `mouvementecho.fr` et `www.mouvementecho.fr` (en décochant "Configuration automatique" pour conserver les enregistrements DNS)
+2. **Attente** de 10 minutes
+3. **Recréation** des entrées multisite avec SSL activé et "Configuration automatique" cochée
+4. **Résultat** : OVH a régénéré la configuration Apache, les requêtes sont correctement routées vers `/www/`
+
+### Chronologie de la résolution
+| Heure | Action | Résultat |
+|-------|--------|----------|
+| 23h30 | Suppression des entrées multisite | ✅ |
+| 23h45 | Recréation avec SSL + Config auto | Tâche "En cours" |
+| 23h59 | Tâche `hostedssl/multisite/create` créée | En cours |
+| ~00h15 | Tâche terminée | ✅ |
+| ~00h15 | Test `http://mouvementecho.fr` | ✅ Site ECHO s'affiche ! |
+| ~00h30 | Certificats SSL passent à "Actif" | ✅ |
+| ~00h30 | Test `https://mouvementecho.fr` | ✅ Cadenas vert 🔒 |
+| ~00h35 | Google Search Console vérifié + sitemap soumis | ✅ |
+
+### État final
+| Composant | Statut |
+|-----------|--------|
+| Site HTTP | ✅ Accessible |
+| Site HTTPS | ✅ Cadenas vert (Let's Encrypt actif jusqu'au 18/06/2026) |
+| Backend API | ✅ Render opérationnel |
+| Google Search Console | ✅ Vérifié + sitemap soumis |
+| Redirection HTTPS | ⏳ `.htaccess` mis à jour, à téléverser via FileZilla |
+
+### Leçon apprise
+Sur OVH mutualisé, si la page "Site en construction" apparaît malgré des fichiers corrects dans `/www/` et un DNS correct, la solution est de **supprimer et recréer les entrées multisite** pour forcer la régénération de la configuration Apache. Ni le `.htaccess`, ni le `.ovhconfig`, ni la suppression/recréation des certificats SSL seuls ne suffisent.
