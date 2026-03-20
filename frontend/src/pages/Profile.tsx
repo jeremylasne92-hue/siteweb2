@@ -25,6 +25,18 @@ interface UserData {
     avatar_url?: string;
     is_member: boolean;
     member_since?: string;
+    display_name?: string;
+}
+
+function formatDisplayName(userData: UserData): string {
+    if (userData.display_name) return userData.display_name;
+    // Remove random hex suffix from OAuth-generated usernames (e.g. "jérémy_lasne_c0cebace" → "Jérémy Lasne")
+    const parts = userData.username.split('_');
+    if (parts.length >= 3 && /^[0-9a-f]{8}$/.test(parts[parts.length - 1])) {
+        const nameParts = parts.slice(0, -1);
+        return nameParts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+    }
+    return userData.username;
 }
 
 const AVAILABLE_INTERESTS = [
@@ -258,18 +270,18 @@ export default function Profile() {
                             {userData.avatar_url || userData.picture ? (
                                 <img
                                     src={userData.avatar_url || userData.picture}
-                                    alt={userData.username}
+                                    alt={formatDisplayName(userData)}
                                     className="w-full h-full rounded-2xl object-cover"
                                 />
                             ) : (
                                 <span className="text-2xl font-bold text-echo-gold">
-                                    {getInitials(userData.username)}
+                                    {getInitials(formatDisplayName(userData))}
                                 </span>
                             )}
                         </div>
                         <div className="min-w-0">
                             <div className="flex items-center gap-3 flex-wrap">
-                                <h1 className="text-2xl sm:text-3xl font-serif text-white">{userData.username}</h1>
+                                <h1 className="text-2xl sm:text-3xl font-serif text-white">{formatDisplayName(userData)}</h1>
                                 <span className={`text-xs px-2.5 py-1 rounded-full border ${roleBadge.color}`}>
                                     {roleBadge.label}
                                 </span>

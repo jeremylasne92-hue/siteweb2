@@ -171,7 +171,7 @@ export function Home() {
                             <X size={32} />
                         </button>
                         <div className="aspect-video rounded-xl overflow-hidden border border-echo-gold/30 shadow-[0_0_60px_rgba(212,175,55,0.2)]">
-                            <YouTubeEmbed videoId="5NvxbMIbjAo" title="ECHO — Bande-annonce" />
+                            <YouTubeEmbed videoId="R34yKJuPDWA" title="ECHO — Bande-annonce" />
                         </div>
                         <div className="text-center mt-6">
                             <Link to="/serie" onClick={() => setShowTrailer(false)}>

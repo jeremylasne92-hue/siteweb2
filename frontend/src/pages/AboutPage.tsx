@@ -113,17 +113,17 @@ export function AboutPage() {
                         <div className="space-y-4">
                             <SeasonCard
                                 season="Saison 1"
-                                subtitle="Enfer (diagnostic des crises)"
+                                subtitle="Diagnostic des crises"
                                 description="Décryptage des dysfonctionnements systémiques. Crises écologiques, sociales et économiques documentées sans complaisance."
                             />
                             <SeasonCard
                                 season="Saison 2"
-                                subtitle="Purgatoire (solutions du terrain)"
+                                subtitle="Solutions du terrain"
                                 description="Documentation des acteurs innovants, des alternatives viables et des solutions concrètes qui fonctionnent."
                             />
                             <SeasonCard
                                 season="Saison 3"
-                                subtitle="Paradis (futurs souhaitables)"
+                                subtitle="Futurs souhaitables"
                                 description="Prospective et imaginaires alternatifs. Projection vers les mondes possibles."
                             />
                         </div>

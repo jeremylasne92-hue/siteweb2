@@ -302,7 +302,7 @@ export function Mouvement() {
                             <details className="group/details">
                                 <summary className="cursor-pointer text-amber-500 text-sm font-medium hover:text-amber-400 transition-colors flex items-center gap-1.5 select-none">
                                     <span className="group-open/details:rotate-90 transition-transform text-xs">▶</span>
-                                    Saison 1 — L'Enfer
+                                    Saison 1 — Diagnostic des crises
                                 </summary>
                                 <div className="mt-4 pt-4 border-t border-red-900/20 space-y-4 text-sm text-stone-400 leading-relaxed">
                                     <p>
@@ -341,7 +341,7 @@ export function Mouvement() {
                             <details className="group/details">
                                 <summary className="cursor-pointer text-amber-500 text-sm font-medium hover:text-amber-400 transition-colors flex items-center gap-1.5 select-none">
                                     <span className="group-open/details:rotate-90 transition-transform text-xs">▶</span>
-                                    Saison 2 — Le Purgatoire
+                                    Saison 2 — Solutions du terrain
                                 </summary>
                                 <div className="mt-4 pt-4 border-t border-amber-900/20 space-y-4 text-sm text-stone-400 leading-relaxed">
                                     <p>
@@ -379,7 +379,7 @@ export function Mouvement() {
                             <details className="group/details">
                                 <summary className="cursor-pointer text-amber-500 text-sm font-medium hover:text-amber-400 transition-colors flex items-center gap-1.5 select-none">
                                     <span className="group-open/details:rotate-90 transition-transform text-xs">▶</span>
-                                    Saison 3 — Le Paradis
+                                    Saison 3 — Futurs souhaitables
                                 </summary>
                                 <div className="mt-4 pt-4 border-t border-emerald-900/20 space-y-4 text-sm text-stone-400 leading-relaxed">
                                     <p>

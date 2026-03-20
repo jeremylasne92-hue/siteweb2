@@ -221,7 +221,7 @@ export function Serie() {
         <div className="flex flex-col min-h-screen bg-[#0A0A0A] text-white">
             <SEO
                 title="La Série"
-                description="Série documentaire ECHO : 33 épisodes en 3 saisons inspirées de Dante (Enfer, Purgatoire, Paradis). Écologie, justice sociale, prospective."
+                description="Série documentaire ECHO : 33 épisodes en 3 saisons inspirées de Dante. Écologie, justice sociale, prospective."
                 url="https://mouvementecho.fr/serie"
             />
             <Helmet>
@@ -232,7 +232,7 @@ export function Serie() {
                         "@id": "https://mouvementecho.fr/serie#series",
                         "name": "ECHO",
                         "alternateName": "ECHO — La Série",
-                        "description": "Série documentaire de 33 épisodes en 3 saisons : S1 Enfer (diagnostic des crises), S2 Purgatoire (solutions du terrain), S3 Paradis (futurs souhaitables). Structure inspirée de la Divine Comédie de Dante.",
+                        "description": "Série documentaire de 33 épisodes en 3 saisons : S1 (diagnostic des crises), S2 (solutions du terrain), S3 (futurs souhaitables). Structure inspirée de la Divine Comédie de Dante.",
                         "numberOfSeasons": 3,
                         "genre": ["Documentary", "Drama"],
                         "inLanguage": "fr-FR",
@@ -241,7 +241,7 @@ export function Serie() {
                             {
                                 "@type": "TVSeason",
                                 "@id": "https://mouvementecho.fr/serie#saison-1",
-                                "name": "Saison 1 — Enfer (diagnostic des crises)",
+                                "name": "Saison 1 — Diagnostic des crises",
                                 "seasonNumber": 1,
                                 "numberOfEpisodes": 11,
                                 "description": "Diagnostic des dysfonctionnements systémiques. Décryptage des crises écologiques, sociales et économiques.",
@@ -250,7 +250,7 @@ export function Serie() {
                             {
                                 "@type": "TVSeason",
                                 "@id": "https://mouvementecho.fr/serie#saison-2",
-                                "name": "Saison 2 — Purgatoire (solutions du terrain)",
+                                "name": "Saison 2 — Solutions du terrain",
                                 "seasonNumber": 2,
                                 "numberOfEpisodes": 11,
                                 "description": "Solutions concrètes du terrain. Documentation des acteurs innovants et des alternatives viables.",
@@ -259,7 +259,7 @@ export function Serie() {
                             {
                                 "@type": "TVSeason",
                                 "@id": "https://mouvementecho.fr/serie#saison-3",
-                                "name": "Saison 3 — Paradis (futurs souhaitables)",
+                                "name": "Saison 3 — Futurs souhaitables",
                                 "seasonNumber": 3,
                                 "numberOfEpisodes": 11,
                                 "description": "Prospective et imaginaires alternatifs. Projection vers les futurs souhaitables.",
@@ -300,7 +300,7 @@ export function Serie() {
             <nav className="sticky top-14 sm:top-16 md:top-[80px] z-40 bg-[#0A0A0A]/90 backdrop-blur-md border-y border-white/10 transition-all duration-300">
                 <div className="container mx-auto px-2 sm:px-4 overflow-x-auto">
                     <div className="flex justify-center min-w-max">
-                        {['apercu', 'prologue', 'saisons', 'personnages'].map((section) => (
+                        {['apercu', 'prologue', 'saisons', 'personnages', 'rejoindre-serie'].map((section) => (
                             <button
                                 key={section}
                                 onClick={() => scrollToSection(section)}
@@ -310,7 +310,7 @@ export function Serie() {
                                     : 'border-transparent text-neutral-500 hover:text-white'
                                     }`}
                             >
-                                {section.charAt(0).toUpperCase() + section.slice(1)}
+                                {section === 'rejoindre-serie' ? 'Rejoindre' : section.charAt(0).toUpperCase() + section.slice(1)}
                             </button>
                         ))}
                     </div>
@@ -336,7 +336,7 @@ export function Serie() {
                             </p>
                             <p>
                                 <strong className="text-white">Une quête moderne, inspirée du voyage initiatique de Dante.</strong><br />
-                                <span className="text-[#DC143C] font-semibold">L'Enfer.</span> <span className="text-[#10B981] font-semibold">Le Purgatoire.</span> <span className="text-[#3B82F6] font-semibold">Le Paradis.</span><br />
+                                <span className="text-[#DC143C] font-semibold">Comprendre.</span> <span className="text-[#10B981] font-semibold">Ressentir.</span> <span className="text-[#3B82F6] font-semibold">Agir.</span><br />
                                 Trois saisons pour traverser les vices de notre époque, explorer des solutions tangibles, et entrevoir une harmonie possible entre l'humain, la nature et nos institutions.
                             </p>
                             <p>
@@ -406,7 +406,7 @@ export function Serie() {
                         <div className="w-full lg:w-[60%]">
                             <div className="relative aspect-video rounded-xl overflow-hidden border border-[#D4AF37]/30 shadow-[0_0_30px_rgba(212,175,55,0.15)] group">
                                 <YouTubeEmbed
-                                    videoId="5NvxbMIbjAo"
+                                    videoId="R34yKJuPDWA"
                                     title="PROLOGUE - Teaser"
                                     className="absolute inset-0 w-full h-full"
                                 />
@@ -489,7 +489,7 @@ export function Serie() {
                             <Flame size={20} className={activeSeason === 1 ? 'text-[#DC143C]' : ''} />
                             <div className="text-left">
                                 <span className="block text-xs font-bold tracking-widest uppercase">Saison 1</span>
-                                <span className="font-serif text-lg font-bold">L'ENFER</span>
+                                <span className="font-serif text-sm font-bold">Diagnostic des crises</span>
                             </div>
                         </button>
 
@@ -504,7 +504,7 @@ export function Serie() {
                             <Mountain size={20} className={activeSeason === 2 ? 'text-[#10B981]' : ''} />
                             <div className="text-left">
                                 <span className="block text-xs font-bold tracking-widest uppercase">Saison 2</span>
-                                <span className="font-serif text-lg font-bold">LE PURGATOIRE</span>
+                                <span className="font-serif text-sm font-bold">Solutions du terrain</span>
                             </div>
                         </button>
 
@@ -519,7 +519,7 @@ export function Serie() {
                             <Star size={20} className={activeSeason === 3 ? 'text-[#3B82F6]' : ''} />
                             <div className="text-left">
                                 <span className="block text-xs font-bold tracking-widest uppercase">Saison 3</span>
-                                <span className="font-serif text-lg font-bold">LE PARADIS</span>
+                                <span className="font-serif text-sm font-bold">Futurs souhaitables</span>
                             </div>
                         </button>
                     </div>
@@ -823,8 +823,11 @@ export function Serie() {
                                     Participez à la production de la série dans votre ville.
                                 </p>
 
-                                {/* Villes teasers */}
+                                {/* Ville teaser réalisé */}
                                 <div className="flex flex-wrap gap-2 mb-3">
+                                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/30">
+                                        Nantes — teaser réalisé ✓
+                                    </span>
                                     {["Lyon", "Lille", "Bordeaux"].map(city => (
                                         <span key={city} className="px-3 py-1 rounded-full text-xs font-medium bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/30">
                                             {city} — teaser à produire
@@ -834,7 +837,7 @@ export function Serie() {
 
                                 {/* Autres villes */}
                                 <div className="flex flex-wrap gap-2 mb-6">
-                                    {["Nantes", "Rambouillet", "Paris", "Toulouse", "Rouen", "Marseille", "Brest", "Strasbourg"].map(city => (
+                                    {["Rambouillet", "Paris", "Toulouse", "Rouen", "Marseille", "Brest", "Strasbourg"].map(city => (
                                         <span key={city} className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-[#9CA3AF] border border-white/10">
                                             {city}
                                         </span>
