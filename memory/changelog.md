@@ -30,3 +30,12 @@
 
 ### Hotfixes
 - Fix YouTube embed : bouton "Accepter et afficher la vidéo" accepte directement les cookies au lieu d'ouvrir le panneau CMP — vidéo accessible en 1 clic en navigation privée
+
+### Onboarding email (workflow BMAD STANDARD)
+- Séquence 2 emails : J+3 "Les coulisses d'ECHO" (Formiguères, saison 1) + J+10 "Et toi, tu rejoins l'aventure ?" (CTA candidature + synopsis)
+- Endpoint cron `POST /api/cron/onboarding` (X-Cron-Secret, limit 20/exec)
+- Champs `onboarding_step` + `onboarding_next_at` sur User
+- Migration users existants → step=3
+- Widget stats onboarding dans dashboard admin
+- Health check enrichi avec statut cron
+- Config : CRON_SECRET à ajouter sur Render + cron-job.org à configurer

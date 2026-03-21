@@ -15,3 +15,4 @@ Tâches complétées, archivées depuis le backlog actif.
 | Tests admin TestClient | P2 | Pipeline CI vert |
 | Délivrabilité emails | P1 | Plain text + tracking off |
 | Fix YouTube embed cookies | HOTFIX | Acceptation directe sans panneau CMP |
+| Séquence email onboarding J+3/J+10 | P3→P1 | 2 emails auto + cron + widget admin + health check |
