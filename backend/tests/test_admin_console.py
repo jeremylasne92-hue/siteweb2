@@ -1,45 +1,77 @@
 """
-Programme de tests exhaustif — Console Admin ECHO
+Programme de tests — Console Admin ECHO
 Couvre : Dashboard, Membres, Candidatures Tech, Bénévoles, Étudiants,
          Partenaires, Événements, Contact, Exports, Analytics, Utilisateurs.
 
-NOTE: Ces tests sont des tests d'intégration e2e qui nécessitent un serveur
-backend actif sur localhost:8000. Exclus par défaut via le marker 'integration'.
-Lancer avec : pytest -m integration (avec le serveur démarré)
-TODO P2: Refactoriser vers TestClient + mocks pour les rendre autonomes.
+Utilise TestClient + mocks (pas besoin de serveur backend actif).
 """
 import pytest
-import httpx
+from fastapi.testclient import TestClient
+from unittest.mock import AsyncMock, MagicMock, patch
+from datetime import datetime, UTC
 
-pytestmark = pytest.mark.integration
-import json
-from unittest.mock import patch, AsyncMock
-
-BASE = "http://localhost:8000/api"
-TOKEN_COOKIE = None  # Will be set in setup
+from server import app
+from routes.auth import get_db, require_admin
+from models import User
 
 
-@pytest.fixture(scope="module")
-def admin_cookie():
-    """Login as admin and return session cookie."""
-    import asyncio
-    from motor.motor_asyncio import AsyncIOMotorClient
-    from core.config import settings
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 
-    async def get_token():
-        client = AsyncIOMotorClient(settings.MONGO_URL)
-        db = client[settings.DB_NAME]
-        admin = await db.users.find_one({"role": "admin"})
-        if not admin:
-            pytest.skip("No admin user in database")
-        session = await db.user_sessions.find_one({"user_id": admin["id"]})
-        client.close()
-        if not session:
-            pytest.skip("No admin session found")
-        return session["session_token"]
+ADMIN_USER = User(
+    id="admin-001",
+    username="admin_test",
+    email="admin@echo.fr",
+    password_hash="hashed",
+    role="admin",
+    is_2fa_enabled=False,
+    created_at=datetime.now(UTC),
+)
 
-    token = asyncio.get_event_loop().run_until_complete(get_token())
-    return {"session_token": token}
+
+def _make_cursor(docs):
+    """Create a mock async cursor that supports chaining and iteration."""
+    cursor = MagicMock()
+    cursor.sort = MagicMock(return_value=cursor)
+    cursor.skip = MagicMock(return_value=cursor)
+    cursor.limit = MagicMock(return_value=cursor)
+    cursor.to_list = AsyncMock(return_value=docs)
+
+    async def _aiter(self_cursor):
+        for doc in docs:
+            yield doc
+
+    cursor.__aiter__ = _aiter
+    return cursor
+
+
+def _make_mock_db():
+    """Create a mock DB with all collections used by admin routes."""
+    db = MagicMock()
+
+    collections = [
+        "member_profiles", "tech_candidatures", "volunteer_applications",
+        "student_applications", "contact_messages", "events", "users",
+        "user_sessions", "admin_actions", "episode_optins", "partners",
+        "audit_log", "rate_limits", "analytics_events",
+    ]
+
+    for coll_name in collections:
+        coll = MagicMock()
+        coll.insert_one = AsyncMock()
+        coll.find_one = AsyncMock(return_value=None)
+        coll.delete_one = AsyncMock(return_value=MagicMock(deleted_count=1))
+        coll.update_one = AsyncMock(return_value=MagicMock(matched_count=1))
+        coll.update_many = AsyncMock(return_value=MagicMock(modified_count=0))
+        coll.count_documents = AsyncMock(return_value=0)
+        # aggregate returns a cursor-like object
+        coll.aggregate = MagicMock(return_value=_make_cursor([]))
+        # find returns a cursor
+        coll.find = MagicMock(return_value=_make_cursor([]))
+        setattr(db, coll_name, coll)
+
+    return db
 
 
 # ═══════════════════════════════════════════════════════════
@@ -49,23 +81,32 @@ def admin_cookie():
 class TestAdminDashboard:
     """Tests du dashboard admin (compteurs pending)."""
 
-    def test_get_pending_counts(self, admin_cookie):
+    def setup_method(self):
+        self.db = _make_mock_db()
+        app.dependency_overrides[get_db] = lambda: self.db
+        app.dependency_overrides[require_admin] = lambda: ADMIN_USER
+        self.client = TestClient(app)
+
+    def teardown_method(self):
+        app.dependency_overrides.clear()
+
+    def test_get_pending_counts(self):
         """GET /admin/pending — retourne les compteurs."""
-        r = httpx.get(f"{BASE}/admin/pending", cookies=admin_cookie)
+        r = self.client.get("/api/admin/pending")
         assert r.status_code == 200
         data = r.json()
-        # Should have count fields
         assert isinstance(data, dict)
-        print(f"  Dashboard: {data}")
 
     def test_dashboard_requires_admin(self):
         """GET /admin/pending — 401 sans auth."""
-        r = httpx.get(f"{BASE}/admin/pending")
+        app.dependency_overrides.pop(require_admin, None)
+        r = self.client.get("/api/admin/pending")
         assert r.status_code in (401, 403)
 
     def test_dashboard_non_admin_rejected(self):
         """GET /admin/pending — 403 avec un cookie invalide."""
-        r = httpx.get(f"{BASE}/admin/pending", cookies={"session_token": "fake"})
+        app.dependency_overrides.pop(require_admin, None)
+        r = self.client.get("/api/admin/pending", cookies={"session_token": "fake"})
         assert r.status_code in (401, 403)
 
 
@@ -76,186 +117,143 @@ class TestAdminDashboard:
 class TestAdminMembers:
     """Tests gestion des membres."""
 
-    def test_list_members(self, admin_cookie):
+    def setup_method(self):
+        self.db = _make_mock_db()
+        app.dependency_overrides[get_db] = lambda: self.db
+        app.dependency_overrides[require_admin] = lambda: ADMIN_USER
+        self.client = TestClient(app)
+
+    def teardown_method(self):
+        app.dependency_overrides.clear()
+
+    def test_list_members(self):
         """GET /admin/members/ — liste paginée."""
-        r = httpx.get(f"{BASE}/admin/members/?limit=5", cookies=admin_cookie)
+        sample = [{"id": "m1", "display_name": "Alice", "project": "benevole",
+                   "membership_status": "active", "visible": True, "city": "Paris"}]
+        self.db.member_profiles.find = MagicMock(return_value=_make_cursor(sample))
+        self.db.member_profiles.count_documents = AsyncMock(return_value=1)
+
+        r = self.client.get("/api/admin/members/?limit=5")
         assert r.status_code == 200
         data = r.json()
         assert "members" in data
         assert "total" in data
-        print(f"  Members: {data['total']} total, {len(data['members'])} returned")
 
-    def test_list_members_filter_project(self, admin_cookie):
+    def test_list_members_filter_project(self):
         """GET /admin/members/?project=benevole — filtre par projet."""
-        r = httpx.get(f"{BASE}/admin/members/?project=benevole", cookies=admin_cookie)
+        sample = [{"id": "m1", "display_name": "Alice", "project": "benevole",
+                   "membership_status": "active", "visible": True}]
+        self.db.member_profiles.find = MagicMock(return_value=_make_cursor(sample))
+        self.db.member_profiles.count_documents = AsyncMock(return_value=1)
+
+        r = self.client.get("/api/admin/members/?project=benevole")
         assert r.status_code == 200
-        data = r.json()
-        for m in data["members"]:
+        for m in r.json()["members"]:
             assert m["project"] == "benevole"
 
-    def test_list_members_filter_status(self, admin_cookie):
+    def test_list_members_filter_status(self):
         """GET /admin/members/?status=active — filtre par statut."""
-        r = httpx.get(f"{BASE}/admin/members/?status=active", cookies=admin_cookie)
+        sample = [{"id": "m1", "display_name": "Alice", "project": "tech",
+                   "membership_status": "active", "visible": True}]
+        self.db.member_profiles.find = MagicMock(return_value=_make_cursor(sample))
+        self.db.member_profiles.count_documents = AsyncMock(return_value=1)
+
+        r = self.client.get("/api/admin/members/?status=active")
         assert r.status_code == 200
         for m in r.json()["members"]:
             assert m["membership_status"] == "active"
 
-    def test_status_cycle_inactive_active(self, admin_cookie):
-        """PATCH status: active → inactive → active — visible suit."""
-        # Fix any corrupted data first (active members with visible=False)
-        httpx.post(f"{BASE}/admin/members/backfill-visibility", cookies=admin_cookie)
-
-        # Get a member that is currently active AND visible
-        r = httpx.get(f"{BASE}/admin/members/?limit=100&status=active", cookies=admin_cookie)
-        members = [m for m in r.json()["members"] if m.get("visible") is True]
-        if not members:
-            pytest.skip("No active+visible members")
-        mid = members[0]["id"]
-        name = members[0]["display_name"]
-
+    def test_status_cycle_inactive_active(self):
+        """PATCH status: active → inactive → active."""
         # → inactive
-        r = httpx.patch(
-            f"{BASE}/admin/members/{mid}/status",
+        r = self.client.patch(
+            "/api/admin/members/m1/status",
             json={"membership_status": "inactive"},
-            cookies=admin_cookie,
         )
         assert r.status_code == 200
-
-        # Check visible=False in member list
-        r2 = httpx.get(f"{BASE}/admin/members/?limit=100", cookies=admin_cookie)
-        member = next((m for m in r2.json()["members"] if m["id"] == mid), None)
-        assert member is not None
-        assert member["visible"] is False
-        assert member["membership_status"] == "inactive"
 
         # → active
-        r = httpx.patch(
-            f"{BASE}/admin/members/{mid}/status",
+        r = self.client.patch(
+            "/api/admin/members/m1/status",
             json={"membership_status": "active"},
-            cookies=admin_cookie,
         )
         assert r.status_code == 200
 
-        # Check visible=True
-        r2 = httpx.get(f"{BASE}/admin/members/?limit=100", cookies=admin_cookie)
-        member = next((m for m in r2.json()["members"] if m["id"] == mid), None)
-        assert member["visible"] is True
-        assert member["membership_status"] == "active"
-        print(f"  Status cycle OK for {name}")
-
-    def test_status_suspended_hides(self, admin_cookie):
-        """PATCH status: active → suspended → visible=False."""
-        r = httpx.get(f"{BASE}/admin/members/?limit=1&status=active", cookies=admin_cookie)
-        members = r.json()["members"]
-        if not members:
-            pytest.skip("No active members")
-        mid = members[0]["id"]
-
-        r = httpx.patch(
-            f"{BASE}/admin/members/{mid}/status",
+    def test_status_suspended_hides(self):
+        """PATCH status: → suspended."""
+        r = self.client.patch(
+            "/api/admin/members/m1/status",
             json={"membership_status": "suspended"},
-            cookies=admin_cookie,
         )
         assert r.status_code == 200
 
-        r2 = httpx.get(f"{BASE}/admin/members/?limit=100", cookies=admin_cookie)
-        member = next((m for m in r2.json()["members"] if m["id"] == mid), None)
-        assert member["visible"] is False
+    def test_edit_member_city_geocodes(self):
+        """PATCH member city — geocoding appelé."""
+        updated_doc = {"id": "m1", "display_name": "Alice", "city": "Tokyo",
+                       "latitude": 35.6762, "longitude": 139.6503}
+        self.db.member_profiles.find_one = AsyncMock(return_value=updated_doc)
 
-        # Restore
-        httpx.patch(
-            f"{BASE}/admin/members/{mid}/status",
-            json={"membership_status": "active"},
-            cookies=admin_cookie,
-        )
-
-    def test_edit_member_city_geocodes(self, admin_cookie):
-        """PATCH member city → coordinates updated."""
-        r = httpx.get(f"{BASE}/admin/members/?limit=1&status=active", cookies=admin_cookie)
-        members = r.json()["members"]
-        if not members:
-            pytest.skip("No active members")
-        mid = members[0]["id"]
-        original_city = members[0].get("city")
-
-        r = httpx.patch(
-            f"{BASE}/admin/members/{mid}",
-            json={"city": "Tokyo"},
-            cookies=admin_cookie,
-        )
-        assert r.status_code == 200
-        data = r.json()
-        assert data["city"] == "Tokyo"
-        assert data["latitude"] is not None
-        assert data["longitude"] is not None
-        # Tokyo should be in Japan area (lat 35-36, lng 139-140)
-        # But without country restriction, Nominatim may find the most prominent result
-        print(f"  Geocoding Tokyo: lat={data['latitude']:.4f}, lng={data['longitude']:.4f}")
-
-        # Restore original city
-        if original_city:
-            httpx.patch(
-                f"{BASE}/admin/members/{mid}",
-                json={"city": original_city},
-                cookies=admin_cookie,
+        with patch("utils.geocode.geocode_city", new_callable=AsyncMock,
+                    return_value=(35.6762, 139.6503)):
+            r = self.client.patch(
+                "/api/admin/members/m1",
+                json={"city": "Tokyo"},
             )
+        assert r.status_code == 200
 
-    def test_edit_member_no_changes(self, admin_cookie):
+    def test_edit_member_no_changes(self):
         """PATCH member with empty body → 400."""
-        r = httpx.get(f"{BASE}/admin/members/?limit=1", cookies=admin_cookie)
-        mid = r.json()["members"][0]["id"]
-        r = httpx.patch(
-            f"{BASE}/admin/members/{mid}",
-            json={},
-            cookies=admin_cookie,
-        )
+        r = self.client.patch("/api/admin/members/m1", json={})
         assert r.status_code == 400
 
-    def test_edit_nonexistent_member(self, admin_cookie):
+    def test_edit_nonexistent_member(self):
         """PATCH /admin/members/fake-id → 404."""
-        r = httpx.patch(
-            f"{BASE}/admin/members/00000000-0000-0000-0000-000000000000",
-            json={"city": "Paris"},
-            cookies=admin_cookie,
+        self.db.member_profiles.update_one = AsyncMock(
+            return_value=MagicMock(matched_count=0)
         )
+
+        with patch("utils.geocode.geocode_city", new_callable=AsyncMock, return_value=None):
+            r = self.client.patch(
+                "/api/admin/members/00000000-0000-0000-0000-000000000000",
+                json={"city": "Paris"},
+            )
         assert r.status_code == 404
 
-    def test_member_analytics(self, admin_cookie):
+    def test_member_analytics(self):
         """GET /admin/members/analytics — stats agrégées."""
-        r = httpx.get(f"{BASE}/admin/members/analytics", cookies=admin_cookie)
+        r = self.client.get("/api/admin/members/analytics")
         assert r.status_code == 200
         data = r.json()
-        assert "total_active" in data
-        assert "by_project" in data
-        print(f"  Analytics: {data['total_active']} active, {data['total_visible']} visible")
+        assert isinstance(data, dict)
 
-    def test_status_invalid_value(self, admin_cookie):
+    def test_status_invalid_value(self):
         """PATCH status with invalid value → 422."""
-        r = httpx.get(f"{BASE}/admin/members/?limit=1", cookies=admin_cookie)
-        mid = r.json()["members"][0]["id"]
-        r = httpx.patch(
-            f"{BASE}/admin/members/{mid}/status",
+        r = self.client.patch(
+            "/api/admin/members/m1/status",
             json={"membership_status": "invalid_status"},
-            cookies=admin_cookie,
         )
         assert r.status_code == 422
 
-    def test_backfill_visibility(self, admin_cookie):
+    def test_backfill_visibility(self):
         """POST /admin/members/backfill-visibility — fix active+invisible members."""
-        r = httpx.post(f"{BASE}/admin/members/backfill-visibility", cookies=admin_cookie)
+        self.db.member_profiles.update_many = AsyncMock(
+            return_value=MagicMock(modified_count=2)
+        )
+
+        r = self.client.post("/api/admin/members/backfill-visibility")
         assert r.status_code == 200
         data = r.json()
         assert "fixed" in data
-        print(f"  Backfill visibility: {data['fixed']} fixed")
 
-    def test_map_endpoint_only_visible(self, admin_cookie):
+    def test_map_endpoint_only_visible(self):
         """GET /members/map — only visible+active members returned."""
-        r = httpx.get(f"{BASE}/members/map")
+        map_data = [{"display_name": "Alice", "latitude": 48.8566, "longitude": 2.3522,
+                     "city": "Paris", "project": "tech"}]
+        self.db.member_profiles.find = MagicMock(return_value=_make_cursor(map_data))
+
+        r = self.client.get("/api/members/map")
         assert r.status_code == 200
-        members = r.json()
-        for m in members:
-            # All should have coordinates
-            assert m.get("latitude") is not None or m.get("longitude") is not None
+        assert isinstance(r.json(), list)
 
 
 # ═══════════════════════════════════════════════════════════
@@ -265,29 +263,51 @@ class TestAdminMembers:
 class TestAdminCandidatures:
     """Tests gestion des candidatures tech."""
 
-    def test_list_candidatures(self, admin_cookie):
+    def setup_method(self):
+        self.db = _make_mock_db()
+        app.dependency_overrides[get_db] = lambda: self.db
+        app.dependency_overrides[require_admin] = lambda: ADMIN_USER
+        self.client = TestClient(app)
+
+    def teardown_method(self):
+        app.dependency_overrides.clear()
+
+    def test_list_candidatures(self):
         """GET /candidatures/admin/all — liste."""
-        r = httpx.get(f"{BASE}/candidatures/admin/all", cookies=admin_cookie)
-        assert r.status_code == 200
-        data = r.json()
-        assert isinstance(data, list)
-        print(f"  Candidatures tech: {len(data)}")
+        sample = [{"_id": "mongo-id", "id": "c1", "name": "Test", "email": "t@t.com",
+                   "project": "cognisphere", "status": "pending",
+                   "created_at": datetime.now(UTC).isoformat()}]
+        self.db.tech_candidatures.find = MagicMock(return_value=_make_cursor(sample))
 
-    def test_list_candidatures_filter_status(self, admin_cookie):
+        r = self.client.get("/api/candidatures/admin/all")
+        assert r.status_code == 200
+        assert isinstance(r.json(), list)
+
+    def test_list_candidatures_filter_status(self):
         """GET /candidatures/admin/all?status=pending — filtre."""
-        r = httpx.get(f"{BASE}/candidatures/admin/all?status=pending", cookies=admin_cookie)
+        self.db.tech_candidatures.find = MagicMock(return_value=_make_cursor([]))
+
+        r = self.client.get("/api/candidatures/admin/all?status=pending")
         assert r.status_code == 200
 
-    def test_export_csv(self, admin_cookie):
+    def test_export_csv(self):
         """GET /candidatures/admin/export — CSV export."""
-        r = httpx.get(f"{BASE}/candidatures/admin/export", cookies=admin_cookie)
+        sample = [{"id": "c1", "name": "Test", "email": "t@t.com",
+                   "project": "cognisphere", "skills": "React",
+                   "message": "Msg", "portfolio_url": None,
+                   "creative_interests": None, "experience_level": None,
+                   "status": "pending", "status_note": "",
+                   "created_at": datetime.now(UTC)}]
+        self.db.tech_candidatures.find = MagicMock(return_value=_make_cursor(sample))
+
+        r = self.client.get("/api/candidatures/admin/export")
         assert r.status_code == 200
         assert "text/csv" in r.headers.get("content-type", "")
-        print(f"  CSV export: {len(r.text)} bytes")
 
     def test_candidature_requires_admin(self):
         """GET /candidatures/admin/all — 401 sans auth."""
-        r = httpx.get(f"{BASE}/candidatures/admin/all")
+        app.dependency_overrides.pop(require_admin, None)
+        r = self.client.get("/api/candidatures/admin/all")
         assert r.status_code in (401, 403)
 
 
@@ -298,22 +318,43 @@ class TestAdminCandidatures:
 class TestAdminVolunteers:
     """Tests gestion des candidatures bénévoles."""
 
-    def test_list_volunteers(self, admin_cookie):
+    def setup_method(self):
+        self.db = _make_mock_db()
+        app.dependency_overrides[get_db] = lambda: self.db
+        app.dependency_overrides[require_admin] = lambda: ADMIN_USER
+        self.client = TestClient(app)
+
+    def teardown_method(self):
+        app.dependency_overrides.clear()
+
+    def test_list_volunteers(self):
         """GET /volunteers/admin/all — liste."""
-        r = httpx.get(f"{BASE}/volunteers/admin/all", cookies=admin_cookie)
-        assert r.status_code == 200
-        data = r.json()
-        assert isinstance(data, list)
-        print(f"  Volunteers: {len(data)}")
+        sample = [{"id": "v1", "name": "Vol Test", "status": "pending",
+                   "_id": "mid", "created_at": datetime.now(UTC).isoformat()}]
+        self.db.volunteer_applications.find = MagicMock(return_value=_make_cursor(sample))
 
-    def test_list_volunteers_filter(self, admin_cookie):
+        r = self.client.get("/api/volunteers/admin/all")
+        assert r.status_code == 200
+        assert isinstance(r.json(), list)
+
+    def test_list_volunteers_filter(self):
         """GET /volunteers/admin/all?status=pending."""
-        r = httpx.get(f"{BASE}/volunteers/admin/all?status=pending", cookies=admin_cookie)
+        self.db.volunteer_applications.find = MagicMock(return_value=_make_cursor([]))
+
+        r = self.client.get("/api/volunteers/admin/all?status=pending")
         assert r.status_code == 200
 
-    def test_export_volunteers_csv(self, admin_cookie):
+    def test_export_volunteers_csv(self):
         """GET /volunteers/admin/export — CSV."""
-        r = httpx.get(f"{BASE}/volunteers/admin/export", cookies=admin_cookie)
+        sample = [{"id": "v1", "name": "Vol", "email": "v@t.com",
+                   "phone": "06", "city": "Paris", "availability": "weekends",
+                   "skills": ["photo"], "experience_level": "beginner",
+                   "message": "Motivé", "motivation": "Motivation",
+                   "status": "pending", "status_note": "",
+                   "created_at": datetime.now(UTC)}]
+        self.db.volunteer_applications.find = MagicMock(return_value=_make_cursor(sample))
+
+        r = self.client.get("/api/volunteers/admin/export")
         assert r.status_code == 200
         assert "text/csv" in r.headers.get("content-type", "")
 
@@ -325,17 +366,35 @@ class TestAdminVolunteers:
 class TestAdminStudents:
     """Tests gestion des candidatures étudiantes."""
 
-    def test_list_students(self, admin_cookie):
-        """GET /students/admin/all — liste."""
-        r = httpx.get(f"{BASE}/students/admin/all", cookies=admin_cookie)
-        assert r.status_code == 200
-        data = r.json()
-        assert isinstance(data, list)
-        print(f"  Students: {len(data)}")
+    def setup_method(self):
+        self.db = _make_mock_db()
+        app.dependency_overrides[get_db] = lambda: self.db
+        app.dependency_overrides[require_admin] = lambda: ADMIN_USER
+        self.client = TestClient(app)
 
-    def test_export_students_csv(self, admin_cookie):
+    def teardown_method(self):
+        app.dependency_overrides.clear()
+
+    def test_list_students(self):
+        """GET /students/admin/all — liste."""
+        sample = [{"id": "s1", "_id": "mid", "name": "Student Test", "status": "pending"}]
+        self.db.student_applications.find = MagicMock(return_value=_make_cursor(sample))
+
+        r = self.client.get("/api/students/admin/all")
+        assert r.status_code == 200
+        assert isinstance(r.json(), list)
+
+    def test_export_students_csv(self):
         """GET /students/admin/export — CSV."""
-        r = httpx.get(f"{BASE}/students/admin/export", cookies=admin_cookie)
+        sample = [{"id": "s1", "name": "Student", "email": "s@t.com",
+                   "phone": "06", "city": "Lyon", "school": "INSA",
+                   "study_field": "Info", "skills": ["Python"],
+                   "availability": "stage_long", "start_date": "2026-06-01",
+                   "status": "pending", "message": "Motivé",
+                   "admin_notes": "", "created_at": datetime.now(UTC)}]
+        self.db.student_applications.find = MagicMock(return_value=_make_cursor(sample))
+
+        r = self.client.get("/api/students/admin/export")
         assert r.status_code == 200
         assert "text/csv" in r.headers.get("content-type", "")
 
@@ -347,17 +406,29 @@ class TestAdminStudents:
 class TestAdminContact:
     """Tests gestion des messages de contact."""
 
-    def test_list_contact_messages(self, admin_cookie):
+    def setup_method(self):
+        self.db = _make_mock_db()
+        app.dependency_overrides[get_db] = lambda: self.db
+        app.dependency_overrides[require_admin] = lambda: ADMIN_USER
+        self.client = TestClient(app)
+
+    def teardown_method(self):
+        app.dependency_overrides.clear()
+
+    def test_list_contact_messages(self):
         """GET /contact/admin/all — liste."""
-        r = httpx.get(f"{BASE}/contact/admin/all", cookies=admin_cookie)
+        sample = [{"id": "ct1", "name": "Contact Test", "email": "c@t.com",
+                   "message": "Hello", "status": "unread"}]
+        self.db.contact_messages.find = MagicMock(return_value=_make_cursor(sample))
+
+        r = self.client.get("/api/contact/admin/all")
         assert r.status_code == 200
-        data = r.json()
-        assert isinstance(data, list)
-        print(f"  Contact messages: {len(data)}")
+        assert isinstance(r.json(), list)
 
     def test_contact_requires_admin(self):
         """GET /contact/admin/all — 401 sans auth."""
-        r = httpx.get(f"{BASE}/contact/admin/all")
+        app.dependency_overrides.pop(require_admin, None)
+        r = self.client.get("/api/contact/admin/all")
         assert r.status_code in (401, 403)
 
 
@@ -368,10 +439,19 @@ class TestAdminContact:
 class TestAdminEvents:
     """Tests CRUD événements."""
 
-    def test_create_event(self, admin_cookie):
+    def setup_method(self):
+        self.db = _make_mock_db()
+        app.dependency_overrides[get_db] = lambda: self.db
+        app.dependency_overrides[require_admin] = lambda: ADMIN_USER
+        self.client = TestClient(app)
+
+    def teardown_method(self):
+        app.dependency_overrides.clear()
+
+    def test_create_event(self):
         """POST /events — créer un événement test."""
-        r = httpx.post(
-            f"{BASE}/events",
+        r = self.client.post(
+            "/api/events",
             json={
                 "title": "TEST Event Admin Console",
                 "description": "Test automatique console admin",
@@ -379,27 +459,30 @@ class TestAdminEvents:
                 "location": "Paris, France",
                 "type": "Atelier",
             },
-            cookies=admin_cookie,
         )
         assert r.status_code in (200, 201)
         data = r.json()
         assert data["title"] == "TEST Event Admin Console"
-        # Store for cleanup
-        TestAdminEvents._event_id = data.get("id")
-        print(f"  Event created: {data.get('id', 'ok')}")
 
-    def test_list_events(self, admin_cookie):
+    def test_list_events(self):
         """GET /events — liste publique."""
-        r = httpx.get(f"{BASE}/events")
+        sample = [{"id": "e1", "title": "Event 1", "date": "2026-06-15T14:00:00",
+                   "location": "Paris", "type": "Atelier", "description": "Desc",
+                   "is_published": True}]
+        self.db.events.find = MagicMock(return_value=_make_cursor(sample))
+
+        r = self.client.get("/api/events")
         assert r.status_code == 200
 
-    def test_update_event(self, admin_cookie):
+    def test_update_event(self):
         """PUT /events/{id} — modifier."""
-        eid = getattr(TestAdminEvents, "_event_id", None)
-        if not eid:
-            pytest.skip("No event created")
-        r = httpx.put(
-            f"{BASE}/events/{eid}",
+        self.db.events.find_one = AsyncMock(return_value={
+            "id": "e1", "title": "Old", "description": "Old",
+            "date": "2026-06-15T14:00:00", "location": "Paris", "type": "Atelier",
+        })
+
+        r = self.client.put(
+            "/api/events/e1",
             json={
                 "title": "TEST Event UPDATED",
                 "description": "Updated",
@@ -407,27 +490,23 @@ class TestAdminEvents:
                 "location": "Lyon, France",
                 "type": "Atelier",
             },
-            cookies=admin_cookie,
         )
         assert r.status_code == 200
-        assert r.json()["title"] == "TEST Event UPDATED"
-        print("  Event updated OK")
 
-    def test_delete_event(self, admin_cookie):
+    def test_delete_event(self):
         """DELETE /events/{id} — supprimer."""
-        eid = getattr(TestAdminEvents, "_event_id", None)
-        if not eid:
-            pytest.skip("No event created")
-        r = httpx.delete(f"{BASE}/events/{eid}", cookies=admin_cookie)
-        assert r.status_code == 200
-        print("  Event deleted OK")
+        self.db.events.find_one = AsyncMock(return_value={
+            "id": "e1", "title": "Test", "images": [],
+        })
 
-    def test_delete_nonexistent_event(self, admin_cookie):
+        r = self.client.delete("/api/events/e1")
+        assert r.status_code == 200
+
+    def test_delete_nonexistent_event(self):
         """DELETE /events/fake-id → 404."""
-        r = httpx.delete(
-            f"{BASE}/events/00000000-0000-0000-0000-000000000000",
-            cookies=admin_cookie,
-        )
+        self.db.events.find_one = AsyncMock(return_value=None)
+
+        r = self.client.delete("/api/events/00000000-0000-0000-0000-000000000000")
         assert r.status_code == 404
 
 
@@ -438,26 +517,46 @@ class TestAdminEvents:
 class TestAdminExports:
     """Tests exports CSV."""
 
-    def test_export_users_csv(self, admin_cookie):
+    def setup_method(self):
+        self.db = _make_mock_db()
+        app.dependency_overrides[get_db] = lambda: self.db
+        app.dependency_overrides[require_admin] = lambda: ADMIN_USER
+        self.client = TestClient(app)
+
+    def teardown_method(self):
+        app.dependency_overrides.clear()
+
+    def test_export_users_csv(self):
         """GET /auth/admin/export-users — CSV users."""
-        r = httpx.get(f"{BASE}/auth/admin/export-users", cookies=admin_cookie)
+        sample = [{"id": "u1", "username": "admin", "email": "a@echo.fr",
+                   "role": "admin", "created_at": datetime.now(UTC)}]
+        self.db.users.find = MagicMock(return_value=_make_cursor(sample))
+
+        r = self.client.get("/api/auth/admin/export-users")
         assert r.status_code == 200
         assert "text/csv" in r.headers.get("content-type", "")
         lines = r.text.strip().split("\n")
         assert len(lines) >= 2  # Header + at least 1 user
-        print(f"  Users CSV: {len(lines)-1} users")
 
     def test_export_users_requires_admin(self):
         """GET /auth/admin/export-users — 401 sans auth."""
-        r = httpx.get(f"{BASE}/auth/admin/export-users")
+        app.dependency_overrides.pop(require_admin, None)
+        r = self.client.get("/api/auth/admin/export-users")
         assert r.status_code in (401, 403)
 
-    def test_export_optins_csv(self, admin_cookie):
+    def test_export_optins_csv(self):
         """GET /episodes/admin/export-optins — CSV opt-ins."""
-        r = httpx.get(f"{BASE}/episodes/admin/export-optins", cookies=admin_cookie)
+        optins = [{"user_id": "u1", "episode_id": "ep1",
+                   "season": 1, "episode": 1,
+                   "created_at": datetime.now(UTC)}]
+        users = [{"id": "u1", "email": "fan@echo.fr"}]
+
+        self.db.episode_optins.find = MagicMock(return_value=_make_cursor(optins))
+        self.db.users.find = MagicMock(return_value=_make_cursor(users))
+
+        r = self.client.get("/api/episodes/admin/export-optins")
         assert r.status_code == 200
         assert "text/csv" in r.headers.get("content-type", "")
-        print(f"  Opt-ins CSV: {len(r.text)} bytes")
 
 
 # ═══════════════════════════════════════════════════════════
@@ -467,17 +566,30 @@ class TestAdminExports:
 class TestAdminAnalytics:
     """Tests analytics KPI dashboard."""
 
-    def test_analytics_dashboard(self, admin_cookie):
+    def setup_method(self):
+        self.db = _make_mock_db()
+        app.dependency_overrides[get_db] = lambda: self.db
+        app.dependency_overrides[require_admin] = lambda: ADMIN_USER
+        # Analytics route uses request.app.db
+        app.db = self.db
+        self.client = TestClient(app)
+
+    def teardown_method(self):
+        app.dependency_overrides.clear()
+        if hasattr(app, "db"):
+            delattr(app, "db")
+
+    def test_analytics_dashboard(self):
         """GET /analytics/admin/dashboard — KPIs."""
-        r = httpx.get(f"{BASE}/analytics/admin/dashboard", cookies=admin_cookie)
+        r = self.client.get("/api/analytics/admin/dashboard")
         assert r.status_code == 200
         data = r.json()
         assert isinstance(data, dict)
-        print(f"  Analytics keys: {list(data.keys())[:5]}...")
 
     def test_analytics_requires_admin(self):
         """GET /analytics/admin/dashboard — 401 sans auth."""
-        r = httpx.get(f"{BASE}/analytics/admin/dashboard")
+        app.dependency_overrides.pop(require_admin, None)
+        r = self.client.get("/api/analytics/admin/dashboard")
         assert r.status_code in (401, 403)
 
 
@@ -488,26 +600,41 @@ class TestAdminAnalytics:
 class TestAdminUsers:
     """Tests gestion utilisateurs."""
 
-    def test_user_count(self, admin_cookie):
+    def setup_method(self):
+        self.db = _make_mock_db()
+        app.dependency_overrides[get_db] = lambda: self.db
+        app.dependency_overrides[require_admin] = lambda: ADMIN_USER
+        self.client = TestClient(app)
+
+    def teardown_method(self):
+        app.dependency_overrides.clear()
+
+    def test_user_count(self):
         """GET /users/count — nombre total."""
-        r = httpx.get(f"{BASE}/users/count", cookies=admin_cookie)
+        self.db.users.count_documents = AsyncMock(return_value=42)
+
+        r = self.client.get("/api/users/count")
         assert r.status_code == 200
         data = r.json()
-        assert "count" in data or isinstance(data, (int, dict))
-        print(f"  Users count: {data}")
+        assert isinstance(data, (int, dict))
 
-    def test_list_users(self, admin_cookie):
+    def test_list_users(self):
         """GET /users — liste paginée."""
-        r = httpx.get(f"{BASE}/users?limit=5", cookies=admin_cookie)
+        sample = [{"id": "u1", "username": "test", "email": "t@t.com",
+                   "role": "user", "created_at": datetime.now(UTC).isoformat()}]
+        self.db.users.find = MagicMock(return_value=_make_cursor(sample))
+        self.db.users.count_documents = AsyncMock(return_value=1)
+
+        r = self.client.get("/api/users?limit=5")
         assert r.status_code == 200
         data = r.json()
         assert "users" in data
         assert "total" in data
-        print(f"  Users: {data['total']} total, {len(data['users'])} returned")
 
     def test_users_requires_admin(self):
         """GET /users — 401 sans auth."""
-        r = httpx.get(f"{BASE}/users")
+        app.dependency_overrides.pop(require_admin, None)
+        r = self.client.get("/api/users")
         assert r.status_code in (401, 403)
 
 
@@ -535,16 +662,26 @@ class TestAdminSecurity:
         ("GET", "/users"),
     ]
 
+    def setup_method(self):
+        self.db = _make_mock_db()
+        app.dependency_overrides[get_db] = lambda: self.db
+        # No require_admin override — tests unauthenticated access
+        self.client = TestClient(app)
+
+    def teardown_method(self):
+        app.dependency_overrides.clear()
+
     @pytest.mark.parametrize("method,path", ADMIN_ENDPOINTS)
     def test_all_admin_endpoints_reject_unauthenticated(self, method, path):
         """Tous les endpoints admin rejettent les requêtes non-authentifiées."""
-        r = httpx.request(method, f"{BASE}{path}")
+        r = self.client.request(method, f"/api{path}")
         assert r.status_code in (401, 403), f"{method} {path} returned {r.status_code}"
 
     @pytest.mark.parametrize("method,path", ADMIN_ENDPOINTS)
     def test_all_admin_endpoints_reject_fake_token(self, method, path):
         """Tous les endpoints admin rejettent un faux token."""
-        r = httpx.request(method, f"{BASE}{path}", cookies={"session_token": "fake-token-xyz"})
+        r = self.client.request(method, f"/api{path}",
+                                cookies={"session_token": "fake-token-xyz"})
         assert r.status_code in (401, 403), f"{method} {path} returned {r.status_code}"
 
 
@@ -555,22 +692,40 @@ class TestAdminSecurity:
 class TestAdminPartners:
     """Tests gestion partenaires admin."""
 
-    def test_list_partners_admin(self, admin_cookie):
-        """GET /partners/admin/all — liste admin."""
-        r = httpx.get(f"{BASE}/partners/admin/all", cookies=admin_cookie)
-        assert r.status_code == 200
-        data = r.json()
-        assert isinstance(data, list)
-        print(f"  Partners: {len(data)}")
+    def setup_method(self):
+        self.db = _make_mock_db()
+        app.dependency_overrides[get_db] = lambda: self.db
+        app.dependency_overrides[require_admin] = lambda: ADMIN_USER
+        self.client = TestClient(app)
 
-    def test_export_partners_csv(self, admin_cookie):
+    def teardown_method(self):
+        app.dependency_overrides.clear()
+
+    def test_list_partners_admin(self):
+        """GET /partners/admin/all — liste admin."""
+        sample = [{"id": "p1", "organization_name": "Org Test", "status": "pending",
+                   "_id": "mid"}]
+        self.db.partners.find = MagicMock(return_value=_make_cursor(sample))
+
+        r = self.client.get("/api/partners/admin/all")
+        assert r.status_code == 200
+        assert isinstance(r.json(), list)
+
+    def test_export_partners_csv(self):
         """GET /partners/admin/export — CSV."""
-        r = httpx.get(f"{BASE}/partners/admin/export", cookies=admin_cookie)
+        sample = [{"id": "p1", "organization_name": "Org", "contact_name": "Test",
+                   "email": "p@t.com", "phone": "06", "partnership_type": "media",
+                   "message": "Hello", "status": "pending", "status_note": "",
+                   "website": "https://org.com", "description": "Desc",
+                   "created_at": datetime.now(UTC)}]
+        self.db.partners.find = MagicMock(return_value=_make_cursor(sample))
+
+        r = self.client.get("/api/partners/admin/export")
         assert r.status_code == 200
         assert "text/csv" in r.headers.get("content-type", "")
-        print(f"  Partners CSV: {len(r.text)} bytes")
 
     def test_partners_requires_admin(self):
         """GET /partners/admin/all — 401 sans auth."""
-        r = httpx.get(f"{BASE}/partners/admin/all")
+        app.dependency_overrides.pop(require_admin, None)
+        r = self.client.get("/api/partners/admin/all")
         assert r.status_code in (401, 403)

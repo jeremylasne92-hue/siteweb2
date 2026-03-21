@@ -23,6 +23,9 @@ load_dotenv(ROOT_DIR / '.env')
 from core.config import settings
 from utils.logging_config import setup_logging
 
+# Server start time for uptime calculation
+_server_start_time = time.time()
+
 # Configure logging
 setup_logging(settings.ENVIRONMENT)
 logger = logging.getLogger(__name__)
@@ -175,16 +178,31 @@ async def root():
 
 @api_router.get("/health")
 async def health_check():
-    """Health check endpoint — verifies MongoDB connectivity."""
+    """Health check endpoint — verifies MongoDB connectivity with latency and uptime."""
+    from starlette.responses import JSONResponse
+
+    uptime_seconds = round(time.time() - _server_start_time, 1)
+
     try:
-        from server import db
+        start = time.perf_counter()
         await db.command("ping")
-        return {"status": "healthy", "database": "connected"}
+        db_latency_ms = round((time.perf_counter() - start) * 1000, 1)
+
+        return {
+            "status": "healthy",
+            "database": "connected",
+            "db_latency_ms": db_latency_ms,
+            "uptime_seconds": uptime_seconds,
+        }
     except Exception as e:
-        from starlette.responses import JSONResponse
+        logger.error("Health check failed — MongoDB unreachable: %s", e)
         return JSONResponse(
             status_code=503,
-            content={"status": "unhealthy", "database": str(e)},
+            content={
+                "status": "unhealthy",
+                "database": str(e),
+                "uptime_seconds": uptime_seconds,
+            },
         )
 
 # Include the router in the main app
@@ -337,11 +355,19 @@ app.add_middleware(ActivityTrackingMiddleware)
 
 
 class RequestLoggingMiddleware(BaseHTTPMiddleware):
-    """Log every HTTP request with method, path, status, and duration."""
+    """Log every HTTP request with method, path, status, and duration.
+
+    Also tracks:
+    - Slow requests (> 2 seconds) logged as WARNING
+    - 5xx error count (in-memory counter for monitoring)
+    """
+
+    error_5xx_count: int = 0
+    SLOW_REQUEST_THRESHOLD_MS: float = 2000.0
 
     async def dispatch(self, request: StarletteRequest, call_next):
-        # Skip health check to avoid noise
-        if request.url.path == "/api/health":
+        # Skip health check and root to avoid noise
+        if request.url.path in ("/api/health", "/api/"):
             return await call_next(request)
 
         request_id = uuid.uuid4().hex[:8]
@@ -352,12 +378,26 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         duration_ms = round((time.perf_counter() - start) * 1000, 1)
 
         status_code = response.status_code
+
+        # Track 5xx errors
         if status_code >= 500:
+            RequestLoggingMiddleware.error_5xx_count += 1
             level = logging.ERROR
         elif status_code >= 400:
             level = logging.WARNING
         else:
             level = logging.INFO
+
+        # Slow request detection
+        if duration_ms > self.SLOW_REQUEST_THRESHOLD_MS:
+            logger.warning(
+                "SLOW REQUEST: %s %s took %.1fms (threshold: %.0fms)",
+                request.method,
+                request.url.path,
+                duration_ms,
+                self.SLOW_REQUEST_THRESHOLD_MS,
+                extra={"request_id": request_id},
+            )
 
         logger.log(
             level,

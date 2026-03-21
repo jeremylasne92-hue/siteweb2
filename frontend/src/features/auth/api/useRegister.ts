@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { API_URL } from '../../../config/api';
+import { getRecaptchaToken } from './useRecaptcha';
 
 interface RegisterPayload {
     username: string;
@@ -20,9 +21,13 @@ interface RegisterResponse {
 }
 
 async function registerUser(data: RegisterPayload): Promise<RegisterResponse> {
+    // Get reCAPTCHA v3 token (empty string if site key not configured)
+    const captcha_token = await getRecaptchaToken('register');
+
     // Attach UTM params and referrer from sessionStorage
     const enrichedData = {
         ...data,
+        captcha_token,
         utm_source: sessionStorage.getItem('echo_utm_source') || undefined,
         utm_medium: sessionStorage.getItem('echo_utm_medium') || undefined,
         utm_campaign: sessionStorage.getItem('echo_utm_campaign') || undefined,

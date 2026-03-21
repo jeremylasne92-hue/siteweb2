@@ -744,8 +744,8 @@ export function Serie() {
                         {/* AKOU */}
                         <CharacterCard
                             name="AKOU"
-                            role="Le Guide Spirituel"
-                            description="Ami et guide spirituel de Sacha, Akou porte en lui une profonde sagesse et une compréhension intuitive du monde. Habité par une quête constante d'équilibre et d'unité, il devient le repère moral essentiel dans le voyage tumultueux de Sacha."
+                            role="Le Guide"
+                            description="Ami et guide de Sacha, Akou porte en lui une profonde sagesse et une compréhension intuitive du monde. Habité par une quête constante d'équilibre et d'unité, il devient le repère moral essentiel dans le voyage tumultueux de Sacha."
                             image="/images/characters/akou.jpeg"
                         />
                         {/* LILY */}
