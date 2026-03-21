@@ -53,6 +53,9 @@ export function MembersSection({ onMemberClick }: MembersSectionProps) {
         fetchMembers();
     }, []);
 
+    // Threshold below which we show a qualitative message instead of the count
+    const MEMBERS_COUNT_THRESHOLD = 15;
+
     if (isLoading || members.length === 0) return null;
 
     return (
@@ -61,13 +64,19 @@ export function MembersSection({ onMemberClick }: MembersSectionProps) {
                 <div className="text-center mb-10">
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-sm text-neutral-400 mb-4">
                         <Users size={16} className="text-[#D4AF37]" />
-                        {members.length} membre{members.length > 1 ? 's' : ''} actif{members.length > 1 ? 's' : ''}
+                        {members.length >= MEMBERS_COUNT_THRESHOLD
+                            ? `${members.length} membre${members.length > 1 ? 's' : ''} actif${members.length > 1 ? 's' : ''}`
+                            : 'Les premiers membres du mouvement'
+                        }
                     </div>
                     <h2 className="text-2xl sm:text-3xl font-serif text-white mb-3">
                         Les Membres du Mouvement
                     </h2>
                     <p className="text-neutral-400 max-w-2xl mx-auto text-sm">
-                        Ils ont rejoint l'aventure ECHO et contribuent activement au projet.
+                        {members.length >= MEMBERS_COUNT_THRESHOLD
+                            ? 'Ils ont rejoint l\'aventure ECHO et contribuent activement au projet.'
+                            : 'Ils font partie des pionniers d\'ECHO. Rejoignez-les pour construire ensemble un mouvement citoyen.'
+                        }
                     </p>
                 </div>
 

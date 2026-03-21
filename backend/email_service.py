@@ -66,22 +66,48 @@ async def send_welcome(email: str, name: str) -> bool:
     """Send welcome email after registration."""
     import html as html_mod
     safe_name = html_mod.escape(name)
-    subject = "Bienvenue sur Mouvement ECHO !"
+    subject = "Bienvenue dans le Mouvement ECHO"
+    site_url = "https://mouvementecho.fr"
     html = (
-        f"<h2>Bienvenue {safe_name} !</h2>"
-        f"<p>Votre compte sur Mouvement ECHO a bien été créé.</p>"
-        f"<p>Vous faites désormais partie d'une communauté engagée pour la transition "
-        f"écologique et sociale. Voici ce que vous pouvez faire dès maintenant :</p>"
-        f"<ul>"
-        f"<li>Découvrir la série documentaire ECHO</li>"
-        f"<li>Participer aux événements à venir</li>"
-        f"<li>Accéder à notre médiathèque de ressources</li>"
-        f"</ul>"
-        f"<p>À très bientôt,<br>L'équipe Mouvement ECHO</p>"
+        f"<div style='font-family:Arial,Helvetica,sans-serif;max-width:600px;margin:0 auto;"
+        f"background:#0a0a0a;color:#e0e0e0;border-radius:12px;overflow:hidden;'>"
+        # Header with logo
+        f"<div style='background:linear-gradient(135deg,#1a1a2e,#16213e);padding:32px;text-align:center;'>"
+        f"<h1 style='color:#D4AF37;font-size:28px;margin:0;letter-spacing:2px;'>ECHO</h1>"
+        f"<p style='color:#aaa;font-size:13px;margin:8px 0 0;'>Mouvement citoyen &amp; documentaire</p>"
+        f"</div>"
+        # Body
+        f"<div style='padding:32px;'>"
+        f"<h2 style='color:#D4AF37;font-size:22px;margin:0 0 16px;'>{safe_name},</h2>"
+        f"<p style='line-height:1.7;font-size:15px;'>"
+        f"Tu viens d'entrer dans l'univers ECHO.</p>"
+        f"<p style='line-height:1.7;font-size:17px;font-weight:bold;color:#D4AF37;'>"
+        f"Trois saisons. Trente-trois épisodes.</p>"
+        f"<p style='line-height:1.7;font-size:15px;'>"
+        f"Un voyage du diagnostic des crises aux futurs souhaitables. "
+        f"Tu fais partie des pionniers de cette aventure &mdash; "
+        f"la suite s'écrit aussi avec toi.</p>"
+        # CTA button
+        f"<div style='text-align:center;margin:28px 0;'>"
+        f"<a href='{site_url}' style='display:inline-block;background:#D4AF37;color:#0a0a0a;"
+        f"padding:14px 36px;text-decoration:none;border-radius:8px;font-weight:bold;"
+        f"font-size:16px;letter-spacing:0.5px;'>Rejoindre le Mouvement</a></div>"
+        f"<p style='line-height:1.7;font-size:15px;'>"
+        f"On est contents de t'avoir parmi les pionniers.</p>"
+        f"<p style='margin-top:24px;font-size:15px;'>"
+        f"Chaleureusement,<br><strong>L'équipe ECHO</strong></p>"
+        f"</div>"
+        # Footer
+        f"<div style='background:#111;padding:20px 32px;text-align:center;"
+        f"font-size:12px;color:#666;'>"
+        f"<p style='margin:0;'>Mouvement ECHO &mdash; "
+        f"<a href='{site_url}' style='color:#D4AF37;text-decoration:none;'>mouvementecho.fr</a></p>"
+        f"</div>"
+        f"</div>"
     )
     if _use_sendgrid():
         return await _send_via_sendgrid(email, subject, html)
-    return await _log_email(email, subject, f"Bienvenue {name} sur Mouvement ECHO")
+    return await _log_email(email, subject, f"Bienvenue {name} dans le Mouvement ECHO")
 
 
 async def send_2fa_code(email: str, code: str) -> bool:

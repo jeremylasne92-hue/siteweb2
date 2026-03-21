@@ -9,7 +9,7 @@ import time
 import secrets
 from models import User, UserSession, Pending2FA
 from auth_utils import generate_2fa_code
-from email_service import send_2fa_code
+from email_service import send_2fa_code, send_welcome
 from datetime import datetime, timedelta, UTC
 from urllib.parse import urlencode
 from core.config import settings
@@ -135,6 +135,13 @@ async def google_callback_service(code: str, db) -> dict:
             consent_version="v2026-03-20",
         )
         await db.users.insert_one(user.model_dump())
+
+        # Send welcome email (non-blocking, best-effort)
+        try:
+            display_name = user_info.get("given_name") or user_info.get("name") or email.split("@")[0]
+            await send_welcome(email, display_name)
+        except Exception:
+            logger.warning(f"Failed to send welcome email to {email} (OAuth)")
 
     # 4. Check if user has 2FA enabled
     if user.is_2fa_enabled:

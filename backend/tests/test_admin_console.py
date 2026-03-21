@@ -2,9 +2,16 @@
 Programme de tests exhaustif — Console Admin ECHO
 Couvre : Dashboard, Membres, Candidatures Tech, Bénévoles, Étudiants,
          Partenaires, Événements, Contact, Exports, Analytics, Utilisateurs.
+
+NOTE: Ces tests sont des tests d'intégration e2e qui nécessitent un serveur
+backend actif sur localhost:8000. Exclus par défaut via le marker 'integration'.
+Lancer avec : pytest -m integration (avec le serveur démarré)
+TODO P2: Refactoriser vers TestClient + mocks pour les rendre autonomes.
 """
 import pytest
 import httpx
+
+pytestmark = pytest.mark.integration
 import json
 from unittest.mock import patch, AsyncMock
 
