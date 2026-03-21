@@ -39,7 +39,9 @@
 - [ ] Messages personnels équipe (100 contacts, message personnalisé avec lien prologue)
 
 **🟠 P1 — Semaine 2-3**
-- [ ] Newsletter mensuelle via SendGrid (template + liste inscrits email_opt_out=false)
+- [x] Newsletter mensuelle admin (composition + aperçu + historique + test obligatoire + brouillon localStorage) ✅
+- [x] Fix YouTube embed — acceptation directe cookies sans panneau CMP ✅
+- [x] Séquence email onboarding J+3 coulisses + J+10 candidature + cron-job.org configuré ✅
 - [ ] Tester réception emails FAI français (Orange, Free, SFR) — réputation domaine neuf
 
 **🟡 P2 — Mois 1**
@@ -50,7 +52,6 @@
 - [ ] Page /pitch épurée pour les partenaires (prologue + chiffres + calendrier)
 
 **🟢 P3 — Mois 2+**
-- [ ] Séquence email onboarding (J+1 bienvenue, J+7 coulisses, J+14 CTA candidature)
 - [ ] Indicateur "Où en sommes-nous ?" sur page Mouvement (étape actuelle, objectifs)
 - [ ] Soumettre manuellement les URLs clés dans Google Search Console (accélérer indexation)
 - [ ] Réseaux sociaux personnages (prévu mai 2026)
@@ -99,6 +100,7 @@
 
 | Date | Décision | Agent |
 |------|----------|-------|
+| 2026-03-21 | Newsletter admin complète (composition + aperçu + historique + test obligatoire + brouillon). Onboarding J+3/J+10 (cron-job.org configuré). Fix YouTube embed cookies. Système mémoire persistante (decisions.csv + changelog.md + review.sh). Workflow BMAD strict réinstauré. | Claude Code (Opus 4.6) |
 | 2026-03-21 | Fix reCAPTCHA v3 (script dynamique + clé secrète corrigée), email bienvenue proposition 2 (narratif), masquage compteurs < seuil, monitoring health check + slow requests, refactoring tests admin (TestClient), délivrabilité emails (plain text + tracking off), Akou "Le Guide". | Claude Code (Opus 4.6) |
 | 2026-03-21 | Restructuration shared-context : archivage historique pré-lancement dans archive-pre-lancement.md (fichier passé de ~23K tokens à ~5K tokens). Backlog documenté. Stratégie virale Vald documentée (5 vidéos + plan d'activation). | Claude Code (Opus 4.6) |
 | 2026-03-20 | Configuration production complète : SendGrid Domain Auth (DKIM/SPF/DMARC), EMAIL_FROM→noreply@mouvementecho.fr, toutes variables Render, custom domain api.mouvementecho.fr, comptes admin, base propre. | Claude Code (Opus 4.6) |
