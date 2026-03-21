@@ -376,7 +376,7 @@ export default function AdminNewsletter() {
                             {/* Email footer */}
                             <div className="bg-[#1a1a1a] px-6 py-4 text-center border-t border-white/10">
                                 <p className="text-white/30 text-xs">
-                                    Mouvement ECHO &mdash; S&eacute;rie documentaire sur la transition &eacute;cologique
+                                    Mouvement ECHO &mdash; S&eacute;rie fiction sur la transition &eacute;cologique
                                 </p>
                                 <p className="text-white/20 text-xs mt-1">
                                     Vous recevez cet email car vous &ecirc;tes abonn&eacute;(e) &agrave; notre newsletter.

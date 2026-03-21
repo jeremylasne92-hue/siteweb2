@@ -1,7 +1,7 @@
-# ECHO — Plateforme citoyenne pour la série documentaire ECHO
+# ECHO — Plateforme citoyenne pour la série fiction ECHO
 
 Mouvement ECHO est une plateforme web full-stack connectant le public
-à une série documentaire sur la transition écologique. Lancement : 20 mars 2026.
+à une série fiction sur la transition écologique. Lancement : 20 mars 2026.
 
 ## Stack
 - **Frontend**: React 19 + TypeScript 5.9 + Vite 7 + Tailwind CSS 4

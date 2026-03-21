@@ -361,7 +361,7 @@ export function Cognisphere() {
                                 Mouvement ECHO.
                             </p>
                             <p className="text-neutral-400 leading-relaxed">
-                                Directement lié à la série documentaire ECHO, Cognisphère proposera des parcours
+                                Directement lié à la série ECHO, Cognisphère proposera des parcours
                                 d'apprentissage rattachés aux thématiques de chaque épisode avec un accès à des
                                 ressources variées et adaptés au profil utilisateur pour ancrer ces savoirs sur le long terme.
                             </p>

@@ -160,7 +160,7 @@ export function FAQ() {
         <>
             <SEO
                 title="FAQ — Questions Fréquentes"
-                description="Questions fréquentes sur Mouvement ECHO : association, série documentaire, CogniSphère, ECHOLink, financement, équipe."
+                description="Questions fréquentes sur Mouvement ECHO : association, série fiction, CogniSphère, ECHOLink, financement, équipe."
                 url="https://mouvementecho.fr/faq"
             />
             <Helmet>

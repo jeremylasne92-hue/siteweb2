@@ -7,7 +7,7 @@ interface SEOProps {
     url?: string;
 }
 
-export function SEO({ title, description, image = 'https://mouvementecho.fr/logo-echo-transparent.png', url = 'https://mouvementecho.fr' }: SEOProps) {
+export function SEO({ title, description, image = 'https://mouvementecho.fr/logo-echo.jpg', url = 'https://mouvementecho.fr' }: SEOProps) {
     const fullTitle = `${title} | Mouvement ECHO`;
 
     return (
@@ -22,6 +22,8 @@ export function SEO({ title, description, image = 'https://mouvementecho.fr/logo
             <meta property="og:type" content="website" />
             <meta property="og:url" content={url} />
             <meta property="og:image" content={image} />
+            <meta property="og:locale" content="fr_FR" />
+            <meta property="og:site_name" content="Mouvement ECHO" />
 
             {/* Canonical URL */}
             <link rel="canonical" href={url} />

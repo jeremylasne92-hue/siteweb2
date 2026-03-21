@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
 import { Home } from 'lucide-react';
+import { SEO } from '../components/seo/SEO';
 
 export default function NotFound() {
     return (
         <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
+            <SEO title="Page introuvable" description="La page que vous recherchez n'existe pas ou a été déplacée." />
             <p className="text-8xl font-bold text-echo-gold mb-4">404</p>
             <h1 className="text-2xl font-bold text-white mb-2">
                 Page introuvable

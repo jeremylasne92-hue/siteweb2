@@ -221,7 +221,7 @@ export function Serie() {
         <div className="flex flex-col min-h-screen bg-[#0A0A0A] text-white">
             <SEO
                 title="La Série"
-                description="Série documentaire ECHO : 33 épisodes en 3 saisons inspirées de Dante. Écologie, justice sociale, prospective."
+                description="Série fiction ECHO : 33 épisodes en 3 saisons inspirées de Dante. Écologie, justice sociale, prospective."
                 url="https://mouvementecho.fr/serie"
             />
             <Helmet>
@@ -232,9 +232,9 @@ export function Serie() {
                         "@id": "https://mouvementecho.fr/serie#series",
                         "name": "ECHO",
                         "alternateName": "ECHO — La Série",
-                        "description": "Série documentaire de 33 épisodes en 3 saisons : S1 (diagnostic des crises), S2 (solutions du terrain), S3 (futurs souhaitables). Structure inspirée de la Divine Comédie de Dante.",
+                        "description": "Série fiction de 33 épisodes en 3 saisons : S1 (diagnostic des crises), S2 (solutions du terrain), S3 (futurs souhaitables). Structure inspirée de la Divine Comédie de Dante.",
                         "numberOfSeasons": 3,
-                        "genre": ["Documentary", "Drama"],
+                        "genre": ["Drama", "Fiction"],
                         "inLanguage": "fr-FR",
                         "productionCompany": { "@id": "https://mouvementecho.fr/#organization" },
                         "hasPart": [
