@@ -122,10 +122,22 @@ Ce projet utilise un système de mémoire persistante dans `memory/`.
 - **`scripts/review.sh`** — Script de vérification des décisions à réviser
 
 ### Règles de session
-1. **Début de session** : lire `memory/decisions.csv` et `memory/changelog.md`
+1. **Début de session** : lire `memory/decisions.csv`, `memory/changelog.md` et `docs/backlog.md`
 2. **Pendant la session** : enregistrer chaque décision significative dans `decisions.csv` avec `revision_date` = date du jour + 30 jours
-3. **Fin de session** : mettre à jour `memory/changelog.md` avec les modifications effectuées
-4. **Révision** : vérifier les décisions dont la `revision_date` est dépassée (status = actif) et proposer de les confirmer, modifier ou archiver
+3. **Après chaque tâche complétée** : mettre à jour `docs/backlog.md` (déplacer la tâche dans "Complétées", mettre à jour le résumé en en-tête)
+4. **Fin de session** : mettre à jour `memory/changelog.md` + `docs/backlog.md` + `.agent/memory/shared-context.md`
+5. **Révision** : vérifier les décisions dont la `revision_date` est dépassée (status = actif) et proposer de les confirmer, modifier ou archiver
+
+### Format backlog (docs/backlog.md)
+Le backlog utilise un format à 6 colonnes compréhensible par un novice :
+- **ID** : identifiant unique (T-001, T-002...)
+- **Cat.** : Tech, Marketing, Contenu, Légal, Infra
+- **Tâche** : nom court
+- **Description** : verbe d'action + ce qui est fait concrètement
+- **Pourquoi** : impact business en une phrase (commencer par "Pour que..." ou "Sinon...")
+- **Qui** : 🤖 Claude / 👤 Toi / 🤖+👤
+- Maximum 20 tâches actives, le reste en Icebox
+- Revue hebdomadaire obligatoire
 
 ### Format decisions.csv
 ```
@@ -136,6 +148,7 @@ date,decision,raisonnement,resultat_attendu,revision_date,status
 - `revision_date` : date du jour + 30 jours par défaut
 
 ## Docs de référence
+- Backlog complet: `docs/backlog.md`
 - Architecture détaillée: `docs/architecture.md`
 - Contrats API (30 endpoints): `docs/api-contracts.md`
 - Modèles de données: `docs/data-models.md`

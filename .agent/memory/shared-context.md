@@ -26,38 +26,17 @@
 
 ## 📋 Backlog Post-Lancement
 
-**🔴 P0 — Cette semaine**
-- [x] Email de bienvenue automatique post-inscription (proposition 2, ton narratif) ✅
-- [x] Fix reCAPTCHA v3 — chargement dynamique script, clé secrète corrigée sur Render ✅
-- [x] Masquer/adapter compteurs communautaires si < seuil (PartnersStats < 20, Members < 15) ✅
-- [x] Monitoring : health check /api/health + middleware slow requests + compteur 5xx ✅
-- [x] Refactoring test_admin_console → TestClient + mocks (275 tests, 0 failure) ✅
-- [x] Amélioration délivrabilité emails (plain text multipart + désactivation tracking SendGrid) ✅
-- [x] Akou : "Le Guide Spirituel" → "Le Guide" ✅
-- [ ] Passer Render en tier payant ($7/mois) — supprimer le cold start 30-60s
-- [ ] Post prologue IA sur LinkedIn/Instagram/TikTok (texte : contre-pied IA, voix et musique authentiques)
-- [ ] Messages personnels équipe (100 contacts, message personnalisé avec lien prologue)
+> **Backlog complet** : voir [`docs/backlog.md`](../docs/backlog.md)
+> 37 tâches total — 10 complétées — 27 actives (4 P0, 6 P1, 9 P2, 8 Icebox)
+> Format : ID unique, catégorie, description, pourquoi, qui — compréhensible par un novice
+> Revue hebdomadaire : max 20 tâches actives, le reste en Icebox
 
-**🟠 P1 — Semaine 2-3**
-- [x] Newsletter mensuelle admin (composition + aperçu + historique + test obligatoire + brouillon localStorage) ✅
-- [x] Fix YouTube embed — acceptation directe cookies sans panneau CMP ✅
-- [x] Séquence email onboarding J+3 coulisses + J+10 candidature + cron-job.org configuré ✅
-- [ ] Tester réception emails FAI français (Orange, Free, SFR) — réputation domaine neuf
-
-**🟡 P2 — Mois 1**
-- [ ] Dashboard Partenaire — revoir UX, données, design avant premiers partenaires
-- [ ] Kit partenaire PDF téléchargeable (4 pages : concept, équipe, calendrier, participation)
-- [ ] Section Actualités/Blog simple + 1er article making-of prologue IA (SEO + contenu frais)
-- [ ] Tunnel de conversion post-vidéo : bande-annonce → inscription → choix du rôle
-- [ ] Page /pitch épurée pour les partenaires (prologue + chiffres + calendrier)
-
-**🟢 P3 — Mois 2+**
-- [ ] Indicateur "Où en sommes-nous ?" sur page Mouvement (étape actuelle, objectifs)
-- [ ] Soumettre manuellement les URLs clés dans Google Search Console (accélérer indexation)
-- [ ] Réseaux sociaux personnages (prévu mai 2026)
-
-**❌ Exclu**
-- Pas de fonctionnalité de discussion/échange entre utilisateurs sur le site
+### Résumé rapide
+- **🔴 P0** : Render payant, post réseaux sociaux, 100 messages personnels, YouTube SEO
+- **🟠 P1** : Test emails FAI, stratégie Vald, Open Graph, backup MongoDB, RGPD (registre + droits)
+- **🟡 P2** : Dashboard partenaire, kit PDF, blog, tunnel conversion, page /pitch, synopsis, Formiguères, dossier presse, calendrier éditorial
+- **🧊 Icebox** : Indicateur progression, Search Console, réseaux personnages, rotation secrets, cache, audit RGPD, cookies, analytics
+- **❌ Exclu** : Discussion entre utilisateurs, segmentation newsletter, CRM avancé
 
 ---
 
