@@ -46,7 +46,7 @@ async def lifespan(app: FastAPI):
     # Data retention TTL indexes (RGPD)
     try:
         await db.tech_candidatures.create_index("created_at", expireAfterSeconds=15552000)
-        await db.contact_messages.create_index("created_at", expireAfterSeconds=15552000)
+        await db.contact_messages.create_index("created_at", expireAfterSeconds=15552000)  # 6 months
         await db.analytics_events.create_index("created_at", expireAfterSeconds=31536000)
         await db.password_reset_tokens.create_index("created_at", expireAfterSeconds=86400)
         await db.volunteer_applications.create_index("created_at", expireAfterSeconds=94608000)

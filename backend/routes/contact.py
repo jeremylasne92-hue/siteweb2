@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, HTTPException, BackgroundTasks, Depends
-from datetime import datetime, UTC
+from datetime import datetime, timedelta, UTC
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import logging
 
@@ -46,6 +46,7 @@ async def submit_contact(
         "message": data.message,
         "ip_address": anonymize_ip(request.client.host if request.client else "unknown"),
         "created_at": datetime.now(UTC),
+        "expires_at": datetime.now(UTC) + timedelta(days=180),
         "read": False,
         "status": "unread",
     }
@@ -54,6 +55,14 @@ async def submit_contact(
     except PyMongoError as e:
         logger.error(f"Failed to save contact message: {e}")
         raise HTTPException(status_code=503, detail="Impossible d'envoyer votre message. Veuillez réessayer.")
+
+    # RGPD: ensure TTL index exists for auto-deletion after 6 months (180 days)
+    try:
+        result = db.contact_messages.create_index("created_at", expireAfterSeconds=15552000)
+        if hasattr(result, '__await__'):
+            await result
+    except Exception:
+        pass  # Index already exists or non-critical failure
 
     subject_label = SUBJECT_LABELS.get(data.subject, data.subject)
 
