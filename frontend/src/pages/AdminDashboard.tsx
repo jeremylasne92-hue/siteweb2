@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
     Shield, Users, Calendar, Download, FileText, Heart,
-    Clock, ChevronRight, AlertTriangle, MessageSquare, BookOpen, GraduationCap, Newspaper
+    Clock, ChevronRight, AlertTriangle, MessageSquare, BookOpen, GraduationCap, Newspaper, Mail
 } from 'lucide-react';
 import { API_URL, PARTNERS_API, CANDIDATURES_API } from '../config/api';
 
@@ -15,6 +15,14 @@ export default function AdminDashboard() {
     const [pending, setPending] = useState<{
         partners: number; candidatures: number; volunteers: number;
         members: number; messages: number; total: number;
+    } | null>(null);
+    const [onboardingStats, setOnboardingStats] = useState<{
+        step_0_waiting_coulisses: number;
+        step_1_waiting_candidature: number;
+        step_3_completed: number;
+        total_users: number;
+        last_cron_run: string;
+        last_cron_sent: number;
     } | null>(null);
     useEffect(() => {
         const fetchStats = async () => {
@@ -78,6 +86,15 @@ export default function AdminDashboard() {
                 if (res.ok) {
                     const data = await res.json();
                     setPending(data);
+                }
+            } catch {
+                // silent
+            }
+            try {
+                const res = await fetch(`${API_URL}/admin/onboarding/stats`, { credentials: 'include' });
+                if (res.ok) {
+                    const data = await res.json();
+                    setOnboardingStats(data);
                 }
             } catch {
                 // silent
@@ -214,6 +231,33 @@ export default function AdminDashboard() {
                                 </Link>
                             )}
                         </div>
+                    </div>
+                )}
+
+                {/* Onboarding Stats */}
+                {onboardingStats && (
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-5 mb-8">
+                        <div className="flex items-center gap-3 mb-4">
+                            <Mail size={20} className="text-echo-gold" />
+                            <h2 className="text-lg font-serif text-white">Onboarding emails</h2>
+                        </div>
+                        <div className="flex flex-wrap gap-6 mb-3">
+                            <div>
+                                <span className="text-2xl font-bold text-echo-gold">{onboardingStats.step_0_waiting_coulisses}</span>
+                                <span className="text-sm text-echo-textMuted ml-2">en attente J+3</span>
+                            </div>
+                            <div>
+                                <span className="text-2xl font-bold text-echo-gold">{onboardingStats.step_1_waiting_candidature}</span>
+                                <span className="text-sm text-echo-textMuted ml-2">en attente J+10</span>
+                            </div>
+                            <div>
+                                <span className="text-2xl font-bold text-green-400">{onboardingStats.step_3_completed}</span>
+                                <span className="text-sm text-echo-textMuted ml-2">terminés</span>
+                            </div>
+                        </div>
+                        <p className="text-xs text-echo-textMuted">
+                            Dernier cron : {new Date(onboardingStats.last_cron_run).toLocaleString('fr-FR')} — {onboardingStats.last_cron_sent} email{onboardingStats.last_cron_sent > 1 ? 's' : ''} envoyé{onboardingStats.last_cron_sent > 1 ? 's' : ''}
+                        </p>
                     </div>
                 )}
 

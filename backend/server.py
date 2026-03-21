@@ -15,7 +15,7 @@ from pymongo.errors import PyMongoError
 from pathlib import Path
 
 # Import routes
-from routes import auth, episodes, progress, videos, users, thematics, resources, partners, candidatures, events, analytics, contact, volunteers, members, mediatheque, students, newsletter
+from routes import auth, episodes, progress, videos, users, thematics, resources, partners, candidatures, events, analytics, contact, volunteers, members, mediatheque, students, newsletter, onboarding
 from routes.admin_dashboard import router as admin_dashboard_router
 
 ROOT_DIR = Path(__file__).parent
@@ -126,6 +126,23 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"RGPD deletion TTL index: {e}")
 
+    # Onboarding email sequence — compound index for cron query
+    try:
+        await db.users.create_index([("onboarding_step", 1), ("onboarding_next_at", 1)])
+    except Exception as e:
+        logger.warning(f"Onboarding index creation: {e}")
+
+    # Onboarding migration — mark existing users as fully onboarded
+    try:
+        result = await db.users.update_many(
+            {"onboarding_step": {"$exists": False}},
+            {"$set": {"onboarding_step": 3, "onboarding_next_at": None}},
+        )
+        if result.modified_count > 0:
+            logger.info(f"Onboarding migration: {result.modified_count} existing users set to step 3")
+    except Exception as e:
+        logger.warning(f"Onboarding migration: {e}")
+
     logger.info("Rate limit and retention indexes ensured")
 
     yield  # Application runs here
@@ -171,6 +188,8 @@ api_router.include_router(admin_dashboard_router)
 api_router.include_router(mediatheque.router)
 api_router.include_router(mediatheque.admin_router)
 api_router.include_router(newsletter.router)
+api_router.include_router(onboarding.router)
+api_router.include_router(onboarding.admin_router)
 
 # Health check endpoint
 @api_router.get("/")
@@ -189,11 +208,18 @@ async def health_check():
         await db.command("ping")
         db_latency_ms = round((time.perf_counter() - start) * 1000, 1)
 
+        from routes.onboarding import _last_cron_run as _onboarding_last_run
+        cron_onboarding_status = "ok" if _onboarding_last_run else "never_run"
+
         return {
             "status": "healthy",
             "database": "connected",
             "db_latency_ms": db_latency_ms,
             "uptime_seconds": uptime_seconds,
+            "cron_onboarding": {
+                "last_run": _onboarding_last_run.isoformat() if _onboarding_last_run else None,
+                "status": cron_onboarding_status,
+            },
         }
     except Exception as e:
         logger.error("Health check failed — MongoDB unreachable: %s", e)

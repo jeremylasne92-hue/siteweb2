@@ -108,6 +108,8 @@ async def register_user(data: UserRegister, db: AsyncIOMotorDatabase) -> dict:
         notification_prefs=NotificationPreferences(
             newsletter=data.newsletter_optin,
         ),
+        onboarding_step=0,
+        onboarding_next_at=datetime.now(UTC) + timedelta(days=3),
     )
     await db.users.insert_one(user.model_dump())
 

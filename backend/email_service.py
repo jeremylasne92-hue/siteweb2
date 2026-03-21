@@ -539,6 +539,111 @@ async def send_newsletter_batch(emails: list[str], subject: str, html_contents: 
     return success
 
 
+async def send_onboarding_coulisses(email: str, name: str, unsubscribe_url: str) -> bool:
+    """Send onboarding email #1 — behind the scenes of ECHO."""
+    import html as html_mod
+    safe_name = html_mod.escape(name)
+    subject = "Les coulisses d'ECHO \u2014 Comment tout a commenc\u00e9"
+    site_url = "https://mouvementecho.fr"
+    html = (
+        f"<div style='font-family:Arial,Helvetica,sans-serif;max-width:600px;margin:0 auto;"
+        f"background:#0a0a0a;color:#e0e0e0;border-radius:12px;overflow:hidden;'>"
+        # Header
+        f"<div style='background:linear-gradient(135deg,#1a1a2e,#16213e);padding:32px;text-align:center;'>"
+        f"<h1 style='color:#D4AF37;font-size:28px;margin:0;letter-spacing:2px;'>ECHO</h1>"
+        f"<p style='color:#aaa;font-size:13px;margin:8px 0 0;'>Mouvement citoyen &amp; documentaire</p>"
+        f"</div>"
+        # Body
+        f"<div style='padding:32px;'>"
+        f"<p style='line-height:1.7;font-size:15px;margin:0 0 16px;'>"
+        f"{safe_name}, \u00e7a fait quelques jours que tu as rejoint le Mouvement ECHO.</p>"
+        f"<p style='line-height:1.7;font-size:15px;margin:0 0 16px;'>"
+        f"L'\u00e9t\u00e9 dernier, l'\u00e9quipe s'est retrouv\u00e9e \u00e0 Formigui\u00e8res, "
+        f"dans les Pyr\u00e9n\u00e9es-Orientales, pendant quatre semaines pour \u00e9crire les "
+        f"sc\u00e9narios de la premi\u00e8re saison. Aujourd'hui, l'\u00e9criture continue "
+        f"&mdash; on peaufine chaque \u00e9pisode, chaque arc narratif. La s\u00e9rie n'existe "
+        f"pas encore, mais elle prend forme jour apr\u00e8s jour.</p>"
+        f"<p style='line-height:1.7;font-size:15px;margin:0 0 16px;'>"
+        f"Le prologue que tu as d\u00e9couvert sur le site est un storyboard anim\u00e9 par IA "
+        f"&mdash; un outil pour donner corps \u00e0 cette vision. La s\u00e9rie, elle, sera "
+        f"tourn\u00e9e en r\u00e9el.</p>"
+        # CTA
+        f"<div style='text-align:center;margin:28px 0;'>"
+        f"<a href='{site_url}/serie' style='display:inline-block;background:#D4AF37;color:#0a0a0a;"
+        f"padding:14px 36px;text-decoration:none;border-radius:8px;font-weight:bold;"
+        f"font-size:16px;letter-spacing:0.5px;'>D\u00e9couvrir le prologue</a></div>"
+        f"<p style='margin-top:24px;font-size:15px;'>"
+        f"Chaleureusement,<br><strong>L'\u00e9quipe ECHO</strong></p>"
+        f"</div>"
+        # Footer
+        f"<div style='background:#111;padding:20px 32px;text-align:center;"
+        f"font-size:12px;color:#666;'>"
+        f"<p style='margin:0;'>Mouvement ECHO &mdash; "
+        f"<a href='{site_url}' style='color:#D4AF37;text-decoration:none;'>mouvementecho.fr</a></p>"
+        f"<p style='margin:12px 0 0;font-size:11px;'>"
+        f"<a href='{unsubscribe_url}' style='color:#D4AF37;text-decoration:underline;'>"
+        f"Se d\u00e9sinscrire</a></p>"
+        f"</div>"
+        f"</div>"
+    )
+    if _use_sendgrid():
+        return await _send_via_sendgrid(email, subject, html)
+    return await _log_email(email, subject, f"Onboarding coulisses pour {name}")
+
+
+async def send_onboarding_candidature(email: str, name: str, unsubscribe_url: str) -> bool:
+    """Send onboarding email #2 — join the team."""
+    import html as html_mod
+    safe_name = html_mod.escape(name)
+    subject = "Et toi, tu rejoins l'aventure ?"
+    site_url = "https://mouvementecho.fr"
+    html = (
+        f"<div style='font-family:Arial,Helvetica,sans-serif;max-width:600px;margin:0 auto;"
+        f"background:#0a0a0a;color:#e0e0e0;border-radius:12px;overflow:hidden;'>"
+        # Header
+        f"<div style='background:linear-gradient(135deg,#1a1a2e,#16213e);padding:32px;text-align:center;'>"
+        f"<h1 style='color:#D4AF37;font-size:28px;margin:0;letter-spacing:2px;'>ECHO</h1>"
+        f"<p style='color:#aaa;font-size:13px;margin:8px 0 0;'>Mouvement citoyen &amp; documentaire</p>"
+        f"</div>"
+        # Body
+        f"<div style='padding:32px;'>"
+        f"<p style='line-height:1.7;font-size:15px;margin:0 0 16px;'>"
+        f"{safe_name}, ECHO se construit avec sa communaut\u00e9.</p>"
+        f"<p style='line-height:1.7;font-size:15px;margin:0 0 16px;'>"
+        f"Aujourd'hui, on cherche des personnes motiv\u00e9es pour rejoindre l'\u00e9quipe :</p>"
+        f"<ul style='line-height:1.9;font-size:15px;margin:0 0 16px;padding-left:20px;'>"
+        f"<li><strong>B\u00e9n\u00e9voles</strong> : communication, \u00e9v\u00e9nements, relais terrain</li>"
+        f"<li><strong>Techniciens</strong> : CogniSph\u00e8re, ECHOLink, d\u00e9veloppement web</li>"
+        f"<li><strong>Stagiaires</strong> : production audiovisuelle, community management</li>"
+        f"<li><strong>Sc\u00e9naristes</strong> : co-\u00e9criture, recherche documentaire</li>"
+        f"</ul>"
+        f"<p style='line-height:1.7;font-size:15px;margin:0 0 16px;'>"
+        f"En t'inscrivant, tu acc\u00e8des aux synopsis d\u00e9taill\u00e9s des \u00e9pisodes "
+        f"&mdash; un avant-go\u00fbt exclusif de ce que la s\u00e9rie r\u00e9serve.</p>"
+        # CTA
+        f"<div style='text-align:center;margin:28px 0;'>"
+        f"<a href='{site_url}/mouvement' style='display:inline-block;background:#D4AF37;color:#0a0a0a;"
+        f"padding:14px 36px;text-decoration:none;border-radius:8px;font-weight:bold;"
+        f"font-size:16px;letter-spacing:0.5px;'>Voir les opportunit\u00e9s</a></div>"
+        f"<p style='margin-top:24px;font-size:15px;'>"
+        f"Chaleureusement,<br><strong>L'\u00e9quipe ECHO</strong></p>"
+        f"</div>"
+        # Footer
+        f"<div style='background:#111;padding:20px 32px;text-align:center;"
+        f"font-size:12px;color:#666;'>"
+        f"<p style='margin:0;'>Mouvement ECHO &mdash; "
+        f"<a href='{site_url}' style='color:#D4AF37;text-decoration:none;'>mouvementecho.fr</a></p>"
+        f"<p style='margin:12px 0 0;font-size:11px;'>"
+        f"<a href='{unsubscribe_url}' style='color:#D4AF37;text-decoration:underline;'>"
+        f"Se d\u00e9sinscrire</a></p>"
+        f"</div>"
+        f"</div>"
+    )
+    if _use_sendgrid():
+        return await _send_via_sendgrid(email, subject, html)
+    return await _log_email(email, subject, f"Onboarding candidature pour {name}")
+
+
 async def send_student_rejected(to_email: str, name: str, status_note: str = "") -> bool:
     """Send rejection notification with optional reason for student/intern applicants."""
     import html as html_mod

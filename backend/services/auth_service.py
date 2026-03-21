@@ -133,6 +133,8 @@ async def google_callback_service(code: str, db) -> dict:
             picture=user_info.get("picture"),
             consent_date=datetime.now(UTC),
             consent_version="v2026-03-20",
+            onboarding_step=0,
+            onboarding_next_at=datetime.now(UTC) + timedelta(days=3),
         )
         await db.users.insert_one(user.model_dump())
 

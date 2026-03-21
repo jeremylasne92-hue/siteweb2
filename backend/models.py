@@ -55,6 +55,9 @@ class User(BaseModel):
     consent_version: Optional[str] = None  # ex: "v2026-03-20"
     consent_ip: Optional[str] = None  # IP anonymisée (dernier octet masqué)
     deletion_requested_at: Optional[datetime] = None  # RGPD Art. 17
+    # Onboarding email sequence
+    onboarding_step: int = 0
+    onboarding_next_at: Optional[datetime] = None
 
     model_config = ConfigDict(json_schema_extra={
         "example": {

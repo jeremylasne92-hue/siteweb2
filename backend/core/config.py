@@ -48,6 +48,9 @@ class Settings:
     # Unsubscribe
     UNSUBSCRIBE_SECRET: str = os.environ.get("UNSUBSCRIBE_SECRET", "echo-unsubscribe-secret-change-me")
 
+    # Cron jobs
+    CRON_SECRET: str = os.environ.get("CRON_SECRET", "")
+
     # Environment
     ENVIRONMENT: str = os.environ.get("ENVIRONMENT", "development")
 
@@ -81,6 +84,8 @@ class Settings:
                 raise ValueError("SENDGRID_API_KEY is required in production for email delivery")
             if not self.RECAPTCHA_SECRET_KEY:
                 raise ValueError("RECAPTCHA_SECRET_KEY is required in production for spam protection")
+            if not self.CRON_SECRET:
+                raise ValueError("CRON_SECRET is required in production for cron job authentication")
 
 
 settings = Settings()
