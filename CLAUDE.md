@@ -112,6 +112,29 @@ Les règles Antigravity sont dans `.gemini/GEMINI.md`.
 - En cas de conflit, le dernier commit testé et buildé gagne
 - Après chaque tâche : mettre à jour `shared-context.md` avec l'agent utilisé
 
+## Mémoire persistante et décisions
+Ce projet utilise un système de mémoire persistante dans `memory/`.
+
+### Fichiers mémoire
+- **`memory/decisions.csv`** — Journal de toutes les décisions projet (CSV)
+- **`memory/changelog.md`** — Log chronologique des modifications par session
+- **`memory/backlog-history.md`** — Archive des tâches complétées
+- **`scripts/review.sh`** — Script de vérification des décisions à réviser
+
+### Règles de session
+1. **Début de session** : lire `memory/decisions.csv` et `memory/changelog.md`
+2. **Pendant la session** : enregistrer chaque décision significative dans `decisions.csv` avec `revision_date` = date du jour + 30 jours
+3. **Fin de session** : mettre à jour `memory/changelog.md` avec les modifications effectuées
+4. **Révision** : vérifier les décisions dont la `revision_date` est dépassée (status = actif) et proposer de les confirmer, modifier ou archiver
+
+### Format decisions.csv
+```
+date,decision,raisonnement,resultat_attendu,revision_date,status
+```
+- `status` : actif | confirmé | révisé | archivé
+- Guillemets obligatoires pour les champs contenant des virgules
+- `revision_date` : date du jour + 30 jours par défaut
+
 ## Docs de référence
 - Architecture détaillée: `docs/architecture.md`
 - Contrats API (30 endpoints): `docs/api-contracts.md`

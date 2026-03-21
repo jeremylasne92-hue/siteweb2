@@ -1,0 +1,11 @@
+date,decision,raisonnement,resultat_attendu,revision_date,status
+2026-03-21,"SendGrid Domain Auth DKIM/SPF/DMARC","Authentification domaine pour passer les filtres anti-spam","Améliorer délivrabilité emails (inbox vs spam)",2026-04-20,actif
+2026-03-21,"Email bienvenue proposition 2 (narratif)","Ton narratif immersif aligné avec univers ECHO","Meilleure rétention des premiers inscrits",2026-04-20,actif
+2026-03-21,"reCAPTCHA v3 fix (score threshold + fallback)","Inscriptions bloquées par validation CAPTCHA trop stricte","Débloquer le flux d'inscription pour tous les utilisateurs",2026-04-20,actif
+2026-03-21,"Masquage compteurs < seuil","Éviter effet site vide quand peu de membres/signatures","Perception positive même avec peu d'utilisateurs initiaux",2026-04-20,actif
+2026-03-21,"Newsletter admin intégrée","Centraliser envoi newsletters dans le panneau admin existant","Communication directe sans outil tiers",2026-04-20,actif
+2026-03-21,"Monitoring health check (/api/health)","Détection proactive des pannes backend/DB","Alertes rapides en cas de panne Render ou Atlas",2026-04-20,actif
+2026-03-21,"Tests admin refactorisés TestClient","Tests admin utilisaient httpx au lieu de TestClient FastAPI","Pipeline CI vert et tests fiables",2026-04-20,actif
+2026-03-21,"Délivrabilité emails (plain text + tracking off)","Emails HTML-only et tracking activé augmentent score spam","Réduire taux de mise en spam SendGrid",2026-04-20,actif
+2026-03-21,"Stratégie virale Vald (5 vidéos)","Levier audience Vald pour acquisition organique massive","Vagues d'inscriptions via partage social",2026-04-20,actif
+2026-03-21,"Akou - Le Guide (retrait spirituel)","Personnage guide spirituel retiré de la narration active","Cohérence narrative sans surcharge de personnages",2026-04-20,actif
