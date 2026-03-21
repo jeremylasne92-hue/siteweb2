@@ -1,4 +1,5 @@
-import { useCookieConsent, openCookiePanel } from './CookieBanner';
+import { useState } from 'react';
+import { useCookieConsent, acceptCookies } from './CookieBanner';
 
 interface YouTubeEmbedProps {
     videoId: string;
@@ -14,7 +15,8 @@ interface YouTubeEmbedProps {
  */
 export function YouTubeEmbed({ videoId, title, className = '' }: YouTubeEmbedProps) {
     const consent = useCookieConsent();
-    const hasConsent = consent === 'accepted';
+    const [localAccepted, setLocalAccepted] = useState(false);
+    const hasConsent = consent === 'accepted' || localAccepted;
 
     if (!hasConsent) {
         return (
@@ -45,7 +47,10 @@ export function YouTubeEmbed({ videoId, title, className = '' }: YouTubeEmbedPro
                         de YouTube et autorisez le dépôt de cookies tiers.
                     </p>
                     <button
-                        onClick={() => openCookiePanel()}
+                        onClick={() => {
+                            acceptCookies();
+                            setLocalAccepted(true);
+                        }}
                         className="px-5 py-2.5 rounded-lg text-sm font-medium border border-echo-gold text-echo-gold hover:bg-echo-gold hover:text-black transition-colors"
                     >
                         Accepter et afficher la vidéo

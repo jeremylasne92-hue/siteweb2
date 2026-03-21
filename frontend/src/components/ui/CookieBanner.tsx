@@ -73,6 +73,15 @@ export function resetCookieConsent() {
 }
 
 /**
+ * Programmatically accept cookies (e.g. from YouTube embed consent button).
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export function acceptCookies() {
+    saveConsent('accepted');
+    try { gtag('consent', 'update', { analytics_storage: 'granted' }); } catch { /* gtag not loaded */ }
+}
+
+/**
  * Reopens the cookie consent panel so the user can change preferences (RGPD art. 7.3).
  */
 // eslint-disable-next-line react-refresh/only-export-components
