@@ -480,6 +480,65 @@ async def send_student_accepted(to_email: str, name: str) -> bool:
     return await _log_email(to_email, subject, f"Candidature stage acceptée pour {name}")
 
 
+async def send_newsletter_batch(emails: list[str], subject: str, html_contents: list[str]) -> bool:
+    """Send newsletter to multiple recipients using SendGrid personalizations.
+
+    Each recipient gets their own HTML (with individual unsubscribe link).
+    Uses one API call per recipient since each has unique content.
+    Falls back to dev logging when SendGrid is not configured.
+    """
+    if not _use_sendgrid():
+        for email in emails:
+            await _log_email(email, subject, f"[Newsletter] {subject}")
+        return True
+
+    import re
+
+    success = True
+    for email, html_content in zip(emails, html_contents):
+        plain_text = re.sub(r'<[^>]+>', '', html_content)
+        plain_text = re.sub(r'\s+', ' ', plain_text).strip()
+
+        payload = {
+            "personalizations": [{"to": [{"email": email}]}],
+            "from": {"email": settings.EMAIL_FROM, "name": settings.EMAIL_FROM_NAME},
+            "reply_to": {"email": settings.EMAIL_REPLY_TO, "name": settings.EMAIL_FROM_NAME},
+            "subject": subject,
+            "content": [
+                {"type": "text/plain", "value": plain_text},
+                {"type": "text/html", "value": html_content},
+            ],
+            "mail_settings": {
+                "bypass_list_management": {"enable": False},
+            },
+            "tracking_settings": {
+                "click_tracking": {"enable": False},
+                "open_tracking": {"enable": False},
+            },
+        }
+        try:
+            async with httpx.AsyncClient() as client:
+                resp = await client.post(
+                    SENDGRID_API_URL,
+                    json=payload,
+                    headers={
+                        "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
+                        "Content-Type": "application/json",
+                    },
+                    timeout=15.0,
+                )
+            if resp.status_code not in (200, 201, 202):
+                logger.error(f"SendGrid newsletter error for {email}: {resp.status_code} {resp.text}")
+                success = False
+            else:
+                logger.info(f"Newsletter sent to {email}")
+        except httpx.HTTPError as e:
+            logger.error(f"SendGrid newsletter request failed for {email}: {e}")
+            success = False
+
+    return success
+
+
 async def send_student_rejected(to_email: str, name: str, status_note: str = "") -> bool:
     """Send rejection notification with optional reason for student/intern applicants."""
     import html as html_mod

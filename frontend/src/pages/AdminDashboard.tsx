@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
     Shield, Users, Calendar, Download, FileText, Heart,
-    Clock, ChevronRight, AlertTriangle, MessageSquare, BookOpen, GraduationCap
+    Clock, ChevronRight, AlertTriangle, MessageSquare, BookOpen, GraduationCap, Newspaper
 } from 'lucide-react';
 import { API_URL, PARTNERS_API, CANDIDATURES_API } from '../config/api';
 
@@ -153,6 +153,13 @@ export default function AdminDashboard() {
             description: 'Gérer les ressources : documents, vidéos, livres, outils',
             icon: <BookOpen size={24} />,
             href: '/admin/mediatheque',
+            active: true,
+        },
+        {
+            title: 'Newsletter',
+            description: 'Composer et envoyer des newsletters',
+            icon: <Newspaper size={24} />,
+            href: '/admin/newsletter',
             active: true,
         },
         {
