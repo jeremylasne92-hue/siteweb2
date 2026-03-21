@@ -3,6 +3,7 @@ import { Play, Users, Link as LinkIcon, X } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Link } from 'react-router-dom';
 import { SEO } from '../components/seo/SEO';
+import { Helmet } from 'react-helmet-async';
 import { useAnalytics } from '../hooks/useAnalytics';
 import { YouTubeEmbed } from '../components/ui/YouTubeEmbed';
 
@@ -17,6 +18,18 @@ export function Home() {
                 description="Mouvement ECHO : association citoyenne produisant une série fiction de 33 épisodes sur la transition écologique. Série, CogniSphère, ECHOLink."
                 url="https://mouvementecho.fr/"
             />
+            <Helmet>
+                <script type="application/ld+json">
+                    {JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "Organization",
+                        "name": "Mouvement ECHO",
+                        "url": "https://mouvementecho.fr",
+                        "logo": "https://mouvementecho.fr/logo-echo.jpg",
+                        "sameAs": ["https://www.youtube.com/@mouvementecho"]
+                    })}
+                </script>
+            </Helmet>
             {/* Hero Section */}
             <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
                 {/* Background Placeholder - Replace with Video later */}

@@ -70,7 +70,7 @@ export const RegisterForm = () => {
     const onSubmit = async (data: RegisterFormData) => {
         try {
             await registerMutation.mutateAsync(data);
-            navigate('/login?registered=true');
+            navigate('/bienvenue');
         } catch {
             // Error handled by mutation state
         }

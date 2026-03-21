@@ -45,6 +45,8 @@ const Register = lazy(() => import('./pages/auth/Register').then(m => ({ default
 const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword').then(m => ({ default: m.ForgotPassword })));
 const ResetPassword = lazy(() => import('./pages/auth/ResetPassword').then(m => ({ default: m.ResetPassword })));
 const GoogleCallback = lazy(() => import('./pages/auth/GoogleCallback').then(m => ({ default: m.GoogleCallback })));
+const Pitch = lazy(() => import('./pages/Pitch').then(m => ({ default: m.Pitch })));
+const Welcome = lazy(() => import('./pages/Welcome').then(m => ({ default: m.Welcome })));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 function RouteLoader() {
@@ -111,6 +113,7 @@ function AppRoutes() {
       <Route path="/mon-compte/partenaire" element={<ProtectedRoute><MyPartnerAccount /></ProtectedRoute>} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/bienvenue" element={<Welcome />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/auth/google/success" element={<GoogleCallback />} />
@@ -119,16 +122,38 @@ function AppRoutes() {
   );
 }
 
-function App() {
+/** Routes rendered without the site Layout (header/footer) */
+function StandaloneRoutes() {
+  return (
+    <Routes>
+      <Route path="/pitch" element={<Pitch />} />
+    </Routes>
+  );
+}
+
+function AppShell() {
   const checkSession = useAuthStore((s) => s.checkSession);
+  const { pathname } = useLocation();
 
   useEffect(() => {
     checkSession();
   }, [checkSession]);
 
+  const standalonePages = ['/pitch'];
+  const isStandalone = standalonePages.includes(pathname);
+
+  if (isStandalone) {
+    return (
+      <ErrorBoundary>
+        <Suspense fallback={<RouteLoader />}>
+          <StandaloneRoutes />
+        </Suspense>
+      </ErrorBoundary>
+    );
+  }
+
   return (
-    <Router>
-      <ScrollToTop />
+    <>
       <Layout>
         <ErrorBoundary>
           <Suspense fallback={<RouteLoader />}>
@@ -137,6 +162,15 @@ function App() {
         </ErrorBoundary>
       </Layout>
       <CookieBanner />
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <ScrollToTop />
+      <AppShell />
     </Router>
   );
 }

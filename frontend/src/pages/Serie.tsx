@@ -228,44 +228,54 @@ export function Serie() {
                 <script type="application/ld+json">
                     {JSON.stringify({
                         "@context": "https://schema.org",
-                        "@type": "CreativeWorkSeries",
+                        "@type": "TVSeries",
                         "@id": "https://mouvementecho.fr/serie#series",
                         "name": "ECHO",
-                        "alternateName": "ECHO — La Série",
-                        "description": "Série fiction de 33 épisodes en 3 saisons : S1 (diagnostic des crises), S2 (solutions du terrain), S3 (futurs souhaitables). Structure inspirée de la Divine Comédie de Dante.",
+                        "description": "Série fiction de 33 épisodes en 3 saisons. Une encyclopédie moderne sur la transition écologique et la justice sociale.",
                         "numberOfSeasons": 3,
-                        "genre": ["Drama", "Fiction"],
-                        "inLanguage": "fr-FR",
-                        "productionCompany": { "@id": "https://mouvementecho.fr/#organization" },
-                        "hasPart": [
+                        "numberOfEpisodes": 33,
+                        "genre": ["Drama", "Social"],
+                        "inLanguage": "fr",
+                        "url": "https://mouvementecho.fr/serie",
+                        "image": "https://mouvementecho.fr/og-echo.jpg",
+                        "creator": {
+                            "@type": "Organization",
+                            "name": "Association Mouvement ECHO",
+                            "url": "https://mouvementecho.fr"
+                        },
+                        "containsSeason": [
                             {
                                 "@type": "TVSeason",
-                                "@id": "https://mouvementecho.fr/serie#saison-1",
-                                "name": "Saison 1 — Diagnostic des crises",
                                 "seasonNumber": 1,
-                                "numberOfEpisodes": 11,
-                                "description": "Diagnostic des dysfonctionnements systémiques. Décryptage des crises écologiques, sociales et économiques.",
-                                "partOfSeries": { "@id": "https://mouvementecho.fr/serie#series" }
+                                "name": "Diagnostic des crises",
+                                "numberOfEpisodes": 11
                             },
                             {
                                 "@type": "TVSeason",
-                                "@id": "https://mouvementecho.fr/serie#saison-2",
-                                "name": "Saison 2 — Solutions du terrain",
                                 "seasonNumber": 2,
-                                "numberOfEpisodes": 11,
-                                "description": "Solutions concrètes du terrain. Documentation des acteurs innovants et des alternatives viables.",
-                                "partOfSeries": { "@id": "https://mouvementecho.fr/serie#series" }
+                                "name": "Solutions du terrain",
+                                "numberOfEpisodes": 11
                             },
                             {
                                 "@type": "TVSeason",
-                                "@id": "https://mouvementecho.fr/serie#saison-3",
-                                "name": "Saison 3 — Futurs souhaitables",
                                 "seasonNumber": 3,
-                                "numberOfEpisodes": 11,
-                                "description": "Prospective et imaginaires alternatifs. Projection vers les futurs souhaitables.",
-                                "partOfSeries": { "@id": "https://mouvementecho.fr/serie#series" }
+                                "name": "Futurs souhaitables",
+                                "numberOfEpisodes": 11
                             }
                         ]
+                    })}
+                </script>
+                <script type="application/ld+json">
+                    {JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "VideoObject",
+                        "name": "ECHO — Prologue (Storyboard IA)",
+                        "description": "Storyboard animé assisté par intelligence artificielle présentant l'univers de la série ECHO. Voix et musique originales.",
+                        "thumbnailUrl": "https://mouvementecho.fr/og-echo.jpg",
+                        "uploadDate": "2026-03-20",
+                        "contentUrl": "https://www.youtube.com/watch?v=R34yKJuPDWA",
+                        "embedUrl": "https://www.youtube-nocookie.com/embed/R34yKJuPDWA",
+                        "duration": "PT5M"
                     })}
                 </script>
             </Helmet>
