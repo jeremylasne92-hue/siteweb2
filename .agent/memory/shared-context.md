@@ -27,15 +27,19 @@
 ## 📋 Backlog Post-Lancement
 
 **🔴 P0 — Cette semaine**
+- [x] Email de bienvenue automatique post-inscription (proposition 2, ton narratif) ✅
+- [x] Fix reCAPTCHA v3 — chargement dynamique script, clé secrète corrigée sur Render ✅
+- [x] Masquer/adapter compteurs communautaires si < seuil (PartnersStats < 20, Members < 15) ✅
+- [x] Monitoring : health check /api/health + middleware slow requests + compteur 5xx ✅
+- [x] Refactoring test_admin_console → TestClient + mocks (275 tests, 0 failure) ✅
+- [x] Amélioration délivrabilité emails (plain text multipart + désactivation tracking SendGrid) ✅
+- [x] Akou : "Le Guide Spirituel" → "Le Guide" ✅
 - [ ] Passer Render en tier payant ($7/mois) — supprimer le cold start 30-60s
-- [ ] Email de bienvenue automatique post-inscription (SendGrid, séquence : bienvenue → présentation série → CTA candidature)
 - [ ] Post prologue IA sur LinkedIn/Instagram/TikTok (texte : contre-pied IA, voix et musique authentiques)
 - [ ] Messages personnels équipe (100 contacts, message personnalisé avec lien prologue)
 
 **🟠 P1 — Semaine 2-3**
-- [ ] Masquer/adapter compteurs communautaires Home si < seuil crédible (éviter effet preuve sociale inverse)
 - [ ] Newsletter mensuelle via SendGrid (template + liste inscrits email_opt_out=false)
-- [ ] Monitoring Render + Atlas (alertes latence > 2s, erreurs 5xx, stockage Atlas)
 - [ ] Tester réception emails FAI français (Orange, Free, SFR) — réputation domaine neuf
 
 **🟡 P2 — Mois 1**
@@ -95,6 +99,7 @@
 
 | Date | Décision | Agent |
 |------|----------|-------|
+| 2026-03-21 | Fix reCAPTCHA v3 (script dynamique + clé secrète corrigée), email bienvenue proposition 2 (narratif), masquage compteurs < seuil, monitoring health check + slow requests, refactoring tests admin (TestClient), délivrabilité emails (plain text + tracking off), Akou "Le Guide". | Claude Code (Opus 4.6) |
 | 2026-03-21 | Restructuration shared-context : archivage historique pré-lancement dans archive-pre-lancement.md (fichier passé de ~23K tokens à ~5K tokens). Backlog documenté. Stratégie virale Vald documentée (5 vidéos + plan d'activation). | Claude Code (Opus 4.6) |
 | 2026-03-20 | Configuration production complète : SendGrid Domain Auth (DKIM/SPF/DMARC), EMAIL_FROM→noreply@mouvementecho.fr, toutes variables Render, custom domain api.mouvementecho.fr, comptes admin, base propre. | Claude Code (Opus 4.6) |
 | 2026-03-20 | Ajustements post-lancement : saisons renommées (Diagnostic/Solutions/Futurs), texte prologue (storyboard IA), crédits compacts, Nantes badge vert, sous-nav "Rejoindre", formatDisplayName() profil, trailer vidéo R34yKJuPDWA, page À propos supprimée. | Claude Code (Opus 4.6) |
