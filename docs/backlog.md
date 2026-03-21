@@ -1,7 +1,7 @@
 # Backlog ECHO — Post-lancement
 
 > **Dernière mise à jour** : 2026-03-21
-> **Résumé** : 27 tâches actives (7 Tech, 7 Marketing, 5 Contenu, 4 Légal/RGPD, 4 Infrastructure) — 10 complétées
+> **Résumé** : 26 tâches actives (7 Tech, 6 Marketing, 5 Contenu, 4 Légal/RGPD, 4 Infrastructure) — 11 complétées
 > **Format** : Chaque tâche a un ID unique, une catégorie, une description en verbe d'action, et un "Pourquoi" expliquant l'impact concret.
 > **Règle** : Maximum 20 tâches actives dans le backlog. Au-delà, déplacer en Icebox.
 
@@ -21,6 +21,7 @@
 | T-008 | Tech | Fix YouTube embed | Le bouton "Accepter et afficher la vidéo" charge directement la vidéo YouTube sans obliger à accepter d'abord les cookies du site | 21/03 |
 | T-009 | Tech | Séquence email onboarding | 2 emails automatiques envoyés aux nouveaux inscrits : J+3 (coulisses de l'écriture à Formiguères) + J+10 (invitation à candidater). Un cron externe (cron-job.org) appelle le backend toutes les heures pour déclencher les envois | 21/03 |
 | T-010 | Tech | Renommage Akou | Le personnage Akou est désormais "Le Guide" au lieu de "Le Guide Spirituel" | 21/03 |
+| T-017 | Marketing | Open Graph / SEO méta | Balises OG optimisées (image fond sombre, og:locale, og:site_name), SEO ajouté à la page 404, "documentaire" → "fiction" partout | 21/03 |
 
 ---
 
@@ -41,7 +42,6 @@
 |---|---|---|---|---|---|
 | T-015 | Marketing | Test emails FAI français | Créer des comptes test chez Orange, Free, SFR et Bouygues pour vérifier que les emails d'ECHO (bienvenue, onboarding, newsletter) arrivent bien en boîte de réception et pas en spam | Un domaine neuf (mouvementecho.fr) a une réputation email de zéro. Les FAI français sont particulièrement stricts. Si les emails arrivent en spam, tout le système d'onboarding est inutile | 👤 Toi |
 | T-016 | Marketing | Stratégie Vald — 5 vidéos | Produire et publier les 5 contenus courts planifiés (voir section Stratégie Virale du shared-context) : extrait psychiatre, side-by-side, Easter egg 33, making-of, plan B multi-rappeurs | Vald a 1,82M d'abonnés YouTube. S'il reposte un contenu ou accepte le rôle, c'est une visibilité massive et gratuite. Les fan pages Vald sont le vecteur principal | 👤 Toi |
-| T-017 | Marketing | Open Graph / SEO méta | Vérifier et optimiser les balises Open Graph (og:title, og:description, og:image) sur chaque page pour que le partage sur les réseaux sociaux affiche un aperçu attractif | Quand quelqu'un partage le lien mouvementecho.fr sur WhatsApp/LinkedIn/Twitter, l'aperçu (image + titre + description) détermine si les gens cliquent. Sans Open Graph correct, c'est un lien nu peu engageant | 🤖 Claude |
 | T-018 | Infra | Backup MongoDB hebdo | Mettre en place un export automatique hebdomadaire de la base MongoDB Atlas (mongodump ou script). Atlas M0 fait des snapshots mais pas de point-in-time recovery | Si une erreur de manipulation supprime des données utilisateurs, il n'y a aucun moyen de les récupérer. Un backup hebdomadaire est le filet de sécurité minimum | 🤖 Claude |
 | T-019 | Légal | Registre des traitements RGPD | Créer le document obligatoire (RGPD article 30) listant tous les traitements de données personnelles : quelles données, pourquoi, combien de temps conservées, qui y a accès | C'est une obligation légale. En cas de contrôle CNIL, l'absence de registre est une infraction. L'audit RGPD du 15/03 l'avait identifié comme écart critique | 🤖+👤 |
 | T-020 | Légal | Endpoint exercice des droits | Créer un endpoint API permettant aux utilisateurs de demander l'accès à leurs données, leur rectification ou leur suppression (RGPD articles 15-17) | C'est une obligation légale. Un utilisateur doit pouvoir demander "quelles données avez-vous sur moi ?" et obtenir une réponse. Actuellement, il faut le faire manuellement dans MongoDB | 🤖 Claude |
