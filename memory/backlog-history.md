@@ -14,3 +14,4 @@ Tâches complétées, archivées depuis le backlog actif.
 | Health check monitoring | P1 | Endpoint /api/health opérationnel |
 | Tests admin TestClient | P2 | Pipeline CI vert |
 | Délivrabilité emails | P1 | Plain text + tracking off |
+| Fix YouTube embed cookies | HOTFIX | Acceptation directe sans panneau CMP |

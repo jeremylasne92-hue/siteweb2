@@ -9,3 +9,6 @@ date,decision,raisonnement,resultat_attendu,revision_date,status
 2026-03-21,"Délivrabilité emails (plain text + tracking off)","Emails HTML-only et tracking activé augmentent score spam","Réduire taux de mise en spam SendGrid",2026-04-20,actif
 2026-03-21,"Stratégie virale Vald (5 vidéos)","Levier audience Vald pour acquisition organique massive","Vagues d'inscriptions via partage social",2026-04-20,actif
 2026-03-21,"Akou - Le Guide (retrait spirituel)","Personnage guide spirituel retiré de la narration active","Cohérence narrative sans surcharge de personnages",2026-04-20,actif
+2026-03-21,"Adoption workflow BMAD strict","Session 21/03 faite en mode action directe — exception. Retour au workflow BMAD complet (scoping → planning → backend → doc → designer → frontend → QA → review → doc finale)","Qualité et traçabilité des développements",2026-04-20,actif
+2026-03-21,"Système mémoire persistante double","Mémoire personnelle (Documents/memory/) + mémoire projet (project/memory/). Les deux doivent être mises à jour à chaque interaction","Continuité entre sessions et amélioration continue",2026-04-20,actif
+2026-03-21,"YouTube embed — acceptation directe cookies","Le bouton accepte directement au lieu d'ouvrir le panneau cookies — moins de friction","Vidéo YouTube accessible en 1 clic sans passer par le CMP",2026-04-20,actif
