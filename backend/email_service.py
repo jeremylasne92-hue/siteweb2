@@ -18,12 +18,27 @@ SENDGRID_API_URL = "https://api.sendgrid.com/v3/mail/send"
 
 async def _send_via_sendgrid(to_email: str, subject: str, html_content: str) -> bool:
     """Send email via SendGrid HTTP API."""
+    # Plain text version improves deliverability (anti-spam filters prefer multipart)
+    import re
+    plain_text = re.sub(r'<[^>]+>', '', html_content)
+    plain_text = re.sub(r'\s+', ' ', plain_text).strip()
+
     payload = {
         "personalizations": [{"to": [{"email": to_email}]}],
         "from": {"email": settings.EMAIL_FROM, "name": settings.EMAIL_FROM_NAME},
         "reply_to": {"email": settings.EMAIL_REPLY_TO, "name": settings.EMAIL_FROM_NAME},
         "subject": subject,
-        "content": [{"type": "text/html", "value": html_content}],
+        "content": [
+            {"type": "text/plain", "value": plain_text},
+            {"type": "text/html", "value": html_content},
+        ],
+        "mail_settings": {
+            "bypass_list_management": {"enable": False},
+        },
+        "tracking_settings": {
+            "click_tracking": {"enable": False},
+            "open_tracking": {"enable": False},
+        },
     }
     try:
         async with httpx.AsyncClient() as client:
