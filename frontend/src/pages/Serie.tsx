@@ -720,13 +720,14 @@ export function Serie() {
 
                 <div className="container mx-auto px-4 relative z-10">
                     <h2 className="text-3xl sm:text-4xl md:text-[48px] font-serif font-bold text-white mb-4 text-center">Les Personnages</h2>
-                    <p className="text-[#D1D5DB] text-center max-w-2xl mx-auto mb-10 sm:mb-16 italic font-serif text-sm sm:text-base">"Ils sont le reflet de nos vices, de nos peurs, mais aussi de nos espoirs."</p>
+                    <p className="text-[#D1D5DB] text-center max-w-2xl mx-auto mb-6 italic font-serif text-sm sm:text-base">"Ils sont le reflet de nos vices, de nos peurs, mais aussi de nos espoirs."</p>
+                    <p className="text-[#9CA3AF] text-center max-w-3xl mx-auto mb-10 sm:mb-16 text-xs sm:text-sm leading-relaxed">Cette galerie de portraits n'attend qu'une chose, prendre vie dans la réalité avec de vraies actrices et acteurs, afin de se libérer du monde virtuel pour s'ancrer pleinement dans le monde réel. Vous pouvez nous y aider.</p>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                         {/* SACHA */}
                         <CharacterCard
                             name="SACHA"
-                            role="Le Protagoniste"
+                            role="La Vision"
                             description="Responsable administratif et financier, Sacha est doté d'une forte empathie et d'une capacité à appréhender les dynamiques systémiques. Il porte en lui le poids immense du « syndrome du sauveur ». Sa détermination à éveiller les consciences et à transformer radicalement la société provient de ses prises de conscience sur l'avenir incertain du monde."
                             image="/images/characters/sacha.jpeg"
                         />
@@ -945,29 +946,38 @@ export function Serie() {
 }
 
 function CharacterCard({ name, role, description, image }: { name: string, role: string, description: string, image: string }) {
+    const [showDesc, setShowDesc] = useState(false);
+
     return (
-        <div className="group relative rounded-xl overflow-hidden bg-[#1A1A1A] border border-white/5 transition-all duration-500 hover:border-[#D4AF37]/50 hover:shadow-[0_0_30px_rgba(212,175,55,0.1)]">
+        <div
+            className="group relative rounded-xl overflow-hidden bg-[#1A1A1A] border border-white/5 transition-all duration-500 hover:border-[#D4AF37]/50 hover:shadow-[0_0_30px_rgba(212,175,55,0.1)] cursor-pointer"
+            onClick={() => setShowDesc(!showDesc)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setShowDesc(!showDesc); }}
+            aria-expanded={showDesc}
+        >
             {/* Image */}
             <div className="aspect-[3/4] relative overflow-hidden">
                 <img
                     src={image}
                     alt={name}
                     loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${showDesc ? 'scale-110' : ''}`}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent opacity-80" />
 
                 {/* Text Overlay (Default Visible) */}
-                <div className="absolute bottom-0 left-0 w-full p-4 sm:p-6 transform transition-transform duration-500 group-hover:-translate-y-2">
+                <div className={`absolute bottom-0 left-0 w-full p-4 sm:p-6 transform transition-transform duration-500 group-hover:-translate-y-2 ${showDesc ? '-translate-y-2' : ''}`}>
                     <h3 className="text-lg sm:text-2xl font-serif font-bold text-white mb-1">{name}</h3>
                     <p className="text-[#D4AF37] text-sm font-bold uppercase tracking-widest">{role}</p>
                 </div>
 
-                {/* Description Overlay (Hover only) */}
-                <div className="absolute inset-0 bg-[#0A0A0A]/90 backdrop-blur-sm p-8 flex flex-col justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <h3 className="text-2xl font-serif font-bold text-[#D4AF37] mb-2">{name}</h3>
-                    <p className="text-white/60 text-xs font-bold uppercase tracking-widest mb-6">{role}</p>
-                    <p className="text-[#D1D5DB] leading-relaxed text-sm">
+                {/* Description Overlay (Hover + Tap) */}
+                <div className={`absolute inset-0 bg-[#0A0A0A]/90 backdrop-blur-sm p-4 sm:p-8 flex flex-col justify-center transition-opacity duration-300 group-hover:opacity-100 ${showDesc ? 'opacity-100' : 'opacity-0'}`}>
+                    <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#D4AF37] mb-2">{name}</h3>
+                    <p className="text-white/60 text-xs font-bold uppercase tracking-widest mb-3 sm:mb-6">{role}</p>
+                    <p className="text-[#D1D5DB] leading-relaxed text-xs sm:text-sm">
                         {description}
                     </p>
                 </div>
