@@ -72,10 +72,12 @@ export function Cognisphere() {
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-16">
                         <span className="text-violet-400 uppercase tracking-widest text-sm font-bold mb-4 block">Le constat</span>
-                        <h2 className="text-4xl font-serif text-white mb-6">Nous oublions 90% de ce que nous apprenons</h2>
+                        <h2 className="text-4xl font-serif text-white mb-6">Sans révision, l'oubli est rapide</h2>
                         <p className="text-neutral-400 max-w-3xl mx-auto leading-relaxed">
-                            Selon la courbe d'Ebbinghaus, nous oublions 70% de ce que nous apprenons en 24 heures,
-                            et 90% en une semaine. Malgré cela, nos systèmes d'apprentissage reposent encore sur
+                            Comme le montre la courbe d'Ebbinghaus, sans révision active, les reconstructions modernes
+                            situent la perte autour de 75 à 77 % après environ une semaine
+                            <a href="https://doi.org/10.1371/journal.pone.0120644" target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:underline text-xs align-super ml-1">[Murre & Dros, 2015, PLOS One]</a>.
+                            Malgré cela, nos systèmes d'apprentissage reposent encore sur
                             une approche passive et l'accumulation de contenus sans structure.
                         </p>
                     </div>
