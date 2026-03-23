@@ -419,7 +419,7 @@ export function Mouvement() {
                             { name: "Eddyason Koffi", role: "Cofondateur", photo: "/images/team/eddyason-koffi.jpg", pos: "50% 20%" },
                             { name: "Déborah Prévaud", role: "Responsable des partenariats", photo: "/images/team/deborah-prevaud.jpg", pos: "50% 20%" },
                             { name: "Clément Grandmontagne", role: "Réalisateur", photo: "/images/team/clement-grandmontagne.jpg", pos: "50% 20%" },
-                            { name: "Thierry Korutos-Chatam", role: "Responsable des partenariats", photo: "/images/team/thierry-korutos-chatam-3.jpeg", pos: "50% 30%" },
+                            { name: "Thierry Korutos-Chatam", role: "Responsable des partenariats", photo: "/images/team/thierry-korutos-chatam-3.jpeg", pos: "42% 25%" },
                         ].map((member, i) => (
                             <div key={i} className="flex flex-col items-center group w-28 sm:w-32 md:w-36">
                                 <div className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-stone-800 group-hover:border-amber-500 transition-colors mb-3 sm:mb-4">
