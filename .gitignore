@@ -12,6 +12,9 @@ build/
 backend/.env
 frontend_backup/.env
 
+# MCP config (contains credentials)
+.mcp.json
+
 # IDE
 .vscode/
 .idea/
