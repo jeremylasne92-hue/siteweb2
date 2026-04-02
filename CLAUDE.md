@@ -56,6 +56,12 @@ Après chaque modification, vérifier dans cet ordre :
 3. `cd backend && python -m pytest -p no:recording -q` — tests backend
 4. `cd frontend && npm run build` — vérifier compilation TS + Vite
 
+## MongoDB MCP Server + Agent Skills
+- **MCP Server** : configuré dans `.mcp.json` (gitignored) — mode **read-only**
+- **Cluster Atlas** : `echo-cluster.y2nonwh.mongodb.net`
+- **DB** : `echo_database` (18 collections, 3 users, 316 analytics_events)
+- **Skills** (`.agents/skills/`) : mongodb-connection, mongodb-schema-design, mongodb-query-optimizer, mongodb-natural-language-querying, mongodb-search-and-ai, mongodb-mcp-setup, atlas-stream-processing
+
 ## Architecture — Décisions clés
 - Auth: cookie-only httpOnly — JAMAIS de token en localStorage
 - CAPTCHA: reCAPTCHA v3 server-side, skip si RECAPTCHA_SECRET_KEY absent

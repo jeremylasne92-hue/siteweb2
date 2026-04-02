@@ -30,8 +30,18 @@ _server_start_time = time.time()
 setup_logging(settings.ENVIRONMENT)
 logger = logging.getLogger(__name__)
 
-# MongoDB connection
-client = AsyncIOMotorClient(settings.MONGO_URL)
+# MongoDB connection — optimized for Atlas M0 + Render (single instance, async Motor)
+client = AsyncIOMotorClient(
+    settings.MONGO_URL,
+    maxPoolSize=10,           # Atlas M0 max 500 conns; 10 suffit pour faible trafic async
+    minPoolSize=2,            # 2 connexions pré-chauffées pour éviter cold starts
+    maxIdleTimeMS=300000,     # 5min — libère les connexions inutilisées
+    connectTimeoutMS=5000,    # 5s — fail fast si Atlas injoignable
+    serverSelectionTimeoutMS=5000,  # 5s — failover rapide
+    compressors=["zlib"],     # Compression réseau Render↔Atlas (natif Python, pas de dépendance)
+    retryWrites=True,         # Retry automatique sur erreurs réseau transitoires
+    retryReads=True,
+)
 db = client[settings.DB_NAME]
 
 @asynccontextmanager
@@ -131,6 +141,19 @@ async def lifespan(app: FastAPI):
         await db.users.create_index([("onboarding_step", 1), ("onboarding_next_at", 1)])
     except Exception as e:
         logger.warning(f"Onboarding index creation: {e}")
+
+    # Query optimizer audit 2026-04-02 — missing indexes for hot queries
+    try:
+        # Partner dashboard: aggregation on analytics_events by partner_id + date range
+        await db.analytics_events.create_index([("partner_id", 1), ("created_at", -1)])
+        # Contact messages: sort by created_at in admin listing
+        await db.contact_messages.create_index([("status", 1), ("created_at", -1)])
+        # Partners: slug already unique, add name for search queries
+        await db.partners.create_index("name")
+        # Member profiles: search by display_name (prefix regex)
+        await db.member_profiles.create_index("display_name")
+    except Exception as e:
+        logger.warning(f"Query optimizer index creation: {e}")
 
     # Onboarding migration — mark existing users as fully onboarded
     try:
