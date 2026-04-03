@@ -97,8 +97,8 @@ Explain where and how to obtain their connection string:
 
 **Expected formats:**
 
-- `mongodb://username:password@host:port/database`
-- `mongodb+srv://username:password@cluster.mongodb.net/database`
+- `mongodb://<user>:<pass>@host:port/database`
+- `mongodb+srv://<user>:<pass>@cluster.mongodb.net/database`
 - `mongodb://host:port` (local, no auth)
 
 Proceed to Step 4 (Determine Read-Only Access).
