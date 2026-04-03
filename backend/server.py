@@ -36,8 +36,8 @@ client = AsyncIOMotorClient(
     maxPoolSize=10,           # Atlas M0 max 500 conns; 10 suffit pour faible trafic async
     minPoolSize=2,            # 2 connexions pré-chauffées pour éviter cold starts
     maxIdleTimeMS=300000,     # 5min — libère les connexions inutilisées
-    connectTimeoutMS=5000,    # 5s — fail fast si Atlas injoignable
-    serverSelectionTimeoutMS=5000,  # 5s — failover rapide
+    connectTimeoutMS=30000,   # 30s — Atlas M0 + Render free tier cold start
+    serverSelectionTimeoutMS=30000,  # 30s — tolère les réveils Atlas M0
     compressors=["zlib"],     # Compression réseau Render↔Atlas (natif Python, pas de dépendance)
     retryWrites=True,         # Retry automatique sur erreurs réseau transitoires
     retryReads=True,
@@ -51,7 +51,10 @@ async def lifespan(app: FastAPI):
     from utils.rate_limit import ensure_rate_limit_indexes
     app.db = db
     settings.validate()
-    await ensure_rate_limit_indexes(db)
+    try:
+        await ensure_rate_limit_indexes(db)
+    except Exception as e:
+        logger.warning(f"Rate limit index creation failed (non-fatal): {e}")
 
     # Data retention TTL indexes (RGPD)
     try:
