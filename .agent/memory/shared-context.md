@@ -7,7 +7,7 @@
 
 ## 📋 État du Projet
 
-**Dernière mise à jour** : 2026-03-21
+**Dernière mise à jour** : 2026-04-03
 **Phase actuelle** : 🚀 LANCÉ — Site en production (20 mars 2026)
 **Statut** : ✅ EN LIGNE — https://mouvementecho.fr
 **Infrastructure** : OVH mutualisé (frontend) + Render (backend API) + MongoDB Atlas M0 (DB) + SendGrid (emails)
@@ -18,7 +18,8 @@
 - SendGrid Domain Authentication (DKIM s1/s2 + SPF + DMARC) ✅
 - EMAIL_FROM = noreply@mouvementecho.fr
 - Custom domain Render : api.mouvementecho.fr (Verified + Certificate Issued)
-- Toutes variables Render configurées (OAUTH_STATE_SECRET, UNSUBSCRIBE_SECRET, RECAPTCHA_SECRET_KEY, GOOGLE_CLIENT_ID/SECRET, SENDGRID_API_KEY, ENVIRONMENT=production, etc.)
+- Toutes variables Render configurées (OAUTH_STATE_SECRET, UNSUBSCRIBE_SECRET, RECAPTCHA_SECRET_KEY, GOOGLE_CLIENT_ID/SECRET, SENDGRID_API_KEY, CRON_SECRET, ENVIRONMENT=production, etc.)
+- Monitoring automatise : endpoint `/api/admin/monitoring` (CRON_SECRET) + tache planifiee tous les 2 jours
 - Comptes admin : jeremy.lasne92@gmail.com + mouvement.echo.france@gmail.com (role: admin)
 - Base de données production propre (0 données de test)
 
