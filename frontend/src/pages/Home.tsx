@@ -17,6 +17,9 @@ export function Home() {
                 title="Accueil"
                 description="Mouvement ECHO : association citoyenne produisant une série fiction de 33 épisodes sur la transition écologique. Série, CogniSphère, ECHOLink."
                 url="https://mouvementecho.fr/"
+                breadcrumbs={[
+                    { name: "Accueil", url: "https://mouvementecho.fr/" }
+                ]}
             />
             <Helmet>
                 <script type="application/ld+json">
@@ -26,7 +29,12 @@ export function Home() {
                         "name": "Mouvement ECHO",
                         "url": "https://mouvementecho.fr",
                         "logo": "https://mouvementecho.fr/logo-echo.jpg",
-                        "sameAs": ["https://www.youtube.com/@mouvementecho"]
+                        "sameAs": [
+                            "https://www.youtube.com/@mouvementecho",
+                            "https://www.instagram.com/mouvementecho",
+                            "https://www.tiktok.com/@mouvementecho",
+                            "https://www.helloasso.com/associations/mouvement-echo"
+                        ]
                     })}
                 </script>
             </Helmet>
