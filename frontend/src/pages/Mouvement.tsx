@@ -150,8 +150,12 @@ export function Mouvement() {
         <div className="bg-stone-950 text-stone-200 font-sans selection:bg-amber-500/30">
             <SEO
                 title="Le Mouvement"
-                description="Le Mouvement ECHO : 7 étapes pour passer de la conscience à l'action. Rejoignez une communauté citoyenne engagée."
+                description="Le Mouvement ECHO : 7 étapes pour passer de la conscience à l'action. Rejoignez une communauté citoyenne engagée pour la transition écologique."
                 url="https://mouvementecho.fr/mouvement"
+                breadcrumbs={[
+                    { name: "Accueil", url: "https://mouvementecho.fr/" },
+                    { name: "Le Mouvement", url: "https://mouvementecho.fr/mouvement" }
+                ]}
             />
             {/* --- Hero Section --- */}
             <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">

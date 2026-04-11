@@ -221,8 +221,12 @@ export function Serie() {
         <div className="flex flex-col min-h-screen bg-[#0A0A0A] text-white">
             <SEO
                 title="La Série"
-                description="Série fiction ECHO : 33 épisodes en 3 saisons inspirées de Dante. Écologie, justice sociale, prospective."
+                description="Série fiction ECHO : 33 épisodes en 3 saisons inspirées de La Divine Comédie de Dante. Écologie, justice sociale, prospective. Gratuite sur YouTube."
                 url="https://mouvementecho.fr/serie"
+                breadcrumbs={[
+                    { name: "Accueil", url: "https://mouvementecho.fr/" },
+                    { name: "La Série", url: "https://mouvementecho.fr/serie" }
+                ]}
             />
             <Helmet>
                 <script type="application/ld+json">

@@ -170,6 +170,10 @@ export function Events() {
                 title="Événements"
                 description="Événements et projections du Mouvement ECHO. Rencontres, ateliers et conférences autour de la transition écologique."
                 url="https://mouvementecho.fr/agenda"
+                breadcrumbs={[
+                    { name: "Accueil", url: "https://mouvementecho.fr/" },
+                    { name: "Événements", url: "https://mouvementecho.fr/agenda" }
+                ]}
             />
             {/* Hero Section */}
             <section className="relative py-20 md:py-32 flex items-center justify-center overflow-hidden">

@@ -43,6 +43,10 @@ export function Support() {
                 title="Soutenir ECHO — 3 courts métrages à financer"
                 description="Soutenez les 3 premiers courts métrages ECHO tournés à Bordeaux, Lille et Lyon avec des étudiants. Dès 1 €. Association loi 1901, déduction fiscale 66%."
                 url="https://mouvementecho.fr/soutenir"
+                breadcrumbs={[
+                    { name: "Accueil", url: "https://mouvementecho.fr/" },
+                    { name: "Soutenir", url: "https://mouvementecho.fr/soutenir" }
+                ]}
             />
 
             {/* Hero Section */}

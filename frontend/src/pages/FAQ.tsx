@@ -162,6 +162,10 @@ export function FAQ() {
                 title="FAQ — Questions Fréquentes"
                 description="Questions fréquentes sur Mouvement ECHO : association, série fiction, CogniSphère, ECHOLink, financement, équipe."
                 url="https://mouvementecho.fr/faq"
+                breadcrumbs={[
+                    { name: "Accueil", url: "https://mouvementecho.fr/" },
+                    { name: "FAQ", url: "https://mouvementecho.fr/faq" }
+                ]}
             />
             <Helmet>
                 <script type="application/ld+json">

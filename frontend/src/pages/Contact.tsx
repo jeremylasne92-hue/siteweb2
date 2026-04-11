@@ -83,6 +83,10 @@ export function Contact() {
                 title="Contact"
                 description="Contactez Mouvement ECHO. Association loi 1901, Bougival (78). Formulaire de contact et informations."
                 url="https://mouvementecho.fr/contact"
+                breadcrumbs={[
+                    { name: "Accueil", url: "https://mouvementecho.fr/" },
+                    { name: "Contact", url: "https://mouvementecho.fr/contact" }
+                ]}
             />
             <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1516387938699-a93567ec168e?q=80&w=2671&auto=format&fit=crop')] bg-cover bg-center opacity-10" />
 

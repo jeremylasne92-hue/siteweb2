@@ -101,6 +101,10 @@ export function Resources() {
                 title="Ressources"
                 description="Ressources et documentation du Mouvement ECHO. Contenus pédagogiques sur la transition écologique et sociale."
                 url="https://mouvementecho.fr/ressources"
+                breadcrumbs={[
+                    { name: "Accueil", url: "https://mouvementecho.fr/" },
+                    { name: "Ressources", url: "https://mouvementecho.fr/ressources" }
+                ]}
             />
 
             {/* Hero Section */}

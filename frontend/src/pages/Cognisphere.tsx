@@ -22,6 +22,10 @@ export function Cognisphere() {
                 title="CogniSphère"
                 description="CogniSphère : plateforme d'apprentissage par répétition espacée (FSRS-5) liée à la série ECHO. Transformez le visionnage en connaissances."
                 url="https://mouvementecho.fr/cognisphere"
+                breadcrumbs={[
+                    { name: "Accueil", url: "https://mouvementecho.fr/" },
+                    { name: "CogniSphère", url: "https://mouvementecho.fr/cognisphere" }
+                ]}
             />
             {/* Hero */}
             <section className="relative h-[60vh] sm:h-[70vh] md:h-[80vh] flex items-center justify-center overflow-hidden">

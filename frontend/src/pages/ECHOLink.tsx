@@ -15,6 +15,10 @@ export function ECHOLink() {
                 title="ECHOLink"
                 description="ECHOLink : réseau de mise en relation des acteurs du changement. Passez de spectateur à acteur de la transition écologique."
                 url="https://mouvementecho.fr/echolink"
+                breadcrumbs={[
+                    { name: "Accueil", url: "https://mouvementecho.fr/" },
+                    { name: "ECHOLink", url: "https://mouvementecho.fr/echolink" }
+                ]}
             />
             {/* Hero */}
             <section className="relative h-[60vh] sm:h-[70vh] md:h-[80vh] flex items-center justify-center overflow-hidden">

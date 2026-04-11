@@ -1,20 +1,46 @@
 import { Helmet } from 'react-helmet-async';
 
+interface BreadcrumbItem {
+    name: string;
+    url: string;
+}
+
 interface SEOProps {
     title: string;
     description: string;
     image?: string;
     url?: string;
+    breadcrumbs?: BreadcrumbItem[];
+    lastModified?: string;
 }
 
-export function SEO({ title, description, image = 'https://mouvementecho.fr/logo-echo.jpg', url = 'https://mouvementecho.fr' }: SEOProps) {
+export function SEO({
+    title,
+    description,
+    image = 'https://mouvementecho.fr/logo-echo.jpg',
+    url = 'https://mouvementecho.fr',
+    breadcrumbs,
+    lastModified,
+}: SEOProps) {
     const fullTitle = `${title} | Mouvement ECHO`;
+
+    const breadcrumbList = breadcrumbs ? {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": breadcrumbs.map((item, index) => ({
+            "@type": "ListItem",
+            "position": index + 1,
+            "name": item.name,
+            "item": item.url
+        }))
+    } : null;
 
     return (
         <Helmet>
             {/* Standard metadata tags */}
             <title>{fullTitle}</title>
             <meta name="description" content={description} />
+            {lastModified && <meta name="article:modified_time" content={lastModified} />}
 
             {/* OpenGraph tags */}
             <meta property="og:title" content={fullTitle} />
@@ -33,6 +59,13 @@ export function SEO({ title, description, image = 'https://mouvementecho.fr/logo
             <meta name="twitter:title" content={fullTitle} />
             <meta name="twitter:description" content={description} />
             <meta name="twitter:image" content={image} />
+
+            {/* BreadcrumbList structured data */}
+            {breadcrumbList && (
+                <script type="application/ld+json">
+                    {JSON.stringify(breadcrumbList)}
+                </script>
+            )}
         </Helmet>
     );
 }

@@ -123,6 +123,10 @@ export default function PartnersPage() {
                 title="L'Écosystème"
                 description="Découvrez l'ECHOSystem : un réseau de partenaires engagés qui tentent de changer positivement ce monde."
                 url="https://mouvementecho.fr/partenaires"
+                breadcrumbs={[
+                    { name: "Accueil", url: "https://mouvementecho.fr/" },
+                    { name: "Partenaires", url: "https://mouvementecho.fr/partenaires" }
+                ]}
             />
             <PartnersHero onApplyClick={() => setIsFormOpen(true)} />
 
