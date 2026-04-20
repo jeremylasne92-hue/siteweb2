@@ -94,3 +94,12 @@ GitHub Secret Scanning a détecté un faux positif dans `.agents/skills/mongodb-
 - Widget stats onboarding dans dashboard admin
 - Health check enrichi avec statut cron
 - Config : CRON_SECRET à ajouter sur Render + cron-job.org à configurer
+
+## 2026-04-20 — Bascule sender email vers contact@mouvementecho.fr
+
+- **Code** : `backend/core/config.py` (EMAIL_ALERT_TO default) + `backend/.env.example` (EMAIL_FROM/REPLY_TO/ALERT_TO) migrés de `mouvement.echo.france@gmail.com` vers `contact@mouvementecho.fr`
+- **Render prod** : 3 variables d'env mises à jour (EMAIL_FROM, EMAIL_REPLY_TO ; EMAIL_ALERT_TO ajoutée explicitement)
+- **SendGrid** : `contact@mouvementecho.fr` vérifié automatiquement via Domain Authentication existante
+- **Exclusions** : compte admin + Google Agenda conservés sur l'ancienne adresse
+- **Test prod** : POST /api/contact → 200 OK, email alerte reçu sur contact@
+- **PR** : https://github.com/jeremylasne92-hue/siteweb2/pull/3 (squash-merge)
