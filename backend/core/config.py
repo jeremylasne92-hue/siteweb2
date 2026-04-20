@@ -37,7 +37,7 @@ class Settings:
     EMAIL_FROM: str = os.environ.get("EMAIL_FROM", "noreply@mouvementecho.fr")
     EMAIL_FROM_NAME: str = os.environ.get("EMAIL_FROM_NAME", "Mouvement ECHO")
     EMAIL_REPLY_TO: str = os.environ.get("EMAIL_REPLY_TO", "contact@mouvementecho.fr")
-    EMAIL_ALERT_TO: str = os.environ.get("EMAIL_ALERT_TO", "mouvement.echo.france@gmail.com")
+    EMAIL_ALERT_TO: str = os.environ.get("EMAIL_ALERT_TO", "contact@mouvementecho.fr")
 
     # AI Enrichment (Claude Haiku)
     ANTHROPIC_API_KEY: str = os.environ.get("ANTHROPIC_API_KEY", "")
